@@ -1,0 +1,14 @@
+{
+  "name": "bc1953-web",
+  "version": "1.0.0",
+  "description": "Báo cáo CV 1953 – KBNN khu vực VIII: nhập, gửi, tiếp nhận, tổng hợp báo cáo giải ngân (Vercel + Postgres)",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "seed": "node scripts/seed.js",
+    "seed:force": "node scripts/seed.js --force",
+    "dev": "node scripts/dev.js",
+    "test": "node test/run.js"
+  },
+  "dependencies": { "pg": "^8.11.3" }
+}

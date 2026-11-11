@@ -1,0 +1,6 @@
+node_modules/
+.env
+.env.local
+ma-dang-nhap.txt
+.vercel/
+*.log
