@@ -163,6 +163,13 @@ td.ps{text-align:right;font-variant-numeric:tabular-nums}tr.par td.nm small{font
 td.a{text-align:right}td.a.glk{font-style:normal;font-weight:700;color:#1d3566;background:#e9f0ff}
 #busy{display:none;position:fixed;top:0;left:0;right:0;height:4px;z-index:100;background:linear-gradient(90deg,#a31d2f,#fff 40%,#f0b4bc 60%,#a31d2f);background-size:200% 100%;animation:bz 1s linear infinite;box-shadow:0 0 6px #a31d2f}@keyframes bz{from{background-position:200% 0}to{background-position:-200% 0}}
 @media(max-width:600px){main{padding:14px 12px 100px}header{padding:12px}}
+.khw{display:grid;gap:14px}.khw h3{margin:0 0 8px;font-size:16px;color:#4a0c17}.khw .card{overflow:hidden}
+.ngt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.ngt .card{padding:10px 14px}.ngt b{display:block;font-size:20px;font-variant-numeric:tabular-nums;line-height:1.25}.ngt span{font-size:12.5px;color:var(--mut)}.ngt .big b{font-size:24px;color:var(--acc2)}
+.khtw{max-height:460px;overflow:auto}.khtw .mini-t th{position:sticky;top:0;background:#fbf3f4;z-index:1}.khtw .mini-t td.l,.khtw .mini-t th.l{text-align:left}
+.mini-t tr.clk{cursor:pointer}.mini-t tr.clk:hover td{background:#fdf6f7}.mini-t tr.kh td{background:#8b2335;color:#fff;font-weight:700;text-align:left}
+.khf{display:grid;grid-template-columns:2fr 1.5fr 1.5fr 1fr auto;gap:8px;margin-bottom:10px;align-items:center}@media(max-width:900px){.khf{grid-template-columns:1fr 1fr}}
+.nchip{display:inline-block;background:#f9eef0;border-radius:8px;padding:1px 7px;margin:1px 3px 1px 0;font-size:12px;white-space:nowrap}
+.khpg{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:10px;flex-wrap:wrap}.khpg button{padding:6px 14px}
 </style>
 </head>
 <body>
@@ -274,15 +281,15 @@ function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)
 function drawTabs(){
   var h='<button data-t="tq">'+(S.vt==='TH'?'📈 Tổng hợp toàn tỉnh':S.vt==='NV2'?'📥 Hộp tiếp nhận':'🏠 Tổng quan')+'</button>';
   ['b01','b02','b03a','b03b'].forEach(function(id){h+='<button data-t="'+id+'">'+esc(BN[id])+'</button>'});
-  h+='<button data-t="in">🖨 In &amp; xuất</button>';$('tabs').innerHTML=h;
+  h+='<button data-t="kh">💰 Kế hoạch vốn</button><button data-t="in">🖨 In &amp; xuất</button>';$('tabs').innerHTML=h;
   [].forEach.call($('tabs').children,function(b){b.onclick=function(){show(b.getAttribute('data-t'))}});
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
 function show(t){S.tab=t;[].forEach.call($('tabs').children,function(b){b.className=b.getAttribute('data-t')===t?'on':''});
-  if(t!=='tq'&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
-  $('pgdBar').style.display=(isV()&&t!=='tq')?'flex':'none';if(isV())$('xemSel').value=S.xem;
-  if(t==='tq')drawTq();else if(t==='in')drawIn();else drawTable(t);
-  $('sbar').style.display=(canEdit()&&t!=='tq'&&t!=='in')?'flex':'none';updBar()}
+  if(t!=='tq'&&t!=='kh'&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
+  $('pgdBar').style.display=(isV()&&t!=='tq'&&t!=='kh')?'flex':'none';if(isV())$('xemSel').value=S.xem;
+  if(t==='tq')drawTq();else if(t==='kh')drawKh();else if(t==='in')drawIn();else drawTable(t);
+  $('sbar').style.display=(canEdit()&&t!=='tq'&&t!=='in'&&t!=='kh')?'flex':'none';updBar()}
 
 /* ===== Tổng quan / hộp tiếp nhận / tổng hợp ===== */
 var COL={dg:'#16a34a',cham:'#f59e0b',chua:'#dc2626',trong:'#cbd3e1'};
@@ -458,6 +465,48 @@ function xuat(fn,btn,mode){
     if(w){w.location.href=url;toast('Đã mở biểu ở tab mới, bấm Ctrl+P để in.',5000)}
     else{var a=document.createElement('a');a.href=url;a.download=r.name;document.body.appendChild(a);a.click();a.remove();toast('Đã tạo '+r.name,4000)}})
   .catch(function(e){if(w)w.close();toast('Lỗi: '+msg(e),8000)}).then(function(){btn.disabled=false;btn.innerHTML=t});
+}
+/* ===== Kế hoạch vốn (QĐ 2623) ===== */
+var KHS={f:{q:'',cdt:'',muc:'',nguon:'',trang:1},h:null};
+function khN(n){return n?fmt(n):'<span style="color:#c9b3b7">–</span>'}
+function khNgay(d){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?m[3]+'/'+m[2]+'/'+m[1]:esc(d||'')}
+function khOpt(v,l,sel){return '<option value="'+esc(v)+'"'+(sel===v?' selected':'')+'>'+esc(l)+'</option>'}
+function drawKh(){
+  var m=$('main');
+  if(!S.kh){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải kế hoạch vốn...</p>';
+    run('khTongQuan',S.token).then(function(d){S.kh=d;if(S.tab==='kh')drawKh()}).catch(function(e){m.innerHTML='<div class="card"><b>Chưa xem được kế hoạch vốn.</b><p class="hint" style="margin-top:6px">'+esc(msg(e))+'</p></div>'});return}
+  var d=S.kh,ng=d.nguon,q0=d.qd[0]||{},f=KHS.f,h='<div class="khw">';
+  h+='<div class="card"><h3>Kế hoạch vốn đầu tư công trung hạn 2026–2030 · vốn ngân sách địa phương</h3><p class="hint" style="margin:0">'+(q0.so?'Quyết định '+esc(q0.so)+(q0.ngay?' ngày '+khNgay(q0.ngay):'')+(q0.coQuan?' · '+esc(q0.coQuan):''):'')+' · Đơn vị: triệu đồng'+(d.tatCa?'':' · Bạn chỉ xem các chủ đầu tư thuộc phòng của mình')+'</p></div>';
+  h+='<div class="ngt"><div class="card big"><b>'+fmt(d.tong)+'</b><span>Tổng kế hoạch vốn</span></div><div class="card"><b>'+fmt(d.soDA)+'</b><span>Dự án / khoản vốn</span></div>'+ng.map(function(n){return '<div class="card"><b>'+fmt(n.tong)+'</b><span>'+esc(n.code)+'</span></div>'}).join('')+'</div>';
+  var th='<th class="l">',head=function(a,b){return '<tr><th class="l">'+a+'</th><th>Số DA</th>'+ng.map(function(n){return '<th>'+esc(n.code)+'</th>'}).join('')+'<th>Tổng</th></tr>'};
+  var cells=function(o,t){return ng.map(function(n){return '<td>'+khN(o[n.id])+'</td>'}).join('')+'<td class="v">'+fmt(t)+'</td>'};
+  h+='<div class="card"><h3>Theo mục của quyết định</h3><div class="khtw"><table class="mini-t">'+head('Mục')+d.muc.map(function(x){return '<tr class="clk" data-m="'+esc(x.ten)+'"><td>'+esc(x.ten)+'</td><td>'+fmt(x.soDA)+'</td>'+cells(x.theo,x.tong)+'</tr>'}).join('')+'<tr class="tot"><td>Tổng cộng</td><td>'+fmt(d.soDA)+'</td>'+ng.map(function(n){return '<td>'+fmt(n.tong)+'</td>'}).join('')+'<td>'+fmt(d.tong)+'</td></tr></table></div><p class="hint" style="margin:8px 0 0">Bấm vào một dòng để lọc danh sách dự án bên dưới.</p></div>';
+  var kh0='',rows='';d.cdt.forEach(function(c,i){if(c.khoi!==kh0){kh0=c.khoi;rows+='<tr class="kh"><td colspan="'+(ng.length+3)+'">'+esc(kh0)+'</td></tr>'}rows+='<tr class="clk" data-c="'+esc(c.id)+'"><td>'+esc(c.name)+'</td><td>'+fmt(c.soDA)+'</td>'+cells(c.theo,c.tong)+'</tr>'});
+  if(d.chuaGan)rows+='<tr class="kh"><td colspan="'+(ng.length+3)+'">Khoản chung (chưa phân bổ cho chủ đầu tư cụ thể)</td></tr><tr class="clk" data-c="_none"><td>Các khoản chưa chia chi tiết: dự phòng, đối ứng ODA, vốn phân cấp xã, dự án khởi công mới chưa phân bổ…</td><td>'+fmt(d.chuaGan.soDA)+'</td>'+cells(d.chuaGan.theo,d.chuaGan.tong)+'</tr>';
+  h+='<div class="card"><h3>Theo chủ đầu tư</h3><div class="khtw"><table class="mini-t">'+head('Chủ đầu tư')+rows+'</table></div></div>';
+  h+='<div class="card" id="khDs"><h3>Danh sách dự án</h3><div class="khf"><input type="text" id="khQ" placeholder="Tìm theo tên dự án, mã dự án, chủ đầu tư..." value="'+esc(f.q)+'">'
+    +'<select id="khC">'+khOpt('','Tất cả chủ đầu tư',f.cdt)+d.cdt.map(function(c){return khOpt(c.id,c.name,f.cdt)}).join('')+(d.chuaGan?khOpt('_none','Khoản chung (chưa phân bổ)',f.cdt):'')+'</select>'
+    +'<select id="khM">'+khOpt('','Tất cả mục',f.muc)+d.muc.map(function(x){return khOpt(x.ten,x.ten,f.muc)}).join('')+'</select>'
+    +'<select id="khG">'+khOpt('','Mọi nguồn vốn',f.nguon)+ng.map(function(n){return khOpt(n.id,n.code,f.nguon)}).join('')+'</select>'
+    +'<button class="ghost" id="khX">⬇ Xuất Excel</button></div><div id="khRes"></div></div></div>';
+  m.innerHTML=h;
+  var go=function(){f.trang=1;khLoad()};
+  $('khQ').oninput=function(){f.q=this.value;clearTimeout(KHS.h);KHS.h=setTimeout(go,300)};
+  $('khC').onchange=function(){f.cdt=this.value;go()};$('khM').onchange=function(){f.muc=this.value;go()};$('khG').onchange=function(){f.nguon=this.value;go()};
+  $('khX').onclick=function(){xuat(function(){return run('xuatKeHoach',S.token,f,'xlsx')},this)};
+  [].forEach.call(m.querySelectorAll('tr[data-c]'),function(r){r.onclick=function(){f.cdt=r.getAttribute('data-c');f.trang=1;$('khC').value=f.cdt;khLoad();$('khDs').scrollIntoView({behavior:'smooth'})}});
+  [].forEach.call(m.querySelectorAll('tr[data-m]'),function(r){r.onclick=function(){f.muc=r.getAttribute('data-m');f.trang=1;$('khM').value=f.muc;khLoad();$('khDs').scrollIntoView({behavior:'smooth'})}});
+  khLoad();
+}
+function khLoad(){
+  var f=KHS.f,box=$('khRes');if(!box)return;box.style.opacity='.5';
+  run('khDuAn',S.token,f).then(function(r){box=$('khRes');if(!box||S.tab!=='kh')return;box.style.opacity='';var ng=S.kh.nguon;
+    var h='<div class="khtw"><table class="mini-t khp"><tr><th class="l">Mã</th><th class="l">Tên dự án</th><th class="l">Chủ đầu tư</th><th class="l">Mục</th><th class="l">Nguồn vốn</th><th>Tổng vốn</th></tr>';
+    if(!r.rows.length)h+='<tr><td colspan="6" style="text-align:center;color:var(--mut);padding:18px">Không có dự án nào khớp bộ lọc.</td></tr>';
+    r.rows.forEach(function(x){h+='<tr><td class="l">'+esc(x.ma)+'</td><td class="l">'+esc(x.ten)+'</td><td class="l">'+esc(x.cdt)+'</td><td class="l">'+esc(x.muc)+(x.nhom?' <span class="nchip">'+esc(x.nhom)+'</span>':'')+'</td><td class="l">'+ng.filter(function(n){return x.von[n.id]}).map(function(n){return '<span class="nchip">'+esc(n.code)+' '+fmt(x.von[n.id])+'</span>'}).join('')+'</td><td class="v">'+fmt(x.tong)+'</td></tr>'});
+    h+='</table></div><div class="khpg"><span class="hint" style="margin:0"><b>'+fmt(r.dem)+'</b> dự án · tổng <b>'+fmt(r.tong)+'</b> triệu đồng</span><span><button class="ghost" id="khP"'+(r.trang<=1?' disabled':'')+'>‹ Trước</button> <span class="hint" style="margin:0 6px">Trang '+r.trang+'/'+r.soTrang+'</span> <button class="ghost" id="khN"'+(r.trang>=r.soTrang?' disabled':'')+'>Sau ›</button></span></div>';
+    box.innerHTML=h;var p=$('khP'),n=$('khN');if(p)p.onclick=function(){f.trang=r.trang-1;khLoad()};if(n)n.onclick=function(){f.trang=r.trang+1;khLoad()}
+  }).catch(function(e){if(box)box.style.opacity='';toast(msg(e),6000)});
 }
 function drawIn(){
   if(S.ky&&S.wf&&S.wf.kyCu){$('main').innerHTML='<div class="card"><h3>🖨 In & xuất kỳ '+esc(S.wf.ky)+'</h3><p class="hint">Kỳ đã chốt: xem số liệu ngay trên các tab biểu. Biểu in PDF/Excel hiện làm cho <b>kỳ hiện tại</b>; chọn lại kỳ hiện tại ở góc trên để in.</p>'+(S.vt!=="PGD"?'<p class="hint">Bảng thống kê nộp báo cáo của kỳ này xuất ở trang Tổng hợp.</p>':'')+'</div>';return}
