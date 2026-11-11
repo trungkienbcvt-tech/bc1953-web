@@ -163,13 +163,10 @@ td.ps{text-align:right;font-variant-numeric:tabular-nums}tr.par td.nm small{font
 td.a{text-align:right}td.a.glk{font-style:normal;font-weight:700;color:#1d3566;background:#e9f0ff}
 #busy{display:none;position:fixed;top:0;left:0;right:0;height:4px;z-index:100;background:linear-gradient(90deg,#a31d2f,#fff 40%,#f0b4bc 60%,#a31d2f);background-size:200% 100%;animation:bz 1s linear infinite;box-shadow:0 0 6px #a31d2f}@keyframes bz{from{background-position:200% 0}to{background-position:-200% 0}}
 @media(max-width:600px){main{padding:14px 12px 100px}header{padding:12px}}
-.khw{display:grid;gap:14px}.khw h3{margin:0 0 8px;font-size:16px;color:#4a0c17}.khw .card{overflow:hidden}
-.ngt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.ngt .card{padding:10px 14px}.ngt b{display:block;font-size:20px;font-variant-numeric:tabular-nums;line-height:1.25}.ngt span{font-size:12.5px;color:var(--mut)}.ngt .big b{font-size:24px;color:var(--acc2)}
-.khtw{max-height:460px;overflow:auto}.khtw .mini-t th{position:sticky;top:0;background:#fbf3f4;z-index:1}.khtw .mini-t td.l,.khtw .mini-t th.l{text-align:left}
-.mini-t tr.clk{cursor:pointer}.mini-t tr.clk:hover td{background:#fdf6f7}.mini-t tr.kh td{background:#8b2335;color:#fff;font-weight:700;text-align:left}
-.khf{display:grid;grid-template-columns:2fr 1.5fr 1.5fr 1fr auto;gap:8px;margin-bottom:10px;align-items:center}@media(max-width:900px){.khf{grid-template-columns:1fr 1fr}}
-.nchip{display:inline-block;background:#f9eef0;border-radius:8px;padding:1px 7px;margin:1px 3px 1px 0;font-size:12px;white-space:nowrap}
-.khpg{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:10px;flex-wrap:wrap}.khpg button{padding:6px 14px}
+.dcb{margin:0 0 10px;border:1px solid #ead3d7;border-radius:12px;background:#fff;padding:8px 14px;font-size:13.5px}.dcb h4{margin:0 0 4px;font-size:13.5px;color:#4a0c17}
+.dcr{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:4px 0;border-top:1px dashed #f0e3e5}.dcr:first-of-type{border-top:0}.dct{flex:1;min-width:260px}.dcv{font-variant-numeric:tabular-nums}
+.dck{display:inline-block;border-radius:999px;padding:1px 11px;font-weight:600;font-size:12.5px;white-space:nowrap}.dck.khop{background:#dcfce7;color:#15803d}.dck.thap{background:#fff1d6;color:#b45309}.dck.cao{background:#fee2e2;color:#b91c1c}
+.dcm td.khop{color:#15803d}.dcm td.thap{color:#b45309;font-weight:600}.dcm td.cao{color:#b91c1c;font-weight:600}.dcm th{font-size:12px}.dcm td,.dcm th{text-align:right}.dcm td:first-child,.dcm th:first-child{text-align:left}
 </style>
 </head>
 <body>
@@ -275,21 +272,21 @@ function loadXem(){run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d
 
 function fillKy(){var l=(S.wf&&S.wf.dsKy)||S.dsKy||[];S.dsKy=l;var sel=$('kySel');if(!sel)return;
   sel.innerHTML=l.slice().reverse().map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'">Kỳ '+k.nhan+(k.hienTai?' (hiện tại)':' · đã chốt')+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Báo cáo CV 1953 – kỳ tháng '+cur.nhan}
-function doiKy(v){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển kỳ?')){$('kySel').value=S.ky||'';return}
+function doiKy(v){S.dc=null;if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển kỳ?')){$('kySel').value=S.ky||'';return}
   S.ky=v;S.dirty={};S.data=null;Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();fillKy();show(S.tab==='in'?'in':'tq')}).catch(function(e){toast(msg(e),6000);S.ky='';fillKy()})}
 function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();show('tq')}
 function drawTabs(){
   var h='<button data-t="tq">'+(S.vt==='TH'?'📈 Tổng hợp toàn tỉnh':S.vt==='NV2'?'📥 Hộp tiếp nhận':'🏠 Tổng quan')+'</button>';
   ['b01','b02','b03a','b03b'].forEach(function(id){h+='<button data-t="'+id+'">'+esc(BN[id])+'</button>'});
-  h+='<button data-t="kh">💰 Kế hoạch vốn</button><button data-t="in">🖨 In &amp; xuất</button>';$('tabs').innerHTML=h;
+  h+='<button data-t="in">🖨 In &amp; xuất</button>';$('tabs').innerHTML=h;
   [].forEach.call($('tabs').children,function(b){b.onclick=function(){show(b.getAttribute('data-t'))}});
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
 function show(t){S.tab=t;[].forEach.call($('tabs').children,function(b){b.className=b.getAttribute('data-t')===t?'on':''});
-  if(t!=='tq'&&t!=='kh'&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
-  $('pgdBar').style.display=(isV()&&t!=='tq'&&t!=='kh')?'flex':'none';if(isV())$('xemSel').value=S.xem;
-  if(t==='tq')drawTq();else if(t==='kh')drawKh();else if(t==='in')drawIn();else drawTable(t);
-  $('sbar').style.display=(canEdit()&&t!=='tq'&&t!=='in'&&t!=='kh')?'flex':'none';updBar()}
+  if(t!=='tq'&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
+  $('pgdBar').style.display=(isV()&&t!=='tq')?'flex':'none';if(isV())$('xemSel').value=S.xem;
+  if(t==='tq')drawTq();else if(t==='in')drawIn();else drawTable(t);
+  $('sbar').style.display=(canEdit()&&t!=='tq'&&t!=='in')?'flex':'none';updBar()}
 
 /* ===== Tổng quan / hộp tiếp nhận / tổng hợp ===== */
 var COL={dg:'#16a34a',cham:'#f59e0b',chua:'#dc2626',trong:'#cbd3e1'};
@@ -302,8 +299,53 @@ function flags(x){var h='';
   if(x.quaHan)h+='<span class="flag r">Quá hạn chưa gửi</span>';
   if(x.nv2Cham)h+='<span class="flag">NV2 nộp chậm</span>';
   if(x.nv2QuaHan&&!x.nv2Cham)h+='<span class="flag">Quá hạn nộp TH</span>';return h}
+/* ===== Đối chiếu số liệu Kho bạc ===== */
+var DCN={khop:'Khớp',thap:'THẤP hơn Kho bạc',cao:'CAO hơn Kho bạc'};
+function dcTT(n,k,sd){var l=n-k;return Math.abs(l)<=Math.max(1,sd*0.5)?'khop':(l<0?'thap':'cao')}
+function dcL(l){var a=Math.round(Math.abs(l)*10)/10;return (l<0?'−':'+')+a.toLocaleString('vi-VN',{maximumFractionDigits:1})}
+function dcLoad(){if(S.dc||S.dcBusy)return;S.dcBusy=1;
+  run('doiChieu',S.token,S.ky).then(function(d){S.dc=d}).catch(function(){S.dc={co:false,loi:1,ds:[],muc:[]}}).then(function(){S.dcBusy=0;if(S.tab==='tq')drawTq();else if(S.tab!=='in')dcRender()})}
+function dcNhap(b,m){var js=m.cot.map(function(c){return b.cols.map(function(x){return x.c}).indexOf(c)}),s=0,sd=0;
+  b.rows.forEach(function(r){var t=0;m.cot.forEach(function(c,i){var k=b.id+'|'+r.r+'|'+c,v=S.dirty[k]!==undefined?S.dirty[k].v:r.v[js[i]],x=Number(v);if(!isNaN(x))t+=x});if(t)sd++;s+=t});return{s:s,sd:sd}}
+function dcChip(tt,l){return '<span class="dck '+tt+'">'+DCN[tt]+(tt==='khop'?'':' '+dcL(l)+' triệu')+'</span>'}
+function dcRender(){var box=$('dcBox');if(!box)return;var d=S.dc;
+  if(!d||!d.co||!S.data||S.data.tatCa){box.innerHTML='';return}
+  var b=S.data.sheets.filter(function(x){return x.id===S.tab})[0],e=d.ds.filter(function(x){return x.pgd===S.data.pgd})[0];if(!b){return}
+  if(!e||!e.mucs){box.innerHTML='';return}
+  var ms=d.muc.filter(function(m){return m.bid===b.id});
+  if(!ms.length){box.innerHTML='<div class="dcb"><small style="color:var(--mut)">⚖ Biểu này chưa có số liệu Kho bạc để đối chiếu.</small></div>';return}
+  var h='<div class="dcb"><h4>⚖ Đối chiếu với số liệu Kho bạc'+(d.meta&&d.meta.den?' <small style="font-weight:400;color:var(--mut)">(Kho bạc tính đến '+esc(d.meta.den)+' · tổng của cả phòng, đơn vị triệu đồng)</small>':'')+'</h4>';
+  ms.forEach(function(m){var rf=e.mucs.filter(function(x){return x.id===m.id})[0];if(!rf)return;var n=dcNhap(b,m),tt=dcTT(n.s,rf.kbnn,n.sd);
+    h+='<div class="dcr"><div class="dct">'+esc(m.ten)+'</div><div class="dcv">Đơn vị nhập <b>'+fmt(n.s)+'</b> · Kho bạc <b>'+fmt(rf.kbnn)+'</b></div>'+dcChip(tt,n.s-rf.kbnn)+'</div>'});
+  box.innerHTML=h+'</div>'}
+function dcPgdCard(){var d=S.dc;if(!d||!d.co)return '';var e=d.ds.filter(function(x){return x.pgd===S.ten})[0];if(!e||!e.mucs)return '';
+  var h='<div class="card" style="padding:8px 14px 12px;margin-top:12px"><h3 style="font-size:15px;margin:4px 0 2px">⚖ So với số liệu Kho bạc</h3><p class="hint" style="margin:0 0 6px">Kho bạc tính đến '+esc((d.meta&&d.meta.den)||'')+' · so sánh tổng lũy kế của cả phòng · triệu đồng · '+esc(d.dungSai)+'</p><table class="mini-t"><thead><tr><th>Nội dung</th><th>Đơn vị nhập</th><th>Kho bạc</th><th>Chênh lệch</th><th>Kết luận</th></tr></thead><tbody>';
+  d.muc.forEach(function(m){var x=e.mucs.filter(function(y){return y.id===m.id})[0];if(!x)return;h+='<tr><td>'+esc(m.ten)+'</td><td>'+fmt(x.nhap)+'</td><td>'+fmt(x.kbnn)+'</td><td>'+(x.tt==='khop'?'–':dcL(x.lech))+'</td><td>'+dcChip(x.tt,x.lech).replace(/ [−+][\d.,]+ triệu/,'')+'</td></tr>'});
+  return h+'</tbody></table></div>'}
+function dcWarn(){var d=S.dc;if(!d||!d.co)return '';var e=d.ds.filter(function(x){return x.pgd===S.ten})[0];if(!e||!e.mucs)return '';
+  var l=e.mucs.filter(function(x){return x.tt!=='khop'});if(!l.length)return '<br><b style="color:#15803d">✓ Số liệu khớp với Kho bạc.</b>';
+  return '<div class="rsn" style="margin-top:8px"><b>⚠ Số liệu còn chênh lệch so với Kho bạc:</b><br>'+l.map(function(x){var m=d.muc.filter(function(y){return y.id===x.id})[0];return '• '+esc(m.ten)+': nhập '+fmt(x.nhap)+' · Kho bạc '+fmt(x.kbnn)+' → <b>'+DCN[x.tt]+' '+dcL(x.lech)+'</b>'}).join('<br>')+'<br><small>Vẫn có thể gửi, nhưng nên kiểm tra lại trước.</small></div>'}
+function dcViewerCard(){var d=S.dc,ro=S.wf&&S.wf.kyCu;
+  var up=ro?'':'<input type="file" id="dcFile" accept=".xlsx" style="display:none"><button class="pri mini" id="dcBtn">'+(d&&d.co?'📂 Tải file Kho bạc mới':'📂 Tải file Kho bạc (.xlsx)')+'</button>'+(d&&d.co?' <button class="mini" id="dcXoa">Xóa</button>':'');
+  var h='<div class="card" style="margin-bottom:16px"><h3>⚖ Đối chiếu số liệu Kho bạc</h3>';
+  if(!d){return h+'<p class="hint">Đang tải...</p></div>'}
+  if(!d.co)return h+'<p class="hint">Chưa có số liệu Kho bạc cho kỳ '+esc(S.wf.ky)+'. Tải file báo cáo <b>01b/TTKHN</b> do Kho bạc gửi (Excel, đơn vị đồng) <b>trước khi các đơn vị nhập</b>: khi nhập số liệu, hệ thống sẽ báo ngay đơn vị nhập <b>thấp hơn / cao hơn / khớp</b> so với Kho bạc.</p>'+up+'</div>';
+  var m=d.meta||{};h+='<p class="hint">File <b>'+esc(m.file||'')+'</b> · tải bởi '+esc(m.nguoi||'')+' lúc '+esc(m.luc||'')+' · số liệu Kho bạc đến <b>'+esc(m.den||'?')+'</b>. Đối chiếu tổng lũy kế của từng phòng theo nhóm vốn (file Kho bạc không có cột chủ đầu tư). '+esc(d.dungSai)+'</p>';
+  if(m.thieu&&m.thieu.length)h+='<div class="rsn" style="margin-bottom:8px">File không có số liệu của: '+esc(m.thieu.join(', '))+'.</div>';
+  h+='<div class="lg1" style="margin-bottom:8px"><span style="color:#15803d">✓ Khớp <b>'+d.dem.khop+'</b></span><span style="color:#b45309">▼ Thấp hơn <b>'+d.dem.thap+'</b></span><span style="color:#b91c1c">▲ Cao hơn <b>'+d.dem.cao+'</b></span> <span style="margin-left:auto">'+up+'</span></div>';
+  h+='<div style="overflow:auto"><table class="mini-t dcm"><thead><tr><th>Phòng</th>'+d.muc.map(function(x){return '<th title="'+esc(x.ten)+'">'+esc(x.ten.replace(' · ','<br>'))+'</th>'}).join('').replace(/&lt;br&gt;/g,'<br>')+'</tr></thead><tbody>';
+  d.ds.forEach(function(e){h+='<tr><td class="p" data-a="xem" data-p="'+esc(e.pgd)+'" style="cursor:pointer;font-weight:600">'+esc(e.pgd)+'</td>'+(e.mucs?e.mucs.map(function(x){return '<td class="'+x.tt+'" title="Đơn vị nhập '+fmt(x.nhap)+' · Kho bạc '+fmt(x.kbnn)+'">'+(x.tt==='khop'?'✓':dcL(x.lech))+'</td>'}).join(''):'<td colspan="'+d.muc.length+'" style="color:var(--mut)">Không có trong file Kho bạc</td>')+'</tr>'});
+  return h+'</tbody></table></div><p class="hint" style="margin-top:6px">Ô hiện số = đơn vị nhập trừ Kho bạc (triệu đồng): số âm là thấp hơn, số dương là cao hơn. Rê chuột vào ô để xem số chi tiết.</p></div>'}
+function bindDc(){
+  if($('dcBtn'))$('dcBtn').onclick=function(){$('dcFile').click()};
+  if($('dcFile'))$('dcFile').onchange=function(){var f=this.files[0],inp=this;if(!f)return;if(f.size>3e6){toast('File quá lớn (tối đa 3 MB).',6000);return}
+    var fr=new FileReader();fr.onload=function(){var u=new Uint8Array(fr.result),s='';for(var i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));
+      toast('Đang đọc file Kho bạc...',4000);
+      run('nhapKbnn',S.token,f.name,btoa(s)).then(function(d){S.dc=d;toast('Đã nạp số liệu Kho bạc của '+d.ds.filter(function(x){return x.mucs}).length+' phòng.',6000);drawTq()}).catch(function(e){toast(msg(e),10000)})};
+    fr.readAsArrayBuffer(f);inp.value=''};
+  if($('dcXoa'))$('dcXoa').onclick=function(){hoi('<h3>Xóa số liệu Kho bạc?</h3><p class="hint">Các cảnh báo so sánh sẽ biến mất cho đến khi tải file mới.</p>','Xóa').then(function(v){if(!v)return;run('xoaKbnn',S.token).then(function(d){S.dc=d;toast('Đã xóa.');drawTq()}).catch(function(e){toast(msg(e),8000)})})}}
 function drawTq(){
-  var render=function(){var wf=S.wf,t=S.tt;if(!wf||!t)return;S.off=wf.nowMs-Date.now();$('main').innerHTML=(S.vt==='PGD'?drawPgd(wf,t):drawViewer(wf,t));bindTq();tick()};
+  var render=function(){var wf=S.wf,t=S.tt;if(!wf||!t)return;S.off=wf.nowMs-Date.now();$('main').innerHTML=(S.vt==='PGD'?drawPgd(wf,t):drawViewer(wf,t));bindTq();bindDc();tick();dcLoad()};
   render();
   if(Date.now()-(S.tqAt||0)<25000&&!S.stale)return;S.stale=false;
   Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();if(S.tab==='tq')render()}).catch(function(e){toast(msg(e),5000)});
@@ -324,7 +366,7 @@ function drawPgd(wf,t){
   ids.forEach(function(i){var b=p.b[i];if(!b)return;tl+=b.luyke;tt2+=b.thang;tn+=b.n;
     h+='<tr><td><b>'+BN[i]+'</b></td><td>'+b.n+'</td><td class="g">'+b.dg+'</td><td class="o">'+b.cham+'</td><td class="r">'+b.chua+'</td><td>'+b.trong+'</td><td class="v">'+fmt(r2(b.luyke))+'</td><td class="v">'+fmt(r2(b.thang))+'</td></tr>'});
   h+='<tr class="tot"><td>Cộng 4 biểu</td><td>'+tn+'</td><td colspan="4"></td><td class="v">'+fmt(r2(tl))+'</td><td class="v">'+fmt(r2(tt2))+'</td></tr></tbody></table></div>'+
-     cdtH(t)+'<p class="hint" style="margin:0">Cập nhật lần cuối: <b>'+(p.last||'chưa có')+'</b> · Sau khi gửi, số liệu bị khóa.</p>';
+     dcPgdCard()+cdtH(t)+'<p class="hint" style="margin:0">Cập nhật lần cuối: <b>'+(p.last||'chưa có')+'</b> · Sau khi gửi, số liệu bị khóa.</p>';
   return h}
 function actions(x){var h='';
   if(S.vt==='NV2'){
@@ -338,7 +380,7 @@ function drawViewer(wf,t){
   wf.list.forEach(function(x){cnt[x.tt]++;if(x.cham||x.quaHan||x.nv2Cham||x.nv2QuaHan)late.push(x)});
   var h='<div class="kp5">'+Object.keys(cnt).map(function(k){return'<div class="card kpi" style="border-top:4px solid '+['#8b95a9','#2563eb','#0d9488','#dc2626','#16a34a'][STC[k]]+'"><b>'+cnt[k]+'</b><span>'+k+'</span></div>'}).join('')+'</div>';
   h=hero(wf,(S.vt==='TH'&&!wf.kyCu?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button id="bTron" class="mini">Làm tròn số liệu về triệu đồng</button><button id="bChot" class="mini">⏭ Chốt kỳ, sang tháng sau</button></div>':'<p class="hint" style="margin:4px 0 0">Tiếp nhận hoặc chuyển trả báo cáo các phòng, rồi nộp tổng hợp.</p>'),dl('Hạn PGD gửi báo cáo',wf.hanHienThi.pgd,wf.hanMs.pgd,false)+dl('Hạn Nghiệp vụ 2 nộp tổng hợp',wf.hanHienThi.nv2,wf.hanMs.nv2,false))+h;
-  h+=tong4H(t)+cdtH(t);
+  h+=dcViewerCard()+tong4H(t)+cdtH(t);
   if(S.vt==='TH'&&!wf.kyCu)h+='<div class="card" style="margin-bottom:16px"><h3>Đặt hạn nộp báo cáo</h3><div class="row2" style="max-width:760px"><div><label>PGD gửi báo cáo trước (ngày/tháng/năm giờ:phút)</label><div style="display:flex;gap:6px"><input type="text" id="hPgdD" placeholder="dd/mm/yyyy" maxlength="10" value="'+isoDmy(wf.han.pgd)+'"><input type="text" id="hPgdT" placeholder="hh:mm" maxlength="5" style="width:90px" value="'+((wf.han.pgd||'').slice(11,16))+'"></div></div><div><label>Nghiệp vụ 2 nộp tổng hợp trước</label><div style="display:flex;gap:6px"><input type="text" id="hNv2D" placeholder="dd/mm/yyyy" maxlength="10" value="'+isoDmy(wf.han.nv2)+'"><input type="text" id="hNv2T" placeholder="hh:mm" maxlength="5" style="width:90px" value="'+((wf.han.nv2||'').slice(11,16))+'"></div></div></div><div style="margin-top:10px"><button class="pri" id="bHan">Lưu hạn nộp</button> <span class="hint">Bây giờ: '+wf.now+'</span></div></div>';
   h+='<div class="card" style="margin-bottom:16px"><h3>Quy trình nộp báo cáo</h3>'+
     (S.vt==='NV2'?'<p class="hint">Tiếp nhận báo cáo PGD đã gửi, hoặc chuyển trả kèm lý do. Báo cáo đã tiếp nhận thì nộp cho cán bộ tổng hợp.</p>':'<p class="hint">Theo dõi từng phòng. Có thể chuyển trả báo cáo (kể cả đã nộp tổng hợp) kèm lý do.</p>')+
@@ -367,10 +409,10 @@ function bindTq(){
   if($('bTron'))$('bTron').onclick=function(){hoi('<h3>Làm tròn số liệu?</h3><p class="hint">Tất cả ô số liệu chủ đầu tư đang có phần lẻ sẽ được làm tròn về số nguyên (triệu đồng). Thao tác này ghi vào nhật ký, không hoàn lại được.</p>','Làm tròn').then(function(v){if(!v)return;$('bTron').disabled=true;
     run('lamTron',S.token).then(function(r){toast('Đã làm tròn '+r.dem+' ô.',5000);S.data=null;return run('tongHop',S.token,S.ky)}).then(function(d){S.tt=d;drawTq()}).catch(function(e){toast(msg(e),8000)}).then(function(){if($('bTron'))$('bTron').disabled=false})})};
   if($('bChot'))$('bChot').onclick=function(){hoi('<h3>Chốt kỳ tháng '+esc(S.wf.ky)+'?</h3><p class="hint">• Lưu lũy kế hiện tại làm mốc để tháng sau tự trừ ra số trong tháng.<br>• Đặt lại trạng thái các phòng về <b>Chưa gửi</b>, xóa tình trạng/ghi chú của chủ đầu tư, đặt lại hạn nộp.<br>• Đổi tiêu đề các biểu sang tháng kế tiếp.<br><b style="color:#b91c1c">Chỉ làm khi đã tổng hợp xong báo cáo tháng này, không hoàn tác được.</b></p>','Chốt kỳ').then(function(v){if(!v)return;
-    $('bChot').disabled=true;run('chotKy',S.token).then(function(r){toast('Đã chốt kỳ, sang tháng '+r.ky);S.wf=r;S.data=null;S.ky='';S.stale=true;fillKy();drawTabs();show('tq')}).catch(function(e){toast(msg(e),8000);$('bChot').disabled=false})})};
+    $('bChot').disabled=true;run('chotKy',S.token).then(function(r){toast('Đã chốt kỳ, sang tháng '+r.ky);S.wf=r;S.data=null;S.ky='';S.stale=true;S.dc=null;fillKy();drawTabs();show('tq')}).catch(function(e){toast(msg(e),8000);$('bChot').disabled=false})})};
   if($('bGui'))$('bGui').onclick=function(){
     var n=['b01','b02','b03a','b03b'].reduce(function(a,i){return a+((S.tt.list[0].b[i]||{}).trong||0)},0);
-    hoi('<h3>Gửi báo cáo?</h3><p class="hint">'+(S.ten==='Phòng Nghiệp vụ 2'?'Sau khi gửi, số liệu bị khóa và báo cáo lên thẳng tổng hợp.':'Sau khi gửi, số liệu bị khóa và chuyển cho cán bộ Nghiệp vụ 2 tiếp nhận.')+''+(n?'<br><b style="color:#b45309">Còn '+n+' dòng chủ đầu tư chưa chọn tình trạng gửi báo cáo.</b>':'')+'</p>','Gửi báo cáo').then(function(v){if(!v)return;
+    hoi('<h3>Gửi báo cáo?</h3><p class="hint">'+(S.ten==='Phòng Nghiệp vụ 2'?'Sau khi gửi, số liệu bị khóa và báo cáo lên thẳng tổng hợp.':'Sau khi gửi, số liệu bị khóa và chuyển cho cán bộ Nghiệp vụ 2 tiếp nhận.')+''+(n?'<br><b style="color:#b45309">Còn '+n+' dòng chủ đầu tư chưa chọn tình trạng gửi báo cáo.</b>':'')+dcWarn()+'</p>','Gửi báo cáo').then(function(v){if(!v)return;
       run('guiBaoCao',S.token,S.ky).then(function(r){toast('Đã gửi báo cáo.');S.data=null;setWf(r)}).catch(function(e){toast(msg(e),7000)})})};
   if($('bDn'))$('bDn').onclick=function(){hoi('<h3>Đề nghị điều chỉnh báo cáo</h3><p class="hint">Báo cáo đã gửi nên đang bị khóa. Ghi rõ lý do, cán bộ Nghiệp vụ 2 hoặc tổng hợp sẽ <b>chuyển trả</b>; khi đó anh/chị sửa số liệu và bấm Gửi lại (tính là báo cáo thay thế).</p>','Gửi đề nghị',true).then(function(v){if(!v)return;
     run('deNghiSua',S.token,v,S.ky).then(function(r){toast('Đã gửi đề nghị điều chỉnh.');setWf(r)}).catch(function(e){toast(msg(e),7000)})})};
@@ -391,7 +433,7 @@ function drawTable(id){
   var b=S.data.sheets.filter(function(x){return x.id===id})[0],m=$('main'),ro=!canEdit(),NC=b.cols.length+2;
   if(!b.rows.length&&!(b.secs&&b.secs.length)){m.innerHTML='<p class="hint">'+esc(S.data.pgd)+' không có chủ đầu tư nào trong biểu này.</p>';return}
   var depth=b.cols[0].lv.length,note=(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã chốt.</b> ':'')+'<b>Đơn vị: triệu đồng.</b> Chỉ nhập số <b>lũy kế giải ngân</b> (đến hết tháng báo cáo); cột <b>trong tháng</b> tự tính = lũy kế − lũy kế tháng trước. '+(ro?(S.vt==='PGD'?'<b style="color:#b45309">Báo cáo đang ở trạng thái "'+esc(S.data.tt)+'" nên không sửa được.</b> Muốn sửa, vào Tổng quan để thu hồi (khi chưa được tiếp nhận).':'Số liệu của <b>'+esc(S.data.pgd)+'</b> (chỉ xem; các biểu tổng hợp theo từng chủ đầu tư, dòng nhỏ màu đỏ là phòng quản lý).'):'Nhập tay vào các ô <b>xanh lá</b> ('+b.rows.length+' dòng thuộc '+esc(S.ten)+'), chỉ gõ chữ số (tự ngắt hàng nghìn), không dán. Các cột tổng và lũy kế cập nhật sau khi lưu.');
-  var h='<div class="ttl">'+(b.tieuDe||[]).map(function(t,i){return i?'<span>'+esc(t)+'</span>':'<b>'+esc(t)+'</b>'}).join('')+'</div><p class="hint">'+note+'</p><div class="wrap"><table><thead>';
+  var h='<div class="ttl">'+(b.tieuDe||[]).map(function(t,i){return i?'<span>'+esc(t)+'</span>':'<b>'+esc(t)+'</b>'}).join('')+'</div><p class="hint">'+note+'</p><div id="dcBox"></div><div class="wrap"><table><thead>';
   for(var i=0;i<depth;i++){
     h+='<tr>';if(i===0)h+='<th class="stt" rowspan="'+depth+'">STT</th><th class="nm" rowspan="'+depth+'">Chủ đầu tư / xã, phường</th>';
     var k=0;while(k<b.cols.length){var c=b.cols[k],txt=c.lv[i];
@@ -423,7 +465,7 @@ function drawTable(id){
   h+='</tbody><tfoot><tr><td class="stt"></td><td class="nm">'+(S.data.tatCa?'TỔNG CỘNG TOÀN TỈNH':'TỔNG CỘNG CỦA PHÒNG')+'</td>';
   b.cols.forEach(function(c,j){if(c.t==='n'||c.t==='t'||c.t==='a'){var s=0;b.rows.forEach(function(r){var x=Number(r.v[j]);if(!isNaN(x))s+=x});h+='<td>'+fmt(r2(s))+'</td>'}else h+='<td></td>'});
   h+='</tr></tfoot></table></div>';m.innerHTML=h;
-  [].forEach.call(m.querySelectorAll('[data-k]'),bind);fixTop(m);
+  [].forEach.call(m.querySelectorAll('[data-k]'),bind);dcLoad();dcRender();fixTop(m);
 }
 function deeper(c,i){for(var x=i+1;x<c.lv.length;x++)if(c.lv[x])return true;return false}
 function sameUp(a,b,i){for(var x=0;x<i;x++)if(a.lv[x]!==b.lv[x])return false;return true}
@@ -442,7 +484,7 @@ function bind(el){var key=el.getAttribute('data-k');
       if(v==='-')v=''}
     var same=t==='n'?((v===''&&(c.old===''||c.old==null))||(v!==''&&c.old!==''&&c.old!=null&&Number(v)===Number(c.old))):String(v)===String(c.old==null?'':c.old);
     if(same)delete S.dirty[key];else S.dirty[key]={id:c.id,r:c.row,c:c.col,v:v};
-    el.classList.toggle('d',!same);updBar()})}
+    el.classList.toggle('d',!same);updBar();dcRender()})}
 function updBar(){var n=nDirty();$('saveBtn').disabled=!n;$('barMsg').textContent=n?('Có '+n+' ô thay đổi chưa lưu.'):'Chưa có thay đổi.'}
 function thieuTT(){var l=[];S.data.sheets.forEach(function(b){if(b.id!==S.tab)return;var js=-1;b.cols.forEach(function(c,j){if(c.t==='s')js=j});if(js<0)return;
   b.rows.forEach(function(r){var key=b.id+'|'+r.r+'|'+b.cols[js].c,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[js];if(!v)l.push(r.b)})});return l}
@@ -453,7 +495,7 @@ $('saveBtn').onclick=function(){
   doSave()};
 function doSave(){
   var arr=Object.keys(S.dirty).map(function(k){return S.dirty[k]});$('saveBtn').disabled=true;$('saveBtn').textContent='Đang lưu...';
-  run('luu',S.token,arr,S.ky).then(function(r){S.data=r.data;toast(r.loi.length?('Đã lưu '+r.ok+' ô. Không lưu được: '+r.loi.slice(0,3).join('; ')):('Đã lưu '+r.ok+' ô.'),r.loi.length?9000:3500);S.dirty={};show(S.tab)})
+  run('luu',S.token,arr,S.ky).then(function(r){S.data=r.data;S.dc=null;toast(r.loi.length?('Đã lưu '+r.ok+' ô. Không lưu được: '+r.loi.slice(0,3).join('; ')):('Đã lưu '+r.ok+' ô.'),r.loi.length?9000:3500);S.dirty={};show(S.tab)})
   .catch(function(e){toast('Lỗi: '+msg(e),8000)}).then(function(){$('saveBtn').textContent='Lưu thay đổi';updBar()})}
 
 /* ===== In & xuất ===== */
@@ -465,48 +507,6 @@ function xuat(fn,btn,mode){
     if(w){w.location.href=url;toast('Đã mở biểu ở tab mới, bấm Ctrl+P để in.',5000)}
     else{var a=document.createElement('a');a.href=url;a.download=r.name;document.body.appendChild(a);a.click();a.remove();toast('Đã tạo '+r.name,4000)}})
   .catch(function(e){if(w)w.close();toast('Lỗi: '+msg(e),8000)}).then(function(){btn.disabled=false;btn.innerHTML=t});
-}
-/* ===== Kế hoạch vốn (QĐ 2623) ===== */
-var KHS={f:{q:'',cdt:'',muc:'',nguon:'',trang:1},h:null};
-function khN(n){return n?fmt(n):'<span style="color:#c9b3b7">–</span>'}
-function khNgay(d){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?m[3]+'/'+m[2]+'/'+m[1]:esc(d||'')}
-function khOpt(v,l,sel){return '<option value="'+esc(v)+'"'+(sel===v?' selected':'')+'>'+esc(l)+'</option>'}
-function drawKh(){
-  var m=$('main');
-  if(!S.kh){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải kế hoạch vốn...</p>';
-    run('khTongQuan',S.token).then(function(d){S.kh=d;if(S.tab==='kh')drawKh()}).catch(function(e){m.innerHTML='<div class="card"><b>Chưa xem được kế hoạch vốn.</b><p class="hint" style="margin-top:6px">'+esc(msg(e))+'</p></div>'});return}
-  var d=S.kh,ng=d.nguon,q0=d.qd[0]||{},f=KHS.f,h='<div class="khw">';
-  h+='<div class="card"><h3>Kế hoạch vốn đầu tư công trung hạn 2026–2030 · vốn ngân sách địa phương</h3><p class="hint" style="margin:0">'+(q0.so?'Quyết định '+esc(q0.so)+(q0.ngay?' ngày '+khNgay(q0.ngay):'')+(q0.coQuan?' · '+esc(q0.coQuan):''):'')+' · Đơn vị: triệu đồng'+(d.tatCa?'':' · Bạn chỉ xem các chủ đầu tư thuộc phòng của mình')+'</p></div>';
-  h+='<div class="ngt"><div class="card big"><b>'+fmt(d.tong)+'</b><span>Tổng kế hoạch vốn</span></div><div class="card"><b>'+fmt(d.soDA)+'</b><span>Dự án / khoản vốn</span></div>'+ng.map(function(n){return '<div class="card"><b>'+fmt(n.tong)+'</b><span>'+esc(n.code)+'</span></div>'}).join('')+'</div>';
-  var th='<th class="l">',head=function(a,b){return '<tr><th class="l">'+a+'</th><th>Số DA</th>'+ng.map(function(n){return '<th>'+esc(n.code)+'</th>'}).join('')+'<th>Tổng</th></tr>'};
-  var cells=function(o,t){return ng.map(function(n){return '<td>'+khN(o[n.id])+'</td>'}).join('')+'<td class="v">'+fmt(t)+'</td>'};
-  h+='<div class="card"><h3>Theo mục của quyết định</h3><div class="khtw"><table class="mini-t">'+head('Mục')+d.muc.map(function(x){return '<tr class="clk" data-m="'+esc(x.ten)+'"><td>'+esc(x.ten)+'</td><td>'+fmt(x.soDA)+'</td>'+cells(x.theo,x.tong)+'</tr>'}).join('')+'<tr class="tot"><td>Tổng cộng</td><td>'+fmt(d.soDA)+'</td>'+ng.map(function(n){return '<td>'+fmt(n.tong)+'</td>'}).join('')+'<td>'+fmt(d.tong)+'</td></tr></table></div><p class="hint" style="margin:8px 0 0">Bấm vào một dòng để lọc danh sách dự án bên dưới.</p></div>';
-  var kh0='',rows='';d.cdt.forEach(function(c,i){if(c.khoi!==kh0){kh0=c.khoi;rows+='<tr class="kh"><td colspan="'+(ng.length+3)+'">'+esc(kh0)+'</td></tr>'}rows+='<tr class="clk" data-c="'+esc(c.id)+'"><td>'+esc(c.name)+'</td><td>'+fmt(c.soDA)+'</td>'+cells(c.theo,c.tong)+'</tr>'});
-  if(d.chuaGan)rows+='<tr class="kh"><td colspan="'+(ng.length+3)+'">Khoản chung (chưa phân bổ cho chủ đầu tư cụ thể)</td></tr><tr class="clk" data-c="_none"><td>Các khoản chưa chia chi tiết: dự phòng, đối ứng ODA, vốn phân cấp xã, dự án khởi công mới chưa phân bổ…</td><td>'+fmt(d.chuaGan.soDA)+'</td>'+cells(d.chuaGan.theo,d.chuaGan.tong)+'</tr>';
-  h+='<div class="card"><h3>Theo chủ đầu tư</h3><div class="khtw"><table class="mini-t">'+head('Chủ đầu tư')+rows+'</table></div></div>';
-  h+='<div class="card" id="khDs"><h3>Danh sách dự án</h3><div class="khf"><input type="text" id="khQ" placeholder="Tìm theo tên dự án, mã dự án, chủ đầu tư..." value="'+esc(f.q)+'">'
-    +'<select id="khC">'+khOpt('','Tất cả chủ đầu tư',f.cdt)+d.cdt.map(function(c){return khOpt(c.id,c.name,f.cdt)}).join('')+(d.chuaGan?khOpt('_none','Khoản chung (chưa phân bổ)',f.cdt):'')+'</select>'
-    +'<select id="khM">'+khOpt('','Tất cả mục',f.muc)+d.muc.map(function(x){return khOpt(x.ten,x.ten,f.muc)}).join('')+'</select>'
-    +'<select id="khG">'+khOpt('','Mọi nguồn vốn',f.nguon)+ng.map(function(n){return khOpt(n.id,n.code,f.nguon)}).join('')+'</select>'
-    +'<button class="ghost" id="khX">⬇ Xuất Excel</button></div><div id="khRes"></div></div></div>';
-  m.innerHTML=h;
-  var go=function(){f.trang=1;khLoad()};
-  $('khQ').oninput=function(){f.q=this.value;clearTimeout(KHS.h);KHS.h=setTimeout(go,300)};
-  $('khC').onchange=function(){f.cdt=this.value;go()};$('khM').onchange=function(){f.muc=this.value;go()};$('khG').onchange=function(){f.nguon=this.value;go()};
-  $('khX').onclick=function(){xuat(function(){return run('xuatKeHoach',S.token,f,'xlsx')},this)};
-  [].forEach.call(m.querySelectorAll('tr[data-c]'),function(r){r.onclick=function(){f.cdt=r.getAttribute('data-c');f.trang=1;$('khC').value=f.cdt;khLoad();$('khDs').scrollIntoView({behavior:'smooth'})}});
-  [].forEach.call(m.querySelectorAll('tr[data-m]'),function(r){r.onclick=function(){f.muc=r.getAttribute('data-m');f.trang=1;$('khM').value=f.muc;khLoad();$('khDs').scrollIntoView({behavior:'smooth'})}});
-  khLoad();
-}
-function khLoad(){
-  var f=KHS.f,box=$('khRes');if(!box)return;box.style.opacity='.5';
-  run('khDuAn',S.token,f).then(function(r){box=$('khRes');if(!box||S.tab!=='kh')return;box.style.opacity='';var ng=S.kh.nguon;
-    var h='<div class="khtw"><table class="mini-t khp"><tr><th class="l">Mã</th><th class="l">Tên dự án</th><th class="l">Chủ đầu tư</th><th class="l">Mục</th><th class="l">Nguồn vốn</th><th>Tổng vốn</th></tr>';
-    if(!r.rows.length)h+='<tr><td colspan="6" style="text-align:center;color:var(--mut);padding:18px">Không có dự án nào khớp bộ lọc.</td></tr>';
-    r.rows.forEach(function(x){h+='<tr><td class="l">'+esc(x.ma)+'</td><td class="l">'+esc(x.ten)+'</td><td class="l">'+esc(x.cdt)+'</td><td class="l">'+esc(x.muc)+(x.nhom?' <span class="nchip">'+esc(x.nhom)+'</span>':'')+'</td><td class="l">'+ng.filter(function(n){return x.von[n.id]}).map(function(n){return '<span class="nchip">'+esc(n.code)+' '+fmt(x.von[n.id])+'</span>'}).join('')+'</td><td class="v">'+fmt(x.tong)+'</td></tr>'});
-    h+='</table></div><div class="khpg"><span class="hint" style="margin:0"><b>'+fmt(r.dem)+'</b> dự án · tổng <b>'+fmt(r.tong)+'</b> triệu đồng</span><span><button class="ghost" id="khP"'+(r.trang<=1?' disabled':'')+'>‹ Trước</button> <span class="hint" style="margin:0 6px">Trang '+r.trang+'/'+r.soTrang+'</span> <button class="ghost" id="khN"'+(r.trang>=r.soTrang?' disabled':'')+'>Sau ›</button></span></div>';
-    box.innerHTML=h;var p=$('khP'),n=$('khN');if(p)p.onclick=function(){f.trang=r.trang-1;khLoad()};if(n)n.onclick=function(){f.trang=r.trang+1;khLoad()}
-  }).catch(function(e){if(box)box.style.opacity='';toast(msg(e),6000)});
 }
 function drawIn(){
   if(S.ky&&S.wf&&S.wf.kyCu){$('main').innerHTML='<div class="card"><h3>🖨 In & xuất kỳ '+esc(S.wf.ky)+'</h3><p class="hint">Kỳ đã chốt: xem số liệu ngay trên các tab biểu. Biểu in PDF/Excel hiện làm cho <b>kỳ hiện tại</b>; chọn lại kỳ hiện tại ở góc trên để in.</p>'+(S.vt!=="PGD"?'<p class="hint">Bảng thống kê nộp báo cáo của kỳ này xuất ở trang Tổng hợp.</p>':'')+'</div>';return}

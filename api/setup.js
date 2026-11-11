@@ -1,15 +1,12 @@
 'use strict';
 // Khởi tạo CSDL từ trình duyệt (không cần cài Node trên máy bạn).
 // Dùng: đặt biến môi trường SETUP_KEY trên Vercel, rồi mở  https://<tên-miền>/api/setup?key=<SETUP_KEY>
-// Nạp 2 phần: (1) báo cáo 1953 + tài khoản (chỉ khi CSDL còn trống), (2) kế hoạch vốn QĐ 2623 từ Google Sheet (chỉ khi chưa có). Mở lại được nhiều lần, phần nào đã có thì bỏ qua.
 // Chỉ chạy được khi CSDL còn trống. Nạp lại từ đầu: thêm &force=1 (XÓA số liệu hiện có).
 // Xong việc nên xóa biến SETUP_KEY trên Vercel để đóng chức năng này.
 const crypto = require('crypto');
 const db = require('../lib/db');
 const { seed } = require('../lib/seed');
 const raw = require('../seed/raw.json');
-const vdtc = require('../seed/vdtc.json');
-const KH = require('../lib/kehoach');
 const SCHEMA = require('../lib/schema');
 const same = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && crypto.timingSafeEqual(x, y); };
 module.exports = async (req, res) => {
@@ -26,8 +23,6 @@ module.exports = async (req, res) => {
       const codes = await seed(d, raw, { force });
       out += 'ĐÃ KHỞI TẠO BÁO CÁO 1953. Lưu lại bảng mã đăng nhập dưới đây (trang này sẽ không hiện lại):\n\nTài khoản\tVai trò\tMã đăng nhập\n' + codes.map((c) => `${c.ten}\t${c.vt}\t${c.ma}`).join('\n') + '\n\n';
     }
-    const kh = await KH.nap(d, vdtc, { force });
-    out += kh.boQua ? 'Kế hoạch vốn QĐ 2623: ĐÃ CÓ ' + kh.von + ' dòng vốn từ trước, giữ nguyên.\n' : 'ĐÃ NẠP KẾ HOẠCH VỐN QĐ 2623 từ Google Sheet: ' + kh.cdt + ' chủ đầu tư, ' + kh.da + ' dự án, ' + kh.von + ' dòng vốn, tổng ' + kh.tong.toLocaleString('vi-VN') + ' triệu đồng.\n';
     res.end(out + '\nBước cuối: xóa biến SETUP_KEY trên Vercel để đóng chức năng này.');
   } catch (e) { res.statusCode = 500; res.end('LỖI: ' + e.message); }
 };
