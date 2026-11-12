@@ -228,20 +228,71 @@ nav#tabs button.on{background:var(--bg);color:var(--acc2);font-weight:600;box-sh
 .sbar{left:236px}
 .kpi1{max-width:860px}.kpi1 h3{margin:0 0 6px}.kpi1 ol{margin:6px 0 10px 18px;padding:0}.kpi1 li{margin:3px 0}.kpi1 .tagk{display:inline-block;background:#e6f2fb;color:#0f4c75;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:600}
 @media(max-width:899px){#shell{display:block}nav#tabs{width:auto;position:sticky;max-height:none;display:flex;gap:10px;overflow-x:auto;padding:6px 12px 0;border-right:0;border-bottom:1px solid var(--line)}nav#tabs .tg{display:flex;align-items:center;gap:4px;margin:0;flex:none}nav#tabs .tgb{display:flex;margin:0;padding:0;border:0}nav#tabs .tgh{flex:none}nav#tabs .tg.shut .tgb{display:flex}nav#tabs .tgc{display:none}nav#tabs button{width:auto;white-space:nowrap}.sbar{left:0}}
+
+/* login v2 - digital */
+#login{background:#1d040a}
+#login .lov{background:linear-gradient(120deg,rgba(32,4,12,.93) 0%,rgba(120,18,38,.78) 55%,rgba(24,3,10,.95) 100%)}
+.lgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse at 50% 50%,#000 25%,transparent 75%);mask-image:radial-gradient(ellipse at 50% 50%,#000 25%,transparent 75%)}
+.lorb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:orb 14s ease-in-out infinite alternate}
+.lorb.o1{width:420px;height:420px;background:#e11d48;left:-120px;top:-100px}.lorb.o2{width:380px;height:380px;background:#f59e0b;right:-100px;bottom:-120px;opacity:.28;animation-delay:-6s}
+@keyframes orb{from{transform:translate(0,0)}to{transform:translate(60px,40px)}}
+.lbadge{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(6px);font-weight:600}
+.pdot{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:pd 1.8s infinite}
+@keyframes pd{70%{box-shadow:0 0 0 9px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+.lhero{max-width:540px}.lhero h1{font-size:50px;line-height:1.08;letter-spacing:-.5px;font-weight:800;margin:18px 0 14px}
+.gx{background:linear-gradient(90deg,#ffd37a,#ff8aa0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lhero p{font-size:16.5px;line-height:1.55;opacity:.88;max-width:470px}
+.lflow{display:flex;align-items:stretch;gap:0;margin:26px 0 18px}
+.lst{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(8px);border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;gap:4px;transition:transform .25s,background .25s}
+.lst:hover{transform:translateY(-4px);background:rgba(255,255,255,.12)}
+.lst b{font-size:14.5px}.lst span{font-size:12.5px;opacity:.75;line-height:1.35}
+.lic{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#f59e0b,#e11d48);display:grid;place-items:center;margin-bottom:6px;box-shadow:0 6px 18px rgba(225,29,72,.45)}
+.lic svg{width:21px;height:21px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lar{width:26px;align-self:center;height:2px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.55) 0 5px,transparent 5px 9px);background-size:18px 2px;animation:flow 1s linear infinite}
+@keyframes flow{to{background-position:18px 0}}
+.lchips{display:flex;flex-wrap:wrap;gap:8px}.lchips span{font-size:12.5px;padding:5px 12px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+#login .lg{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);border-radius:26px;padding:32px 30px;max-width:410px;color:#fff;box-shadow:0 30px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.25)}
+#login .lg .logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#f59e0b,#e11d48);box-shadow:0 10px 26px rgba(225,29,72,.55);margin-bottom:16px}
+#login .lg h2{font-size:23px;color:#fff}#login .lg p{color:rgba(255,255,255,.72);margin:6px 0 14px}
+#login .lg label{color:rgba(255,255,255,.8);font-size:13px;font-weight:500}
+#login .lg select,#login .lg input{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:12px;padding:12px 14px;transition:border-color .2s,box-shadow .2s}
+#login .lg select option{color:#222;background:#fff}
+#login .lg input::placeholder{color:rgba(255,255,255,.45)}
+#login .lg select:focus,#login .lg input:focus{outline:none;border-color:#ffd37a;box-shadow:0 0 0 3px rgba(255,211,122,.25)}
+#login .lg .pri{background:linear-gradient(90deg,#f59e0b,#e11d48);border:0;border-radius:12px;color:#fff;box-shadow:0 10px 26px rgba(225,29,72,.45);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+#login .lg .pri:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(225,29,72,.6)}
+#login .lg .pri::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:shine 3.6s infinite}
+@keyframes shine{60%,100%{left:130%}}
+#login .lg .err{color:#ffb4b4}
+.lsec{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:16px;font-size:12.5px;color:#6ee7b7}
+#login .lver{border-top:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.62)}#login .lver b{color:#ffd37a}
+@media(max-width:900px){.lhero h1{font-size:38px}.lflow{flex-direction:column;gap:6px}.lar{display:none}}
 </style>
 </head>
 <body>
-<div id="login"><div class="lbg"></div><div class="lov"></div><div class="lnet"></div>
+<div id="login"><div class="lbg"></div><div class="lov"></div><div class="lnet"></div><div class="lgrid"></div><div class="lorb o1"></div><div class="lorb o2"></div>
 <div class="lwrap">
-  <div class="lhero"><div class="lbadge">KBNN KHU VỰC VIII</div><h1>Chương trình<br>báo cáo ĐTTQ</h1><p>Công văn 1953 · Nhập, ký duyệt, gửi và tổng hợp số liệu giải ngân theo chủ đầu tư.</p>
-    <div class="lfeat"><span>① Phòng giao dịch nhập số liệu</span><span>② Kế toán trưởng, Trưởng phòng ký duyệt</span><span>③ Số liệu tự lên Tổng hợp toàn tỉnh</span></div></div>
+  <div class="lhero">
+    <div class="lbadge"><i class="pdot"></i>KBNN KHU VỰC VIII · CHUYỂN ĐỔI SỐ</div>
+    <h1>Chương trình<br>báo cáo <span class="gx">ĐTTQ</span></h1>
+    <p>Nền tảng số nhập, ký duyệt và tổng hợp báo cáo giải ngân vốn đầu tư công Tuyên Quang theo Công văn 1953.</p>
+    <div class="lflow">
+      <div class="lst"><div class="lic"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z M4 10h16 M10 5v14"/></svg></div><b>Nhập số liệu</b><span>Phòng giao dịch nhập trực tuyến</span></div>
+      <div class="lar"></div>
+      <div class="lst"><div class="lic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div><b>Ký duyệt số</b><span>Kế toán trưởng, Trưởng phòng</span></div>
+      <div class="lar"></div>
+      <div class="lst"><div class="lic"><svg viewBox="0 0 24 24"><path d="M4 19V9 M10 19V5 M16 19v-7 M21 19H3"/></svg></div><b>Tự động tổng hợp</b><span>Số liệu lên toàn tỉnh tức thì</span></div>
+    </div>
+    <div class="lchips"><span>Thời gian thực</span><span>Không còn gửi file Excel</span><span>Bản in hiển thị đã ký duyệt</span></div>
+  </div>
   <div class="lg">
-    <div class="logo">📊</div>
-    <h2>Đăng nhập</h2><p>Chọn tài khoản và nhập mã đăng nhập của đơn vị.</p>
+    <div class="logo"><svg viewBox="0 0 32 32" width="30" height="30"><path d="M5 26V15M12 26V7M19 26v-9M26 26V11" stroke="#fff" stroke-width="3.4" stroke-linecap="round" fill="none"/></svg></div>
+    <h2>Đăng nhập hệ thống</h2><p>Chọn tài khoản và nhập mã đăng nhập của đơn vị.</p>
     <label>Tài khoản</label><select id="lgPgd"><option>Đang tải...</option></select>
     <label>Mã đăng nhập</label><input id="lgMa" type="text" autocomplete="off" maxlength="12" placeholder="Nhập mã được cấp">
-    <div style="margin-top:20px"><button class="pri" id="lgBtn" style="width:100%;padding:12px;font-weight:600">Đăng nhập</button></div>
+    <div style="margin-top:22px"><button class="pri" id="lgBtn" style="width:100%;padding:13px;font-weight:600">Đăng nhập</button></div>
     <div class="err" id="lgErr"></div>
+    <div class="lsec"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.500-1-8-4-8-9V6z M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Kết nối được bảo mật · Phân quyền theo vai trò</div>
     <div class="lver"><b>Phiên bản dùng thử · Version 68.01</b><br>Tác giả: Hoàng Thúy Hạnh – Phòng NV2</div>
   </div>
 </div></div>
