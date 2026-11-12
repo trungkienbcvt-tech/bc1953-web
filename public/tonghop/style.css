@@ -34,7 +34,8 @@ h2{font-size:18px;color:var(--navy)} h3{font-size:15px;color:var(--navy)}
 .who span{display:block;font-size:12px;opacity:.85}
 .tabs{display:flex;gap:4px;padding:0 16px;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:0;z-index:5}
 .tab{border:0;background:none;padding:12px 14px;font:inherit;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
-.tab:hover{color:var(--navy)} .tab.on{color:var(--navy);border-bottom-color:var(--navy);font-weight:600}
+.tab:hover{color:var(--navy)}
+.tab-link{margin-left:auto;text-decoration:none;color:#0f3d6e;font-weight:600}.tab-link:hover{color:#c99a2e} .tab.on{color:var(--navy);border-bottom-color:var(--navy);font-weight:600}
 main{padding:20px;max-width:1500px;margin:0 auto}
 
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(15,61,110,.04)}

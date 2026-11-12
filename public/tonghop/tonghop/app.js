@@ -15,7 +15,7 @@ const app = document.getElementById('app');
 const QUYEN_XEM = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'XEM', 'TH_PGD', 'TH_NV2'];
 const QUYEN_SUA = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'TH_NV2'];
 // Tab được xem theo vai trò (mặc định: tất cả)
-const TAB_THEO_VAI_TRO = { TH_PGD: ['da', 'bc'] };
+const TAB_THEO_VAI_TRO = { TH_PGD: ['da', 'bc', 'b5'] };
 // Phòng giao dịch: xem báo cáo, so sánh; không in, không xuất Excel
 const coXuat = () => S.me?.vai_tro !== 'TH_PGD';
 const tabsCua = () => { const t = TAB_THEO_VAI_TRO[S.me?.vai_tro]; return t ? Object.fromEntries(Object.entries(TABS).filter(([k]) => t.includes(k))) : TABS; };
@@ -194,7 +194,8 @@ function renderShell() {
         <a class="btn small" href="/?cong=1" title="Về trang chủ hệ thống" style="text-decoration:none">🏠 Trang chủ</a>
         <button class="btn small" id="logout">Đăng xuất</button></div>
     </header>
-    <nav class="tabs">${Object.entries(tabsCua()).map(([k, v]) => `<button class="tab ${k === S.tab ? 'on' : ''}" data-tab="${k}">${v}</button>`).join('')}</nav>
+    <nav class="tabs">${Object.entries(tabsCua()).map(([k, v]) => `<button class="tab ${k === S.tab ? 'on' : ''}" data-tab="${k}">${v}</button>`).join('')}
+      <a class="tab tab-link" href="https://tckb-kbviii.vercel.app/" target="_blank" rel="noopener" title="Mở Ứng dụng tra cứu Kho bạc (TCKB+) ở tab mới">🏛️ Ứng dụng tra cứu Kho bạc ↗</a></nav>
     <main id="view"><div class="loading">Đang tải dữ liệu...</div></main>`;
   app.querySelector('.tabs').addEventListener('click', e => {
     const t = e.target.closest('[data-tab]'); if (!t) return;
@@ -1013,7 +1014,7 @@ function veKetQuaB501(box) {
     <div class="bar">
       <label>Hiển thị<select id="b5loc"><option value="lech" ${B5S.loc === 'lech' ? 'selected' : ''}>Chỉ dự án chênh lệch (${k.soLech})</option><option value="tat" ${B5S.loc === 'tat' ? 'selected' : ''}>Tất cả dự án có số (${k.rows.length})</option></select></label>
       <label style="min-width:260px">Tìm mã / tên dự án / chủ đầu tư<input id="b5tim" value="${esc(B5S.tim)}"></label>
-      <button class="btn" id="b5xuat" style="align-self:flex-end">⬇ Xuất Excel</button>
+      ${coXuat() ? '<button class="btn" id="b5xuat" style="align-self:flex-end">⬇ Xuất Excel</button>' : ''}
     </div>
     <div class="tbl-wrap tall"><table class="tbl ss"><thead><tr><th>STT</th><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư</th><th>TT15<br>KH kéo dài</th><th>B5-01<br>NS xã</th><th>B5-01<br>NS tỉnh</th><th>Cộng<br>B5-01</th><th>Chênh lệch</th><th>Dư tạm ứng năm trước<br>(B5-01, tham khảo)</th><th>Nhận xét</th></tr></thead>
     <tbody>${ds.map((r, i) => `<tr><td class="c">${i + 1}</td><td>${esc(r.ma_da)}</td><td class="ten" title="${esc(r.ten)}">${esc(r.ten)}</td><td>${esc(cdt.get(r.ma_da)?.cdt || '')}</td>
@@ -1022,7 +1023,7 @@ function veKetQuaB501(box) {
     <p class="small muted">Đơn vị: triệu đồng. Bỏ qua chênh dưới 0,001 triệu (làm tròn). Xanh: TT15 lớn hơn; đỏ: B5-01 lớn hơn.</p></div>`;
   box.querySelector('#b5loc').onchange = e => { B5S.loc = e.target.value; veKetQuaB501(box); };
   let hen; box.querySelector('#b5tim').oninput = e => { B5S.tim = e.target.value; clearTimeout(hen); hen = setTimeout(() => { veKetQuaB501(box); const i = box.querySelector('#b5tim'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 300); };
-  box.querySelector('#b5xuat').onclick = () => xuatB501(ds).catch(fail);
+  const bx = box.querySelector('#b5xuat'); if (bx) bx.onclick = () => xuatB501(ds).catch(fail);
 }
 async function xuatB501(ds) {
   const ExcelJS = await loadExcelJS();
