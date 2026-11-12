@@ -286,7 +286,7 @@ $('xemSel').onchange=function(){S.xem=$('xemSel').value;loadXem()};
 function loadXem(){run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;S.dirty={};show(S.tab)}).catch(function(e){toast(msg(e),6000)})}
 
 function fillKy(){var l=(S.wf&&S.wf.dsKy)||S.dsKy||[];S.dsKy=l;var sel=$('kySel');if(!sel)return;
-  sel.innerHTML=l.slice().reverse().map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'">Kỳ '+k.nhan+(k.hienTai?' (hiện tại)':' · đã chốt')+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Báo cáo CV 1953 – kỳ tháng '+cur.nhan}
+  sel.innerHTML=l.slice().reverse().map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'">Kỳ '+k.nhan+(k.hienTai?' (hiện tại)':(k.soGoc?' · số gốc, chỉ xem':' · đã chốt'))+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Báo cáo CV 1953 – kỳ tháng '+cur.nhan}
 function doiKy(v){S.dc=null;S.cb=null;S.bt=null;if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển kỳ?')){$('kySel').value=S.ky||'';return}
   S.ky=v;S.dirty={};S.data=null;Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();fillKy();show(S.tab==='in'?'in':'tq')}).catch(function(e){toast(msg(e),6000);S.ky='';fillKy()})}
 function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();show('tq')}

@@ -16,6 +16,16 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   await L.chuyenTra(nv, 'Phòng giao dịch 20', 'sai số'); await L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: String(lk0 + 500) }]);
   await L.guiBaoCao(p20); await L.tiepNhan(nv, 'Phòng giao dịch 20'); let t = await L.nopTongHop(nv, ['Phòng giao dịch 20']); assert.strictEqual(t.ok, 1);
   for (const [f, a] of [[X.xuatBieu, [p20, 'B01', '2026-11-05', '', 'xlsx', '']], [X.xuatBieu, [p20, 'B02', '2026-11-05', '', 'pdf', '']], [X.xuatTong, [th, 'cdt', 'xlsx', '']], [X.xuatThongKe, [th, 'xlsx', '']]]) { const o = await f(...a); assert(o.b64.length > 500); }
+  // ---- Kỳ 09/2026 (số gốc, chỉ xem) ----
+  {
+    const ds = (await L.trangThai(th)).dsKy; assert.deepStrictEqual(ds.map((x) => x.ky), ['2026-09', '2026-10'], 'có cả kỳ 9 và kỳ 10');
+    const d9 = await L.layDuLieu(th, '*', '2026-09'), d10 = await L.layDuLieu(th, '*', '2026-10');
+    assert.strictEqual(d9.soGoc, true); assert.strictEqual(d9.docChiXem, true);
+    const sum = (d, i) => d.sheets[0].rows.reduce((a, r) => a + (Number(r.v[i]) || 0), 0);
+    assert(sum(d9, 1) < sum(d10, 1), 'lũy kế tháng 9 nhỏ hơn tháng 10');
+    await assert.rejects(() => L.luu(p20, [{ id: 'b01', r: d9.sheets[0].rows[0].r, c: 5, v: '1' }], '2026-09'), /số gốc/);
+    await assert.rejects(() => L.tiepNhan(nv, 'Phòng giao dịch 20', '2026-09'), /số gốc/);
+  }
   // ---- Quy trình thí điểm PGD 17 ----
   {
     const P = 'Phòng giao dịch 17', lg = async (n) => (await L.dangNhap(n, ma(n))).token;
