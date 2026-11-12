@@ -15,10 +15,14 @@ module.exports = async (req, res) => {
   if (!process.env.SETUP_KEY) { res.statusCode = 403; return res.end('Chưa bật khởi tạo: hãy đặt biến môi trường SETUP_KEY trên Vercel rồi Redeploy.'); }
   if (!same(key, process.env.SETUP_KEY)) { res.statusCode = 403; return res.end('Sai khóa.'); }
   try {
-    const force = url.searchParams.get('force') === '1', d = db(); await d.exec(SCHEMA);
+    const force = url.searchParams.get('force') === '1', chiSoLieu = url.searchParams.get('mode') === 'data', d = db(); await d.exec(SCHEMA);
     const daCo = Number((await d.q('SELECT COUNT(*) AS n FROM kv'))[0].n) > 0;
     let out = '';
-    if (daCo && !force) out += 'Báo cáo 1953 và tài khoản: ĐÃ CÓ từ trước, giữ nguyên (không hiện lại mã đăng nhập).\n\n';
+    if (chiSoLieu) {
+      if (!daCo) throw new Error('Chưa có dữ liệu để nạp lại; hãy chạy khởi tạo bình thường (không có mode=data).');
+      await seed(d, raw, { force: true, giuTaiKhoan: true });
+      out += 'ĐÃ NẠP LẠI SỐ LIỆU báo cáo (kỳ 10/2026 = số liệu thật, tháng 9 = lũy kế − phát sinh tháng 10). Tài khoản và mã đăng nhập giữ nguyên.\nLưu ý: trạng thái gửi/duyệt các phòng được đặt lại "Chưa gửi"; file THBC đã tải (nếu có) bị xóa, cần tải lại.\n\n';
+    } else if (daCo && !force) out += 'Báo cáo 1953 và tài khoản: ĐÃ CÓ từ trước, giữ nguyên (không hiện lại mã đăng nhập).\n\n';
     else {
       const codes = await seed(d, raw, { force });
       out += 'ĐÃ KHỞI TẠO BÁO CÁO 1953. Lưu lại bảng mã đăng nhập dưới đây (trang này sẽ không hiện lại):\n\nTài khoản\tVai trò\tMã đăng nhập\n' + codes.map((c) => `${c.ten}\t${c.vt}\t${c.ma}`).join('\n') + '\n\n';
