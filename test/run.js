@@ -14,6 +14,9 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   let s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: String(lk0 + 1000) }]); assert.strictEqual(s.ok, 1);
   const r1 = s.data.sheets[0].rows.find((r) => r.r === r0.r); assert.strictEqual(r1.v[4], r0.v[4] + 1000, 'trong tháng = lũy kế − tháng trước');
   s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: 8, v: '5' }]); assert(s.loi.length, 'không cho nhập cột tự tính');
+  s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: '-5' }]); assert(s.loi.length && /không được âm/.test(s.loi[0]), 'không cho số âm');
+  s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: String(lk0 - 1000) }]); assert(s.loi.length && /nhỏ hơn lũy kế tháng trước/.test(s.loi[0]), 'không cho lũy kế giảm');
+  const gcol = d.sheets[0].cols.find((x) => x.t === 'g'); s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: gcol.c, v: 'abc' }]); assert(s.loi.length && /tự sinh/.test(s.loi[0]), 'ghi chú không nhập tay');
   await assert.rejects(() => L.guiBaoCao(p20), /quy trình/);
   await gui20(); await assert.rejects(() => L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: '1' }]), /đã gửi/);
   await L.duyet(th, 'th_nhan', '', '', P20); await assert.rejects(() => L.duyet(th, 'th_nhan', '', '', P20), /Không thực hiện/);
@@ -33,7 +36,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   }
   // ---- Kỳ 09/2026 (số gốc, chỉ xem) ----
   {
-    const ds = (await L.trangThai(th)).dsKy; assert.deepStrictEqual(ds.map((x) => x.ky), ['2026-09', '2026-10'], 'có cả kỳ 9 và kỳ 10');
+    const ds = (await L.trangThai(th)).dsKy; assert.deepStrictEqual(ds.map((x) => x.ky), ['2026-09', '2026-10', '2026-11'], 'có kỳ 9, 10 và kỳ 11 chưa mở'); assert(ds[2].chuaMo && ds[1].hienTai && ds[0].soGoc);
     const d9 = await L.layDuLieu(th, '*', '2026-09'), d10 = await L.layDuLieu(th, '*', '2026-10');
     assert.strictEqual(d9.soGoc, true); assert.strictEqual(d9.docChiXem, true);
     const sum = (d, i) => d.sheets[0].rows.reduce((a, r) => a + (Number(r.v[i]) || 0), 0);
@@ -117,6 +120,11 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const cb = await TB.canhBao(th, ''); assert(cb.co && cb.ds.length > 0 && cb.ds[0].nhap !== undefined);
     const cp = await TB.canhBao(p20, ''); assert(cp.ds.every((x) => x.pgd === 'Phòng giao dịch 20' && x.nhap === undefined && x.thbc === undefined), 'PGD chỉ thấy phần mình, không thấy số THBC');
     assert((await X.xuatBieuTong(th, 'xlsx', '')).b64.length > 1000);
+    // PGD 21 trình báo cáo: lệch THBC → bắt buộc nêu lý do, ghi chú dòng tự sinh
+    const lap21 = await lg('PGD21 - Người lập biểu'); await assert.rejects(() => L.duyet(lap21, 'lap_trinh', '', ''), /lý do chênh lệch/);
+    await L.duyet(lap21, 'lap_trinh', 'chứng từ hạch toán tháng sau', ''); const d21 = await L.layDuLieu(lap21), gt = d21.sheets[0].rows.map((r) => r.v[r.v.length - 1]).filter((v) => /Chênh lệch so với THBC: chứng từ/.test(v));
+    assert(gt.length >= 1, 'ghi chú tự sinh từ lý do chênh lệch');
+    await L.duyet(lap21, 'lap_rut', '', '');
     const x2 = await TB.xoa(th); assert.strictEqual(x2.co, false);
   }
   await L.chotKy(th); d = await L.layDuLieu(p20); const k1 = d.sheets[0].rows[0];
