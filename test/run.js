@@ -58,6 +58,17 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     // PGD khác vẫn theo luồng cũ: chưa ký thì không có "(đã ký)"
     const h18 = Buffer.from((await X.xuatBieu(p20, 'B01', '2026-11-05', '', 'pdf', '')).b64, 'base64').toString('utf8'); assert(!/đã ký/.test(h18));
   }
+  // ---- Biểu tổng theo danh mục CĐT ----
+  {
+    const BT = require('../lib/bieutong'), r = await BT.bieuTong(th, ''), tot = r.rows.find((x) => x.k === 'tot');
+    assert.strictEqual(r.soThua, 0, 'mọi dòng web đều khớp danh mục'); assert.strictEqual(r.rows.filter((x) => x.k === 'row').length, 195);
+    const tp = await L.tongHop(th), s4 = tp.list.reduce((a, p) => a + Object.values(p.b).reduce((z, b) => z + b.luyke, 0), 0), t4 = tp.list.reduce((a, p) => a + Object.values(p.b).reduce((z, b) => z + b.thang, 0), 0);
+    assert(Math.abs(tot.lk - s4) < 0.01 && Math.abs(tot.th - t4) < 0.01, 'tổng biểu tổng = tổng 4 biểu con');
+    const khoi = r.rows.filter((x) => x.k === 'khoi'); assert(Math.abs(khoi.reduce((a, x) => a + x.lk, 0) - tot.lk) < 0.01);
+    await assert.rejects(() => BT.bieuTong(p20, ''), /chỉ dành/);
+    for (const f of ['xlsx', 'pdf']) { const o = await X.xuatBieuTong(th, f, ''); assert(o.b64.length > 1000); }
+    assert((await X.xuatTong(th, 'bt', 'pdf', '')).name.includes('Bieu_tong'));
+  }
   await L.chotKy(th); d = await L.layDuLieu(p20); const k1 = d.sheets[0].rows[0];
   assert.strictEqual(d.ky, '11/2026'); assert.strictEqual(k1.v[1], lk0 + 500, 'lũy kế chuyển sang kỳ mới'); assert.strictEqual(k1.v[4], 0, 'trong tháng kỳ mới = 0');
   // ---- Đối chiếu số liệu Kho bạc ----

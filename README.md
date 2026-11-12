@@ -91,10 +91,10 @@ npm test
 Danh sách dòng nằm trong bảng `rowdef` (lấy từ `seed/raw.json`). Muốn thêm/bớt chủ đầu tư, sửa file Excel gốc, xuất lại `seed/raw.json` rồi nạp lại (`npm run seed:force`) **trước khi** các đơn vị nhập số liệu, hoặc nhờ người phát triển viết lệnh di chuyển số liệu.
 
 
-## Đối chiếu số liệu Kho bạc
-1. Cán bộ Nghiệp vụ 2 hoặc tổng hợp đăng nhập → trang đầu → thẻ **Đối chiếu số liệu Kho bạc** → **Tải file Kho bạc (.xlsx)**: chọn file báo cáo 01b/TTKHN của Kho bạc (đơn vị đồng). Làm trước khi các đơn vị nhập; mỗi kỳ tải lại một lần.
-2. Số Kho bạc theo từng phòng được lưu ở bảng `kbnn_ref` (đơn vị đồng). Khi PGD nhập số, đầu mỗi biểu hiện khung so sánh Thấp hơn / Cao hơn / Khớp (đổi ngay khi gõ), trang Tổng quan có bảng đối chiếu, và khi bấm Gửi báo cáo có cảnh báo (vẫn cho gửi).
-3. Cách đối chiếu (file Kho bạc không có cột chủ đầu tư nên so ở mức tổng từng phòng): Biểu 01 ↔ dòng "1. Vốn cân đối NSĐP" (cột kéo dài, cột kế hoạch năm); Biểu 02 ↔ "2.1 Vốn NSTW ngành, lĩnh vực"; Biểu 03 (21-25) ↔ "2.2 Vốn NSTW chương trình MTQG" (cộng 3 cột NSTW). Biểu 03 (26-30) chưa có dữ liệu Kho bạc tương ứng. Sửa quy tắc ở mảng `MUC` đầu file `lib/doichieu.js`.
+## Đối chiếu số liệu THBC
+1. Cán bộ Nghiệp vụ 2 hoặc tổng hợp đăng nhập → trang đầu → thẻ **Đối chiếu số liệu THBC** → **Tải file THBC (.xlsx)**: chọn file báo cáo 01b/TTKHN của THBC (đơn vị đồng). Làm trước khi các đơn vị nhập; mỗi kỳ tải lại một lần.
+2. Số THBC theo từng phòng được lưu ở bảng `kbnn_ref` (đơn vị đồng). Khi PGD nhập số, đầu mỗi biểu hiện khung so sánh Thấp hơn / Cao hơn / Khớp (đổi ngay khi gõ), trang Tổng quan có bảng đối chiếu, và khi bấm Gửi báo cáo có cảnh báo (vẫn cho gửi).
+3. Cách đối chiếu (file THBC không có cột chủ đầu tư nên so ở mức tổng từng phòng): Biểu 01 ↔ dòng "1. Vốn cân đối NSĐP" (cột kéo dài, cột kế hoạch năm); Biểu 02 ↔ "2.1 Vốn NSTW ngành, lĩnh vực"; Biểu 03 (21-25) ↔ "2.2 Vốn NSTW chương trình MTQG" (cộng 3 cột NSTW). Biểu 03 (26-30) chưa có dữ liệu THBC tương ứng. Sửa quy tắc ở mảng `MUC` đầu file `lib/doichieu.js`.
 4. Coi là khớp khi chênh lệch ≤ 1 triệu đồng hoặc ≤ 0,5 triệu mỗi dòng đã nhập (do làm tròn).
 
 ## Quy trình ký duyệt thí điểm (Phòng giao dịch 17)
