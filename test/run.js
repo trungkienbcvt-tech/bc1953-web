@@ -65,7 +65,8 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const tp = await L.tongHop(th), s4 = tp.list.reduce((a, p) => a + Object.values(p.b).reduce((z, b) => z + b.luyke, 0), 0), t4 = tp.list.reduce((a, p) => a + Object.values(p.b).reduce((z, b) => z + b.thang, 0), 0);
     assert(Math.abs(tot.lk - s4) < 0.01 && Math.abs(tot.th - t4) < 0.01, 'tổng biểu tổng = tổng 4 biểu con');
     const khoi = r.rows.filter((x) => x.k === 'khoi'); assert(Math.abs(khoi.reduce((a, x) => a + x.lk, 0) - tot.lk) < 0.01);
-    await assert.rejects(() => BT.bieuTong(p20, ''), /chỉ dành/);
+    const rp = await BT.bieuTong(p20, ''); assert.strictEqual(rp.full, false); assert(rp.rows.filter((x) => x.k === 'row').every((x) => x.c === 'Phòng giao dịch 20'), 'PGD chỉ thấy dòng của mình');
+    assert(rp.rows.every((x) => x.tlk === undefined), 'PGD không thấy số THBC'); assert(rp.rows.find((x) => x.k === 'tot').lk > 0 && rp.rows.find((x) => x.k === 'tot').lk < tot.lk);
     for (const f of ['xlsx', 'pdf']) { const o = await X.xuatBieuTong(th, f, ''); assert(o.b64.length > 1000); }
     assert((await X.xuatTong(th, 'bt', 'pdf', '')).name.includes('Bieu_tong'));
   }
