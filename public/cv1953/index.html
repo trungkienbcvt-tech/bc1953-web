@@ -233,7 +233,7 @@ nav#tabs button.on{background:var(--bg);color:var(--acc2);font-weight:600;box-sh
 <body>
 <div id="login"><div class="lbg"></div><div class="lov"></div><div class="lnet"></div>
 <div class="lwrap">
-  <div class="lhero"><div class="lbadge">KBNN KHU VỰC VIII</div><h1>Chương trình<br>báo cáo ĐTTQ</h1><p>Công văn 1953 · Nhập, gửi, tiếp nhận và tổng hợp số liệu giải ngân theo chủ đầu tư.</p>
+  <div class="lhero"><div class="lbadge">KBNN KHU VỰC VIII</div><h1>Chương trình<br>báo cáo ĐTTQ</h1><p>Công văn 1953 · Nhập, ký duyệt, gửi và tổng hợp số liệu giải ngân theo chủ đầu tư.</p>
     <div class="lfeat"><span>① Phòng giao dịch nhập số liệu</span><span>② Kế toán trưởng, Trưởng phòng ký duyệt</span><span>③ Số liệu tự lên Tổng hợp toàn tỉnh</span></div></div>
   <div class="lg">
     <div class="logo">📊</div>
@@ -559,7 +559,7 @@ function hbars(items,key,key2){var mx=Math.max.apply(null,items.map(function(x){
 function drawViewer(wf,t){
   var x4=tong4(t),late=0,cho=0,da=0,n=wf.list.length,th=S.vt==='TH';
   wf.list.forEach(function(x){if(x.cham||x.quaHan)late++;if(x.tt==='Đã gửi')cho++;if(['Chưa gửi','Bị trả lại'].indexOf(x.tt)<0)da++});
-  var mid='<div style="margin-top:8px"><button class="mini pri" data-go="qt">'+(th?'🔄 Quy trình &amp; hạn nộp':'📥 Hộp tiếp nhận')+' →</button></div>';
+  var mid='<div style="margin-top:8px"><button class="mini pri" data-go="qt">'+'🔄 Quy trình &amp; hạn nộp'+' →</button></div>';
   var h=hero(wf,mid,dl('Hạn gửi báo cáo',wf.hanHienThi.pgd,wf.hanMs.pgd,false));
   h+='<div class="ovg">'+ovTile(late?'bad':(da===n?'ok':''),'📤','Đã gửi báo cáo',da+' <small style="font-size:13px;font-weight:500">/ '+n+' phòng</small>',late?late+' phòng chậm / quá hạn':'không có phòng chậm')+
     ovTile('','💰','Tổng lũy kế giải ngân',fmt(r2(x4.lk)),'triệu đồng · tháng '+esc(wf.ky)+': '+fmt(r2(x4.th)))+ovGn()+ovTt()+ovLech()+'</div>';
