@@ -548,20 +548,18 @@ function topCdt(cd,n){return (cd||[]).slice().sort(function(a,b){return b.lk-a.l
 function hbars(items,key,key2){var mx=Math.max.apply(null,items.map(function(x){return x[key]}).concat([1]));if(!items.length)return '<p class="hint">Chưa có dữ liệu.</p>';
   return '<div class="hbs">'+items.map(function(x){return '<div class="hb"><span class="hl" title="'+esc(x.l)+'">'+esc(x.l)+'</span><div class="ht"><i style="width:'+Math.max(x[key]*100/mx,0.8)+'%"></i>'+(key2?'<i class="b2" style="width:'+Math.max(x[key2]*100/mx,0)+'%"></i>':'')+'</div><b>'+fmt(r2(x[key]))+'</b></div>'}).join('')+'</div>'}
 function drawViewer(wf,t){
-  var ids=['b01','b02','b03a','b03b'],G=[['Chưa gửi',['Chưa gửi'],0],['Đang ký duyệt tại phòng',['Chờ KTT duyệt','Chờ TP phê duyệt'],5],['Chờ Tổng hợp tiếp nhận',['Đã gửi'],1],['Tổng hợp đang xử lý',['Tổng hợp đã tiếp nhận','Đã trình lãnh đạo phòng'],6],['Đã phê duyệt',['Trưởng phòng TH đã phê duyệt'],4],['Bị trả lại',['Bị trả lại'],3]],late=0,cho=0;
-  G.forEach(function(g){g.n=wf.list.filter(function(x){return g[1].indexOf(x.tt)>=0}).length});
-  wf.list.forEach(function(x){if(x.cham||x.quaHan)late++;if(x.tt==='Đã gửi')cho++});
-  var parts=G.filter(function(g){return g.n}).map(function(g){return{v:g.n,c:SCOL[g[2]],l:g[0]}}),
-    xong=G[2].n+G[3].n+G[4].n,sum=cdtTong(t),x4=tong4(t);
-  var mid='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px"><button class="mini pri" data-go="qt">'+(S.vt==='TH'?'🔄 Quy trình &amp; hạn nộp':'📥 Hộp tiếp nhận')+' →</button>'+(cho?'<span class="flag">'+cho+' báo cáo chờ tiếp nhận</span>':'')+(late?'<span class="flag r">'+late+' đơn vị chậm / quá hạn</span>':'')+'</div>';
+  var x4=tong4(t),late=0,cho=0,da=0,n=wf.list.length,th=S.vt==='TH';
+  wf.list.forEach(function(x){if(x.cham||x.quaHan)late++;if(x.tt==='Đã gửi')cho++;if(['Chưa gửi','Bị trả lại'].indexOf(x.tt)<0)da++});
+  var mid='<div style="margin-top:8px"><button class="mini pri" data-go="qt">'+(th?'🔄 Quy trình &amp; hạn nộp':'📥 Hộp tiếp nhận')+' →</button></div>';
   var h=hero(wf,mid,dl('Hạn gửi báo cáo',wf.hanHienThi.pgd,wf.hanMs.pgd,false));
-  h+='<div class="kp5">'+G.map(function(g){return'<div class="card kpi" style="border-top:4px solid '+SCOL[g[2]]+'"><b>'+g.n+'</b><span>'+g[0]+'</span></div>'}).join('')+'</div>';
-  h+='<div class="ovg">'+ovTile('','💰','Tổng lũy kế giải ngân',fmt(r2(x4.lk)),'cộng 4 biểu · triệu đồng')+ovTile('','📆','Trong tháng '+esc(wf.ky),fmt(r2(x4.th)),'triệu đồng')+ovTile('','🏢','Đơn vị đã gửi Tổng hợp',xong+' <small style="font-size:13px;font-weight:500">/ '+wf.list.length+'</small>','')+ovLech()+'</div>';
-  var pg=t.list.map(function(p){var lk=0,th=0;Object.keys(p.b).forEach(function(i){lk+=p.b[i].luyke;th+=p.b[i].thang});return{l:p.pgd.replace('Phòng giao dịch','PGD').replace('Phòng Nghiệp vụ 2','NV2'),lk:lk,th:th}}).sort(function(a,b){return b.lk-a.lk});
-  h+='<div class="chg">'+chartCard('Tiến độ nộp báo cáo của các phòng',donut(parts,xong+'/'+wf.list.length,'đã gửi'))+
-    unitCard()+
-    chartCard('Cơ cấu theo nguồn vốn',donut(ids.map(function(i,ix){var v=0;t.list.forEach(function(p){v+=Math.max((p.b[i]||{}).luyke||0,0)});return{v:v,c:VC[ix],l:BN[i]}}),fmt(Math.round(x4.lk/1e3)),'tỷ đồng'))+'</div>';
-  h+='<div class="card chc" style="margin-bottom:14px"><h4>Lũy kế giải ngân theo phòng <small style="font-weight:400;color:var(--mut)">· thanh đậm: trong tháng · triệu đồng</small></h4>'+hbars(pg,'lk','th')+'</div>';
+  h+='<div class="ovg">'+ovTile(da===n?'ok':'','📤','Đã gửi báo cáo',da+' <small style="font-size:13px;font-weight:500">/ '+n+' phòng</small>',cho?cho+' chờ tiếp nhận':'')+
+    ovTile(late?'bad':'ok','⏰','Chậm / quá hạn',late,late?'đơn vị':'Không có')+
+    ovTile('','💰','Tổng lũy kế giải ngân',fmt(r2(x4.lk)),'triệu đồng · tháng '+esc(wf.ky)+': '+fmt(r2(x4.th)))+ovLech()+'</div>';
+  var tm={};t.list.forEach(function(p){var l=0,m=0;Object.keys(p.b).forEach(function(i){l+=p.b[i].luyke;m+=p.b[i].thang});tm[p.pgd]={lk:l,th:m}});
+  h+='<div class="card" style="padding:12px 14px;margin-bottom:14px"><h3 style="margin:0 0 8px;font-size:15px">Tình hình gửi và tiếp nhận báo cáo của các phòng</h3><div class="btsc"><table class="bt"><thead><tr><th style="text-align:left">Phòng</th><th style="text-align:center">Trạng thái</th><th style="text-align:center">Gửi lúc</th><th style="text-align:center">Tiếp nhận</th><th>Lũy kế (triệu đồng)</th><th>Trong tháng</th></tr></thead><tbody>'+
+   wf.list.map(function(x){var m=tm[x.pgd]||{lk:0,th:0};
+    return '<tr><td style="text-align:left"><b>'+esc(x.pgd)+'</b></td><td style="text-align:center">'+chip(x.tt)+' '+flags(x)+'</td><td style="text-align:center">'+(x.gui&&x.tt!=='Chưa gửi'?x.gui:'—')+'</td><td style="text-align:center">'+(x.nhan?x.nhan+'<br><small>'+esc(x.nguoiNhan||'')+'</small>':'—')+'</td><td style="text-align:right">'+fmt(r2(m.lk))+'</td><td style="text-align:right">'+fmt(r2(m.th))+'</td></tr>'}).join('')+
+   '</tbody></table></div></div>';
   return h}
 function drawQt(wf,t){
   var ids=['b01','b02','b03a','b03b'],cnt={'Chưa gửi':0,'Đã gửi':0,'Đã tiếp nhận':0,'Bị trả lại':0,'Đã nộp tổng hợp':0},late=[];
@@ -572,7 +570,7 @@ function drawQt(wf,t){
   h+='<div class="card" style="margin-bottom:16px"><h3>Quy trình nộp báo cáo</h3>'+
     '<p class="hint">Mỗi phòng ký duyệt nội bộ rồi gửi thẳng Tổng hợp; Tổng hợp tiếp nhận → trình Trưởng phòng Tổng hợp phê duyệt.</p>'+
     '<div style="overflow:auto"><table class="mx wf"><thead><tr><th>Phòng</th><th>Trạng thái</th><th>Gửi lúc</th><th>Tổng hợp tiếp nhận</th><th>Đã ký</th><th>Cảnh báo</th><th>Thao tác</th></tr></thead><tbody>';
-  wf.list.forEach(function(x){h+='<tr><td class="p" data-a="xem" data-p="'+esc(x.pgd)+'">'+esc(x.pgd)+'</td><td>'+chip(x.tt)+(x.soTra?'<br><small>trả '+x.soTra+' lần</small>':'')+(x.soGui>1?'<br><small>gửi lần '+x.soGui+' (thay thế)</small>':'')+(x.deNghi?'<br><small style="color:#9a5b00">📝 Đề nghị sửa: '+esc(x.deNghi)+'</small>':'')+(x.lyDo?'<br><small style="color:#a11">'+esc(x.lyDo)+'</small>':'')+'</td><td>'+(x.gui||'<small>—</small>')+'</td><td>'+(x.nhan?x.nhan+'<br><small>'+esc(x.nguoiNhan)+'</small>':'<small>—</small>')+'</td><td>'+kyTxt(x)+'</td><td>'+(flags(x)||'<small>—</small>')+'</td><td>'+actions(x)+'</td></tr>'});
+  wf.list.forEach(function(x){h+='<tr><td class="p" data-a="xem" data-p="'+esc(x.pgd)+'">'+esc(x.pgd)+'</td><td>'+chip(x.tt)+(x.soTra?'<br><small>trả '+x.soTra+' lần</small>':'')+(x.soGui>1?'<br><small>gửi lần '+x.soGui+' (thay thế)</small>':'')+(x.deNghi?'<br><small style="color:#9a5b00">📝 Đề nghị sửa: '+esc(x.deNghi)+'</small>':'')+(x.lyDo?'<br><small style="color:#a11">'+esc(x.lyDo)+'</small>':'')+'</td><td>'+(x.gui||'<small>—</small>')+'</td><td style="text-align:center">'+(x.nhan?x.nhan+'<br><small>'+esc(x.nguoiNhan)+'</small>':'<small>—</small>')+'</td><td>'+kyTxt(x)+'</td><td>'+(flags(x)||'<small>—</small>')+'</td><td>'+actions(x)+'</td></tr>'});
   h+='</tbody></table></div></div>';
   h+=drawStat(wf,late);
   return h}
