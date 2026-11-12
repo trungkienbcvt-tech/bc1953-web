@@ -16,8 +16,8 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   const r1 = s.data.sheets[0].rows.find((r) => r.r === r0.r); assert.strictEqual(r1.v[4], r0.v[4] + 1000, 'trong tháng = lũy kế − tháng trước');
   s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: 8, v: '5' }]); assert(s.loi.length, 'không cho nhập cột tự tính');
   s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: '-5' }]); assert(s.loi.length && /không được âm/.test(s.loi[0]), 'không cho số âm');
-  s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: String(lk0 - 1000) }]); assert(s.loi.length && /nhỏ hơn lũy kế tháng trước/.test(s.loi[0]), 'không cho lũy kế giảm');
-  const gcol = d.sheets[0].cols.find((x) => x.t === 'g'); s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: gcol.c, v: 'abc' }]); assert(s.loi.length && /tự sinh/.test(s.loi[0]), 'ghi chú không nhập tay');
+  const pv0 = lk0 - r0.v[4]; assert(pv0 > 5); s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: String(pv0 - 5) }]); assert(!s.loi.length && s.canhBao.length === 1 && s.canhBao[0].truoc === pv0, 'lũy kế giảm: vẫn lưu, chỉ cảnh báo'); await L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: String(lk0 + 1000) }]);
+  const gcol = d.sheets[0].cols.find((x) => x.t === 'g'); s = await L.luu(p20, [{ id: 'b01', r: r0.r, c: gcol.c, v: 'nộp trả sai mã' }]); assert(!s.loi.length && s.data.sheets[0].rows.find((r) => r.r === r0.r).v.slice(-1)[0] === 'nộp trả sai mã', 'ghi chú nhập tự do');
   await assert.rejects(() => L.guiBaoCao(p20), /quy trình/);
   await gui20(); await assert.rejects(() => L.luu(p20, [{ id: 'b01', r: r0.r, c: 5, v: '1' }]), /đã gửi/);
   await L.duyet(th, 'th_nhan', '', '', P20); await assert.rejects(() => L.duyet(th, 'th_nhan', '', '', P20), /Không thực hiện/);

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-:root{--ink:#2a1a1e;--mut:#7a6468;--line:#e4d3d6;--bg:#f8f2f2;--acc:#a31d2f;--acc2:#5c0f1b;--inp:#ffeeb0;--ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;--gray:#cbd3e1}
+:root{--ink:#2a1a1e;--mut:#4a3a3f;--line:#e4d3d6;--bg:#f8f2f2;--acc:#a31d2f;--acc2:#5c0f1b;--inp:#ffeeb0;--ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;--gray:#cbd3e1}
 *{box-sizing:border-box}
 body{margin:0;font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
 button{font:inherit;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;color:var(--ink);transition:.15s}
@@ -31,7 +31,7 @@ header h1 small{display:block;font-weight:400;opacity:.8;font-size:12.5px}
 header .vecong{color:#fff;text-decoration:none;padding:6px 12px;border:1px solid rgba(255,255,255,.35);border-radius:6px;background:rgba(255,255,255,.15);font-size:13px;white-space:nowrap}header .vecong:hover{background:rgba(255,255,255,.28)}
 header button{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.35);color:#fff}
 nav{display:flex;gap:6px;padding:6px 20px 0;overflow-x:auto;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
-nav button{border:0;border-radius:10px 10px 0 0;background:none;padding:8px 14px;white-space:nowrap;color:var(--mut)}
+nav button{border:0;border-radius:10px 10px 0 0;background:none;padding:8px 14px;white-space:nowrap;color:#3a2a2f}
 tr.tot0 td{background:#f3e1e4;font-weight:700;position:sticky;top:var(--hh,0px);z-index:3}tr.tot0 td.nm{z-index:5}
 tr.par td{background:#fff!important;background-image:none!important;font-weight:700}tr.ind td.nm,tr.par td.nm{font-weight:700;color:#5c0f1b}tr.sub td.nm{font-style:italic;font-weight:400;color:#46527a;padding-left:22px}tr.sub td.stt{color:#46527a;font-style:italic}
 .hd1{background:#eef6ff;border:1px solid #cfe0f5;color:#26466d;border-radius:10px;padding:7px 12px;margin:0 0 8px;font-size:13px}.hd1 b{color:#16365c}
@@ -336,7 +336,7 @@ function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)
 var BTAB=['b01','b02','b03a','b03b'];
 S.shut=S.shut||{};
 function drawTabs(){
-  var G=[{id:'g1953',t:'📑 BC 1953',it:[['tq',S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan']].concat(BTAB.map(function(id){return [id,BN[id]]})).concat([['tt','📋 Biểu 04-KBNN'],['bt','⚖ Đối chiếu THBC']]).concat(S.vt==='TH'?[['qt','🔄 Quy trình & hạn nộp']]:(S.vt==='NV2'?[['qt','📥 Hộp tiếp nhận']]:[]))},
+  var G=[{id:'g1953',t:'📑 BC 1953',it:[['tq',S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan']].concat(BTAB.map(function(id){return [id,BN[id]]})).concat([['tt','Biểu 04-KBNN'],['bt','⚖ Đối chiếu THBC']]).concat(S.vt==='TH'?[['qt','🔄 Quy trình & hạn nộp']]:(S.vt==='NV2'?[['qt','📥 Hộp tiếp nhận']]:[]))},
     {id:'gkpi',t:'🎯 BC đánh giá KPI',tag:'sắp có',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Biểu KPI'],['kpibt','⚖ Đối chiếu THBC (KPI)']]},
     {id:'gchung',t:'🗂 Dùng chung',it:[['dm','📁 Danh mục dự án']]}],h='';
   G.forEach(function(g){h+='<div class="tg'+(S.shut[g.id]?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+g.it.map(function(x){return '<button data-t="'+x[0]+'">'+esc(x[1])+'</button>'}).join('')+'</div></div>'});
@@ -487,7 +487,7 @@ function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=!!
       (full?(x.n!=null?'<td class="v">'+fmt(r2(x.tlk))+'</td><td>'+btD(x.ttl,x.dlk)+'</td>':'<td colspan="2"></td>'):'')+'</tr>'});
   return h}
 function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=S.btF||'all';
-  var h='<div class="card btc"><div class="tb1"><div class="tb1l"><div class="hd1"><b>Đối chiếu THBC (BC 1953)</b> – cộng 4 biểu con (01, 02, 03 21-25, 03 26-30) theo danh mục chủ đầu tư, so với file THBC theo <b>lũy kế</b>. Cột chênh ghi <b>Khớp</b> hoặc số chênh (web − THBC). <span style="color:#46527a">Chữ đậm = đơn vị chủ quản / độc lập · chữ nghiêng = đơn vị trực thuộc.</span>'+(!full?' Bạn chỉ thấy phần của đơn vị mình.':'')+'</div></div><div class="tb1r">'+expBar('bt')+
+  var h='<div class="card btc"><div class="tb1"><div class="tb1l"><div class="hd1"><b>Đối chiếu THBC:</b> so lũy kế trên hệ thống với file THBC. Cột Chênh lệch ghi <b>Khớp</b> hoặc số chênh (hệ thống − THBC).'+(!full?' Chỉ hiện phần của đơn vị bạn.':'')+'</div></div><div class="tb1r">'+expBar('bt')+
     '<div class="btb">'+(full?'<input type="file" id="btFile" accept=".xlsx" style="display:none"><button class="mini pri" id="btUp">📂 '+(d&&d.co?'Tải THBC mới':'Tải file THBC')+'</button>'+(d&&d.co?'<button class="mini" id="btXoa">Xóa THBC</button>':''):'')+'</div></div></div>'+
     '<div class="ttl"><b>Tổng hợp kết quả giải ngân vốn đầu tư theo chủ đầu tư</b><span>Đối chiếu THBC · Kỳ báo cáo: tháng '+esc(d?d.ky:'')+'</span></div><div class="dvr">Đơn vị: Triệu đồng</div>';
   if(!d)return h+'<p class="hint" style="padding:18px 0;text-align:center">Đang tính biểu tổng...</p></div>';
@@ -519,7 +519,7 @@ function ttBody(d){var f=S.ttF||'all',q=(S.ttQ||'').toLowerCase().trim(),h='',le
      '<td style="font-size:12.5px;color:var(--mut)">'+esc(x.gc||'')+'</td></tr>'});
   return h}
 function drawTt(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null,f=S.ttF||'all';
-  var h='<div class="card btc"><div class="tb1"><div class="tb1l"><div class="hd1"><b>Biểu 04-KBNN – tự động tổng hợp, không nhập tại đây.</b> Tình trạng của từng chủ đầu tư lấy từ cột <i>Tình trạng gửi BC</i> ở các biểu 01, 02, 03. Đơn vị chọn <b>Không phát sinh</b> ở biểu nào thì biểu đó không bắt buộc phải có số liệu: các biểu còn lại gửi đủ là tính <b>nộp đầy đủ</b>. <span style="color:#46527a">Chữ đậm = đơn vị chủ quản / độc lập · chữ nghiêng = đơn vị trực thuộc.</span></div></div><div class="tb1r">'+expBar('tt')+'</div></div>'+
+  var h='<div class="card btc"><div class="tb1"><div class="tb1l"><div class="hd1"><b>Biểu 04-KBNN tự tổng hợp</b> từ cột Tình trạng gửi BC ở các biểu 01, 02, 03 – không nhập tại đây. Biểu nào chọn <b>Không phát sinh</b> thì không cần số liệu.</div></div><div class="tb1r">'+expBar('tt')+'</div></div>'+
     '<div class="ttl"><b>Tình trạng gửi báo cáo của chủ đầu tư theo từng biểu</b><span>Biểu 04-KBNN · Kỳ báo cáo: tháng '+esc(d?d.ky:'')+(d&&!d.full?' · '+esc(d.pgd):'')+'</span></div>';
   if(!d){return $('main').innerHTML=h+'<p class="hint" style="padding:18px 0;text-align:center">Đang tính...</p></div>',ttLoad(),void 0}
   if(d.err){$('main').innerHTML=h+'<p class="hint">Không tải được. Thử tải lại trang.</p></div>';return}
@@ -632,7 +632,7 @@ function bindTq(){
     if(a==='tra')hoi('<h3>Chuyển trả '+esc(p)+'</h3><p class="hint">Ghi rõ lý do để phòng sửa lại.</p>','Chuyển trả',true).then(function(v){if(!v)return;run('chuyenTra',S.token,p,v,S.ky).then(function(r){toast('Đã chuyển trả '+p);setWf(r)}).catch(function(e){toast(msg(e),7000)})})}})}
 
 /* ===== Bảng nhập ===== */
-var HDAN='<b>Cách điền:</b> nhập <b>số lũy kế giải ngân đến cuối tháng</b> vào các ô trắng (triệu đồng, số nguyên, không âm, không nhỏ hơn lũy kế tháng trước). Các cột <i>Tổng số</i> và <i>Trong tháng</i> tự tính. Mỗi chủ đầu tư chọn <b>Tình trạng gửi BC</b> (không có số liệu thì chọn <b>Không phát sinh</b>); cột Ghi chú do hệ thống tự sinh. <span style="color:#46527a">Chữ đậm = đơn vị chủ quản / đơn vị độc lập · chữ nghiêng = đơn vị trực thuộc.</span>';
+var HDAN='<b>Cách điền:</b> nhập <b>số lũy kế giải ngân đến cuối tháng</b> vào các ô xanh nhạt, các cột khác tự cập nhật. Mỗi chủ đầu tư chọn <b>Tình trạng gửi BC</b> (không có số liệu thì chọn <b>Không phát sinh</b>). Cột <b>Ghi chú</b> nhập tự do.';
 function drawTable(id){
   var b=S.data.sheets.filter(function(x){return x.id===id})[0],m=$('main'),ro=!canEdit(),NC=b.cols.length+2;
   if(!b.rows.length&&!(b.secs&&b.secs.length)){m.innerHTML='<p class="hint">'+esc(S.data.pgd)+' không có chủ đầu tư nào trong biểu này.</p>';return}
@@ -667,7 +667,7 @@ function drawTable(id){
       b.cols.forEach(function(c,j){var v=r.v[j],key=b.id+'|'+r.r+'|'+c.c,g=grp(c),gb=(j===0||grp(b.cols[j-1])!==g)?' gb':'',cl=(g+gb).trim();
         if(c.t==='t'||c.t==='a'){h+='<td class="'+(c.t==='a'?'a ':'t ')+(Number(v)<0?'neg ':'')+cl+'"'+(c.t==='a'?' title="Tự tính = lũy kế − lũy kế tháng trước"':'')+'>'+fmt(v)+'</td>';return}
         var val=S.dirty[key]!==undefined?S.dirty[key].v:v,dis=ro?' disabled':'';
-        if(c.t==='g'){h+='<td class="'+cl+' gn">'+esc(v)+'</td>';return}
+        if(c.t==='g'){var gv=S.dirty[key]!==undefined?S.dirty[key].v:v;h+=ro?'<td class="'+cl+' gn">'+esc(v)+'</td>':'<td class="'+cl+' gn"><input type="text" data-k="'+key+'" class="gc'+(S.dirty[key]?' d':'')+'" maxlength="500" value="'+esc(gv)+'" autocomplete="off" placeholder="Ghi chú..."></td>';return}
         if(c.t==='s')h+='<td class="'+cl+'"><select data-k="'+key+'"'+dis+(S.dirty[key]?' class="d"':'')+'><option value=""></option>'+S.data.ttOpts.map(function(o){return'<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>'}).join('')+'</select></td>';
         else h+='<td class="'+cl+'"><input type="text" data-k="'+key+'"'+dis+' class="'+(c.t==='g'?'gc':'')+(S.dirty[key]?' d':'')+'" value="'+esc(c.t==='n'?fmtInp(val):val)+'" inputmode="'+(c.t==='n'?'numeric':'text')+'" autocomplete="off"></td>'});
       h+='</tr>'});
@@ -708,7 +708,8 @@ $('saveBtn').onclick=function(){
   doSave()};
 function doSave(){
   var arr=Object.keys(S.dirty).map(function(k){return S.dirty[k]});$('saveBtn').disabled=true;$('saveBtn').textContent='Đang lưu...';
-  run('luu',S.token,arr,S.ky).then(function(r){S.data=r.data;S.dc=null;S.cb=null;S.bt=null;toast(r.loi.length?('Đã lưu '+r.ok+' ô. Không lưu được: '+r.loi.slice(0,3).join('; ')):('Đã lưu '+r.ok+' ô.'),r.loi.length?9000:3500);S.dirty={};show(S.tab)})
+  run('luu',S.token,arr,S.ky).then(function(r){S.data=r.data;S.dc=null;S.cb=null;S.bt=null;toast(r.loi.length?('Đã lưu '+r.ok+' ô. Không lưu được: '+r.loi.slice(0,3).join('; ')):('Đã lưu '+r.ok+' ô.'),r.loi.length?9000:3500);S.dirty={};show(S.tab);
+    if(r.canhBao&&r.canhBao.length)hoi('<h3>⚠ Lũy kế thấp hơn tháng trước</h3><p class="hint">Đã lưu. Có <b>'+r.canhBao.length+'</b> dòng lũy kế giảm so với tháng trước (do nộp trả / điều chỉnh giảm). Vui lòng kiểm tra lại và ghi lý do vào cột <b>Ghi chú</b>:</p><div style="max-height:200px;overflow:auto;font-size:13px;background:#faf3f3;border-radius:8px;padding:8px 12px">'+r.canhBao.slice(0,10).map(function(x){return '• '+esc(x.ten)+': '+fmt(x.truoc)+' → '+fmt(x.lk)}).join('<br>')+(r.canhBao.length>10?'<br>... và '+(r.canhBao.length-10)+' dòng nữa':'')+'</div>','Đã hiểu')})
   .catch(function(e){toast('Lỗi: '+msg(e),8000)}).then(function(){$('saveBtn').textContent='Lưu thay đổi';updBar()})}
 
 /* ===== In & xuất ===== */
