@@ -146,7 +146,8 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   {
     const H = async (f, a) => Buffer.from((await f(...a)).b64, 'base64').toString('utf8');
     const h1 = await H(X.xuatBieu, [p20, 'B01', '2026-11-05', '', 'html', '']);
-    assert(!/\n?<tr class="sec"/.test(h1) && !/<title>[^&]*B01/.test(h1), 'biểu PGD không có dòng khu vực / tên file ở đầu trang');
+    assert(/<tr class="sec"><td><\/td><td>I - KHỐI TỈNH/.test(h1) && !/<title>[^&]*B01/.test(h1), 'biểu PGD có đề mục KHỐI TỈNH, không có tên file ở đầu trang');
+    const hT = await H(X.xuatTong, [th, 'b01', 'html', '']); assert(hT.includes('KBNN nơi mở tài khoản') && !/ – Phòng giao dịch/.test(hT), 'biểu toàn tỉnh tách riêng cột KBNN');
     assert(h1.includes('<div class="bn">Biểu 01-KBNN</div>')); assert(h1.includes('<colgroup>'));
     assert(h1.indexOf('TỔNG CỘNG') < h1.indexOf('<tr class="row') && !/TỔNG CỘNG CỦA PHÒNG/.test(h1), 'TỔNG CỘNG nằm trên cùng');
     const h4 = await H(X.xuatTinhTrang, [th, 'html', '']); assert(h4.includes('Biểu 04-KBNN') && h4.includes('NGƯỜI LẬP BIỂU'), 'biểu 04 có nhãn và chữ ký');

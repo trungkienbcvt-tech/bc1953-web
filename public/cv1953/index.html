@@ -33,9 +33,11 @@ header button{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.35
 nav{display:flex;gap:6px;padding:6px 20px 0;overflow-x:auto;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
 nav button{border:0;border-radius:10px 10px 0 0;background:none;padding:8px 14px;white-space:nowrap;color:var(--mut)}
 tr.tot0 td{background:#f3e1e4;font-weight:700;position:sticky;top:var(--hh,0px);z-index:3}tr.tot0 td.nm{z-index:5}
-tr.ind td.nm,tr.par td.nm{font-weight:700;color:#5c0f1b}tr.sub td.nm{font-style:italic;font-weight:400;color:#46527a;padding-left:22px}tr.sub td.stt{color:#46527a;font-style:italic}
+tr.par td{background:#fff!important;background-image:none!important;font-weight:700}tr.ind td.nm,tr.par td.nm{font-weight:700;color:#5c0f1b}tr.sub td.nm{font-style:italic;font-weight:400;color:#46527a;padding-left:22px}tr.sub td.stt{color:#46527a;font-style:italic}
 .hd1{background:#eef6ff;border:1px solid #cfe0f5;color:#26466d;border-radius:10px;padding:7px 12px;margin:0 0 8px;font-size:13px}.hd1 b{color:#16365c}
 .bt tr.bt-i td:nth-child(2){font-weight:700;color:#5c0f1b}.bt tr.bt-s td:nth-child(2){font-style:italic;color:#46527a;padding-left:26px!important}
+.tb1{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin:0 0 6px}.tb1l{flex:1;min-width:300px}.tb1r{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px}.tb1r .expb{margin:0;justify-content:flex-end}.tb1l .hd1{margin:0}
+.bt tr.bt-i td{font-weight:700}.bt tr.bt-s td:nth-child(n+3){font-weight:400}
 nav .tgl{align-self:center;font-size:11.5px;font-weight:700;letter-spacing:.3px;color:#fff;background:var(--acc);border-radius:999px;padding:3px 11px;white-space:nowrap;margin-right:4px}
 nav .tgl.tg2{background:#0f766e}nav .tgs{flex:1;min-width:14px}
 nav button.b2{color:#0f766e}nav button.b2.on{color:#0f5f58;box-shadow:inset 0 3px 0 #0f766e}
@@ -137,7 +139,6 @@ td.stt,th.stt{position:sticky;left:0;z-index:4;min-width:54px;max-width:54px;wid
 thead th.stt{background:#f3e1e4;z-index:6;color:#5c0f1b}
 td.nm,th.nm{left:54px!important}
 tr.sec td{background:#8c2638!important;background-image:none!important;color:#fff;font-weight:700;font-size:14px;padding:7px 10px;letter-spacing:.3px}
-tr.par td{background:#f3dfe2!important;background-image:none!important;color:#5c0f1b;font-weight:700;padding:5px 10px}
 .sx{position:sticky;left:12px;display:inline-block}
 .pg{font-weight:400;font-size:11.5px;color:var(--acc);margin-top:1px}
 
@@ -157,7 +158,7 @@ main>p.hint{margin:0 0 6px;font-size:12.5px}
 @media(max-width:900px){.hero{grid-template-columns:1fr}}
 .kysel{width:auto!important;min-width:190px;background:rgba(255,255,255,.95);font-weight:600;color:var(--acc2);padding:6px 10px}
 .oldk{background:#f59e0b;color:#3b2200;border-radius:8px;padding:0 7px;font-size:11px;font-weight:700;margin-left:4px}
-tr.par td{background:#f3dfe2!important;background-image:none!important;color:#5c0f1b;font-weight:700;padding:5px 10px}
+
 tr.stot td{background:#e9c8ce!important;background-image:none!important;color:#4a0c17;font-weight:700;border-top:2px solid #8c2638}
 tr.emp td{color:var(--mut);font-style:italic;padding:8px 10px}
 .mini-t{width:100%;border-collapse:collapse;font-size:14px}.mini-t th{text-align:right;font-weight:600;color:var(--mut);padding:8px 10px;border-bottom:2px solid #ead3d7;font-size:12.5px}.mini-t th:first-child,.mini-t td:first-child{text-align:left}.mini-t td{text-align:right;padding:9px 10px;border-bottom:1px solid #f0e3e5;font-variant-numeric:tabular-nums}.mini-t td.g{color:#15803d;font-weight:700}.mini-t td.o{color:#b45309;font-weight:700}.mini-t td.r{color:#b91c1c;font-weight:700}.mini-t td.v{font-weight:700;color:#4a0c17}.mini-t tr.tot td{background:#f9eef0;font-weight:700;border-bottom:0}
@@ -480,14 +481,15 @@ function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=!!
     if(q){if(x.k!=='row')return false;if(((x.ten||x.b)+' '+x.c).toLowerCase().indexOf(q)<0)return false}
     return true});
   if(!rows.length)return '<tr><td colspan="'+nc+'" style="text-align:center;padding:22px;color:var(--mut)">'+(f==='all'?'Không có dòng nào.':'✓ Không có dòng nào thuộc nhóm này.')+'</td></tr>';
-  rows.forEach(function(x){var leaf=f!=='all'||q,nm=leaf&&x.ten&&x.b==='Giao dịch tại'?x.ten+' <small>· giao dịch tại '+esc(x.c)+'</small>':esc(x.ten&&leaf?x.ten:x.b),cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-n':(x.st==='sub'?'bt-s':(x.st==='ind'?'bt-i':''))));
-    h+='<tr class="'+cl+'"><td class="bt-a">'+esc(x.a)+'</td><td style="padding-left:'+(leaf?10:8+Math.max(x.lv-1,0)*16)+'px">'+nm+(!leaf&&x.c?'<br><small>'+esc(x.c)+'</small>':(leaf&&x.b!=='Giao dịch tại'&&x.c?' <small>· '+esc(x.c)+'</small>':''))+'</td>'+
+  rows.forEach(function(x){var leaf=f!=='all'||q,nm=leaf&&x.ten&&x.b==='Giao dịch tại'?x.ten+' <small>· giao dịch tại '+esc(x.c)+'</small>':esc(x.ten&&leaf?x.ten:x.b),cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-i':(x.st==='sub'?'bt-s':(x.st==='ind'?'bt-i':''))));
+    h+='<tr class="'+cl+'"><td class="bt-a">'+esc(x.a)+'</td><td style="padding-left:'+(leaf?10:8+Math.max(x.lv-1,0)*16)+'px">'+nm+(!leaf&&x.c&&d.full?'<br><small>'+esc(x.c)+'</small>':(leaf&&x.b!=='Giao dịch tại'&&x.c?' <small>· '+esc(x.c)+'</small>':''))+'</td>'+
       '<td class="v">'+fmt(r2(x.lk))+'</td><td class="v">'+fmt(r2(x.th))+'</td>'+
       (full?(x.n!=null?'<td class="v">'+fmt(r2(x.tlk))+'</td><td>'+btD(x.ttl,x.dlk)+'</td>':'<td colspan="2"></td>'):'')+'</tr>'});
   return h}
 function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=S.btF||'all';
-  var h='<div class="card btc"><div class="bth"><div><h3>📑 Đối chiếu THBC · biểu tổng theo danh mục chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Cộng 4 biểu con (01, 02, 03 21-25, 03 26-30) · triệu đồng · ngoài BC 1953, dùng đối chiếu THBC'+(!full?' · chỉ phần của đơn vị':'')+'</p></div>'+
-    '<div class="btb">'+(full?'<input type="file" id="btFile" accept=".xlsx" style="display:none"><button class="mini pri" id="btUp">📂 '+(d&&d.co?'Tải THBC mới':'Tải file THBC')+'</button>'+(d&&d.co?'<button class="mini" id="btXoa">Xóa THBC</button>':''):'')+'</div></div>'+expBar('bt');
+  var h='<div class="card btc"><div class="tb1"><div class="tb1l"><div class="hd1"><b>Đối chiếu THBC (BC 1953)</b> – cộng 4 biểu con (01, 02, 03 21-25, 03 26-30) theo danh mục chủ đầu tư, so với file THBC theo <b>lũy kế</b>. Cột chênh ghi <b>Khớp</b> hoặc số chênh (web − THBC). <span style="color:#46527a">Chữ đậm = đơn vị chủ quản / độc lập · chữ nghiêng = đơn vị trực thuộc.</span>'+(!full?' Bạn chỉ thấy phần của đơn vị mình.':'')+'</div></div><div class="tb1r">'+expBar('bt')+
+    '<div class="btb">'+(full?'<input type="file" id="btFile" accept=".xlsx" style="display:none"><button class="mini pri" id="btUp">📂 '+(d&&d.co?'Tải THBC mới':'Tải file THBC')+'</button>'+(d&&d.co?'<button class="mini" id="btXoa">Xóa THBC</button>':''):'')+'</div></div></div>'+
+    '<div class="ttl"><b>Tổng hợp kết quả giải ngân vốn đầu tư theo chủ đầu tư</b><span>Đối chiếu THBC · Kỳ báo cáo: tháng '+esc(d?d.ky:'')+'</span></div><div class="dvr">Đơn vị: Triệu đồng</div>';
   if(!d)return h+'<p class="hint" style="padding:18px 0;text-align:center">Đang tính biểu tổng...</p></div>';
   if(d.err)return h+'<p class="hint">Không tải được biểu tổng. Thử tải lại trang.</p></div>';
   var st=btLech(d);
@@ -509,15 +511,16 @@ function ttBody(d){var f=S.ttF||'all',q=(S.ttQ||'').toLowerCase().trim(),h='',le
   var rows=d.rows.filter(function(x){if(leaf){if(x.k!=='row'||!x.cat||x.cat==='khong')return false;if(f!=='all'&&x.cat!==f)return false}
     if(q&&((x.ten||x.b)+' '+x.c).toLowerCase().indexOf(q)<0)return false;return true});
   if(!rows.length)return '<tr><td colspan="9" style="text-align:center;padding:22px;color:var(--mut)">✓ Không có dòng nào thuộc nhóm này.</td></tr>';
-  rows.forEach(function(x){var lf=x.k==='row',cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-n':''));
+  rows.forEach(function(x){var lf=x.k==='row',cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-i':(x.st==='sub'?'bt-s':(x.st==='ind'?'bt-i':''))));
     var nm=leaf&&x.ten&&x.b==='Giao dịch tại'?x.ten+' <small>· giao dịch tại '+esc(x.c)+'</small>':esc(leaf&&x.ten?x.ten:x.b);
-    h+='<tr class="'+cl+'"><td class="bt-a">'+esc(x.a)+'</td><td style="padding-left:'+(leaf?10:8+Math.max(x.lv-1,0)*16)+'px">'+nm+(!leaf&&x.c?'<br><small>'+esc(x.c)+'</small>':(leaf&&x.b!=='Giao dịch tại'&&x.c?' <small>· '+esc(x.c)+'</small>':''))+'</td>'+
+    h+='<tr class="'+cl+'"><td class="bt-a">'+esc(x.a)+'</td><td style="padding-left:'+(leaf?10:8+Math.max(x.lv-1,0)*16)+'px">'+nm+(!leaf&&x.c&&d.full?'<br><small>'+esc(x.c)+'</small>':(leaf&&x.b!=='Giao dịch tại'&&x.c?' <small>· '+esc(x.c)+'</small>':''))+'</td>'+
      (lf&&x.s?['b01','b02','b03a','b03b'].map(function(i){return '<td style="text-align:center">'+ttSt(x.s[i])+'</td>'}).join('')+'<td style="text-align:center">'+(x.cat&&x.cat!=='khong'?'<span class="ts '+TTN[x.cat][1]+'">'+TTN[x.cat][0]+'</span>':'—')+'</td>':
       '<td colspan="4" style="text-align:center;font-size:12.5px">'+(x.nd||x.nc||x.nx?'<span class="ts dg">'+x.nd+' đúng hạn</span> <span class="ts cham">'+x.nc+' chậm</span> <span class="ts chua">'+x.nx+' chưa gửi</span>':'')+'</td><td></td>')+
      '<td style="font-size:12.5px;color:var(--mut)">'+esc(x.gc||'')+'</td></tr>'});
   return h}
 function drawTt(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null,f=S.ttF||'all';
-  var h='<div class="card btc"><div class="bth"><div><h3>📋 Biểu 04-KBNN · Tình trạng gửi báo cáo của chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Theo từng biểu, xếp đúng danh mục chủ đầu tư · tình trạng do đơn vị chọn ở các biểu 01, 02, 03</p></div></div>'+expBar('tt');
+  var h='<div class="card btc"><div class="tb1"><div class="tb1l"><div class="hd1"><b>Biểu 04-KBNN – tự động tổng hợp, không nhập tại đây.</b> Tình trạng của từng chủ đầu tư lấy từ cột <i>Tình trạng gửi BC</i> ở các biểu 01, 02, 03. Đơn vị chọn <b>Không phát sinh</b> ở biểu nào thì biểu đó không bắt buộc phải có số liệu: các biểu còn lại gửi đủ là tính <b>nộp đầy đủ</b>. <span style="color:#46527a">Chữ đậm = đơn vị chủ quản / độc lập · chữ nghiêng = đơn vị trực thuộc.</span></div></div><div class="tb1r">'+expBar('tt')+'</div></div>'+
+    '<div class="ttl"><b>Tình trạng gửi báo cáo của chủ đầu tư theo từng biểu</b><span>Biểu 04-KBNN · Kỳ báo cáo: tháng '+esc(d?d.ky:'')+(d&&!d.full?' · '+esc(d.pgd):'')+'</span></div>';
   if(!d){return $('main').innerHTML=h+'<p class="hint" style="padding:18px 0;text-align:center">Đang tính...</p></div>',ttLoad(),void 0}
   if(d.err){$('main').innerHTML=h+'<p class="hint">Không tải được. Thử tải lại trang.</p></div>';return}
   var t=d.tong,n=t.nd+t.nc+t.nx;
@@ -634,7 +637,8 @@ function drawTable(id){
   var b=S.data.sheets.filter(function(x){return x.id===id})[0],m=$('main'),ro=!canEdit(),NC=b.cols.length+2;
   if(!b.rows.length&&!(b.secs&&b.secs.length)){m.innerHTML='<p class="hint">'+esc(S.data.pgd)+' không có chủ đầu tư nào trong biểu này.</p>';return}
   var depth=b.cols[0].lv.length,note=(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã đóng, chỉ xem.</b> ':'')+(ro&&S.vt==='PGD'&&!S.data.kyCu?'<b style="color:#b45309">Báo cáo đang ở trạng thái "'+esc(S.data.tt)+'" nên không sửa được.</b>':'');
-  var h='<div class="ttl">'+(b.tieuDe||[]).map(function(t,i){return i?'<span>'+esc(t)+'</span>':'<b>'+esc(t)+'</b>'}).join('')+'</div>'+(note?'<p class="hint" style="margin:4px 0">'+note+'</p>':'')+(canEdit()?'<div class="hd1">'+HDAN+'</div>':'')+'<div class="dvr">Đơn vị: Triệu đồng</div>'+expBar('bieu',id)+(canEdit()?'<div class="expb"><button id="kpsBtn" title="Các dòng chưa có số liệu và chưa chọn tình trạng sẽ được đặt là Không phát sinh">Đặt "Không phát sinh" cho các dòng chưa có số liệu</button></div>':'')+'<div id="dcBox"></div><div class="wrap"><table><thead>';
+  var h='<div class="tb1"><div class="tb1l">'+(note?'<p class="hint" style="margin:0 0 6px">'+note+'</p>':'')+(canEdit()?'<div class="hd1">'+HDAN+'</div>':'')+'</div><div class="tb1r">'+expBar('bieu',id)+(canEdit()?'<button id="kpsBtn" class="mini" title="Các dòng chưa có số liệu và chưa chọn tình trạng sẽ được đặt là Không phát sinh">Đặt "Không phát sinh" cho dòng chưa có số liệu</button>':'')+'</div></div>'+
+    '<div class="ttl">'+(b.tieuDe||[]).map(function(t,i){return i?'<span>'+esc(t)+'</span>':'<b>'+esc(t)+'</b>'}).join('')+'</div><div class="dvr">Đơn vị: Triệu đồng</div><div id="dcBox"></div><div class="wrap"><table><thead>';
   for(var i=0;i<depth;i++){
     h+='<tr>';if(i===0)h+='<th class="stt" rowspan="'+depth+'">STT</th><th class="nm" rowspan="'+depth+'">Chủ đầu tư / xã, phường</th>';
     var k=0;while(k<b.cols.length){var c=b.cols[k],txt=c.lv[i];
@@ -650,13 +654,13 @@ function drawTable(id){
   var secList=(b.secs&&b.secs.length)?b.secs.slice():[];b.rows.forEach(function(r){if(secList.indexOf(r.sec)<0)secList.push(r.sec)});
   var nTop=0,nSub=0;
   secList.forEach(function(sec){
-    var rr=b.rows.filter(function(r){return r.sec===sec});
-    if(sec&&S.vt==='TH')h+='<tr class="sec"><td class="stt"></td><td class="nm"><span class="sx">'+esc(sec)+'</span></td>'+cells(sums(rr),'')+'</tr>';
+    var rr=b.rows.filter(function(r){return r.sec===sec});nTop=0;nSub=0;
+    if(sec&&(rr.length||S.vt==='TH'))h+='<tr class="sec"><td class="stt"></td><td class="nm"><span class="sx">'+esc(sec)+'</span></td>'+cells(sums(rr),'')+'</tr>';
     if(!rr.length&&S.vt==='TH')h+='<tr class="emp"><td class="stt"></td><td class="nm" colspan="'+(NC-1)+'"><small>'+(S.data.tatCa?'Chưa có chủ đầu tư':'Phòng không có chủ đầu tư trong khối này')+'</small></td></tr>';
     var pPar=null;
     rr.forEach(function(r){
       var nhom=S.vt!=='TH'&&r.par&&gp[r.par].length>1,cls='',sttV=S.vt==='TH'?esc(r.a):'';
-      if(S.vt==='TH'){if(r.par&&r.par!==pPar){h+='<tr class="par"><td class="stt"></td><td class="nm">'+esc(r.par)+'</td>'+cells(sums(gp[r.par]),'')+'</tr>';pPar=r.par}if(!r.par)pPar=null}
+      if(S.vt==='TH'){if(r.par&&r.par!==pPar){var pm=/^(\d+)\.\s*(.*)$/.exec(r.par);h+='<tr class="par"><td class="stt">'+(pm?pm[1]:'')+'</td><td class="nm">'+esc(pm?pm[2]:r.par)+'</td>'+cells(sums(gp[r.par]),'')+'</tr>';pPar=r.par}if(!r.par)pPar=null;cls=r.par?'sub':'ind'}
       else{if(nhom&&r.par!==pPar){pPar=r.par;nTop++;nSub=0;h+='<tr class="par"><td class="stt">'+nTop+'</td><td class="nm">'+esc(r.par.replace(/^\d+\.\s*/,''))+'</td>'+cells(sums(gp[r.par]),'')+'</tr>'}
         if(!nhom)pPar=null;cls=nhom?'sub':'ind';sttV=nhom?nTop+'.'+(++nSub):(++nTop)}
       h+='<tr'+(cls?' class="'+cls+'"':'')+'><td class="stt">'+sttV+'</td><td class="nm">'+esc(r.b)+(S.data.tatCa?'<div class="pg">'+esc(r.p)+'</div>':'')+'</td>';
