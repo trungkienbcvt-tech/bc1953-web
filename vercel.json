@@ -1,5 +1,5 @@
 {
-  "functions": { "api/rpc.js": { "maxDuration": 30 } },
+  "functions": { "api/rpc.js": { "maxDuration": 30, "includeFiles": "lib/**" }, "api/setup.js": { "maxDuration": 60, "includeFiles": "{lib,seed}/**" } },
   "headers": [
     { "source": "/(.*)", "headers": [
       { "key": "X-Content-Type-Options", "value": "nosniff" },
