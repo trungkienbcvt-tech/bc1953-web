@@ -130,3 +130,10 @@ Dữ liệu dùng chung với ứng dụng `/tonghop/` (bảng `th_cdt` trong Su
 - Biến môi trường Vercel bắt buộc: `TONGHOP_KHOA` (trùng giá trị trong bảng `cv_khoa`). Tùy chọn: `TONGHOP_URL`, `TONGHOP_ANON`.
 - Phòng giao dịch / Nghiệp vụ 2 chỉ thấy và sửa dự án có `kbnn` = phòng mình (không đổi được phòng); Cán bộ tổng hợp xem/sửa/thêm tất cả.
 - Tên chủ đầu tư phải thuộc `lib/tenmau.json` (tên dòng chủ đầu tư trên mẫu báo cáo).
+
+## Nhiều báo cáo trên cùng hệ thống (BC 1953, BC đánh giá KPI…)
+Cây điều hướng bên trái chia theo báo cáo; mỗi báo cáo là một "module" độc lập, cùng dùng chung nền tảng:
+- **Dùng chung:** tài khoản/phân quyền, kỳ báo cáo, quy trình ký duyệt (lập biểu → KTT → trưởng phòng → tổng hợp), danh mục dự án / chủ đầu tư (tab "Dùng chung").
+- **Riêng mỗi báo cáo:** (1) cấu hình biểu nhập (cột, dòng, đơn vị tính), (2) **mẫu file THBC của báo cáo đó** (bộ đọc file riêng), (3) danh sách chỉ tiêu đối chiếu và khóa ghép dòng, (4) mục "Đối chiếu THBC" riêng ngay dưới báo cáo đó.
+- **Cách đối chiếu (dùng chung cho mọi báo cáo):** mỗi báo cáo cung cấp 2 hàm — `soWeb(kỳ, khóa)` lấy số từ biểu nhập và `soTHBC(kỳ, khóa)` đọc từ file THBC đã nạp; phần so sánh (dung sai, "Khớp"/số chênh, cảnh báo khi trình – KTT – phê duyệt, bắt buộc lý do) viết một lần dùng cho tất cả.
+- BC 1953 hiện dùng bảng `thbc_cdt` (đối chiếu theo lũy kế). BC KPI: khung đã tạo sẵn (mục "BC đánh giá KPI" trên cây), chờ biểu mẫu và mẫu THBC KPI.

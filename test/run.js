@@ -148,7 +148,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const h1 = await H(X.xuatBieu, [p20, 'B01', '2026-11-05', '', 'html', '']);
     assert(!/\n?<tr class="sec"/.test(h1) && !/<title>[^&]*B01/.test(h1), 'biểu PGD không có dòng khu vực / tên file ở đầu trang');
     assert(h1.includes('<div class="bn">Biểu 01-KBNN</div>')); assert(h1.includes('<colgroup>'));
-    assert(h1.indexOf('TỔNG CỘNG') < h1.indexOf('<tr class="row">') && !/TỔNG CỘNG CỦA PHÒNG/.test(h1), 'TỔNG CỘNG nằm trên cùng');
+    assert(h1.indexOf('TỔNG CỘNG') < h1.indexOf('<tr class="row') && !/TỔNG CỘNG CỦA PHÒNG/.test(h1), 'TỔNG CỘNG nằm trên cùng');
     const h4 = await H(X.xuatTinhTrang, [th, 'html', '']); assert(h4.includes('Biểu 04-KBNN') && h4.includes('NGƯỜI LẬP BIỂU'), 'biểu 04 có nhãn và chữ ký');
     assert((await X.xuatTinhTrang(th, 'xlsx', '')).b64.length > 1000);
     assert(require('../lib/common').TINH_TRANG.includes('Không phát sinh'));
