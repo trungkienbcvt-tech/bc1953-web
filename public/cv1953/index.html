@@ -1,3 +1,6 @@
+  var kp=0;(d.rows||[]).forEach(function(x){if(x.k==='row'&&x.s&&Object.keys(x.s).every(function(i){return x.s[i]==='Không phát sinh'||!x.s[i]||x.s[i]==='—'})&&Object.keys(x.s).some(function(i){return x.s[i]==='Không phát sinh'}))kp++});
+  h+='<div class="ovg" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0">'+ovTile('','Σ','Tổng chủ đầu tư',n)+ovTile('ok','✓','Đúng hạn',t.nd)+ovTile(t.nc?'warn':'','⏱','Gửi chậm',t.nc)+ovTile(t.nx?'bad':'ok','✗','Chưa gửi / chưa đầy đủ',t.nx)+ovTile('','○','Không phát sinh toàn bộ biểu',kp)+'</div>';
+  h+='<div class="btt"><input type="text" id="ttQ" placeholder="🔍 Tìm chủ đầu tư, xã, phường..." value="'+esc(S.ttQ||'')+'"></div>';
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -505,7 +508,7 @@ function drawBt(){$('main').innerHTML=btCard();bindTq();bindEx();btLoad()}
 /* ----- Tab Tình trạng gửi BC ----- */
 var TTN={dung:['Đúng hạn','dg'],cham:['Gửi chậm','cham'],chua:['Chưa gửi / chưa đầy đủ','chua'],khong:['—','x']};
 function ttLoad(){var d=S.ttd;if(S.ttBusy||!S.wf||(d&&d.ky===S.wf.ky))return;S.ttBusy=1;
-  run('tinhTrang',S.token,S.ky).then(function(r){S.ttd=r;S.ttF=r.tong.nx?'chua':'all'}).catch(function(){S.ttd={err:1,rows:[],ky:S.wf.ky,tong:{nd:0,nc:0,nx:0}}}).then(function(){S.ttBusy=0;if(S.tab==='tt')drawTt();else if(S.tab==='tq')drawTq()})}
+  run('tinhTrang',S.token,S.ky).then(function(r){S.ttd=r;S.ttF='all'}).catch(function(){S.ttd={err:1,rows:[],ky:S.wf.ky,tong:{nd:0,nc:0,nx:0}}}).then(function(){S.ttBusy=0;if(S.tab==='tt')drawTt();else if(S.tab==='tq')drawTq()})}
 function ttSt(v){if(!v||v==='—')return '<span class="ts x">—</span>';var m={'Đã gửi BC':['dg','✓ Đã gửi'],'Gửi BC chậm':['cham','⏱ Chậm'],'Chưa gửi BC':['chua','✗ Chưa gửi'],'Không phát sinh':['dg','✓ Không phát sinh'],'Chưa chọn':['chn','○ Chưa chọn']}[v]||['x',esc(v)];return '<span class="ts '+m[0]+'">'+m[1]+'</span>'}
 function ttBody(d){var f=S.ttF||'all',q=(S.ttQ||'').toLowerCase().trim(),h='',leaf=f!=='all'||q;
   var rows=d.rows.filter(function(x){if(leaf){if(x.k!=='row'||!x.cat||x.cat==='khong')return false;if(f!=='all'&&x.cat!==f)return false}
@@ -529,7 +532,7 @@ function drawTt(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null,f=S.ttF||'all
   h+='<div class="btsc"><table class="bt"><thead><tr><th>STT</th><th>Chủ đầu tư / đơn vị / xã, phường</th><th>Biểu 01</th><th>Biểu 02</th><th>Biểu 03 (21-25)</th><th>Biểu 03 (26-30)</th><th>Tình trạng</th><th style="text-align:left">Ghi chú</th></tr></thead><tbody id="ttTb">'+ttBody(d)+'</tbody></table></div></div>';
   $('main').innerHTML=h;bindEx();
   if($('ttQ'))$('ttQ').oninput=function(){S.ttQ=this.value;$('ttTb').innerHTML=ttBody(S.ttd)};
-  [].forEach.call($('main').querySelectorAll('[data-tf]'),function(b){b.onclick=function(){S.ttF=b.getAttribute('data-tf');drawTt()}})}
+}
 function ovTile(cls,ic,lab,val,sub,go){return '<div class="card ovt '+cls+'"'+(go?' data-go="'+go+'" style="cursor:pointer" title="Bấm để xem chi tiết"':'')+'><div class="ovi">'+ic+'</div><div><span>'+lab+'</span><b>'+val+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div></div>'}
 function ovLech(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null;if(!d||d.err)return ovTile('','⚖','Đối chiếu THBC','…','','bt');if(!d.co)return ovTile('','⚖','Đối chiếu THBC','Chưa có file THBC',S.vt==='TH'?'Vào tab Đối chiếu THBC để tải file':'','bt');var l=btLech(d);return ovTile(l.n?'bad':'ok','⚖','Lệch THBC',l.n+' <small style="font-size:13px;font-weight:500">/ '+(l.n+l.khop)+' CĐT</small>',l.n?l.thap+' thấp hơn · '+l.cao+' cao hơn (lũy kế)':'Khớp toàn bộ','bt')}
 var VC=['#a31d2f','#2563eb','#0d9488','#d97706'],SCOL=['#8b95a9','#2563eb','#0d9488','#dc2626','#16a34a','#d97706','#7c3aed'];
@@ -632,7 +635,7 @@ function bindTq(){
     if(a==='tra')hoi('<h3>Chuyển trả '+esc(p)+'</h3><p class="hint">Ghi rõ lý do để phòng sửa lại.</p>','Chuyển trả',true).then(function(v){if(!v)return;run('chuyenTra',S.token,p,v,S.ky).then(function(r){toast('Đã chuyển trả '+p);setWf(r)}).catch(function(e){toast(msg(e),7000)})})}})}
 
 /* ===== Bảng nhập ===== */
-var HDAN='<b>Cách điền:</b> nhập <b>số lũy kế giải ngân đến cuối tháng</b> vào các ô xanh nhạt, các cột khác tự cập nhật. Mỗi chủ đầu tư chọn <b>Tình trạng gửi BC</b> (không có số liệu thì chọn <b>Không phát sinh</b>). Cột <b>Ghi chú</b> nhập tự do.';
+var HDAN='<b>Cách điền:</b> nhập <b>số lũy kế giải ngân đến cuối tháng</b> vào các ô xanh nhạt, các cột khác tự cập nhật. Mỗi chủ đầu tư chọn <b>Tình trạng gửi BC</b> (không có số liệu thì chọn <b>Không phát sinh</b>).';
 function drawTable(id){
   var b=S.data.sheets.filter(function(x){return x.id===id})[0],m=$('main'),ro=!canEdit(),NC=b.cols.length+2;
   if(!b.rows.length&&!(b.secs&&b.secs.length)){m.innerHTML='<p class="hint">'+esc(S.data.pgd)+' không có chủ đầu tư nào trong biểu này.</p>';return}
