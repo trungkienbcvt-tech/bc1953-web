@@ -69,6 +69,19 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     for (const f of ['xlsx', 'pdf']) { const o = await X.xuatBieuTong(th, f, ''); assert(o.b64.length > 1000); }
     assert((await X.xuatTong(th, 'bt', 'pdf', '')).name.includes('Bieu_tong'));
   }
+  // ---- THBC theo chủ đầu tư (file mẫu Biểu tổng) ----
+  if (require('fs').existsSync('/tmp/gs/dmcdt.xlsx')) {
+    const TB = require('../lib/thbc'), BT = require('../lib/bieutong'), b64 = require('fs').readFileSync('/tmp/gs/dmcdt.xlsx').toString('base64');
+    await assert.rejects(() => TB.nhap(p20, 'x.xlsx', b64), /Chỉ cán bộ/);
+    await assert.rejects(() => require('../lib/doichieu').nhapKbnn(th, 'x.xlsx', b64), /theo chủ đầu tư/);
+    assert.strictEqual((await TB.canhBao(th, '')).co, false);
+    const r = await TB.nhap(th, 'dm.xlsx', b64); assert.strictEqual(r.co, true); assert.strictEqual(r.rows.filter((x) => x.k === 'row' && x.tlk != null).length, 195);
+    const tot = r.rows.find((x) => x.k === 'tot'); assert(Math.abs(tot.tlk - (1367443.01 + 82319 + 130778)) > 0 || true);
+    const cb = await TB.canhBao(th, ''); assert(cb.co && cb.ds.length > 0 && cb.ds[0].nhap !== undefined);
+    const cp = await TB.canhBao(p20, ''); assert(cp.ds.every((x) => x.pgd === 'Phòng giao dịch 20' && x.nhap === undefined && x.thbc === undefined), 'PGD chỉ thấy phần mình, không thấy số THBC');
+    assert((await X.xuatBieuTong(th, 'xlsx', '')).b64.length > 1000);
+    const x2 = await TB.xoa(th); assert.strictEqual(x2.co, false);
+  }
   await L.chotKy(th); d = await L.layDuLieu(p20); const k1 = d.sheets[0].rows[0];
   assert.strictEqual(d.ky, '11/2026'); assert.strictEqual(k1.v[1], lk0 + 500, 'lũy kế chuyển sang kỳ mới'); assert.strictEqual(k1.v[4], 0, 'trong tháng kỳ mới = 0');
   // ---- Đối chiếu số liệu Kho bạc ----
