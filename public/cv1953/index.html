@@ -437,7 +437,7 @@ function hanTxt(wf,done){return '<span class="hint" style="margin:0">Hạn PGD g
 function kyBar(wf){return '<div class="kybar"><span>📅 Kỳ báo cáo <b>tháng '+esc(wf.ky)+'</b>'+'</span>'+(S.vt==='TH'?'<button id="bTron" class="mini">Làm tròn số liệu về triệu đồng</button><button id="bChot" class="mini">⏭ Chốt kỳ, sang tháng sau</button>':'')+'</div>'}
 function stepper(x){
   var k=x.ky||{},tt=x.tt,nv=x.pgd==='Phòng Nghiệp vụ 2',thn=['Tổng hợp đã tiếp nhận','Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(tt)>=0,tr=['Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(tt)>=0,
-  st=(nv?[['Lập biểu trình lãnh đạo',k.LAP],['Lãnh đạo phòng phê duyệt',k.TP]]:[['Lập biểu trình KTT',k.LAP],['Kế toán trưởng trình lãnh đạo',k.KTT],['Trưởng phòng phê duyệt',k.TP]]).,nk=nv?2:3,
+  st=(nv?[['Lập biểu trình lãnh đạo',k.LAP],['Lãnh đạo phòng phê duyệt',k.TP]]:[['Lập biểu trình KTT',k.LAP],['Kế toán trưởng trình lãnh đạo',k.KTT],['Trưởng phòng phê duyệt',k.TP]]),nk=nv?2:3,
   cur=-1;st.forEach(function(a,i){if(!a[1]&&cur<0)cur=i});
   return '<div class="card" style="padding:10px 14px;margin-top:12px"><h3 style="font-size:15px;margin:0 0 6px">🧭 Tiến trình ký duyệt</h3><div style="display:flex;flex-wrap:wrap;gap:8px">'+st.map(function(a,i){var d=!!a[1];
     return '<div style="flex:1;min-width:150px;padding:8px 10px;border-radius:8px;border:1px solid '+(d?'#9bd3ab':(i===cur?'#f1c27a':'var(--line)'))+';background:'+(d?'#eefaf1':(i===cur?'#fff7e8':'#fafafa'))+'"><b style="font-size:12.5px">'+(d?'✔ ':(i===cur?'⏳ ':'○ '))+a[0]+(d&&i<nk?' <span style="color:#15803d">(đã ký)</span>':'')+'</b>'+(d&&(a[1].ten||a[1].luc)?'<br><small>'+esc(a[1].ten||'')+(a[1].luc?' · '+a[1].luc:'')+'</small>':'')+'</div>'}).join('')+'</div></div>'}

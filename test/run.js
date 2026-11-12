@@ -173,5 +173,10 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert((await M.dmXuat(th, {})).b64.length > 300);
     M.api.goi = null; delete process.env.TONGHOP_KHOA; await assert.rejects(() => M.dmDs(th, {}, 0), /TONGHOP_KHOA/);
   }
+  {   // giao diện: script nhúng trong index.html phải đúng cú pháp (lỗi cú pháp làm hỏng cả trang, kể cả đăng nhập)
+    const html = require('fs').readFileSync(require('path').join(__dirname, '..', 'public', 'cv1953', 'index.html'), 'utf8');
+    const m = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].pop();
+    assert(m, 'không thấy script'); new (require('vm').Script)(m[1]);
+  }
   console.log('Tất cả kiểm thử đạt (' + (Date.now() - t0) + ' ms).');
 })().catch((e) => { console.error('KIỂM THỬ LỖI:', e); process.exit(1); });
