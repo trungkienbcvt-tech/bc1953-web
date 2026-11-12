@@ -192,6 +192,7 @@ td.a{text-align:right}td.a.glk{font-style:normal;font-weight:700;color:#1d3566;b
 .hb .ht{position:relative;height:14px;background:#f6ebed;border-radius:7px;overflow:hidden}.hb .ht i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#d4586a,#a31d2f);border-radius:7px}.hb .ht i.b2{background:#5c0f1b;top:4px;bottom:4px}.hb b{text-align:right;font-variant-numeric:tabular-nums}
 .expb{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 10px}.expb label{margin:0;font-size:13px;display:flex;align-items:center;gap:6px}.expb input{width:120px;padding:6px 9px}
 .ts{display:inline-block;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:600;white-space:nowrap}.ts.dg{background:#dcfce7;color:#15803d}.ts.cham{background:#fff1d6;color:#b45309}.ts.chua{background:#fee2e2;color:#b91c1c}.ts.chn{background:#eceff5;color:#5b6577}.ts.x{color:var(--mut);background:none;font-weight:400}
+.ucr{margin:6px 0 12px}.uch{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}.ucb{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#f1e6e8}.ucb i{display:block}.ucl{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:4px}
 </style>
 </head>
 <body>
@@ -305,17 +306,17 @@ var BTAB=['b01','b02','b03a','b03b'];
 function drawTabs(){
   var h='<button data-t="tq">'+(S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan')+'</button>';
   BTAB.forEach(function(id){h+='<button data-t="'+id+'">'+esc(BN[id])+'</button>'});
-  h+='<button data-t="tt">📋 Tình trạng gửi BC</button><button data-t="bt">📑 Biểu tổng CĐT</button>';
+  h+='<button data-t="tt">📋 BC tình trạng</button><button data-t="bt">⚖ Đối chiếu THBC</button>';
   if(S.vt==='TH')h+='<button data-t="qt">🔄 Quy trình &amp; hạn nộp</button>';else if(S.vt==='NV2')h+='<button data-t="qt">📥 Hộp tiếp nhận</button>';
-  h+='<button data-t="in">🖨 In &amp; xuất</button>';$('tabs').innerHTML=h;
+  $('tabs').innerHTML=h;
   [].forEach.call($('tabs').children,function(b){b.onclick=function(){show(b.getAttribute('data-t'))}});
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
 function show(t){S.tab=t;[].forEach.call($('tabs').children,function(b){b.className=b.getAttribute('data-t')===t?'on':''});
-  var isB=BTAB.indexOf(t)>=0,needData=isB||t==='in';
+  var isB=BTAB.indexOf(t)>=0,needData=isB;
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   $('pgdBar').style.display=(isV()&&isB)?'flex':'none';if(isV())$('xemSel').value=S.xem;
-  if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='tt')drawTt();else if(t==='in')drawIn();else{drawTable(t);bindEx()}
+  if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
   $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
 var NAMEB={b01:'B01',b02:'B02',b03a:'B03(21-25)',b03b:'B03(26-30)'};
@@ -391,7 +392,7 @@ function bindDc(){
     fr.readAsArrayBuffer(f);inp.value=''};
   if($('dcXoa'))$('dcXoa').onclick=function(){hoi('<h3>Xóa số liệu THBC?</h3><p class="hint">Các cảnh báo so sánh sẽ biến mất cho đến khi tải file mới.</p>','Xóa').then(function(v){if(!v)return;run('xoaKbnn',S.token).then(function(d){S.dc=d;toast('Đã xóa.');drawTq()}).catch(function(e){toast(msg(e),8000)})})}}
 function drawTq(){
-  var render=function(){var wf=S.wf,t=S.tt;if(!wf||!t)return;S.off=wf.nowMs-Date.now();$('main').innerHTML=(S.tab==='qt'?drawQt(wf,t):(S.vt==='PGD'?drawPgd(wf,t):drawViewer(wf,t)));bindTq();bindDc();tick();dcLoad();btLoad()};
+  var render=function(){var wf=S.wf,t=S.tt;if(!wf||!t)return;S.off=wf.nowMs-Date.now();$('main').innerHTML=(S.tab==='qt'?drawQt(wf,t):(S.vt==='PGD'?drawPgd(wf,t):drawViewer(wf,t)));bindTq();bindDc();tick();dcLoad();btLoad();ttLoad();ttLoad()};
   render();
   if(Date.now()-(S.tqAt||0)<25000&&!S.stale)return;S.stale=false;
   Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();if(S.tab==='tq'||S.tab==='qt')render()}).catch(function(e){toast(msg(e),5000)});
@@ -421,10 +422,10 @@ function drawPgd(wf,t){
   h+=hero(wf,mid,dl('Hạn gửi báo cáo',wf.hanHienThi.pgd,wf.hanMs.pgd,!chua,(x.gui?'Gửi lúc '+x.gui:'')+(x.gui?(x.cham?' · <span class="lt">gửi chậm</span>':' · đúng hạn'):'')));
   var x4=tong4(t),sum=cdtTong(t);
   h+='<div class="ovg">'+ovTile('','💰','Lũy kế giải ngân',fmt(r2(x4.lk)),'triệu đồng')+ovTile('','📆','Trong tháng '+esc(wf.ky),fmt(r2(x4.th)),'triệu đồng')+ovTile('','🏗','Số dòng chủ đầu tư',sum.n,'trong 4 biểu')+ovLech()+'</div>';
-  h+='<div class="chg">'+chartCard('Tình trạng gửi BC của chủ đầu tư',donut([{v:sum.dg,c:COL.dg,l:'Đã gửi'},{v:sum.cham,c:COL.cham,l:'Gửi chậm'},{v:sum.chua,c:COL.chua,l:'Chưa gửi'},{v:sum.trong,c:COL.trong,l:'Chưa chọn'}],sum.n?Math.round((sum.dg+sum.cham)*100/sum.n)+'%':'–','đã gửi'))+
-   chartCard('Cơ cấu theo nguồn vốn',donut(ids.map(function(i,ix){return{v:Math.max((p.b[i]||{}).luyke||0,0),c:VC[ix],l:BN[i]}}),fmtK(x4.lk),'lũy kế'))+
+  h+='<div class="chg">'+unitCard()+
+   chartCard('Cơ cấu theo nguồn vốn',donut(ids.map(function(i,ix){return{v:Math.max((p.b[i]||{}).luyke||0,0),c:VC[ix],l:BN[i]}}),fmt(Math.round(x4.lk/1e3)),'tỷ đồng'))+
    chartCard('Chủ đầu tư giải ngân nhiều nhất',hbars(topCdt(p.cd,8),'lk'))+'</div>'+
-   '<p class="hint" style="margin:0">Cập nhật lần cuối: <b>'+(p.last||'chưa có')+'</b> · Sau khi gửi, số liệu bị khóa. Xem chi tiết ở các tab biểu, <b>Tình trạng gửi BC</b> và <b>Biểu tổng CĐT</b>.</p>';
+   '<p class="hint" style="margin:0">Cập nhật lần cuối: <b>'+(p.last||'chưa có')+'</b> · Sau khi gửi, số liệu bị khóa. Xem chi tiết ở các tab biểu, <b>BC tình trạng</b> và <b>Đối chiếu THBC</b>.</p>';
   return h}
 function actions(x){var h='';
   if(S.vt==='NV2'){
@@ -454,7 +455,7 @@ function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=d.
       (so?(x.n!=null?'<td>'+btD(x.ttl,x.dlk)+'</td><td>'+btD(x.ttt,x.dth)+'</td>':'<td colspan="2"></td>'):'')+'</tr>'});
   return h}
 function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=S.btF||'all';
-  var h='<div class="card btc"><div class="bth"><div><h3>📑 Biểu tổng theo danh mục chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Cộng 4 biểu con (01, 02, 03 21-25, 03 26-30) · triệu đồng · ngoài BC 1953, dùng đối chiếu THBC'+(!full?' · chỉ phần của đơn vị':'')+'</p></div>'+
+  var h='<div class="card btc"><div class="bth"><div><h3>📑 Đối chiếu THBC · biểu tổng theo danh mục chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Cộng 4 biểu con (01, 02, 03 21-25, 03 26-30) · triệu đồng · ngoài BC 1953, dùng đối chiếu THBC'+(!full?' · chỉ phần của đơn vị':'')+'</p></div>'+
     '<div class="btb">'+(full?'<input type="file" id="btFile" accept=".xlsx" style="display:none"><button class="mini pri" id="btUp">📂 '+(d&&d.co?'Tải THBC mới':'Tải file THBC')+'</button>'+(d&&d.co?'<button class="mini" id="btXoa">Xóa THBC</button>':''):'')+'</div></div>'+expBar('bt');
   if(!d)return h+'<p class="hint" style="padding:18px 0;text-align:center">Đang tính biểu tổng...</p></div>';
   if(d.err)return h+'<p class="hint">Không tải được biểu tổng. Thử tải lại trang.</p></div>';
@@ -471,7 +472,7 @@ function drawBt(){$('main').innerHTML=btCard();bindTq();bindEx();btLoad()}
 /* ----- Tab Tình trạng gửi BC ----- */
 var TTN={dung:['Đúng hạn','dg'],cham:['Gửi chậm','cham'],chua:['Chưa gửi / chưa đầy đủ','chua'],khong:['—','x']};
 function ttLoad(){var d=S.ttd;if(S.ttBusy||!S.wf||(d&&d.ky===S.wf.ky))return;S.ttBusy=1;
-  run('tinhTrang',S.token,S.ky).then(function(r){S.ttd=r;S.ttF=r.tong.nx?'chua':'all'}).catch(function(){S.ttd={err:1,rows:[],ky:S.wf.ky,tong:{nd:0,nc:0,nx:0}}}).then(function(){S.ttBusy=0;if(S.tab==='tt')drawTt()})}
+  run('tinhTrang',S.token,S.ky).then(function(r){S.ttd=r;S.ttF=r.tong.nx?'chua':'all'}).catch(function(){S.ttd={err:1,rows:[],ky:S.wf.ky,tong:{nd:0,nc:0,nx:0}}}).then(function(){S.ttBusy=0;if(S.tab==='tt')drawTt();else if(S.tab==='tq')drawTq()})}
 function ttSt(v){if(!v||v==='—')return '<span class="ts x">—</span>';var m={'Đã gửi BC':['dg','✓ Đã gửi'],'Gửi BC chậm':['cham','⏱ Chậm'],'Chưa gửi BC':['chua','✗ Chưa gửi'],'Chưa chọn':['chn','○ Chưa chọn']}[v]||['x',esc(v)];return '<span class="ts '+m[0]+'">'+m[1]+'</span>'}
 function ttBody(d){var f=S.ttF||'all',q=(S.ttQ||'').toLowerCase().trim(),h='',leaf=f!=='all'||q;
   var rows=d.rows.filter(function(x){if(leaf){if(x.k!=='row'||!x.cat||x.cat==='khong')return false;if(f!=='all'&&x.cat!==f)return false}
@@ -485,7 +486,7 @@ function ttBody(d){var f=S.ttF||'all',q=(S.ttQ||'').toLowerCase().trim(),h='',le
      '<td style="font-size:12.5px;color:var(--mut)">'+esc(x.gc||'')+'</td></tr>'});
   return h}
 function drawTt(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null,f=S.ttF||'all';
-  var h='<div class="card btc"><div class="bth"><div><h3>📋 Tình trạng gửi báo cáo của chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Theo từng biểu, xếp đúng danh mục chủ đầu tư · tình trạng do đơn vị chọn ở các biểu 01, 02, 03</p></div></div>'+expBar('tt');
+  var h='<div class="card btc"><div class="bth"><div><h3>📋 BC tình trạng gửi báo cáo của chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Theo từng biểu, xếp đúng danh mục chủ đầu tư · tình trạng do đơn vị chọn ở các biểu 01, 02, 03</p></div></div>'+expBar('tt');
   if(!d){return $('main').innerHTML=h+'<p class="hint" style="padding:18px 0;text-align:center">Đang tính...</p></div>',ttLoad(),void 0}
   if(d.err){$('main').innerHTML=h+'<p class="hint">Không tải được. Thử tải lại trang.</p></div>';return}
   var t=d.tong,n=t.nd+t.nc+t.nx;
@@ -495,8 +496,8 @@ function drawTt(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null,f=S.ttF||'all
   $('main').innerHTML=h;bindEx();
   if($('ttQ'))$('ttQ').oninput=function(){S.ttQ=this.value;$('ttTb').innerHTML=ttBody(S.ttd)};
   [].forEach.call($('main').querySelectorAll('[data-tf]'),function(b){b.onclick=function(){S.ttF=b.getAttribute('data-tf');drawTt()}})}
-function ovTile(cls,ic,lab,val,sub){return '<div class="card ovt '+cls+'"><div class="ovi">'+ic+'</div><div><span>'+lab+'</span><b>'+val+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div></div>'}
-function ovLech(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null;if(!d||d.err)return ovTile('','⚖','Đối chiếu THBC','…','');if(!d.co)return ovTile('','⚖','Đối chiếu THBC','Chưa có file','');var l=btLech(d);return ovTile(l.n?'bad':'ok','⚖','Lệch THBC',l.n+' <small style="font-size:13px;font-weight:500">/ '+(l.n+l.khop)+' CĐT</small>',l.n?l.thap+' thấp hơn · '+l.cao+' cao hơn (lũy kế)':'Khớp toàn bộ')}
+function ovTile(cls,ic,lab,val,sub,go){return '<div class="card ovt '+cls+'"'+(go?' data-go="'+go+'" style="cursor:pointer" title="Bấm để xem chi tiết"':'')+'><div class="ovi">'+ic+'</div><div><span>'+lab+'</span><b>'+val+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div></div>'}
+function ovLech(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null;if(!d||d.err)return ovTile('','⚖','Đối chiếu THBC','…','','bt');if(!d.co)return ovTile('','⚖','Đối chiếu THBC','Chưa có file THBC',S.vt==='TH'?'Vào tab Đối chiếu THBC để tải file':'','bt');var l=btLech(d);return ovTile(l.n?'bad':'ok','⚖','Lệch THBC',l.n+' <small style="font-size:13px;font-weight:500">/ '+(l.n+l.khop)+' CĐT</small>',l.n?l.thap+' thấp hơn · '+l.cao+' cao hơn (lũy kế)':'Khớp toàn bộ','bt')}
 var VC=['#a31d2f','#2563eb','#0d9488','#d97706'],SCOL=['#8b95a9','#2563eb','#0d9488','#dc2626','#16a34a','#d97706','#7c3aed'];
 function fmtK(v){return fmt(Math.round(v/1e3))+' tỷ'}
 function cdtTong(t){var o={n:0,dg:0,cham:0,chua:0,trong:0};t.list.forEach(function(p){Object.keys(p.b).forEach(function(i){var b=p.b[i];o.n+=b.n;o.dg+=b.dg;o.cham+=b.cham;o.chua+=b.chua;o.trong+=b.trong})});return o}
@@ -504,6 +505,9 @@ function donut(parts,center,sub){var R=50,Cc=2*Math.PI*R,tot=parts.reduce(functi
   parts.forEach(function(x){if(x.v<=0||!tot)return;var len=Cc*x.v/tot;sv+='<circle cx="70" cy="70" r="'+R+'" fill="none" stroke="'+x.c+'" stroke-width="20" stroke-dasharray="'+len.toFixed(2)+' '+(Cc-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 70 70)"><title>'+esc(x.l)+': '+x.v+'</title></circle>';off+=len});
   sv+='<text x="70" y="68" text-anchor="middle" class="dn1">'+esc(center)+'</text><text x="70" y="86" text-anchor="middle" class="dn2">'+esc(sub)+'</text></svg>';
   return '<div class="dnw">'+sv+'<ul class="dnl">'+parts.map(function(x){return '<li><i style="background:'+x.c+'"></i>'+esc(x.l)+' <b>'+(Math.round(x.v*10)/10).toLocaleString('vi-VN')+'</b></li>'}).join('')+'</ul></div>'}
+function unitCard(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null;if(!d)return chartCard('Số đơn vị đã gửi báo cáo','<p class="hint">Đang tính...</p>');if(d.err||!d.lon)return chartCard('Số đơn vị đã gửi báo cáo','<p class="hint">Không tải được.</p>');
+  function row(t,g){if(!g.n)return '';var ok=g.dung+g.cham;return '<div class="ucr"><div class="uch"><span>'+t+'</span><b>'+ok+' / '+g.n+'</b></div><div class="ucb"><i style="width:'+g.dung*100/g.n+'%;background:'+COL.dg+'"></i><i style="width:'+g.cham*100/g.n+'%;background:'+COL.cham+'"></i><i style="width:'+g.chua*100/g.n+'%;background:'+COL.chua+'"></i></div><div class="ucl"><span style="color:'+COL.dg+'">● '+g.dung+' đúng hạn</span><span style="color:'+COL.cham+'">● '+g.cham+' gửi chậm</span><span style="color:'+COL.chua+'">● '+g.chua+' chưa gửi / chưa đủ</span></div></div>'}
+  return '<div class="card chc" data-go="tt" style="cursor:pointer" title="Bấm để xem chi tiết"><h4>Số đơn vị đã gửi báo cáo</h4>'+row('Chủ đầu tư cấp tỉnh',d.lon.tinh)+row('Xã, phường',d.lon.xa)+'<p class="hint" style="margin:4px 0 0">Đã gửi = đủ các biểu đơn vị có số liệu (01, 02, 03)</p></div>'}
 function chartCard(title,body){return '<div class="card chc"><h4>'+esc(title)+'</h4>'+body+'</div>'}
 function topCdt(cd,n){return (cd||[]).slice().sort(function(a,b){return b.lk-a.lk}).slice(0,n).map(function(c){return{l:c.t,lk:c.lk,th:c.th}})}
 function hbars(items,key,key2){var mx=Math.max.apply(null,items.map(function(x){return x[key]}).concat([1]));if(!items.length)return '<p class="hint">Chưa có dữ liệu.</p>';
@@ -519,8 +523,8 @@ function drawViewer(wf,t){
   h+='<div class="ovg">'+ovTile('','💰','Tổng lũy kế giải ngân',fmt(r2(x4.lk)),'cộng 4 biểu · triệu đồng')+ovTile('','📆','Trong tháng '+esc(wf.ky),fmt(r2(x4.th)),'triệu đồng')+ovTile('','🏢','Đơn vị đã nộp tổng hợp',xong+' <small style="font-size:13px;font-weight:500">/ '+wf.list.length+'</small>','')+ovLech()+'</div>';
   var pg=t.list.map(function(p){var lk=0,th=0;Object.keys(p.b).forEach(function(i){lk+=p.b[i].luyke;th+=p.b[i].thang});return{l:p.pgd.replace('Phòng giao dịch','PGD').replace('Phòng Nghiệp vụ 2','NV2'),lk:lk,th:th}}).sort(function(a,b){return b.lk-a.lk});
   h+='<div class="chg">'+chartCard('Tiến độ nộp báo cáo của các phòng',donut(parts,xong+'/'+wf.list.length,'đã nộp tổng hợp'))+
-    chartCard('Tình trạng gửi BC của chủ đầu tư',donut([{v:sum.dg,c:COL.dg,l:'Đã gửi'},{v:sum.cham,c:COL.cham,l:'Gửi chậm'},{v:sum.chua,c:COL.chua,l:'Chưa gửi'},{v:sum.trong,c:COL.trong,l:'Chưa chọn'}],sum.n?Math.round((sum.dg+sum.cham)*100/sum.n)+'%':'–','đã gửi'))+
-    chartCard('Cơ cấu theo nguồn vốn',donut(ids.map(function(i,ix){var v=0;t.list.forEach(function(p){v+=Math.max((p.b[i]||{}).luyke||0,0)});return{v:v,c:VC[ix],l:BN[i]}}),fmtK(x4.lk),'lũy kế'))+'</div>';
+    unitCard()+
+    chartCard('Cơ cấu theo nguồn vốn',donut(ids.map(function(i,ix){var v=0;t.list.forEach(function(p){v+=Math.max((p.b[i]||{}).luyke||0,0)});return{v:v,c:VC[ix],l:BN[i]}}),fmt(Math.round(x4.lk/1e3)),'tỷ đồng'))+'</div>';
   h+='<div class="card chc" style="margin-bottom:14px"><h4>Lũy kế giải ngân theo phòng <small style="font-weight:400;color:var(--mut)">· thanh đậm: trong tháng · triệu đồng</small></h4>'+hbars(pg,'lk','th')+'</div>';
   return h}
 function drawQt(wf,t){

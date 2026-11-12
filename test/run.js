@@ -21,6 +21,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const TT = require('../lib/tinhtrang'), r = await TT.tinh(th, ''), lf = r.rows.filter((x) => x.k === 'row' && !x.thua);
     assert.strictEqual(lf.length, 195); assert.strictEqual(r.rows.find((x) => x.k === 'tot').nd + r.rows.find((x) => x.k === 'tot').nc + r.rows.find((x) => x.k === 'tot').nx, lf.filter((x) => x.cat !== 'khong').length);
     assert(lf.every((x) => ['dung', 'cham', 'chua', 'khong'].includes(x.cat)));
+    assert.strictEqual(r.lon.tinh.n, 25); assert.strictEqual(r.lon.xa.n, 124); assert.strictEqual(r.lon.tinh.dung + r.lon.tinh.cham + r.lon.tinh.chua, 25);
     const rp = await TT.tinh(p20, ''); assert(rp.rows.filter((x) => x.k === 'row').every((x) => x.c === 'Phòng giao dịch 20') && !rp.full);
     for (const f of ['xlsx', 'pdf']) assert((await X.xuatTinhTrang(th, f, '')).b64.length > 1000);
     assert((await X.xuatTinhTrang(p20, 'pdf', '')).b64.length > 1000); assert((await X.xuatBieuTong(p20, 'pdf', '')).b64.length > 1000);
