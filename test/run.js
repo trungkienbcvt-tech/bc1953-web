@@ -106,7 +106,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert(Math.abs(tot.lk - s4) < 0.01 && Math.abs(tot.th - t4) < 0.01, 'tổng biểu tổng = tổng 4 biểu con');
     const khoi = r.rows.filter((x) => x.k === 'khoi'); assert(Math.abs(khoi.reduce((a, x) => a + x.lk, 0) - tot.lk) < 0.01);
     const rp = await BT.bieuTong(p20, ''); assert.strictEqual(rp.full, false); assert(rp.rows.filter((x) => x.k === 'row').every((x) => x.c === 'Phòng giao dịch 20'), 'PGD chỉ thấy dòng của mình');
-    assert(rp.rows.every((x) => x.tlk === undefined), 'PGD không thấy số THBC'); assert(rp.rows.find((x) => x.k === 'tot').lk > 0 && rp.rows.find((x) => x.k === 'tot').lk < tot.lk);
+    assert(rp.rows.some((x) => x.tlk !== undefined), 'PGD thấy số THBC và chênh lệch của phần mình'); assert(rp.rows.find((x) => x.k === 'tot').lk > 0 && rp.rows.find((x) => x.k === 'tot').lk < tot.lk);
     for (const f of ['xlsx', 'pdf']) { const o = await X.xuatBieuTong(th, f, ''); assert(o.b64.length > 1000); }
     assert((await X.xuatTong(th, 'bt', 'pdf', '')).name.includes('Bieu_tong'));
   }
@@ -146,6 +146,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   {
     const H = async (f, a) => Buffer.from((await f(...a)).b64, 'base64').toString('utf8');
     const h1 = await H(X.xuatBieu, [p20, 'B01', '2026-11-05', '', 'html', '']);
+    assert(!/\n?<tr class="sec"/.test(h1) && !/<title>[^&]*B01/.test(h1), 'biểu PGD không có dòng khu vực / tên file ở đầu trang');
     assert(h1.includes('<div class="bn">Biểu 01-KBNN</div>')); assert(h1.includes('<colgroup>'));
     assert(h1.indexOf('TỔNG CỘNG') < h1.indexOf('<tr class="row">') && !/TỔNG CỘNG CỦA PHÒNG/.test(h1), 'TỔNG CỘNG nằm trên cùng');
     const h4 = await H(X.xuatTinhTrang, [th, 'html', '']); assert(h4.includes('Biểu số 04') && h4.includes('NGƯỜI LẬP BIỂU'), 'biểu 04 có nhãn và chữ ký');

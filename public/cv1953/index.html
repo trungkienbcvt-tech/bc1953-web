@@ -474,7 +474,7 @@ function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=
   else if(full)h+='<div class="btw nf"><b>Chưa có file THBC kỳ '+esc(d.ky)+'</b><span>Tải file THBC (cùng mẫu biểu tổng này) để hệ thống tự cảnh báo chủ đầu tư thấp hơn / cao hơn.</span></div>';
   if(d.soThua)h+='<div class="rsn" style="background:#fff7e0;border-color:#f1deaa;color:#7a5200;margin:8px 0">Có <b>'+d.soThua+'</b> dòng chưa có trong danh mục (xếp cuối biểu); tổng vẫn bằng tổng 4 biểu con.</div>';
   h+='<div class="btt"><input type="text" id="btQ" placeholder="🔍 Tìm chủ đầu tư, xã, phường..." value="'+esc(S.btQ||'')+'">'+(d.co?[['lech','Chỉ dòng lệch'],['thap','Lũy kế thấp hơn'],['cao','Lũy kế cao hơn']].map(function(x){return'<button class="pill'+(f===x[0]?' on':'')+'" data-bf="'+x[0]+'">'+x[1]+'</button>'}).join(''):'')+'<button class="pill'+(f==='all'?' on':'')+'" data-bf="all">Tất cả (theo danh mục)</button></div>';
-  var full2=d.full&&d.co,so=d.co&&!d.full;
+  var full2=!!d.co,so=false;
   h+='<div class="btsc"><table class="bt"><thead><tr><th>STT</th><th>Chủ đầu tư / đơn vị / xã, phường</th><th>Lũy kế</th><th>Trong tháng</th>'+(full2?'<th>THBC lũy kế</th><th>Chênh</th><th>THBC tháng</th><th>Chênh</th>':'')+(so?'<th>Chênh lũy kế</th><th>Chênh tháng</th>':'')+'</tr></thead><tbody id="btTb">'+btBody(d)+'</tbody></table></div>';
   if(d.co)h+='<p class="hint" style="margin:6px 0 0">Chênh = số web − THBC (triệu đồng). <span class="dck thap">−</span> thấp hơn THBC · <span class="dck cao">+</span> cao hơn THBC · lệch dưới 1 triệu coi là khớp.</p>';
   return h+'</div>'}
@@ -624,15 +624,16 @@ function drawTable(id){
   var cells=function(a,cls){return a.map(function(x,j){return'<td class="ps '+cls+' '+grp(b.cols[j])+'">'+(x===null?'':fmt(x))+'</td>'}).join('')};
   var gp={},gs={};b.rows.forEach(function(r){if(r.par)(gp[r.par]=gp[r.par]||[]).push(r);(gs[r.sec]=gs[r.sec]||[]).push(r)});
   var secList=(b.secs&&b.secs.length)?b.secs.slice():[];b.rows.forEach(function(r){if(secList.indexOf(r.sec)<0)secList.push(r.sec)});
+  var stt=0;
   secList.forEach(function(sec){
     var rr=b.rows.filter(function(r){return r.sec===sec});
-    if(sec)h+='<tr class="sec"><td class="stt"></td><td class="nm"><span class="sx">'+esc(sec)+'</span></td>'+cells(sums(rr),'')+'</tr>';
-    if(!rr.length)h+='<tr class="emp"><td class="stt"></td><td class="nm" colspan="'+(NC-1)+'"><small>'+(S.data.tatCa?'Chưa có chủ đầu tư':'Phòng không có chủ đầu tư trong khối này')+'</small></td></tr>';
+    if(sec&&S.vt==='TH')h+='<tr class="sec"><td class="stt"></td><td class="nm"><span class="sx">'+esc(sec)+'</span></td>'+cells(sums(rr),'')+'</tr>';
+    if(!rr.length&&S.vt==='TH')h+='<tr class="emp"><td class="stt"></td><td class="nm" colspan="'+(NC-1)+'"><small>'+(S.data.tatCa?'Chưa có chủ đầu tư':'Phòng không có chủ đầu tư trong khối này')+'</small></td></tr>';
     var pPar=null;
     rr.forEach(function(r){
-      if(r.par&&r.par!==pPar){h+='<tr class="par"><td class="stt"></td><td class="nm">'+esc(r.par)+'</td>'+cells(sums(gp[r.par]),'')+'</tr>';pPar=r.par}
+      if(r.par&&r.par!==pPar){if(S.vt==='TH'||gp[r.par].length>1)h+='<tr class="par"><td class="stt"></td><td class="nm">'+esc(r.par)+'</td>'+cells(sums(gp[r.par]),'')+'</tr>';pPar=r.par}
       if(!r.par)pPar=null;
-      h+='<tr><td class="stt">'+esc(r.a)+'</td><td class="nm">'+esc(r.b)+(S.data.tatCa?'<div class="pg">'+esc(r.p)+'</div>':'')+'</td>';
+      h+='<tr><td class="stt">'+(S.vt==='TH'?esc(r.a):(++stt))+'</td><td class="nm">'+esc(r.b)+(S.data.tatCa?'<div class="pg">'+esc(r.p)+'</div>':'')+'</td>';
       b.cols.forEach(function(c,j){var v=r.v[j],key=b.id+'|'+r.r+'|'+c.c,g=grp(c),gb=(j===0||grp(b.cols[j-1])!==g)?' gb':'',cl=(g+gb).trim();
         if(c.t==='t'||c.t==='a'){h+='<td class="'+(c.t==='a'?'a ':'t ')+(Number(v)<0?'neg ':'')+cl+'"'+(c.t==='a'?' title="Tự tính = lũy kế − lũy kế tháng trước"':'')+'>'+fmt(v)+'</td>';return}
         var val=S.dirty[key]!==undefined?S.dirty[key].v:v,dis=ro?' disabled':'';
