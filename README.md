@@ -118,3 +118,9 @@ Tài khoản được tự tạo khi chạy (không cần nạp lại dữ liệ
 `PGD17 - Người lập biểu`, `PGD17 - Kế toán trưởng`, `PGD17 - Trưởng phòng`, `Huy (NV2 - PGD 17)` (chỉ thấy PGD 17).
 Tài khoản cũ "Phòng giao dịch 17" bị ẩn khỏi danh sách đăng nhập. Mỗi người tự nhập họ tên ở tab *In & xuất*;
 biểu in/xuất của PGD 17 hiện "(đã ký)" dưới từng chức danh đã ký trong kỳ.
+
+## Quy trình ký duyệt (áp dụng cho cả 12 phòng)
+- PGD 17–27: Người lập biểu → Kế toán trưởng → Trưởng phòng phê duyệt → gửi thẳng Tổng hợp.
+- Phòng Nghiệp vụ 2: Người lập biểu → Lãnh đạo phòng phê duyệt → gửi thẳng Tổng hợp.
+- Tổng hợp toàn tỉnh: Chuyên viên tổng hợp (tài khoản "Tổng hợp toàn tỉnh") tiếp nhận, đối chiếu, trình → "Trưởng phòng Tổng hợp" phê duyệt. Có thể chuyển trả kèm lý do ở bất kỳ bước nào của Tổng hợp.
+- Tài khoản theo chức vụ được tự tạo khi khởi động (mã mặc định `bc1953`, đổi ngay sau khi đưa vào dùng). Tài khoản chung của từng phòng và cán bộ NV2 bị ẩn khỏi danh sách đăng nhập.
