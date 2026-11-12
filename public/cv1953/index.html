@@ -194,6 +194,13 @@ td.a{text-align:right}td.a.glk{font-style:normal;font-weight:700;color:#1d3566;b
 .ts{display:inline-block;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:600;white-space:nowrap}.ts.dg{background:#dcfce7;color:#15803d}.ts.cham{background:#fff1d6;color:#b45309}.ts.chua{background:#fee2e2;color:#b91c1c}.ts.chn{background:#eceff5;color:#5b6577}.ts.x{color:var(--mut);background:none;font-weight:400}
 .ucr{margin:6px 0 12px}.uch{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}.ucb{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#f1e6e8}.ucb i{display:block}.ucl{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:4px}
 .dvr{text-align:right;font-style:italic;color:#5b4a4e;margin:2px 6px 2px}td.gn{font-size:12.5px;color:#5b4a4e;white-space:normal;min-width:140px}
+.dmk{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0 12px}.dmk div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px}.dmk b{display:block;font-size:22px;color:var(--acc2)}.dmk span{font-size:12.5px;color:var(--mut)}
+.dmf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 10px}.dmf input,.dmf select{width:auto;min-width:130px;max-width:230px;padding:7px 10px;font-size:13.5px}.dmf input.q{min-width:230px}
+.dmt{width:100%;border-collapse:collapse;font-size:13px}.dmt th{position:sticky;top:0;background:#f6e3e6;padding:7px 8px;text-align:left;font-size:12px;color:var(--acc2);border-bottom:2px solid #ead3d7;z-index:1}.dmt td{padding:4px 8px;border-bottom:1px solid #f0e4e6;vertical-align:top}
+.dmt td input{width:100%;min-width:100px;padding:5px 7px;font-size:12.5px;border:1px solid #e3d5d8;border-radius:7px}.dmt td input.sua{background:#e8f7ec;border-color:#86d19b}.dmt td.ten{min-width:260px;max-width:420px}.dmt td small{color:var(--mut)}
+.dmw{max-height:620px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}.dmp{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0;font-size:13px}
+.dmwarn{background:#fff7e6;border:1px solid #f6d99a;border-radius:12px;padding:10px 14px;margin:0 0 12px}.dmwarn .hint{margin:4px 0}
+#modal .box.wide{max-width:760px}.dmg{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dmg label{display:block;font-size:12.5px;color:var(--mut)}.dmg label input,.dmg label select{margin-top:3px}@media(max-width:640px){.dmg{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -309,7 +316,7 @@ var BTAB=['b01','b02','b03a','b03b'];
 function drawTabs(){
   var h='<button data-t="tq">'+(S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan')+'</button>';
   BTAB.forEach(function(id){h+='<button data-t="'+id+'">'+esc(BN[id])+'</button>'});
-  h+='<button data-t="tt">📋 BC tình trạng</button><button data-t="bt">⚖ Đối chiếu THBC</button>';
+  h+='<button data-t="tt">📋 BC tình trạng</button><button data-t="bt">⚖ Đối chiếu THBC</button><button data-t="dm">📁 Danh mục dự án</button>';
   if(S.vt==='TH')h+='<button data-t="qt">🔄 Quy trình &amp; hạn nộp</button>';else if(S.vt==='NV2')h+='<button data-t="qt">📥 Hộp tiếp nhận</button>';
   $('tabs').innerHTML=h;
   [].forEach.call($('tabs').children,function(b){b.onclick=function(){show(b.getAttribute('data-t'))}});
@@ -319,7 +326,7 @@ function show(t){S.tab=t;[].forEach.call($('tabs').children,function(b){b.classN
   var isB=BTAB.indexOf(t)>=0,needData=isB;
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   $('pgdBar').style.display=(isV()&&isB)?'flex':'none';if(isV())$('xemSel').value=S.xem;
-  if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
+  if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
   $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
 var NAMEB={b01:'B01',b02:'B02',b03a:'B03(21-25)',b03b:'B03(26-30)'};
@@ -697,6 +704,80 @@ function drawIn(){
 }
 function saveKy(){var i=S.info;if(!$('kLap'))return Promise.resolve();i.lap=$('kLap').value;i.tp=$('kTp').value;if($('kKtt'))i.ktt=$('kKtt').value;return run('luuNguoiKy',S.token,i.lap,i.coKtt?i.ktt:'',i.tp)}
 
+
+/* ===== Danh mục dự án (sheet CDT): PGD chỉ phần của mình, Tổng hợp toàn bộ ===== */
+var DM={loc:{tim:'',cdt:'',kbnn:'',dac_thu:'',ctmt:'',ctmt_2630:''},trang:0,opt:null,d:null,moHT:false,ht:null,seq:0};
+var DMC=[['dac_thu','Đặc thù'],['ctmt','CTMTQG 2021-2025'],['ctmt_2630','CTMTQG 2026-2030']];
+function dmOpts(a,all){return '<option value="">'+all+'</option>'+a.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('')}
+function dmSelCol(f,t,o){return '<select data-f="'+f+'" title="'+t+'"><option value="">'+t+': tất cả</option><option value="__co">'+t+': đã có</option><option value="__trong">'+t+': chưa có</option>'+(o[f]||[]).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('')+'</select>'}
+function drawDm(){
+  var m=$('main');
+  if(!DM.opt){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh mục dự án...</p>';
+    run('dmTuyChon',S.token).then(function(o){DM.opt=o;if(S.tab==='dm')drawDm()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
+  var o=DM.opt;
+  m.innerHTML='<h3 style="margin:0 0 4px">📁 Danh mục dự án</h3><p class="hint">'+(o.toanBo?'Cán bộ tổng hợp: xem, hoàn thiện và điều chỉnh <b>tất cả</b> mã dự án.':'Danh sách dự án của <b>'+esc(o.phamVi)+'</b>. Hoàn thiện chủ đầu tư và phân loại để số liệu vào đúng báo cáo.')+'</p>'+
+   '<div class="dmk" id="dmK"></div><div id="dmH"></div>'+
+   '<div class="dmf"><input type="text" class="q" id="dmQ" placeholder="🔍 Tìm mã hoặc tên dự án..." value="'+esc(DM.loc.tim)+'">'+
+   '<select id="dmC">'+dmOpts(o.cdt,'Tất cả chủ đầu tư')+'</select>'+(o.toanBo?'<select id="dmB">'+dmOpts(o.kbnn,'Tất cả phòng giao dịch')+'</select>':'')+
+   DMC.map(function(c){return dmSelCol(c[0],c[1],o)}).join('')+'</div>'+
+   '<div class="expb"><button class="pri" id="dmAdd">＋ Thêm dự án</button><button id="dmHt">⚠ Hoàn thiện dự án đã phát sinh giải ngân</button><button id="dmBulk">Gán phân loại hàng loạt</button><button id="dmXls">⬇ Xuất Excel</button></div>'+
+   '<div class="dmw"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư</th>'+(o.toanBo?'<th>Phòng giao dịch</th>':'')+'<th>Đặc thù</th><th>CTMTQG 2021-2025</th><th>CTMTQG 2026-2030</th><th></th></tr></thead><tbody id="dmB1"></tbody></table></div><div class="dmp" id="dmP"></div>'+
+   DMC.map(function(c){return '<datalist id="dl_'+c[0]+'">'+(o[c[0]]||[]).map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist>'}).join('');
+  $('dmC').value=DM.loc.cdt;if($('dmB'))$('dmB').value=DM.loc.kbnn;DMC.forEach(function(c){m.querySelector('select[data-f="'+c[0]+'"]').value=DM.loc[c[0]]});
+  var tm;$('dmQ').oninput=function(){clearTimeout(tm);var v=this.value;tm=setTimeout(function(){DM.loc.tim=v;DM.trang=0;dmLoad()},350)};
+  $('dmC').onchange=function(){DM.loc.cdt=this.value;DM.trang=0;dmLoad()};if($('dmB'))$('dmB').onchange=function(){DM.loc.kbnn=this.value;DM.trang=0;dmLoad();if(DM.moHT)dmDrawHt()};
+  [].forEach.call(m.querySelectorAll('select[data-f]'),function(e){e.onchange=function(){DM.loc[e.getAttribute('data-f')]=e.value;DM.trang=0;dmLoad()}});
+  $('dmAdd').onclick=function(){dmForm(null)};
+  $('dmHt').onclick=function(){DM.moHT=!DM.moHT;if(DM.moHT&&!DM.ht){run('dmCanHT',S.token).then(function(r){DM.ht=r;dmDrawHt()}).catch(function(e){toast(msg(e),6000)})}else dmDrawHt()};
+  $('dmBulk').onclick=dmBulk;
+  $('dmXls').onclick=function(){var b=this;xuat(function(){return run('dmXuat',S.token,DM.loc)},b,'xlsx')};
+  $('dmB1').onchange=function(e){var i=e.target;if(!i.getAttribute('data-f'))return;var ma=i.closest('tr').getAttribute('data-ma'),f=i.getAttribute('data-f'),rec={};rec[f]=i.value.trim();
+    run('dmSua',S.token,ma,rec).then(function(){i.classList.add('sua');toast('Đã lưu – '+ma)}).catch(function(er){toast(msg(er),6000);var r=(DM.d.rows.filter(function(x){return x.ma_da===ma})[0])||{};i.value=r[f]||''})};
+  $('dmB1').onclick=function(e){var b=e.target.closest('[data-sua]');if(!b)return;dmForm(DM.d.rows.filter(function(x){return x.ma_da===b.getAttribute('data-sua')})[0])};
+  $('dmP').onclick=function(e){var b=e.target.closest('[data-pg]');if(!b)return;DM.trang=+b.getAttribute('data-pg');dmLoad()};
+  dmLoad();if(DM.moHT)dmDrawHt();
+}
+function dmLoad(){var sq=++DM.seq;run('dmDs',S.token,DM.loc,DM.trang).then(function(d){if(sq!==DM.seq||S.tab!=='dm')return;DM.d=d;dmDrawRows()}).catch(function(e){toast(msg(e),6000)})}
+function dmDrawRows(){var d=DM.d,o=DM.opt,k=d.kpi||{};
+  $('dmK').innerHTML=[['Tổng số dự án',k.tong],['Có phân loại Đặc thù',k.dt],['CTMTQG 2021-2025',k.c1],['CTMTQG 2026-2030',k.c2],['Đã sửa / thêm trên web',k.them]].map(function(x){return '<div><b>'+(x[1]==null?'—':Number(x[1]).toLocaleString('vi-VN'))+'</b><span>'+x[0]+'</span></div>'}).join('');
+  $('dmB1').innerHTML=d.rows.map(function(r){return '<tr data-ma="'+esc(r.ma_da)+'"><td><b>'+esc(r.ma_da)+'</b></td><td class="ten">'+esc(r.ten_da)+(r.them_tay?' <small>(thêm tay)</small>':'')+'</td><td>'+esc(r.cdt)+(r.cdt2&&r.cdt2!==r.cdt?'<br><small>BC tuần: '+esc(r.cdt2)+'</small>':'')+'</td>'+(o.toanBo?'<td>'+esc(r.kbnn)+'</td>':'')+
+    DMC.map(function(c){return '<td><input type="text" data-f="'+c[0]+'" list="dl_'+c[0]+'" value="'+esc(r[c[0]])+'" class="'+(r.sua_tay&&r[c[0]]?'sua':'')+'"></td>'}).join('')+'<td><button data-sua="'+esc(r.ma_da)+'">Sửa</button></td></tr>'}).join('')||'<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--mut)">Không có dự án nào phù hợp.</td></tr>';
+  var n=Math.max(1,Math.ceil(d.tong/d.per)),t=d.trang;
+  $('dmP').innerHTML='<button data-pg="'+(t-1)+'"'+(t<=0?' disabled':'')+'>‹ Trước</button><span>Trang '+(t+1)+' / '+n+' · '+Number(d.tong).toLocaleString('vi-VN')+' dự án</span><button data-pg="'+(t+1)+'"'+(t+1>=n?' disabled':'')+'>Sau ›</button>'}
+function dmTr(n){return (n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})}
+function dmDrawHt(){var box=$('dmH');if(!box)return;if(!DM.moHT||!DM.ht){box.innerHTML='';return}
+  var ds=DM.ht.filter(function(x){return !DM.loc.kbnn||x.kbnn===DM.loc.kbnn});
+  box.innerHTML='<div class="dmwarn"><b>Dự án đã phát sinh giải ngân nhưng chưa vào được báo cáo: '+ds.length+'</b><p class="hint">Bấm <b>Hoàn thiện</b>, chọn đúng <b>chủ đầu tư</b> (theo tên trên mẫu báo cáo) rồi Lưu.</p>'+
+   (ds.length?'<div class="dmw" style="max-height:300px"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Phòng</th><th>Vấn đề</th><th>KHV (triệu)</th><th>Giải ngân (triệu)</th><th></th></tr></thead><tbody>'+ds.map(function(x){return '<tr><td>'+esc(x.ma_da)+'</td><td class="ten">'+esc(x.ten)+'</td><td>'+esc(x.kbnn||x.kb||'')+'</td><td>'+(x.loi==='CHUA_CO'?'Chưa có trong danh mục':'Chủ đầu tư chưa đúng tên mẫu<br><small>'+esc(x.cdt2||x.cdt||'(trống)')+'</small>')+'</td><td style="text-align:right">'+dmTr(x.khv)+'</td><td style="text-align:right">'+dmTr(x.gn)+'</td><td><button class="pri" data-ht="'+esc(x.ma_da)+'">Hoàn thiện</button></td></tr>'}).join('')+'</tbody></table></div>':'<p class="hint">✓ Tất cả dự án đã phát sinh giải ngân đều đã đủ thông tin.</p>')+'</div>';
+  box.onclick=function(e){var b=e.target.closest('[data-ht]');if(!b)return;var x=DM.ht.filter(function(y){return y.ma_da===b.getAttribute('data-ht')})[0];
+    if(x.loi==='CHUA_CO')dmForm(null,{ma_da:x.ma_da,ten_da:x.ten,kbnn:x.kbnn||''});
+    else run('dmDs',S.token,{tim:x.ma_da},0).then(function(d){var r=d.rows.filter(function(y){return y.ma_da===x.ma_da})[0];dmForm(r||null,r?null:{ma_da:x.ma_da,ten_da:x.ten,kbnn:x.kbnn||''})}).catch(function(er){toast(msg(er),6000)})}}
+function dmForm(r,mac){var o=DM.opt,moi=!r,d=r||mac||{};
+  function dl(id,a){return '<datalist id="'+id+'">'+a.map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist>'}
+  var b=$('mbox');b.className='box wide';
+  b.innerHTML='<h3 style="margin:0 0 10px">'+(moi?'Thêm dự án vào danh mục':'Sửa dự án '+esc(d.ma_da))+'</h3><div class="dmg">'+
+   '<label>Mã dự án<input type="text" id="fMa" value="'+esc(d.ma_da||'')+'"'+(moi&&!(mac&&mac.ma_da)?'':' readonly')+'></label>'+
+   '<label>Phòng giao dịch (KBNN giao dịch)'+(o.toanBo?'<input type="text" id="fKb" list="dlKb" value="'+esc(d.kbnn||'')+'">'+dl('dlKb',o.kbnn):'<input type="text" id="fKb" value="'+esc(o.phamVi)+'" readonly>')+'</label></div>'+
+   '<label class="dmg" style="display:block;margin-top:10px;font-size:12.5px;color:var(--mut)">Tên dự án<input type="text" id="fTen" value="'+esc(d.ten_da||'')+'"></label>'+
+   '<div class="dmg" style="margin-top:10px"><label>Chủ đầu tư (BC tháng)<input type="text" id="fCdt" list="dlCdt" value="'+esc(d.cdt||'')+'"></label><label>Chủ đầu tư 2 (BC tuần)<input type="text" id="fCdt2" list="dlCdt" value="'+esc(d.cdt2||'')+'"></label></div>'+dl('dlCdt',o.mau)+
+   '<div class="dmg" style="margin-top:10px">'+DMC.map(function(c){return '<label>'+c[1]+'<input type="text" id="f_'+c[0]+'" list="dl_'+c[0]+'" value="'+esc(d[c[0]]||'')+'"></label>'}).join('')+'</div>'+
+   '<p class="hint" style="margin-top:10px">Tên chủ đầu tư phải trùng tên dòng trên mẫu báo cáo (chọn trong danh sách gợi ý) thì số liệu mới vào đúng báo cáo.</p>'+
+   '<div id="fErr" style="color:#b91c1c;font-size:13px;min-height:18px"></div><div style="margin-top:8px;display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">Lưu</button></div>';
+  $('modal').style.display='flex';
+  function dong(){$('modal').style.display='none';$('mbox').className='box'}
+  $('fNo').onclick=dong;
+  $('fOk').onclick=function(){var rec={ten_da:$('fTen').value,cdt:$('fCdt').value,cdt2:$('fCdt2').value};if(o.toanBo)rec.kbnn=$('fKb').value;DMC.forEach(function(c){rec[c[0]]=$('f_'+c[0]).value});
+    var ma=$('fMa').value.trim(),btn=this;btn.disabled=true;
+    if(!moi){['ten_da','cdt','cdt2','kbnn','dac_thu','ctmt','ctmt_2630'].forEach(function(k){if(k in rec&&String(rec[k]).trim()===String(d[k]||''))delete rec[k]})}
+    run(moi?'dmThem':'dmSua',S.token,ma,rec).then(function(){dong();toast('Đã lưu dự án '+ma);DM.ht=null;if(DM.moHT){run('dmCanHT',S.token).then(function(x){DM.ht=x;dmDrawHt()})}dmLoad()}).catch(function(e){btn.disabled=false;$('fErr').textContent=msg(e)})}}
+function dmBulk(){var o=DM.opt,b=$('mbox');b.className='box wide';
+  b.innerHTML='<h3 style="margin:0 0 10px">Gán phân loại hàng loạt</h3><label style="font-size:12.5px;color:var(--mut)">Dán danh sách mã dự án (mỗi dòng một mã, hoặc cách nhau bởi dấu phẩy / khoảng trắng – có thể copy cả cột từ Excel)<textarea id="bMa" rows="7"></textarea></label>'+
+   '<div class="dmg" style="margin-top:10px"><label>Gán vào cột<select id="bF">'+DMC.map(function(c){return '<option value="'+c[0]+'">'+c[1]+'</option>'}).join('')+'</select></label><label>Giá trị (để trống = xóa phân loại)<input type="text" id="bV" list="dl_dac_thu"></label></div>'+
+   '<p class="hint" style="margin-top:8px">'+(o.toanBo?'':'Chỉ áp dụng cho dự án của '+esc(o.phamVi)+'; mã của phòng khác sẽ bị bỏ qua.')+'</p><div id="fErr" style="color:#b91c1c;font-size:13px;min-height:18px"></div>'+
+   '<div style="margin-top:8px;display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">Gán</button></div>';
+  $('modal').style.display='flex';function dong(){$('modal').style.display='none';$('mbox').className='box'}
+  $('bF').onchange=function(){$('bV').setAttribute('list','dl_'+this.value)};$('fNo').onclick=dong;
+  $('fOk').onclick=function(){var btn=this;btn.disabled=true;run('dmHangLoat',S.token,$('bMa').value,$('bF').value,$('bV').value).then(function(r){dong();toast('Đã gán cho '+r.so+' / '+r.tong+' mã dự án.'+(r.so<r.tong?' Số còn lại không có trong danh mục'+(o.toanBo?'':' hoặc không thuộc phòng bạn')+'.':''),7000);dmLoad()}).catch(function(e){btn.disabled=false;$('fErr').textContent=msg(e)})}}
 </script>
 </body>
 </html>

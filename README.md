@@ -124,3 +124,9 @@ biểu in/xuất của PGD 17 hiện "(đã ký)" dưới từng chức danh đ�
 - Phòng Nghiệp vụ 2: Người lập biểu → Lãnh đạo phòng phê duyệt → gửi thẳng Tổng hợp.
 - Tổng hợp toàn tỉnh: Chuyên viên tổng hợp (tài khoản "Tổng hợp toàn tỉnh") tiếp nhận, đối chiếu, trình → "Trưởng phòng Tổng hợp" phê duyệt. Có thể chuyển trả kèm lý do ở bất kỳ bước nào của Tổng hợp.
 - Tài khoản theo chức vụ được tự tạo khi khởi động (mã mặc định `bc1953`, đổi ngay sau khi đưa vào dùng). Tài khoản chung của từng phòng và cán bộ NV2 bị ẩn khỏi danh sách đăng nhập.
+
+## Danh mục dự án (tab "📁 Danh mục dự án")
+Dữ liệu dùng chung với ứng dụng `/tonghop/` (bảng `th_cdt` trong Supabase `bcgiaingan`). Máy chủ CV 1953 gọi các hàm SQL `cv_dm_*` (SECURITY DEFINER, kiểm tra khóa trong bảng `cv_khoa`) qua REST.
+- Biến môi trường Vercel bắt buộc: `TONGHOP_KHOA` (trùng giá trị trong bảng `cv_khoa`). Tùy chọn: `TONGHOP_URL`, `TONGHOP_ANON`.
+- Phòng giao dịch / Nghiệp vụ 2 chỉ thấy và sửa dự án có `kbnn` = phòng mình (không đổi được phòng); Cán bộ tổng hợp xem/sửa/thêm tất cả.
+- Tên chủ đầu tư phải thuộc `lib/tenmau.json` (tên dòng chủ đầu tư trên mẫu báo cáo).
