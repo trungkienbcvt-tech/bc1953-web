@@ -4,7 +4,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
 (async () => {
   const t0 = Date.now(); const codes = await seed(db, raw), ma = (t) => codes.find((c) => c.ten === t).ma;
   const L = require('../lib/logic'), X = require('../lib/export');
-  const p20 = (await L.dangNhap('Phòng giao dịch 20', ma('Phòng giao dịch 20'))).token, nv = (await L.dangNhap('Cán bộ Nghiệp vụ 2', ma('Cán bộ Nghiệp vụ 2'))).token, th = (await L.dangNhap('Tổng hợp toàn tỉnh', ma('Tổng hợp toàn tỉnh'))).token;
+  const p20 = (await L.dangNhap('Phòng giao dịch 20', ma('Phòng giao dịch 20'))).token, nv = (await L.dangNhap('Cán bộ Nghiệp vụ 2', ma('Cán bộ Nghiệp vụ 2'))).token, th = (await L.dangNhap('Chuyên viên THBC', ma('Chuyên viên THBC'))).token;
   const lg = async (n) => (await L.dangNhap(n, ma(n))).token, P20 = 'Phòng giao dịch 20';
   const lap20 = await lg('PGD20 - Người lập biểu'), ktt20 = await lg('PGD20 - Kế toán trưởng'), tp20 = await lg('PGD20 - Trưởng phòng');
   const dienTT = async (tk, v) => { const dd = await L.layDuLieu(tk), ed = []; dd.sheets.forEach((sh) => { const j = sh.cols.findIndex((x) => x.t === 's'); sh.rows.forEach((r) => { if (!r.v[j]) ed.push({ id: sh.id, r: r.r, c: sh.cols[j].c, v: v || 'Đã gửi BC' }); }); }); if (ed.length) { const o = await L.luu(tk, ed); assert(!o.loi.length, o.loi[0]); } };

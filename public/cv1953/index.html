@@ -309,7 +309,7 @@ function hoi(html,okText,withText){return new Promise(function(res){
 /* đăng nhập */
 run('dsTaiKhoan').then(function(ds){var g={TH:'Cán bộ tổng hợp',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},h='';
   var og=function(lb,l){if(l.length)h+='<optgroup label="'+esc(lb)+'">'+l.map(function(x){return'<option>'+esc(x.ten)+'</option>'}).join('')+'</optgroup>'};
-  og('Tổng hợp toàn tỉnh',ds.filter(function(x){return x.vt==='TH'}));og('Cán bộ Nghiệp vụ 2',ds.filter(function(x){return x.vt==='NV2'}));
+  og('Chuyên viên THBC',ds.filter(function(x){return x.vt==='TH'}));og('Cán bộ Nghiệp vụ 2',ds.filter(function(x){return x.vt==='NV2'}));
   PGDS.forEach(function(p){og(p,ds.filter(function(x){return x.vt==='PGD'&&x.donvi===p}))});
   $('lgPgd').innerHTML=h||'<option>(chưa có tài khoản)</option>'}).catch(function(e){$('lgErr').textContent=msg(e)});
 $('lgMa').addEventListener('keydown',function(e){if(e.key==='Enter')dangNhap()});
@@ -442,9 +442,9 @@ function stepper(x){
   return '<div class="card" style="padding:10px 14px;margin-top:12px"><h3 style="font-size:15px;margin:0 0 6px">🧭 Tiến trình ký duyệt</h3><div style="display:flex;flex-wrap:wrap;gap:8px">'+st.map(function(a,i){var d=!!a[1];
     return '<div style="flex:1;min-width:150px;padding:8px 10px;border-radius:8px;border:1px solid '+(d?'#9bd3ab':(i===cur?'#f1c27a':'var(--line)'))+';background:'+(d?'#eefaf1':(i===cur?'#fff7e8':'#fafafa'))+'"><b style="font-size:12.5px">'+(d?'✔ ':(i===cur?'⏳ ':'○ '))+a[0]+(d&&i<nk?' <span style="color:#15803d">(đã ký)</span>':'')+'</b>'+(d&&(a[1].ten||a[1].luc)?'<br><small>'+esc(a[1].ten||'')+(a[1].luc?' · '+a[1].luc:'')+'</small>':'')+'</div>'}).join('')+'</div></div>'}
 function pilotBtns(x){var cv=S.info.cv,tt=x.tt,h='',nv=x.pgd==='Phòng Nghiệp vụ 2';
-  if(cv==='LAP'){if(tt==='Chưa gửi'||tt==='Bị trả lại')h+='<button class="pri" data-w="lap_trinh" style="padding:10px 20px;font-weight:600">📤 Trình '+(nv?'Lãnh đạo phòng':'Kế toán trưởng')+'</button>';if(tt==='Chờ KTT duyệt'||(nv&&tt==='Chờ TP phê duyệt'))h+='<button data-w="lap_rut">↩ Rút lại để sửa</button>'}
-  if(cv==='KTT'&&tt==='Chờ KTT duyệt')h+='<button class="pri" data-w="ktt_trinh" style="padding:10px 20px;font-weight:600">✔ Trình lãnh đạo (ký)</button> <button data-w="ktt_tra">↩ Trả lại người lập</button>';
-  if(cv==='TP'&&tt==='Chờ TP phê duyệt')h+='<button class="pri" data-w="tp_duyet" style="padding:10px 20px;font-weight:600">✔ Phê duyệt (ký) &amp; gửi Tổng hợp</button> <button data-w="tp_tra">↩ Trả lại</button>';
+  if(cv==='LAP'){if(tt==='Chưa gửi'||tt==='Bị trả lại')h+='<button class="pri" data-w="lap_trinh" style="padding:10px 20px;font-weight:600">📤 Trình '+(nv?'Lãnh đạo phòng':'Kế toán trưởng')+'</button>';if(tt==='Chờ KTT duyệt'||(nv&&tt==='Chờ TP phê duyệt'))h+='<button data-w="lap_rut">↩ Thu hồi để sửa</button>'}
+  if(cv==='KTT'&&tt==='Chờ KTT duyệt')h+='<button class="pri" data-w="ktt_trinh" style="padding:10px 20px;font-weight:600">✔ Trình lãnh đạo (ký)</button> <button data-w="ktt_tra">↩ Chuyển trả người lập</button>';
+  if(cv==='TP'&&tt==='Chờ TP phê duyệt')h+='<button class="pri" data-w="tp_duyet" style="padding:10px 20px;font-weight:600">✔ Phê duyệt (ký) &amp; gửi BC phòng NV2</button> <button data-w="tp_tra">↩ Chuyển trả</button>';
   return h}
 function cbWarn(){var d=S.bt;if(!d||!d.co)return '';var l=btLech(d);return l.n?'<br><b style="color:#b45309">⚠ '+l.n+' chủ đầu tư còn lệch so với THBC (xem biểu tổng ở trang Tổng quan).</b>':''}
 function drawPgd(wf,t){
@@ -465,7 +465,7 @@ function drawPgd(wf,t){
   return h}
 function actions(x){var h='',cv=S.info.cv,p=esc(x.pgd),B=function(a,l,c){return '<button class="mini'+(c?' pri':'')+'" data-a="'+a+'" data-p="'+p+'">'+l+'</button>'};
   if(S.vt==='TH'){
-    if(cv==='TTH'){if(x.tt==='Đã trình lãnh đạo phòng')h+=B('thduyet','Phê duyệt',1)+B('thtra','Trả lại')}
+    if(cv==='TTH'){if(x.tt==='Đã trình lãnh đạo phòng')h+=B('thduyet','Phê duyệt',1)+B('thtra','Chuyển trả')}
     else{if(['Đã gửi','Tổng hợp đã tiếp nhận','Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(x.tt)>=0)h+=B('tra','Chuyển trả (khi số liệu sai)')}}
   return h+B('xem','Xem số liệu')}
 function btFull(){return S.vt==='TH'||(S.vt==='NV2'&&S.scope.length>=12)}
@@ -602,10 +602,10 @@ function bindTq(){
   if($('bChot'))$('bChot').onclick=function(){hoi('<h3>Chốt kỳ tháng '+esc(S.wf.ky)+'?</h3><p class="hint">• Lưu lũy kế hiện tại làm mốc để tháng sau tự trừ ra số trong tháng.<br>• Đặt lại trạng thái các phòng về <b>Chưa gửi</b>, xóa tình trạng/ghi chú của chủ đầu tư, đặt lại hạn nộp.<br>• Đổi tiêu đề các biểu sang tháng kế tiếp.<br><b style="color:#b91c1c">Chỉ làm khi đã tổng hợp xong báo cáo tháng này, không hoàn tác được.</b></p>','Chốt kỳ').then(function(v){if(!v)return;
     $('bChot').disabled=true;run('chotKy',S.token).then(function(r){toast('Đã chốt kỳ, sang tháng '+r.ky);S.wf=r;S.data=null;S.ky='';S.stale=true;S.dc=null;S.cb=null;S.bt=null;fillKy();drawTabs();show('tq')}).catch(function(e){toast(msg(e),8000);$('bChot').disabled=false})})};
   [].forEach.call(m.querySelectorAll('[data-w]'),function(b){b.onclick=function(){var w=b.getAttribute('data-w'),tra=/_tra$/.test(w),
-    T={lap_trinh:[S.info.donvi==='Phòng Nghiệp vụ 2'?'Trình Lãnh đạo phòng?':'Trình Kế toán trưởng?','Báo cáo sẽ chuyển cho '+(S.info.donvi==='Phòng Nghiệp vụ 2'?'Lãnh đạo phòng':'Kế toán trưởng')+', số liệu bị khóa. Họ tên của bạn sẽ được ghi "(đã ký)" khi in.'],lap_rut:['Rút lại báo cáo?','Báo cáo về trạng thái chưa gửi để bạn sửa số liệu.'],ktt_trinh:['Trình lãnh đạo?','Bạn xác nhận số liệu đúng và ký. Báo cáo chuyển Trưởng phòng phê duyệt.'],ktt_tra:['Trả lại người lập biểu','Ghi rõ lý do để người lập biểu sửa lại.'],tp_duyet:['Phê duyệt báo cáo?','Bạn ký phê duyệt. Báo cáo được gửi thẳng cho Tổng hợp toàn tỉnh tiếp nhận, đối chiếu.'],tp_tra:['Trả lại báo cáo','Ghi rõ lý do để người lập biểu sửa lại.']}[w];
+    T={lap_trinh:[S.info.donvi==='Phòng Nghiệp vụ 2'?'Trình Lãnh đạo phòng?':'Trình Kế toán trưởng?','Báo cáo sẽ chuyển cho '+(S.info.donvi==='Phòng Nghiệp vụ 2'?'Lãnh đạo phòng':'Kế toán trưởng')+', số liệu bị khóa. Họ tên của bạn sẽ được ghi "(đã ký)" khi in.'],lap_rut:['Thu hồi báo cáo?','Báo cáo về trạng thái chưa gửi để bạn sửa số liệu.'],ktt_trinh:['Trình lãnh đạo?','Bạn xác nhận số liệu đúng và ký. Báo cáo chuyển Trưởng phòng phê duyệt.'],ktt_tra:['Chuyển trả người lập biểu','Ghi rõ lý do để người lập biểu sửa lại.'],tp_duyet:['Phê duyệt báo cáo?','Bạn ký phê duyệt và gửi báo cáo về phòng NV2. Số liệu tự động cập nhật vào tổng hợp toàn tỉnh.'],tp_tra:['Chuyển trả báo cáo','Ghi rõ lý do để người lập biểu sửa lại.']}[w];
     var go=function(cb){var lech=cb&&cb.co&&cb.ds&&cb.ds.length,lyDo=lech&&w==='lap_trinh',viec=w==='tp_duyet'?'phê duyệt':'trình',
       ds=lech?'<div class="lechb"><b style="color:#b45309">⚠ Có '+cb.ds.length+' chủ đầu tư chênh lệch so với số tổng hợp THBC. '+(lyDo?'Bắt buộc nêu lý do chênh lệch để tiếp tục:':'Bạn có chắc chắn muốn '+viec+' không?')+'</b><ul>'+cb.ds.slice(0,12).map(function(d){return '<li>'+esc(d.ten)+' — <i>'+(d.ttLk==='thap'?'thấp hơn':'cao hơn')+' THBC</i> ('+(d.dLk>0?'+':'−')+fmt(Math.abs(d.dLk))+' triệu)</li>'}).join('')+(cb.ds.length>12?'<li>… và '+(cb.ds.length-12)+' đơn vị khác</li>':'')+'</ul></div>':'';
-      hoi('<h3>'+T[0]+'</h3><p class="hint">'+T[1]+'</p>'+ds,tra?'Trả lại':(lech&&!lyDo?'Vẫn '+viec:'Xác nhận'),tra||lyDo).then(function(v){if(!v)return;
+      hoi('<h3>'+T[0]+'</h3><p class="hint">'+T[1]+'</p>'+ds,tra?'Chuyển trả':(lech&&!lyDo?'Vẫn '+viec:'Xác nhận'),tra||lyDo).then(function(v){if(!v)return;
         run('duyet',S.token,w,(tra||lyDo)?v:'',S.ky).then(function(r){toast('Đã thực hiện.');S.data=null;setWf(r)}).catch(function(e){toast(msg(e),9000)})})};
     if(w==='lap_trinh'||w==='ktt_trinh'||w==='tp_duyet')run('canhBaoThbc',S.token,S.ky).then(go).catch(function(){go(null)});else go(null)}});
   if($('bGui'))$('bGui').onclick=function(){
@@ -624,7 +624,7 @@ function bindTq(){
     if(a==='xem'){S.xem=p;$('xemSel').value=p;run('layDuLieu',S.token,p,S.ky).then(function(d){S.data=d;S.dirty={};show('b01')});return}
     if(a==='nhan')run('tiepNhan',S.token,p,S.ky).then(function(r){toast('Đã tiếp nhận '+p);setWf(r)}).catch(function(e){toast(msg(e),7000)});
     if(a==='thnhan'||a==='thtrinh'||a==='thduyet')run('duyet',S.token,a==='thnhan'?'th_nhan':(a==='thtrinh'?'th_trinh':'th_duyet'),'',S.ky,p).then(function(r){toast(a==='thnhan'?'Đã tiếp nhận '+p:(a==='thtrinh'?'Đã trình Trưởng phòng Tổng hợp: '+p:'Đã phê duyệt: '+p));setWf(r)}).catch(function(e){toast(msg(e),7000)});
-    if(a==='thtra')hoi('<h3>Trả lại '+esc(p)+'</h3><p class="hint">Ghi rõ lý do để chuyên viên / phòng sửa lại.</p>','Trả lại',true).then(function(v){if(!v)return;run('duyet',S.token,'th_tra',v,S.ky,p).then(function(r){toast('Đã trả lại '+p);setWf(r)}).catch(function(e){toast(msg(e),7000)})});
+    if(a==='thtra')hoi('<h3>Chuyển trả '+esc(p)+'</h3><p class="hint">Ghi rõ lý do để chuyên viên / phòng sửa lại.</p>','Chuyển trả',true).then(function(v){if(!v)return;run('duyet',S.token,'th_tra',v,S.ky,p).then(function(r){toast('Đã trả lại '+p);setWf(r)}).catch(function(e){toast(msg(e),7000)})});
     if(a==='nop')run('nopTongHop',S.token,[p],S.ky).then(function(r){toast('Đã nộp tổng hợp '+p);setWf(r)}).catch(function(e){toast(msg(e),7000)});
     if(a==='tra')hoi('<h3>Chuyển trả '+esc(p)+'</h3><p class="hint">Ghi rõ lý do để phòng sửa lại.</p>','Chuyển trả',true).then(function(v){if(!v)return;run('chuyenTra',S.token,p,v,S.ky).then(function(r){toast('Đã chuyển trả '+p);setWf(r)}).catch(function(e){toast(msg(e),7000)})})}})}
 
