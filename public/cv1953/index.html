@@ -32,6 +32,9 @@ header .vecong{color:#fff;text-decoration:none;padding:6px 12px;border:1px solid
 header button{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.35);color:#fff}
 nav{display:flex;gap:6px;padding:6px 20px 0;overflow-x:auto;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
 nav button{border:0;border-radius:10px 10px 0 0;background:none;padding:8px 14px;white-space:nowrap;color:var(--mut)}
+nav .tgl{align-self:center;font-size:11.5px;font-weight:700;letter-spacing:.3px;color:#fff;background:var(--acc);border-radius:999px;padding:3px 11px;white-space:nowrap;margin-right:4px}
+nav .tgl.tg2{background:#0f766e}nav .tgs{flex:1;min-width:14px}
+nav button.b2{color:#0f766e}nav button.b2.on{color:#0f5f58;box-shadow:inset 0 3px 0 #0f766e}
 nav button.on{background:var(--bg);color:var(--acc2);font-weight:600;box-shadow:inset 0 3px 0 var(--acc)}
 #pgdBar{display:none;padding:10px 20px;background:#fff7e0;border-bottom:1px solid #f1deaa;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
 #pgdBar select{width:auto;min-width:220px}
@@ -314,15 +317,16 @@ function doiKy(v){S.dc=null;S.cb=null;S.bt=null;if(nDirty()&&!confirm('Còn thay
 function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();show('tq')}
 var BTAB=['b01','b02','b03a','b03b'];
 function drawTabs(){
-  var h='<button data-t="tq">'+(S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan')+'</button>';
+  var h='<span class="tgl">📑 BC 1953</span><button data-t="tq">'+(S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan')+'</button>';
   BTAB.forEach(function(id){h+='<button data-t="'+id+'">'+esc(BN[id])+'</button>'});
-  h+='<button data-t="tt">📋 BC tình trạng</button><button data-t="bt">⚖ Đối chiếu THBC</button><button data-t="dm">📁 Danh mục dự án</button>';
+  h+='<button data-t="tt">📋 Biểu 04-KBNN</button>';
   if(S.vt==='TH')h+='<button data-t="qt">🔄 Quy trình &amp; hạn nộp</button>';else if(S.vt==='NV2')h+='<button data-t="qt">📥 Hộp tiếp nhận</button>';
+  h+='<span class="tgs"></span><span class="tgl tg2">🔎 Đối chiếu &amp; tra cứu</span><button class="b2" data-t="bt">⚖ Đối chiếu THBC</button><button class="b2" data-t="dm">📁 Danh mục dự án</button>';
   $('tabs').innerHTML=h;
-  [].forEach.call($('tabs').children,function(b){b.onclick=function(){show(b.getAttribute('data-t'))}});
+  [].forEach.call($('tabs').querySelectorAll('button'),function(b){b.onclick=function(){show(b.getAttribute('data-t'))}});
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
-function show(t){S.tab=t;[].forEach.call($('tabs').children,function(b){b.className=b.getAttribute('data-t')===t?'on':''});
+function show(t){S.tab=t;[].forEach.call($('tabs').querySelectorAll('button'),function(b){b.className=(b.className.indexOf('b2')>=0?'b2 ':'')+(b.getAttribute('data-t')===t?'on':'')});
   var isB=BTAB.indexOf(t)>=0,needData=isB;
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   $('pgdBar').style.display=(isV()&&isB)?'flex':'none';if(isV())$('xemSel').value=S.xem;
@@ -449,20 +453,19 @@ function btFull(){return S.vt==='TH'||(S.vt==='NV2'&&S.scope.length>=12)}
 function btLoad(){var d=S.bt;if(S.btBusy||!S.wf||(d&&d.ky===S.wf.ky))return;S.btBusy=1;
   run('bieuTong',S.token,S.ky).then(function(r){S.bt=r;S.btF=r.co&&btLech(r).n?'lech':'all'}).catch(function(){S.bt={err:1,rows:[],ky:S.wf.ky}}).then(function(){S.btBusy=0;if(S.tab==='tq')drawTq();else if(S.tab==='bt')drawBt()})}
 function btLeaf(d){return d.rows.filter(function(x){return x.k==='row'&&x.n!=null})}
-function btLech(d){var n=0,th=0,ca=0,kh=0;if(d.co)btLeaf(d).forEach(function(x){if(x.ttl==='khop'&&x.ttt==='khop')kh++;else{n++;if(x.ttl==='thap')th++;if(x.ttl==='cao')ca++}});return{n:n,thap:th,cao:ca,khop:kh}}
-function btD(tt,l){return '<span class="dck '+tt+'">'+(tt==='khop'?'✓ khớp':(l>0?'+':'−')+fmt(Math.abs(r2(l))))+'</span>'}
-function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=d.full&&d.co,so=d.co&&!d.full,h='',nc=3+(full?4:0)+(so?2:0);
+function btLech(d){var n=0,th=0,ca=0,kh=0;if(d.co)btLeaf(d).forEach(function(x){if(x.ttl==='khop')kh++;else{n++;if(x.ttl==='thap')th++;if(x.ttl==='cao')ca++}});return{n:n,thap:th,cao:ca,khop:kh}}
+function btD(tt,l){return '<span class="dck '+tt+'">'+(tt==='khop'?'✓ Khớp':(l>0?'+':'−')+fmt(Math.abs(r2(l))))+'</span>'}
+function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=!!d.co,h='',nc=3+(full?2:0);
   var rows=d.rows.filter(function(x){
     if(f!=='all'){if(x.k!=='row'||x.n==null)return false;
-      if(f==='lech'&&x.ttl==='khop'&&x.ttt==='khop')return false;if(f==='thap'&&x.ttl!=='thap')return false;if(f==='cao'&&x.ttl!=='cao')return false}
+      if(f==='lech'&&x.ttl==='khop')return false;if(f==='thap'&&x.ttl!=='thap')return false;if(f==='cao'&&x.ttl!=='cao')return false}
     if(q){if(x.k!=='row')return false;if(((x.ten||x.b)+' '+x.c).toLowerCase().indexOf(q)<0)return false}
     return true});
   if(!rows.length)return '<tr><td colspan="'+nc+'" style="text-align:center;padding:22px;color:var(--mut)">'+(f==='all'?'Không có dòng nào.':'✓ Không có dòng nào thuộc nhóm này.')+'</td></tr>';
   rows.forEach(function(x){var leaf=f!=='all'||q,nm=leaf&&x.ten&&x.b==='Giao dịch tại'?x.ten+' <small>· giao dịch tại '+esc(x.c)+'</small>':esc(x.ten&&leaf?x.ten:x.b),cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-n':''));
     h+='<tr class="'+cl+'"><td class="bt-a">'+esc(x.a)+'</td><td style="padding-left:'+(leaf?10:8+Math.max(x.lv-1,0)*16)+'px">'+nm+(!leaf&&x.c?'<br><small>'+esc(x.c)+'</small>':(leaf&&x.b!=='Giao dịch tại'&&x.c?' <small>· '+esc(x.c)+'</small>':''))+'</td>'+
       '<td class="v">'+fmt(r2(x.lk))+'</td><td class="v">'+fmt(r2(x.th))+'</td>'+
-      (full?(x.n!=null?'<td class="v">'+fmt(r2(x.tlk))+'</td><td>'+btD(x.ttl,x.dlk)+'</td><td class="v">'+fmt(r2(x.tth))+'</td><td>'+btD(x.ttt,x.dth)+'</td>':'<td colspan="4"></td>'):'')+
-      (so?(x.n!=null?'<td>'+btD(x.ttl,x.dlk)+'</td><td>'+btD(x.ttt,x.dth)+'</td>':'<td colspan="2"></td>'):'')+'</tr>'});
+      (full?(x.n!=null?'<td class="v">'+fmt(r2(x.tlk))+'</td><td>'+btD(x.ttl,x.dlk)+'</td>':'<td colspan="2"></td>'):'')+'</tr>'});
   return h}
 function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=S.btF||'all';
   var h='<div class="card btc"><div class="bth"><div><h3>📑 Đối chiếu THBC · biểu tổng theo danh mục chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Cộng 4 biểu con (01, 02, 03 21-25, 03 26-30) · triệu đồng · ngoài BC 1953, dùng đối chiếu THBC'+(!full?' · chỉ phần của đơn vị':'')+'</p></div>'+
@@ -474,9 +477,9 @@ function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=
   else if(full)h+='<div class="btw nf"><b>Chưa có file THBC kỳ '+esc(d.ky)+'</b><span>Tải file THBC (cùng mẫu biểu tổng này) để hệ thống tự cảnh báo chủ đầu tư thấp hơn / cao hơn.</span></div>';
   if(d.soThua)h+='<div class="rsn" style="background:#fff7e0;border-color:#f1deaa;color:#7a5200;margin:8px 0">Có <b>'+d.soThua+'</b> dòng chưa có trong danh mục (xếp cuối biểu); tổng vẫn bằng tổng 4 biểu con.</div>';
   h+='<div class="btt"><input type="text" id="btQ" placeholder="🔍 Tìm chủ đầu tư, xã, phường..." value="'+esc(S.btQ||'')+'">'+(d.co?[['lech','Chỉ dòng lệch'],['thap','Lũy kế thấp hơn'],['cao','Lũy kế cao hơn']].map(function(x){return'<button class="pill'+(f===x[0]?' on':'')+'" data-bf="'+x[0]+'">'+x[1]+'</button>'}).join(''):'')+'<button class="pill'+(f==='all'?' on':'')+'" data-bf="all">Tất cả (theo danh mục)</button></div>';
-  var full2=!!d.co,so=false;
-  h+='<div class="btsc"><table class="bt"><thead><tr><th>STT</th><th>Chủ đầu tư / đơn vị / xã, phường</th><th>Lũy kế</th><th>Trong tháng</th>'+(full2?'<th>THBC lũy kế</th><th>Chênh</th><th>THBC tháng</th><th>Chênh</th>':'')+(so?'<th>Chênh lũy kế</th><th>Chênh tháng</th>':'')+'</tr></thead><tbody id="btTb">'+btBody(d)+'</tbody></table></div>';
-  if(d.co)h+='<p class="hint" style="margin:6px 0 0">Chênh = số web − THBC (triệu đồng). <span class="dck thap">−</span> thấp hơn THBC · <span class="dck cao">+</span> cao hơn THBC · lệch dưới 1 triệu coi là khớp.</p>';
+  var full2=!!d.co;
+  h+='<div class="btsc"><table class="bt"><thead><tr><th>STT</th><th>Chủ đầu tư / đơn vị / xã, phường</th><th>Lũy kế</th><th>Trong tháng</th>'+(full2?'<th>THBC lũy kế</th><th>Chênh lệch lũy kế</th>':'')+'</tr></thead><tbody id="btTb">'+btBody(d)+'</tbody></table></div>';
+  if(d.co)h+='<p class="hint" style="margin:6px 0 0">Đối chiếu theo lũy kế · Chênh = số web − THBC (triệu đồng). <span class="dck thap">−</span> thấp hơn THBC · <span class="dck cao">+</span> cao hơn THBC · lệch dưới 1 triệu coi là khớp.</p>';
   return h+'</div>'}
 function drawBt(){$('main').innerHTML=btCard();bindTq();bindEx();btLoad()}
 /* ----- Tab Tình trạng gửi BC ----- */
@@ -496,7 +499,7 @@ function ttBody(d){var f=S.ttF||'all',q=(S.ttQ||'').toLowerCase().trim(),h='',le
      '<td style="font-size:12.5px;color:var(--mut)">'+esc(x.gc||'')+'</td></tr>'});
   return h}
 function drawTt(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null,f=S.ttF||'all';
-  var h='<div class="card btc"><div class="bth"><div><h3>📋 BC tình trạng gửi báo cáo của chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Theo từng biểu, xếp đúng danh mục chủ đầu tư · tình trạng do đơn vị chọn ở các biểu 01, 02, 03</p></div></div>'+expBar('tt');
+  var h='<div class="card btc"><div class="bth"><div><h3>📋 Biểu 04-KBNN · Tình trạng gửi báo cáo của chủ đầu tư</h3><p class="hint" style="margin:2px 0 0">Theo từng biểu, xếp đúng danh mục chủ đầu tư · tình trạng do đơn vị chọn ở các biểu 01, 02, 03</p></div></div>'+expBar('tt');
   if(!d){return $('main').innerHTML=h+'<p class="hint" style="padding:18px 0;text-align:center">Đang tính...</p></div>',ttLoad(),void 0}
   if(d.err){$('main').innerHTML=h+'<p class="hint">Không tải được. Thử tải lại trang.</p></div>';return}
   var t=d.tong,n=t.nd+t.nc+t.nx;
@@ -582,10 +585,11 @@ function bindTq(){
     $('bChot').disabled=true;run('chotKy',S.token).then(function(r){toast('Đã chốt kỳ, sang tháng '+r.ky);S.wf=r;S.data=null;S.ky='';S.stale=true;S.dc=null;S.cb=null;S.bt=null;fillKy();drawTabs();show('tq')}).catch(function(e){toast(msg(e),8000);$('bChot').disabled=false})})};
   [].forEach.call(m.querySelectorAll('[data-w]'),function(b){b.onclick=function(){var w=b.getAttribute('data-w'),tra=/_tra$/.test(w),
     T={lap_trinh:[S.info.donvi==='Phòng Nghiệp vụ 2'?'Trình Lãnh đạo phòng?':'Trình Kế toán trưởng?','Báo cáo sẽ chuyển cho '+(S.info.donvi==='Phòng Nghiệp vụ 2'?'Lãnh đạo phòng':'Kế toán trưởng')+', số liệu bị khóa. Họ tên của bạn sẽ được ghi "(đã ký)" khi in.'],lap_rut:['Rút lại báo cáo?','Báo cáo về trạng thái chưa gửi để bạn sửa số liệu.'],ktt_trinh:['Trình lãnh đạo?','Bạn xác nhận số liệu đúng và ký. Báo cáo chuyển Trưởng phòng phê duyệt.'],ktt_tra:['Trả lại người lập biểu','Ghi rõ lý do để người lập biểu sửa lại.'],tp_duyet:['Phê duyệt báo cáo?','Bạn ký phê duyệt. Báo cáo được gửi thẳng cho Tổng hợp toàn tỉnh tiếp nhận, đối chiếu.'],tp_tra:['Trả lại báo cáo','Ghi rõ lý do để người lập biểu sửa lại.']}[w];
-    var go=function(cb){var lech=cb&&cb.co&&cb.ds&&cb.ds.length,ds=lech?'<div class="lechb"><b style="color:#b45309">⚠ Có '+cb.ds.length+' chủ đầu tư chênh lệch so với số tổng hợp THBC. Bắt buộc nêu lý do chênh lệch để tiếp tục:</b><ul>'+cb.ds.slice(0,12).map(function(d){return '<li>'+esc(d.ten)+' — <i>'+(d.ttLk==='thap'||(d.ttLk==='khop'&&d.ttTh==='thap')?'thấp hơn':'cao hơn')+' THBC</i></li>'}).join('')+(cb.ds.length>12?'<li>… và '+(cb.ds.length-12)+' đơn vị khác</li>':'')+'</ul></div>':'';
-      hoi('<h3>'+T[0]+'</h3><p class="hint">'+T[1]+'</p>'+ds,tra?'Trả lại':'Xác nhận',tra||lech).then(function(v){if(!v)return;
-        run('duyet',S.token,w,(tra||lech)?v:'',S.ky).then(function(r){toast('Đã thực hiện.');S.data=null;setWf(r)}).catch(function(e){toast(msg(e),9000)})})};
-    if(w==='lap_trinh')run('canhBaoThbc',S.token,S.ky).then(go).catch(function(){go(null)});else go(null)}});
+    var go=function(cb){var lech=cb&&cb.co&&cb.ds&&cb.ds.length,lyDo=lech&&w==='lap_trinh',viec=w==='tp_duyet'?'phê duyệt':'trình',
+      ds=lech?'<div class="lechb"><b style="color:#b45309">⚠ Có '+cb.ds.length+' chủ đầu tư chênh lệch so với số tổng hợp THBC. '+(lyDo?'Bắt buộc nêu lý do chênh lệch để tiếp tục:':'Bạn có chắc chắn muốn '+viec+' không?')+'</b><ul>'+cb.ds.slice(0,12).map(function(d){return '<li>'+esc(d.ten)+' — <i>'+(d.ttLk==='thap'?'thấp hơn':'cao hơn')+' THBC</i> ('+(d.dLk>0?'+':'−')+fmt(Math.abs(d.dLk))+' triệu)</li>'}).join('')+(cb.ds.length>12?'<li>… và '+(cb.ds.length-12)+' đơn vị khác</li>':'')+'</ul></div>':'';
+      hoi('<h3>'+T[0]+'</h3><p class="hint">'+T[1]+'</p>'+ds,tra?'Trả lại':(lech&&!lyDo?'Vẫn '+viec:'Xác nhận'),tra||lyDo).then(function(v){if(!v)return;
+        run('duyet',S.token,w,(tra||lyDo)?v:'',S.ky).then(function(r){toast('Đã thực hiện.');S.data=null;setWf(r)}).catch(function(e){toast(msg(e),9000)})})};
+    if(w==='lap_trinh'||w==='ktt_trinh'||w==='tp_duyet')run('canhBaoThbc',S.token,S.ky).then(go).catch(function(){go(null)});else go(null)}});
   if($('bGui'))$('bGui').onclick=function(){
     var n=['b01','b02','b03a','b03b'].reduce(function(a,i){return a+((S.tt.list[0].b[i]||{}).trong||0)},0);
     hoi('<h3>Gửi báo cáo?</h3><p class="hint">'+(S.ten==='Phòng Nghiệp vụ 2'?'Sau khi gửi, số liệu bị khóa và báo cáo lên thẳng tổng hợp.':'Sau khi gửi, số liệu bị khóa và chuyển cho cán bộ Nghiệp vụ 2 tiếp nhận.')+''+(n?'<br><b style="color:#b45309">Còn '+n+' dòng chủ đầu tư chưa chọn tình trạng gửi báo cáo.</b>':'')+dcWarn()+cbWarn()+'</p>','Gửi báo cáo').then(function(v){if(!v)return;

@@ -122,7 +122,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const cp = await TB.canhBao(p20, ''); assert(cp.ds.every((x) => x.pgd === 'Phòng giao dịch 20' && x.nhap === undefined && x.thbc === undefined), 'PGD chỉ thấy phần mình, không thấy số THBC');
     assert((await X.xuatBieuTong(th, 'xlsx', '')).b64.length > 1000);
     // PGD 21 trình báo cáo: lệch THBC → bắt buộc nêu lý do, ghi chú dòng tự sinh
-    const lap21 = await lg('PGD21 - Người lập biểu'); await dienTT(lap21); await assert.rejects(() => L.duyet(lap21, 'lap_trinh', '', ''), /lý do chênh lệch/);
+    const lap21 = await lg('PGD21 - Người lập biểu'); { const dd = await L.layDuLieu(lap21), rr = dd.sheets[0].rows[0]; const o = await L.luu(lap21, [{ id: 'b01', r: rr.r, c: 5, v: String(rr.v[1] + 987654) }]); assert(!o.loi.length); } await dienTT(lap21); await assert.rejects(() => L.duyet(lap21, 'lap_trinh', '', ''), /lý do chênh lệch/);
     await L.duyet(lap21, 'lap_trinh', 'chứng từ hạch toán tháng sau', ''); const d21 = await L.layDuLieu(lap21), gt = d21.sheets[0].rows.map((r) => r.v[r.v.length - 1]).filter((v) => /Chênh lệch so với THBC: chứng từ/.test(v));
     assert(gt.length >= 1, 'ghi chú tự sinh từ lý do chênh lệch');
     await L.duyet(lap21, 'lap_rut', '', '');
@@ -149,7 +149,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert(!/\n?<tr class="sec"/.test(h1) && !/<title>[^&]*B01/.test(h1), 'biểu PGD không có dòng khu vực / tên file ở đầu trang');
     assert(h1.includes('<div class="bn">Biểu 01-KBNN</div>')); assert(h1.includes('<colgroup>'));
     assert(h1.indexOf('TỔNG CỘNG') < h1.indexOf('<tr class="row">') && !/TỔNG CỘNG CỦA PHÒNG/.test(h1), 'TỔNG CỘNG nằm trên cùng');
-    const h4 = await H(X.xuatTinhTrang, [th, 'html', '']); assert(h4.includes('Biểu số 04') && h4.includes('NGƯỜI LẬP BIỂU'), 'biểu 04 có nhãn và chữ ký');
+    const h4 = await H(X.xuatTinhTrang, [th, 'html', '']); assert(h4.includes('Biểu 04-KBNN') && h4.includes('NGƯỜI LẬP BIỂU'), 'biểu 04 có nhãn và chữ ký');
     assert((await X.xuatTinhTrang(th, 'xlsx', '')).b64.length > 1000);
     assert(require('../lib/common').TINH_TRANG.includes('Không phát sinh'));
   }
