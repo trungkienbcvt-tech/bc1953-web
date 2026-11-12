@@ -227,7 +227,7 @@ nav#tabs button.on{background:var(--bg);color:var(--acc2);font-weight:600;box-sh
 <div id="login"><div class="lbg"></div><div class="lov"></div><div class="lnet"></div>
 <div class="lwrap">
   <div class="lhero"><div class="lbadge">KBNN KHU VỰC VIII</div><h1>Báo cáo giải ngân<br>vốn đầu tư công</h1><p>Công văn 1953 · Nhập, gửi, tiếp nhận và tổng hợp số liệu giải ngân theo chủ đầu tư.</p>
-    <div class="lfeat"><span>① Phòng giao dịch nhập số liệu</span><span>② Nghiệp vụ 2 tiếp nhận</span><span>③ Tổng hợp toàn tỉnh</span></div></div>
+    <div class="lfeat"><span>① Phòng giao dịch nhập số liệu</span><span>② Kế toán trưởng, Trưởng phòng ký duyệt</span><span>③ Số liệu tự lên Tổng hợp toàn tỉnh</span></div></div>
   <div class="lg">
     <div class="logo">📊</div>
     <h2>Đăng nhập</h2><p>Chọn tài khoản và nhập mã đăng nhập của đơn vị.</p>
@@ -437,8 +437,7 @@ function hanTxt(wf,done){return '<span class="hint" style="margin:0">Hạn PGD g
 function kyBar(wf){return '<div class="kybar"><span>📅 Kỳ báo cáo <b>tháng '+esc(wf.ky)+'</b>'+'</span>'+(S.vt==='TH'?'<button id="bTron" class="mini">Làm tròn số liệu về triệu đồng</button><button id="bChot" class="mini">⏭ Chốt kỳ, sang tháng sau</button>':'')+'</div>'}
 function stepper(x){
   var k=x.ky||{},tt=x.tt,nv=x.pgd==='Phòng Nghiệp vụ 2',thn=['Tổng hợp đã tiếp nhận','Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(tt)>=0,tr=['Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(tt)>=0,
-  st=(nv?[['Lập biểu trình lãnh đạo',k.LAP],['Lãnh đạo phòng phê duyệt',k.TP]]:[['Lập biểu trình KTT',k.LAP],['Kế toán trưởng trình lãnh đạo',k.KTT],['Trưởng phòng phê duyệt',k.TP]]).concat(
-    [['Tổng hợp tiếp nhận, đối chiếu',thn?{ten:x.nguoiNhan,luc:x.nhan}:null],['Trình Trưởng phòng Tổng hợp',tr?{ten:'',luc:''}:null],['Trưởng phòng Tổng hợp phê duyệt',tt==='Trưởng phòng TH đã phê duyệt'?(k.TTH||{ten:'',luc:''}):null]]),nk=nv?2:3,
+  st=(nv?[['Lập biểu trình lãnh đạo',k.LAP],['Lãnh đạo phòng phê duyệt',k.TP]]:[['Lập biểu trình KTT',k.LAP],['Kế toán trưởng trình lãnh đạo',k.KTT],['Trưởng phòng phê duyệt',k.TP]]).,nk=nv?2:3,
   cur=-1;st.forEach(function(a,i){if(!a[1]&&cur<0)cur=i});
   return '<div class="card" style="padding:10px 14px;margin-top:12px"><h3 style="font-size:15px;margin:0 0 6px">🧭 Tiến trình ký duyệt</h3><div style="display:flex;flex-wrap:wrap;gap:8px">'+st.map(function(a,i){var d=!!a[1];
     return '<div style="flex:1;min-width:150px;padding:8px 10px;border-radius:8px;border:1px solid '+(d?'#9bd3ab':(i===cur?'#f1c27a':'var(--line)'))+';background:'+(d?'#eefaf1':(i===cur?'#fff7e8':'#fafafa'))+'"><b style="font-size:12.5px">'+(d?'✔ ':(i===cur?'⏳ ':'○ '))+a[0]+(d&&i<nk?' <span style="color:#15803d">(đã ký)</span>':'')+'</b>'+(d&&(a[1].ten||a[1].luc)?'<br><small>'+esc(a[1].ten||'')+(a[1].luc?' · '+a[1].luc:'')+'</small>':'')+'</div>'}).join('')+'</div></div>'}
@@ -467,8 +466,7 @@ function drawPgd(wf,t){
 function actions(x){var h='',cv=S.info.cv,p=esc(x.pgd),B=function(a,l,c){return '<button class="mini'+(c?' pri':'')+'" data-a="'+a+'" data-p="'+p+'">'+l+'</button>'};
   if(S.vt==='TH'){
     if(cv==='TTH'){if(x.tt==='Đã trình lãnh đạo phòng')h+=B('thduyet','Phê duyệt',1)+B('thtra','Trả lại')}
-    else{if(x.tt==='Đã gửi')h+=B('thnhan','Tiếp nhận',1);if(x.tt==='Tổng hợp đã tiếp nhận')h+=B('thtrinh','Trình Trưởng phòng',1);
-      if(['Đã gửi','Tổng hợp đã tiếp nhận','Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(x.tt)>=0)h+=B('tra','Chuyển trả')}}
+    else{if(['Đã gửi','Tổng hợp đã tiếp nhận','Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(x.tt)>=0)h+=B('tra','Chuyển trả (khi số liệu sai)')}}
   return h+B('xem','Xem số liệu')}
 function btFull(){return S.vt==='TH'||(S.vt==='NV2'&&S.scope.length>=12)}
 function btLoad(){var d=S.bt;if(S.btBusy||!S.wf||(d&&d.ky===S.wf.ky))return;S.btBusy=1;
@@ -552,25 +550,25 @@ function drawViewer(wf,t){
   wf.list.forEach(function(x){if(x.cham||x.quaHan)late++;if(x.tt==='Đã gửi')cho++;if(['Chưa gửi','Bị trả lại'].indexOf(x.tt)<0)da++});
   var mid='<div style="margin-top:8px"><button class="mini pri" data-go="qt">'+(th?'🔄 Quy trình &amp; hạn nộp':'📥 Hộp tiếp nhận')+' →</button></div>';
   var h=hero(wf,mid,dl('Hạn gửi báo cáo',wf.hanHienThi.pgd,wf.hanMs.pgd,false));
-  h+='<div class="ovg">'+ovTile(da===n?'ok':'','📤','Đã gửi báo cáo',da+' <small style="font-size:13px;font-weight:500">/ '+n+' phòng</small>',cho?cho+' chờ tiếp nhận':'')+
+  h+='<div class="ovg">'+ovTile(da===n?'ok':'','📤','Đã gửi báo cáo',da+' <small style="font-size:13px;font-weight:500">/ '+n+' phòng</small>','')+
     ovTile(late?'bad':'ok','⏰','Chậm / quá hạn',late,late?'đơn vị':'Không có')+
     ovTile('','💰','Tổng lũy kế giải ngân',fmt(r2(x4.lk)),'triệu đồng · tháng '+esc(wf.ky)+': '+fmt(r2(x4.th)))+ovLech()+'</div>';
   var tm={};t.list.forEach(function(p){var l=0,m=0;Object.keys(p.b).forEach(function(i){l+=p.b[i].luyke;m+=p.b[i].thang});tm[p.pgd]={lk:l,th:m}});
-  h+='<div class="card" style="padding:12px 14px;margin-bottom:14px"><h3 style="margin:0 0 8px;font-size:15px">Tình hình gửi và tiếp nhận báo cáo của các phòng</h3><div class="btsc"><table class="bt"><thead><tr><th style="text-align:left">Phòng</th><th style="text-align:center">Trạng thái</th><th style="text-align:center">Gửi lúc</th><th style="text-align:center">Tiếp nhận</th><th>Lũy kế (triệu đồng)</th><th>Trong tháng</th></tr></thead><tbody>'+
+  h+='<div class="card" style="padding:12px 14px;margin-bottom:14px"><h3 style="margin:0 0 8px;font-size:15px">Tình hình gửi báo cáo của các phòng</h3><div class="btsc"><table class="bt"><thead><tr><th style="text-align:left">Phòng</th><th style="text-align:center">Trạng thái</th><th style="text-align:center">Gửi lúc</th><th>Lũy kế (triệu đồng)</th><th>Trong tháng</th></tr></thead><tbody>'+
    wf.list.map(function(x){var m=tm[x.pgd]||{lk:0,th:0};
-    return '<tr><td style="text-align:left"><b>'+esc(x.pgd)+'</b></td><td style="text-align:center">'+chip(x.tt)+' '+flags(x)+'</td><td style="text-align:center">'+(x.gui&&x.tt!=='Chưa gửi'?x.gui:'—')+'</td><td style="text-align:center">'+(x.nhan?x.nhan+'<br><small>'+esc(x.nguoiNhan||'')+'</small>':'—')+'</td><td style="text-align:right">'+fmt(r2(m.lk))+'</td><td style="text-align:right">'+fmt(r2(m.th))+'</td></tr>'}).join('')+
+    return '<tr><td style="text-align:left"><b>'+esc(x.pgd)+'</b></td><td style="text-align:center">'+chip(x.tt)+' '+flags(x)+'</td><td style="text-align:center">'+(x.gui&&x.tt!=='Chưa gửi'?x.gui:'—')+'</td><td style="text-align:right">'+fmt(r2(m.lk))+'</td><td style="text-align:right">'+fmt(r2(m.th))+'</td></tr>'}).join('')+
    '</tbody></table></div></div>';
   return h}
 function drawQt(wf,t){
   var ids=['b01','b02','b03a','b03b'],cnt={'Chưa gửi':0,'Đã gửi':0,'Đã tiếp nhận':0,'Bị trả lại':0,'Đã nộp tổng hợp':0},late=[];
   wf.list.forEach(function(x){cnt[x.tt]=(cnt[x.tt]||0)+1;if(x.cham||x.quaHan||x.nv2Cham||x.nv2QuaHan)late.push(x)});
-  var h='<div class="card" style="margin-bottom:16px"><h3>🔄 Quy trình nộp báo cáo · kỳ '+esc(wf.ky)+'</h3><p class="hint" style="margin:2px 0 8px">'+(S.info.cv==='TTH'?'Phê duyệt hoặc trả lại các báo cáo chuyên viên tổng hợp đã trình.':'Các phòng gửi thẳng cho Tổng hợp. Tiếp nhận, đối chiếu THBC rồi trình Trưởng phòng Tổng hợp, hoặc chuyển trả kèm lý do.')+'</p>'+
+  var h='<div class="card" style="margin-bottom:16px"><h3>🔄 Quy trình nộp báo cáo · kỳ '+esc(wf.ky)+'</h3><p class="hint" style="margin:2px 0 8px">'+(S.info.cv==='TTH'?'Phê duyệt hoặc trả lại các báo cáo chuyên viên tổng hợp đã trình.':'Trưởng phòng ký phê duyệt là số liệu tự động lên tổng hợp, Tổng hợp không cần tiếp nhận hay xác nhận. Chỉ chuyển trả kèm lý do khi phát hiện số liệu sai.')+'</p>'+
     (S.vt==='TH'&&S.info.cv!=='TTH'&&!wf.kyCu?'<div style="display:flex;gap:8px;flex-wrap:wrap"><button id="bTron" class="mini">Làm tròn số liệu về triệu đồng</button><button id="bChot" class="mini">⏭ Chốt kỳ, sang tháng sau</button></div>':'')+'</div>';
   if(S.vt==='TH'&&S.info.cv!=='TTH'&&!wf.kyCu)h+='<div class="card" style="margin-bottom:16px"><h3>Đặt hạn nộp báo cáo</h3><div class="row2" style="max-width:760px"><div><label>PGD gửi báo cáo trước (ngày/tháng/năm giờ:phút)</label><div style="display:flex;gap:6px"><input type="text" id="hPgdD" placeholder="dd/mm/yyyy" maxlength="10" value="'+isoDmy(wf.han.pgd)+'"><input type="text" id="hPgdT" placeholder="hh:mm" maxlength="5" style="width:90px" value="'+((wf.han.pgd||'').slice(11,16))+'"></div></div><div style="display:none"><label>Nghiệp vụ 2 nộp tổng hợp trước</label><div style="display:flex;gap:6px"><input type="text" id="hNv2D" placeholder="dd/mm/yyyy" maxlength="10" value="'+isoDmy(wf.han.nv2)+'"><input type="text" id="hNv2T" placeholder="hh:mm" maxlength="5" style="width:90px" value="'+((wf.han.nv2||'').slice(11,16))+'"></div></div></div><div style="margin-top:10px"><button class="pri" id="bHan">Lưu hạn nộp</button> <span class="hint">Bây giờ: '+wf.now+'</span></div></div>';
   h+='<div class="card" style="margin-bottom:16px"><h3>Quy trình nộp báo cáo</h3>'+
-    '<p class="hint">Mỗi phòng ký duyệt nội bộ rồi gửi thẳng Tổng hợp; Tổng hợp tiếp nhận → trình Trưởng phòng Tổng hợp phê duyệt.</p>'+
-    '<div style="overflow:auto"><table class="mx wf"><thead><tr><th>Phòng</th><th>Trạng thái</th><th>Gửi lúc</th><th>Tổng hợp tiếp nhận</th><th>Đã ký</th><th>Cảnh báo</th><th>Thao tác</th></tr></thead><tbody>';
-  wf.list.forEach(function(x){h+='<tr><td class="p" data-a="xem" data-p="'+esc(x.pgd)+'">'+esc(x.pgd)+'</td><td>'+chip(x.tt)+(x.soTra?'<br><small>trả '+x.soTra+' lần</small>':'')+(x.soGui>1?'<br><small>gửi lần '+x.soGui+' (thay thế)</small>':'')+(x.deNghi?'<br><small style="color:#9a5b00">📝 Đề nghị sửa: '+esc(x.deNghi)+'</small>':'')+(x.lyDo?'<br><small style="color:#a11">'+esc(x.lyDo)+'</small>':'')+'</td><td>'+(x.gui||'<small>—</small>')+'</td><td style="text-align:center">'+(x.nhan?x.nhan+'<br><small>'+esc(x.nguoiNhan)+'</small>':'<small>—</small>')+'</td><td>'+kyTxt(x)+'</td><td>'+(flags(x)||'<small>—</small>')+'</td><td>'+actions(x)+'</td></tr>'});
+    '<p class="hint">Mỗi phòng ký duyệt nội bộ (người lập → Kế toán trưởng → Trưởng phòng); Trưởng phòng phê duyệt xong là số liệu tự động cập nhật vào tổng hợp toàn tỉnh.</p>'+
+    '<div style="overflow:auto"><table class="mx wf"><thead><tr><th>Phòng</th><th>Trạng thái</th><th>Gửi lúc</th><th>Đã ký</th><th>Cảnh báo</th><th>Thao tác</th></tr></thead><tbody>';
+  wf.list.forEach(function(x){h+='<tr><td class="p" data-a="xem" data-p="'+esc(x.pgd)+'">'+esc(x.pgd)+'</td><td>'+chip(x.tt)+(x.soTra?'<br><small>trả '+x.soTra+' lần</small>':'')+(x.soGui>1?'<br><small>gửi lần '+x.soGui+' (thay thế)</small>':'')+(x.deNghi?'<br><small style="color:#9a5b00">📝 Đề nghị sửa: '+esc(x.deNghi)+'</small>':'')+(x.lyDo?'<br><small style="color:#a11">'+esc(x.lyDo)+'</small>':'')+'</td><td>'+(x.gui||'<small>—</small>')+'</td><td>'+kyTxt(x)+'</td><td>'+(flags(x)||'<small>—</small>')+'</td><td>'+actions(x)+'</td></tr>'});
   h+='</tbody></table></div></div>';
   h+=drawStat(wf,late);
   return h}
@@ -578,8 +576,8 @@ function drawStat(wf,late){
   var n=wf.list.length,dung=wf.list.filter(function(x){return x.gui&&!x.cham}).length,cham=wf.list.filter(function(x){return x.cham}).length,qh=wf.list.filter(function(x){return x.quaHan}).length,nv=wf.list.filter(function(x){return x.nv2Cham||x.nv2QuaHan}).length;
   var h='<div class="card" style="margin-bottom:16px"><h3>🚨 Thống kê nộp báo cáo · kỳ '+esc(wf.ky)+'</h3><p class="hint">Xem trước ngay tại đây, hài lòng thì bấm xuất file. Dòng nền hồng = nộp chậm / quá hạn.</p>'+
    '<div class="lg1" style="margin:6px 0 10px;font-size:13.5px"><span>Tổng <b>'+n+'</b> đơn vị</span><span style="color:#15803d">✓ Gửi đúng hạn <b>'+dung+'</b></span><span style="color:#b45309">⏱ Gửi chậm <b>'+cham+'</b></span><span style="color:#b91c1c">✗ Quá hạn chưa gửi <b>'+qh+'</b></span></div>'+
-   '<div style="overflow:auto"><table class="mx wf"><thead><tr><th>STT</th><th>Đơn vị</th><th>Trạng thái</th><th>Gửi lúc</th><th>Hạn PGD</th><th>Tiếp nhận</th><th>Nộp tổng hợp</th><th>Số lần bị trả</th><th>Chậm / quá hạn</th></tr></thead><tbody>';
-  wf.list.forEach(function(x,i){var l=x.cham||x.quaHan||x.nv2Cham||x.nv2QuaHan;h+='<tr'+(l?' class="late"':'')+'><td>'+(i+1)+'</td><td><b>'+esc(x.pgd)+'</b></td><td>'+chip(x.tt)+'</td><td>'+(x.gui||'—')+'</td><td>'+(wf.hanHienThi.pgd||'—')+'</td><td>'+(x.nhan||'—')+'</td><td>'+(x.nop||'—')+'</td><td style="text-align:center">'+(x.soTra||0)+(x.soGui>1?' · gửi '+x.soGui+' lần':'')+'</td><td>'+(flags(x)||'<small>—</small>')+'</td></tr>'});
+   '<div style="overflow:auto"><table class="mx wf"><thead><tr><th>STT</th><th>Đơn vị</th><th>Trạng thái</th><th>Gửi lúc</th><th>Hạn PGD</th><th>Số lần bị trả</th><th>Chậm / quá hạn</th></tr></thead><tbody>';
+  wf.list.forEach(function(x,i){var l=x.cham||x.quaHan||x.nv2Cham||x.nv2QuaHan;h+='<tr'+(l?' class="late"':'')+'><td>'+(i+1)+'</td><td><b>'+esc(x.pgd)+'</b></td><td>'+chip(x.tt)+'</td><td>'+(x.gui||'—')+'</td><td>'+(wf.hanHienThi.pgd||'—')+'</td><td style="text-align:center">'+(x.soTra||0)+(x.soGui>1?' · gửi '+x.soGui+' lần':'')+'</td><td>'+(flags(x)||'<small>—</small>')+'</td></tr>'});
   return h+'</tbody></table></div><div style="margin-top:12px;display:flex;gap:10px"><button class="pri" data-tk="pdf">Xuất PDF</button><button data-tk="xlsx">Xuất Excel</button></div></div>'}
 function kyTxt(x){var k=x.ky||{},o=[['LAP','Lập'],['KTT','KTT'],['TP',x.pgd==='Phòng Nghiệp vụ 2'?'LĐ':'TP'],['TTH','TP-TH']].filter(function(a){return k[a[0]]}).map(function(a){return '✔ '+a[1]});return o.length?'<small>'+o.join(' · ')+'</small>':'<small>—</small>'}
 function rdBt(){if(S.tab==='bt')drawBt();else drawTq()}
