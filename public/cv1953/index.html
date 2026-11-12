@@ -335,6 +335,7 @@ function expBar(kind,id){if(kind==='bieu'&&S.vt==='NV2'&&S.xem==='*')return '<di
   return '<div class="expb">'+(kind==='bieu'?'<label>Ngày lập <input type="text" id="eNgay" maxlength="10" placeholder="dd/mm/yyyy" value="'+esc(S.ngay||homNay())+'"></label>':'')+
    '<button class="pri" data-ex="pdf" data-ek="'+kind+'" data-ei="'+(id||'')+'">🖨 In PDF</button><button data-ex="xlsx" data-ek="'+kind+'" data-ei="'+(id||'')+'">⬇ Xuất Excel</button></div>'}
 function bindEx(){
+  if($('kpsBtn'))$('kpsBtn').onclick=datKps;
   if($('eNgay'))$('eNgay').oninput=function(){S.ngay=this.value};
   [].forEach.call($('main').querySelectorAll('[data-ex]'),function(b){b.onclick=function(){var f=b.getAttribute('data-ex'),k=b.getAttribute('data-ek'),id=b.getAttribute('data-ei');
     xuat(function(){
@@ -482,7 +483,7 @@ function drawBt(){$('main').innerHTML=btCard();bindTq();bindEx();btLoad()}
 var TTN={dung:['Đúng hạn','dg'],cham:['Gửi chậm','cham'],chua:['Chưa gửi / chưa đầy đủ','chua'],khong:['—','x']};
 function ttLoad(){var d=S.ttd;if(S.ttBusy||!S.wf||(d&&d.ky===S.wf.ky))return;S.ttBusy=1;
   run('tinhTrang',S.token,S.ky).then(function(r){S.ttd=r;S.ttF=r.tong.nx?'chua':'all'}).catch(function(){S.ttd={err:1,rows:[],ky:S.wf.ky,tong:{nd:0,nc:0,nx:0}}}).then(function(){S.ttBusy=0;if(S.tab==='tt')drawTt();else if(S.tab==='tq')drawTq()})}
-function ttSt(v){if(!v||v==='—')return '<span class="ts x">—</span>';var m={'Đã gửi BC':['dg','✓ Đã gửi'],'Gửi BC chậm':['cham','⏱ Chậm'],'Chưa gửi BC':['chua','✗ Chưa gửi'],'Chưa chọn':['chn','○ Chưa chọn']}[v]||['x',esc(v)];return '<span class="ts '+m[0]+'">'+m[1]+'</span>'}
+function ttSt(v){if(!v||v==='—')return '<span class="ts x">—</span>';var m={'Đã gửi BC':['dg','✓ Đã gửi'],'Gửi BC chậm':['cham','⏱ Chậm'],'Chưa gửi BC':['chua','✗ Chưa gửi'],'Không phát sinh':['dg','✓ Không phát sinh'],'Chưa chọn':['chn','○ Chưa chọn']}[v]||['x',esc(v)];return '<span class="ts '+m[0]+'">'+m[1]+'</span>'}
 function ttBody(d){var f=S.ttF||'all',q=(S.ttQ||'').toLowerCase().trim(),h='',leaf=f!=='all'||q;
   var rows=d.rows.filter(function(x){if(leaf){if(x.k!=='row'||!x.cat||x.cat==='khong')return false;if(f!=='all'&&x.cat!==f)return false}
     if(q&&((x.ten||x.b)+' '+x.c).toLowerCase().indexOf(q)<0)return false;return true});
@@ -610,7 +611,7 @@ function drawTable(id){
   var b=S.data.sheets.filter(function(x){return x.id===id})[0],m=$('main'),ro=!canEdit(),NC=b.cols.length+2;
   if(!b.rows.length&&!(b.secs&&b.secs.length)){m.innerHTML='<p class="hint">'+esc(S.data.pgd)+' không có chủ đầu tư nào trong biểu này.</p>';return}
   var depth=b.cols[0].lv.length,note=(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã đóng, chỉ xem.</b> ':'')+(ro&&S.vt==='PGD'&&!S.data.kyCu?'<b style="color:#b45309">Báo cáo đang ở trạng thái "'+esc(S.data.tt)+'" nên không sửa được.</b>':'');
-  var h='<div class="ttl">'+(b.tieuDe||[]).map(function(t,i){return i?'<span>'+esc(t)+'</span>':'<b>'+esc(t)+'</b>'}).join('')+'</div>'+(note?'<p class="hint" style="margin:4px 0">'+note+'</p>':'')+'<div class="dvr">Đơn vị: Triệu đồng</div>'+expBar('bieu',id)+'<div id="dcBox"></div><div class="wrap"><table><thead>';
+  var h='<div class="ttl">'+(b.tieuDe||[]).map(function(t,i){return i?'<span>'+esc(t)+'</span>':'<b>'+esc(t)+'</b>'}).join('')+'</div>'+(note?'<p class="hint" style="margin:4px 0">'+note+'</p>':'')+'<div class="dvr">Đơn vị: Triệu đồng</div>'+expBar('bieu',id)+(canEdit()?'<div class="expb"><button id="kpsBtn" title="Các dòng chưa có số liệu và chưa chọn tình trạng sẽ được đặt là Không phát sinh">Đặt "Không phát sinh" cho các dòng chưa có số liệu</button></div>':'')+'<div id="dcBox"></div><div class="wrap"><table><thead>';
   for(var i=0;i<depth;i++){
     h+='<tr>';if(i===0)h+='<th class="stt" rowspan="'+depth+'">STT</th><th class="nm" rowspan="'+depth+'">Chủ đầu tư / xã, phường</th>';
     var k=0;while(k<b.cols.length){var c=b.cols[k],txt=c.lv[i];
@@ -664,12 +665,17 @@ function bind(el){var key=el.getAttribute('data-k');
     if(same)delete S.dirty[key];else S.dirty[key]={id:c.id,r:c.row,c:c.col,v:v};
     el.classList.toggle('d',!same);updBar();dcRender()})}
 function updBar(){var n=nDirty();$('saveBtn').disabled=!n;$('barMsg').textContent=n?('Có '+n+' ô thay đổi chưa lưu.'):'Chưa có thay đổi.'}
+function coSoLieu(b,r){var k=false;b.cols.forEach(function(c,j){if(c.t==='s'||c.t==='g')return;var key=b.id+'|'+r.r+'|'+c.c,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[j];if(Number(String(v==null?'':v).replace(',','.'))){k=true}});return k}
 function thieuTT(){var l=[];S.data.sheets.forEach(function(b){if(b.id!==S.tab)return;var js=-1;b.cols.forEach(function(c,j){if(c.t==='s')js=j});if(js<0)return;
-  b.rows.forEach(function(r){var key=b.id+'|'+r.r+'|'+b.cols[js].c,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[js];if(!v)l.push(r.b)})});return l}
+  b.rows.forEach(function(r){var key=b.id+'|'+r.r+'|'+b.cols[js].c,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[js];if(!v&&coSoLieu(b,r))l.push(r.b)})});return l}
+function datKps(){var n=0;S.data.sheets.forEach(function(b){if(b.id!==S.tab)return;var js=-1;b.cols.forEach(function(c,j){if(c.t==='s')js=j});if(js<0)return;
+  b.rows.forEach(function(r){var col=b.cols[js].c,key=b.id+'|'+r.r+'|'+col,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[js];if(!v&&!coSoLieu(b,r)){S.dirty[key]={id:b.id,r:r.r,c:col,v:'Không phát sinh'};n++}})});
+  if(!n){toast('Không có dòng nào cần đặt (các dòng chưa chọn tình trạng đều đã có số liệu).',4500);return}
+  show(S.tab);toast('Đã đặt "Không phát sinh" cho '+n+' dòng chưa có số liệu. Bấm Lưu để ghi lại.',6000)}
 $('saveBtn').onclick=function(){
   var bad=document.querySelector('.e');if(bad){toast('Có ô nhập sai (không phải số), vui lòng sửa.');bad.focus();return}
   var th=S.vt==='PGD'?thieuTT():[];
-  if(th.length){hoi('<h3>⚠ Chưa chọn tình trạng gửi báo cáo</h3><p class="hint">Ở <b>'+esc(BN[S.tab])+'</b> còn <b>'+th.length+'</b> chủ đầu tư chưa chọn tình trạng gửi báo cáo:</p><div style="max-height:200px;overflow:auto;font-size:13px;background:#faf3f3;border-radius:8px;padding:8px 12px">'+th.slice(0,12).map(function(x){return'• '+esc(x)}).join('<br>')+(th.length>12?'<br>... và '+(th.length-12)+' dòng nữa':'')+'</div><p class="hint" style="margin-top:10px">Vẫn lưu số liệu hay quay lại bổ sung?</p>','Vẫn lưu').then(function(v){if(v)doSave()});return}
+  if(th.length){toast('Chưa lưu: ở '+BN[S.tab]+' còn '+th.length+' chủ đầu tư có số liệu nhưng chưa chọn tình trạng gửi báo cáo ('+th.slice(0,3).join('; ')+(th.length>3?'…':'')+'). Hãy chọn tình trạng; nếu không phát sinh thì chọn "Không phát sinh".',10000);return}
   doSave()};
 function doSave(){
   var arr=Object.keys(S.dirty).map(function(k){return S.dirty[k]});$('saveBtn').disabled=true;$('saveBtn').textContent='Đang lưu...';

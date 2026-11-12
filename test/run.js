@@ -7,7 +7,8 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   const p20 = (await L.dangNhap('Phòng giao dịch 20', ma('Phòng giao dịch 20'))).token, nv = (await L.dangNhap('Cán bộ Nghiệp vụ 2', ma('Cán bộ Nghiệp vụ 2'))).token, th = (await L.dangNhap('Tổng hợp toàn tỉnh', ma('Tổng hợp toàn tỉnh'))).token;
   const lg = async (n) => (await L.dangNhap(n, ma(n))).token, P20 = 'Phòng giao dịch 20';
   const lap20 = await lg('PGD20 - Người lập biểu'), ktt20 = await lg('PGD20 - Kế toán trưởng'), tp20 = await lg('PGD20 - Trưởng phòng');
-  const gui20 = async () => { await L.duyet(lap20, 'lap_trinh', '', ''); await L.duyet(ktt20, 'ktt_trinh', '', ''); await L.duyet(tp20, 'tp_duyet', '', ''); };
+  const dienTT = async (tk, v) => { const dd = await L.layDuLieu(tk), ed = []; dd.sheets.forEach((sh) => { const j = sh.cols.findIndex((x) => x.t === 's'); sh.rows.forEach((r) => { if (!r.v[j]) ed.push({ id: sh.id, r: r.r, c: sh.cols[j].c, v: v || 'Đã gửi BC' }); }); }); if (ed.length) { const o = await L.luu(tk, ed); assert(!o.loi.length, o.loi[0]); } };
+  const gui20 = async () => { await dienTT(lap20); await L.duyet(lap20, 'lap_trinh', '', ''); await L.duyet(ktt20, 'ktt_trinh', '', ''); await L.duyet(tp20, 'tp_duyet', '', ''); };
   await assert.rejects(() => L.dangNhap('Phòng giao dịch 20', 'SAIMA1'), /Sai tài khoản/);
   let d = await L.layDuLieu(p20); const r0 = d.sheets[0].rows[0], lk0 = r0.v[1];
   assert(d.sheets[0].rows.every((r) => r.b && r.b.trim()), 'mọi dòng đều có tên chủ đầu tư');
@@ -58,7 +59,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await assert.rejects(() => L.luu(ktt, [{ id: 'b01', r: rr.r, c: 5, v: '1' }]), /người lập biểu/);
     await assert.rejects(() => L.duyet(ktt, 'ktt_trinh', '', ''), /Không thực hiện/);      // chưa trình
     await assert.rejects(() => L.duyet(tp, 'lap_trinh', '', ''), /Người lập biểu/);          // sai chức vụ
-    let x = (await L.duyet(lap, 'lap_trinh', '', '')).list[0]; assert.strictEqual(x.tt, 'Chờ KTT duyệt'); assert(x.ky.LAP);
+    await dienTT(lap, 'Không phát sinh'); let x = (await L.duyet(lap, 'lap_trinh', '', '')).list[0]; assert.strictEqual(x.tt, 'Chờ KTT duyệt'); assert(x.ky.LAP);
     await assert.rejects(() => L.luu(lap, [{ id: 'b01', r: rr.r, c: 5, v: '1' }]), /đã gửi/);
     await assert.rejects(() => L.duyet(ktt, 'ktt_tra', '', ''), /lý do/);
     x = (await L.duyet(ktt, 'ktt_tra', 'sai số dòng 1', '')).list[0]; assert.strictEqual(x.tt, 'Bị trả lại'); assert(!x.ky.LAP, 'trả lại thì xóa chữ ký'); assert(/sai số/.test(x.lyDo));
@@ -90,7 +91,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert.strictEqual((await L.duyet(tth, 'th_duyet', '', '', P)).list.find((y) => y.pgd === P).tt, 'Trưởng phòng TH đã phê duyệt');
     // Phòng Nghiệp vụ 2: Lập biểu → Lãnh đạo phòng → Tổng hợp
     const nl = await lg('NV2 - Người lập biểu'), nt = await lg('NV2 - Lãnh đạo phòng'), NV = 'Phòng Nghiệp vụ 2', sn = async () => (await L.trangThai(th)).list.find((y) => y.pgd === NV);
-    await L.duyet(nl, 'lap_trinh', '', ''); assert.strictEqual((await sn()).tt, 'Chờ TP phê duyệt');
+    await dienTT(nl); await L.duyet(nl, 'lap_trinh', '', ''); assert.strictEqual((await sn()).tt, 'Chờ TP phê duyệt');
     await L.duyet(nl, 'lap_rut', '', ''); assert.strictEqual((await sn()).tt, 'Chưa gửi'); await L.duyet(nl, 'lap_trinh', '', '');
     await assert.rejects(() => L.duyet(nt, 'ktt_trinh', '', ''), /Kế toán trưởng/);
     await L.duyet(nt, 'tp_duyet', '', ''); let xn = await sn(); assert.strictEqual(xn.tt, 'Đã gửi'); assert(xn.ky.LAP && xn.ky.TP && !xn.ky.KTT);
@@ -121,7 +122,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const cp = await TB.canhBao(p20, ''); assert(cp.ds.every((x) => x.pgd === 'Phòng giao dịch 20' && x.nhap === undefined && x.thbc === undefined), 'PGD chỉ thấy phần mình, không thấy số THBC');
     assert((await X.xuatBieuTong(th, 'xlsx', '')).b64.length > 1000);
     // PGD 21 trình báo cáo: lệch THBC → bắt buộc nêu lý do, ghi chú dòng tự sinh
-    const lap21 = await lg('PGD21 - Người lập biểu'); await assert.rejects(() => L.duyet(lap21, 'lap_trinh', '', ''), /lý do chênh lệch/);
+    const lap21 = await lg('PGD21 - Người lập biểu'); await dienTT(lap21); await assert.rejects(() => L.duyet(lap21, 'lap_trinh', '', ''), /lý do chênh lệch/);
     await L.duyet(lap21, 'lap_trinh', 'chứng từ hạch toán tháng sau', ''); const d21 = await L.layDuLieu(lap21), gt = d21.sheets[0].rows.map((r) => r.v[r.v.length - 1]).filter((v) => /Chênh lệch so với THBC: chứng từ/.test(v));
     assert(gt.length >= 1, 'ghi chú tự sinh từ lý do chênh lệch');
     await L.duyet(lap21, 'lap_rut', '', '');
@@ -140,6 +141,16 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert.strictEqual((await D.doiChieu(p20)).ds.length, 1, 'PGD chỉ thấy phần của mình');
     assert.strictEqual(D._.ketLuan(100, 100.4, 1), 'khop'); assert.strictEqual(D._.ketLuan(90, 100, 3), 'thap'); assert.strictEqual(D._.ketLuan(120, 100, 3), 'cao');
     assert.strictEqual((await D.xoaKbnn(th)).co, false);
+  }
+  // ---- Mẫu in: nhãn biểu góc phải, TỔNG CỘNG ở đầu, biểu số 04 có chữ ký, "Không phát sinh" ----
+  {
+    const H = async (f, a) => Buffer.from((await f(...a)).b64, 'base64').toString('utf8');
+    const h1 = await H(X.xuatBieu, [p20, 'B01', '2026-11-05', '', 'html', '']);
+    assert(h1.includes('<div class="bn">Biểu 01-KBNN</div>')); assert(h1.includes('<colgroup>'));
+    assert(h1.indexOf('TỔNG CỘNG') < h1.indexOf('<tr class="row">') && !/TỔNG CỘNG CỦA PHÒNG/.test(h1), 'TỔNG CỘNG nằm trên cùng');
+    const h4 = await H(X.xuatTinhTrang, [th, 'html', '']); assert(h4.includes('Biểu số 04') && h4.includes('NGƯỜI LẬP BIỂU'), 'biểu 04 có nhãn và chữ ký');
+    assert((await X.xuatTinhTrang(th, 'xlsx', '')).b64.length > 1000);
+    assert(require('../lib/common').TINH_TRANG.includes('Không phát sinh'));
   }
   // ---- Danh mục dự án (CSDL ngoài, giả lập) ----
   {
