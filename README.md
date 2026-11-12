@@ -1,10 +1,19 @@
-# Báo cáo CV 1953 – KBNN khu vực VIII (bản Vercel + Postgres)
+# Hệ thống báo cáo giải ngân vốn đầu tư công – KBNN khu vực VIII
+
+> **Đã gộp (11/2026):** repo này chứa cả hai phân hệ, dùng chung một CSDL Supabase (`omtcphhbbrizxybmyiuh`).
+> Bảng của CV 1953 nằm trong schema riêng `bc1953` (tài khoản CSDL `bc1953_app`, tự đặt `search_path = bc1953`);
+> bảng của phân hệ Tổng hợp nằm trong schema `public`. Tên miền `tonghopbaocaokv8.vercel.app` tự chuyển sang `/tonghop/`.
+
+## Phân hệ Báo cáo CV 1953
 
 Ứng dụng web nhập, gửi, tiếp nhận và tổng hợp báo cáo giải ngân của 12 đơn vị (Phòng Nghiệp vụ 2 + Phòng giao dịch 17–27).
 Giao diện giữ nguyên bản Apps Script; máy chủ chạy bằng hàm Node.js trên **Vercel**, số liệu lưu trong **Postgres** (Supabase hoặc Vercel/Neon Postgres). Phòng giao dịch không truy cập được file Excel/Google.
 
 ```
-public/index.html   giao diện (một trang, gọi POST /api/rpc)
+public/index.html   trang chủ chung: chọn phân hệ (CV 1953 / Tổng hợp theo CĐT) + liên kết TCKB+
+public/cv1953/      phân hệ Báo cáo CV 1953 (một trang, gọi POST /api/rpc)
+public/tonghop/     phân hệ Tổng hợp giải ngân theo chủ đầu tư (gọi thẳng Supabase, xem docs-tonghop.md)
+supabase/           lược đồ + hàm SQL của phân hệ Tổng hợp (tonghop.sql, tonghop_seed.sql)
 api/rpc.js          cổng API duy nhất (đăng nhập, nhập số liệu, quy trình, xuất biểu)
 lib/                logic nghiệp vụ, xuất Excel/PDF, kết nối CSDL, lược đồ SQL
 seed/raw.json       bản chụp số liệu từ file Excel tháng 10/2026 (cấu trúc dòng + số đầu kỳ tháng 9)

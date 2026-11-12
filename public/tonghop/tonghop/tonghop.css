@@ -1,0 +1,99 @@
+/* Trang tổng hợp theo chủ đầu tư – bổ sung cho style.css */
+a.btn{text-decoration:none;display:inline-block}
+.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.src{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:#fff}
+.src h3{margin:0 0 4px}
+.src .st{font-size:12px;color:var(--muted)}
+.src.ok{border-left:4px solid var(--ok)} .src.no{border-left:4px solid var(--warn)}
+.map-row{display:grid;grid-template-columns:160px 1fr 160px;gap:10px;align-items:center;margin:6px 0}
+.rpt-title{text-align:center;margin:6px 0 12px}
+.rpt-title div{font-weight:700;color:var(--navy)}
+.rpt-title .t1{font-size:16px;text-transform:uppercase}
+.tbl.rpt{font-size:12px}
+.tbl.rpt thead th{font-size:11px;font-weight:600;padding:4px;white-space:normal;min-width:70px}
+.tbl.rpt thead th.nm{min-width:240px}
+.tbl.rpt td{padding:3px 6px}
+.tbl.rpt td.nm{white-space:nowrap;max-width:360px;overflow:hidden;text-overflow:ellipsis}
+.tbl.rpt tr.l0 td{background:#fff3cc;font-weight:700}
+.tbl.rpt tr.l1 td{background:#eaf1fb;font-weight:700;color:var(--navy)}
+.tbl.rpt tr.l2 td{background:#f5f8fc;font-weight:600}
+.tbl.rpt td.adj{background:#fff4e5!important;box-shadow:inset 0 0 0 1px #f0b56a}
+.tbl.rpt td.neg{color:var(--red)}
+.tbl-wrap.tall{max-height:72vh;overflow:auto}
+.tbl-wrap.tall thead th{position:sticky}
+.kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px}
+.kpi div{background:#f5f8fc;border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.kpi b{display:block;font-size:18px;color:var(--navy)}
+.kpi span{font-size:12px;color:var(--muted)}
+.warnbox{background:#fff7e6;border:1px solid #f0d199;border-radius:8px;padding:10px 14px;margin:10px 0}
+.okbox{background:#e9f6ee;border:1px solid #b7e0c4;border-radius:8px;padding:10px 14px;margin:10px 0}
+.tbl td.adj{background:#fff4e5!important;box-shadow:inset 0 0 0 1px #f0b56a}
+.tbl.dm td{padding:3px 6px;font-size:12px}
+.tbl.dm td.ten{max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl.dm input{min-width:120px;padding:3px 6px;font-size:12px}
+.tbl.dm input.sua{background:#eef7ff;border-color:#8bb8e8}
+.phong-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,300px));gap:18px;justify-content:center;width:100%;max-width:660px;margin-bottom:18px}
+.phong{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 18px;border:2px solid var(--line);border-radius:14px;background:#fff;cursor:pointer;font:inherit;color:var(--text);transition:.15s}
+.phong:hover{border-color:var(--navy);box-shadow:0 6px 20px rgba(15,61,110,.12);transform:translateY(-2px)}
+.phong .ic{font-size:40px}
+.phong b{font-size:17px;color:var(--navy)}
+.phong span:last-child{font-size:12px;color:var(--muted);text-align:center}
+.phong:disabled{opacity:.6;cursor:wait}
+details.khac{margin-top:8px;text-align:center;color:var(--muted);font-size:13px}
+details.khac summary{cursor:pointer}
+details.khac .card{margin-top:10px;text-align:left}
+.tbl.ss td{padding:4px 8px;font-size:12.5px}
+.tbl.ss td.ten{max-width:460px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl.ss tr.chon td{background:#eaf1fb;font-weight:600}
+.tbl.ss tr[data-cot]:hover td{background:#f5f8fc}
+.duong{color:#1a7f37} .am{color:var(--red)}
+.chip{display:inline-block;padding:1px 7px;border-radius:10px;background:#f1f3f6;margin:1px 0;white-space:nowrap;font-size:11.5px}
+.chip.duong{background:#e9f6ee} .chip.am{background:#fdecec}
+.btn.canh{background:#fff4e5;border-color:#f0b56a;color:#8a4b00}
+.btn .badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:#e8590c;color:#fff;font-size:11px;margin-left:4px}
+th.gc-col,td.gc-col{min-width:220px}
+td.gc-col input.gc{width:100%;min-width:200px;padding:3px 6px;font-size:12px}
+td.gc-col input.gc.sua{background:#eef7ff;border-color:#8bb8e8}
+@media print{
+  td.gc-col,th.gc-col{display:none}
+  body.khong-in #app{display:none!important}
+  body.khong-in::after{content:"Tài khoản Phòng giao dịch không có quyền in báo cáo.";display:block;padding:40px;font-size:18px}
+}
+
+/* ===== Màn hình đăng nhập: chủ đề Kho bạc (xanh đậm + vàng kim) ===== */
+.kb-login{position:relative;overflow:hidden;isolation:isolate;justify-content:center;padding-top:48px;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(64,122,190,.55), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, rgba(201,154,46,.28), transparent 60%),
+    linear-gradient(160deg,#0b2a4d 0%,#0f3d6e 45%,#0a2240 100%)}
+.kb-nen{position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    /* toà nhà cột kiểu kho bạc mờ ở chân trang */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 360'><g fill='%23ffffff' fill-opacity='.045'><path d='M150 120 L600 10 L1050 120 Z'/><rect x='170' y='125' width='860' height='18'/><rect x='200' y='150' width='34' height='170'/><rect x='290' y='150' width='34' height='170'/><rect x='380' y='150' width='34' height='170'/><rect x='470' y='150' width='34' height='170'/><rect x='696' y='150' width='34' height='170'/><rect x='786' y='150' width='34' height='170'/><rect x='876' y='150' width='34' height='170'/><rect x='966' y='150' width='34' height='170'/><rect x='540' y='170' width='120' height='150' rx='60' ry='60'/><rect x='130' y='322' width='940' height='16'/><rect x='100' y='340' width='1000' height='20'/></g><circle cx='600' cy='80' r='22' fill='none' stroke='%23f6d77a' stroke-opacity='.18' stroke-width='3'/></svg>") center bottom / min(1100px,130%) auto no-repeat,
+    /* hoa văn đồng tiền + lưới mảnh */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><g fill='none' stroke='%23f6d77a' stroke-opacity='.07'><circle cx='60' cy='60' r='22'/><circle cx='60' cy='60' r='16'/><rect x='54' y='54' width='12' height='12' transform='rotate(45 60 60)'/></g><path d='M0 0H120V120' fill='none' stroke='%23ffffff' stroke-opacity='.035'/></svg>") 0 0 / 120px 120px repeat,
+    /* đường sóng vàng */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200' preserveAspectRatio='none'><path d='M0 120 C 240 60 480 180 720 120 S 1200 60 1440 120' fill='none' stroke='%23f6d77a' stroke-opacity='.25' stroke-width='2'/><path d='M0 150 C 260 100 500 200 760 150 S 1220 100 1440 150' fill='none' stroke='%23f6d77a' stroke-opacity='.12' stroke-width='1.5'/></svg>") center 62% / 100% 200px no-repeat}
+.kb-login .hero h1{color:#fff;font-size:30px;letter-spacing:.2px;margin:6px 0 4px;text-shadow:0 2px 12px rgba(0,0,0,.25)}
+.kb-login .hero .sub{color:#c9d7ea}
+.kb-org{color:#f6d77a;font-weight:700;letter-spacing:.18em;font-size:12.5px;margin-top:6px}
+.kb-huy{display:flex;justify-content:center;filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+.kb-login .phong{background:rgba(255,255,255,.97);border:1px solid rgba(246,215,122,.55);backdrop-filter:blur(8px);
+  box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.kb-login .phong{transition:transform .15s,box-shadow .15s,border-color .15s,background .15s}
+.kb-login .phong:hover{background:#fff;border-color:#f6d77a;transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.35),0 0 0 3px rgba(246,215,122,.45),0 0 26px rgba(246,215,122,.35)}
+.kb-login .phong b{color:#0f3d6e}
+.kb-login .card.login{background:rgba(255,255,255,.95);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.kb-login .footer,.kb-login .footer a{color:#c9d7ea}
+/* Liên kết sang Ứng dụng tra cứu Kho bạc (TCKB+) – dưới 2 ô chọn phòng, tông xanh + vàng kim */
+.tckb{display:flex;align-items:center;justify-content:center;gap:16px;margin:28px auto 0;padding:16px 28px;border-radius:16px;min-width:min(100%,420px);
+  background:rgba(255,255,255,.08);border:1px solid rgba(246,215,122,.45);backdrop-filter:blur(6px);
+  color:#fff;text-decoration:none;box-shadow:0 8px 22px rgba(0,0,0,.22);transition:.15s}
+.tckb:hover{background:rgba(255,255,255,.16);border-color:#f6d77a;transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.35),0 0 0 3px rgba(246,215,122,.45),0 0 26px rgba(246,215,122,.35)}
+.tckb-ic{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(160deg,#1f5a99,#0f3d6e);box-shadow:inset 0 0 0 1.5px rgba(246,215,122,.8)}
+.tckb-ic svg{fill:#f6d77a}
+.tckb-chu{display:flex;flex-direction:column;line-height:1.2;text-align:left}
+.tckb-chu b{font-size:22px;letter-spacing:.3px;color:#f6d77a}
+.tckb-chu span{font-size:14.5px;color:#dbe6f4}
+.tckb-mo{font-size:18px;color:#f6d77a;margin-left:4px}

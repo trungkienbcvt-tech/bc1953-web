@@ -1,0 +1,21 @@
+-- Điều chỉnh "cộng thêm" lấy từ file Excel mẫu
+insert into public.th_dieu_chinh (bao_cao, dong, ten_dong, cot, so_tien, ghi_chu) values
+('TT15', 2, 'BQLDA ĐTXD công trình số 01 tỉnh Tuyên Quang', 'U', 10000, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT15', 3, 'BQLDA ĐTXD công trình tỉnh Tuyên Quang', 'U', 5000, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT15', 3, 'BQLDA ĐTXD công trình tỉnh Tuyên Quang', 'X', 222, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT15', 4, 'Ban điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang', 'U', 28039, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT15', 10, 'Sở Xây dựng tỉnh Tuyên Quang', 'U', 439, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT15', 10, 'Sở Xây dựng tỉnh Tuyên Quang', 'X', 10000, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT15', 10, 'Sở Xây dựng tỉnh Tuyên Quang', 'Y', 40000, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT15', 109, 'UBND xã Đường Hồng', 'U', 1503, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT15', 110, 'UBND xã Bắc Mê', 'U', 1241, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT85', 3, 'BQLDA ĐTXD công trình tỉnh Tuyên Quang', 'X', 222, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT85', 10, 'Sở Xây dựng tỉnh Tuyên Quang', 'U', 439, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT85', 109, 'UBND xã Đường Hồng', 'U', 1503, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('TT85', 110, 'UBND xã Bắc Mê', 'U', 1241, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('THANG', 29, 'BQLDA ĐTXD khu vực Quản Bạ', 'N', 222, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('THANG', 30, 'BQLDA ĐTXD khu vực Quản Bạ (KB 2470)', 'N', 222, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('THANG', 60, 'Sở Xây dựng tỉnh Tuyên Quang', 'K', 439, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('THANG', 61, 'Sở Xây dựng tỉnh Tuyên Quang (KB 2461)', 'K', 439, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('THANG', 181, 'UBND xã Đường Hồng (KB 2477)', 'K', 1503, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11'),
+('THANG', 182, 'UBND xã Bắc Mê (KB 2477)', 'K', 1241, 'Cộng thêm có sẵn trong file Excel BC_Chu_dau_tu_2026_NV2_08.11');

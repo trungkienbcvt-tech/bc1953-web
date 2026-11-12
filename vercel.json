@@ -1,5 +1,11 @@
 {
   "functions": { "api/rpc.js": { "maxDuration": 30, "includeFiles": "lib/**" }, "api/setup.js": { "maxDuration": 60, "includeFiles": "{lib,seed}/**" } },
+  "redirects": [
+    { "source": "/", "has": [{ "type": "host", "value": "tonghopbaocaokv8.vercel.app" }], "missing": [{ "type": "query", "key": "cong" }], "destination": "/tonghop/", "permanent": false },
+    { "source": "/tonghop", "destination": "/tonghop/", "permanent": false },
+    { "source": "/cv1953", "destination": "/cv1953/", "permanent": false },
+    { "source": "/tonghop.html", "destination": "/tonghop/", "permanent": false }
+  ],
   "headers": [
     { "source": "/(.*)", "headers": [
       { "key": "X-Content-Type-Options", "value": "nosniff" },
