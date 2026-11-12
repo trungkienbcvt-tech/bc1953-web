@@ -705,7 +705,7 @@ $('saveBtn').onclick=function(){
   doSave()};
 function doSave(){
   var arr=Object.keys(S.dirty).map(function(k){return S.dirty[k]});$('saveBtn').disabled=true;$('saveBtn').textContent='Đang lưu...';
-  run('luu',S.token,arr,S.ky).then(function(r){S.data=r.data;S.dc=null;S.cb=null;S.bt=null;toast(r.loi.length?('Đã lưu '+r.ok+' ô. Không lưu được: '+r.loi.slice(0,3).join('; ')):('Đã lưu '+r.ok+' ô.'),r.loi.length?9000:3500);S.dirty={};show(S.tab);
+  run('luu',S.token,arr,S.ky).then(function(r){S.data=r.data;S.dc=null;S.cb=null;S.bt=null;S.ttd=null;S.stale=true;toast(r.loi.length?('Đã lưu '+r.ok+' ô. Không lưu được: '+r.loi.slice(0,3).join('; ')):('Đã lưu '+r.ok+' ô.'),r.loi.length?9000:3500);S.dirty={};show(S.tab);
     if(r.canhBao&&r.canhBao.length)hoi('<h3>⚠ Lũy kế thấp hơn tháng trước</h3><p class="hint">Đã lưu. Có <b>'+r.canhBao.length+'</b> dòng lũy kế giảm so với tháng trước (do nộp trả / điều chỉnh giảm). Vui lòng kiểm tra lại và ghi lý do vào cột <b>Ghi chú</b>:</p><div style="max-height:200px;overflow:auto;font-size:13px;background:#faf3f3;border-radius:8px;padding:8px 12px">'+r.canhBao.slice(0,10).map(function(x){return '• '+esc(x.ten)+': '+fmt(x.truoc)+' → '+fmt(x.lk)}).join('<br>')+(r.canhBao.length>10?'<br>... và '+(r.canhBao.length-10)+' dòng nữa':'')+'</div>','Đã hiểu')})
   .catch(function(e){toast('Lỗi: '+msg(e),8000)}).then(function(){$('saveBtn').textContent='Lưu thay đổi';updBar()})}
 
