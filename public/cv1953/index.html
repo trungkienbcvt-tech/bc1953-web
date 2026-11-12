@@ -267,6 +267,20 @@ nav#tabs button.on{background:var(--bg);color:var(--acc2);font-weight:600;box-sh
 .lsec{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:16px;font-size:12.5px;color:#6ee7b7}
 #login .lver{border-top:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.62)}#login .lver b{color:#ffd37a}
 @media(max-width:900px){.lhero h1{font-size:38px}.lflow{flex-direction:column;gap:6px}.lar{display:none}}
+
+/* login light card + header v2 */
+#login .lg{background:rgba(255,255,255,.95);border:1px solid rgba(255,255,255,.6);color:#2a1a1e;backdrop-filter:blur(18px);box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 6px rgba(255,255,255,.08)}
+#login .lg h2{color:#5c0f1b}#login .lg p{color:#6b5a5f}#login .lg label{color:#4a3a3f;font-weight:600;font-size:13px;display:block;margin:14px 0 6px}
+#login .lg select,#login .lg input{background:#fff;border:1.5px solid #e3cdd2;color:#2a1a1e;font-size:15px;padding:13px 14px;box-shadow:0 1px 2px rgba(92,15,27,.06)}
+#login .lg select option{color:#222}
+#login .lg input::placeholder{color:#a8979c}
+#login .lg select:focus,#login .lg input:focus{border-color:#c2253b;box-shadow:0 0 0 4px rgba(194,37,59,.15)}
+#login .lg .err{color:#b91c1c}.lsec{color:#0f766e}
+#login .lver{border-top:1px solid #eadadd;color:#7a6a6e}#login .lver b{color:#8c1a2b}
+header h1{position:relative;padding-left:56px;min-height:44px;display:flex;flex-direction:column;justify-content:center;font-size:19px;font-weight:800;letter-spacing:.2px}
+header h1::before{content:"";position:absolute;left:0;top:50%;width:44px;height:44px;margin-top:-22px;border-radius:13px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M7 24V15M13 24V8M19 24v-8M25 24V12' stroke='white' stroke-width='3.2' stroke-linecap='round' fill='none'/></svg>") center/26px no-repeat,linear-gradient(135deg,#f59e0b,#e11d48);box-shadow:0 6px 16px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+header h1 small{display:flex;align-items:center;gap:7px;font-size:12.5px;opacity:.9;margin-top:2px}
+header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;background:#34d399;animation:pd 1.8s infinite;flex:none}
 </style>
 </head>
 <body>
