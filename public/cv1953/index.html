@@ -303,7 +303,11 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kt tr.kedit td.in{padding:3px 4px}.kt tr.kedit input.ki{width:100%;min-width:0;box-sizing:border-box;text-align:right;padding:5px 6px;font-size:13px}.kt tr.kedit td.v{font-weight:600}
 .kt tr.kedit2 td.ly{text-align:left;padding:2px 8px 6px}.kt tr.kedit2 input.kly{width:calc(100% - 150px);min-width:0;box-sizing:border-box;text-align:left;margin-right:10px}
 .kdel{cursor:pointer;color:#b91c1c;font-size:12px;align-self:center}
-.bt.kt{border-collapse:separate;border-spacing:0}.kt thead th{position:sticky;background:#f6e3e6;z-index:3;padding:4px 6px}.kt thead tr:first-child th{top:0;height:32px}.kt thead tr:nth-child(2) th{top:var(--k1,32px);height:44px}.kt thead tr:first-child th[rowspan]{z-index:6;vertical-align:middle}
+.bt.kt{border-collapse:separate;border-spacing:0}.bt.kt{table-layout:fixed;width:100%}.kt{font-size:12.5px}.kt thead th{min-width:0!important}.kt tbody td{padding:6px 5px}.kt tbody td:nth-child(2){min-width:0!important;max-width:none!important;overflow-wrap:anywhere}.kt tbody td:nth-child(1){min-width:0!important}.kt tbody td.v{font-variant-numeric:tabular-nums}
+.kt tr.kedit input.ki{padding:4px 4px;font-size:12.5px}
+.kpw{overflow-x:hidden!important}
+.kpsave{background:linear-gradient(135deg,#f59e0b,#e11d48);color:#fff;border:0;font-weight:700;font-size:14.5px;padding:10px 20px;border-radius:10px;cursor:pointer;box-shadow:0 4px 12px rgba(225,29,72,.3)}.kpsave:disabled{opacity:.45;box-shadow:none;cursor:default}
+.kt thead th{position:sticky;background:#f6e3e6;z-index:3;padding:4px 6px}.kt thead tr:first-child th{top:0;height:32px}.kt thead tr:nth-child(2) th{top:var(--k1,32px);height:44px}.kt thead tr:first-child th[rowspan]{z-index:6;vertical-align:middle}
 .kt tr.bt-t td{top:var(--k2,76px)!important;z-index:2}.kt tr.bt-t td:nth-child(1),.kt tr.bt-t td:nth-child(2){z-index:3}
 .kpv{flex-wrap:wrap}.kpv .kph{flex-basis:100%;margin:2px 0 0;color:var(--mut);font-size:12.5px}
 .kt tr.kxl td.kl small{font-weight:400}.kt tr.kedit td.kl{color:#92400e}.kt tr.tagd td.kl{color:#92400e}
@@ -999,14 +1003,15 @@ function kpCells(x){var v=S.kpView||'sau';if(v==='goc'||v==='de')return kp9(x,'t
 function kpFmtC(n){if((S.kpView||'sau')==='lech')return Math.abs(n)<0.5?'–':(n<0?'−':'+')+fmt(Math.abs(n));return fmt(n)}
 function kpHdr(){var l=['Tổng số','Thanh toán KLHT','Tạm ứng'];return '<thead><tr><th rowspan="2" style="width:50px">STT</th><th rowspan="2" style="text-align:left;min-width:250px">Chủ đầu tư / đơn vị</th><th colspan="3">Tổng cộng</th><th colspan="3">Giải ngân KHV kéo dài</th><th colspan="3">Giải ngân KHV năm</th></tr><tr>'+l.concat(l,l).map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead>'}
 function kpBody(d){
-  var q=d.quyen||{},th=S.vt!=='PGD',h='',ev=S.kpView||'sau',ed=!!q.sua&&ev==='de';S.kpDirty=0;
-  if(S.vt==='PGD'){var m=d.ds[0]||{};h+='<div class="card kpgo" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>'+esc(S.pgd||'')+'</b>'+kpChip(m.tt)+(m.nguoi?'<span class="hint" style="margin:0">'+esc(m.nguoi)+' · '+esc(m.luc||'')+'</span>':'')+'</div><p class="hint" style="margin:6px 0 0">Số liệu do Chuyên viên THBC cung cấp. Nếu <b>đúng</b>, Trưởng phòng bấm <b>Xác nhận</b>. Nếu muốn ghi nhận <b>khác</b>, chọn mục <b>Số đề nghị điều chỉnh</b> bên dưới, nhập số thực tế và <b>nêu lý do</b> (bắt buộc), rồi lưu. Mục <b>Số sau điều chỉnh</b> cho thấy kết quả.</p></div>'}
+  var q=d.quyen||{},th=S.vt!=='PGD',h='',hasAdj=d.rows.some(function(x){return x.k==='row'&&x.ly!==undefined}),ev=S.kpView||(hasAdj?'sau':'goc'),canDe=!!q.sua||hasAdj;if(ev==='sau'&&!hasAdj)ev='goc';if(ev==='de'&&!canDe)ev='goc';var ed=!!q.sua&&ev==='de';S.kpDirty=0;S.kpEv=ev;
+  if(S.vt==='PGD'){var m=d.ds[0]||{};h+='<div class="card kpgo" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>'+esc(S.pgd||'')+'</b>'+kpChip(m.tt)+(m.nguoi?'<span class="hint" style="margin:0">'+esc(m.nguoi)+' · '+esc(m.luc||'')+'</span>':'')+'</div></div>'}
   else{h+='<div class="card" style="margin-bottom:12px"><label style="display:inline">Lọc theo phòng: </label><select id="kpP" style="width:auto"><option value="">Toàn tỉnh</option>'+d.ds.map(function(x){return '<option'+(S.kpP===x.pgd?' selected':'')+'>'+esc(x.pgd)+'</option>'}).join('')+'</select> <span class="hint" style="margin:0 0 0 8px">Chỉ xem; số điều chỉnh do phòng giao dịch nhập.</span></div>'}
-  var hint={goc:'Số do Chuyên viên THBC cung cấp, giữ nguyên để đối chiếu.',de:(q.sua?'Đây là nơi <b>duy nhất</b> để sửa: nhập số thực tế vào các ô xanh; nếu khác THBC thì <b>bắt buộc nêu lý do</b>, rồi bấm Lưu.':'Các dòng phòng đề nghị ghi nhận khác THBC, kèm số đề nghị và lý do.'),sau:'Kết quả cuối: dòng đã điều chỉnh thay thế số THBC, các dòng còn lại theo THBC. Đây là số gửi Sở Tài chính.'};
-  h+='<div class="kpv"><b>Xem:</b> <label><input type="radio" name="kv" value="goc"'+(ev==='goc'?' checked':'')+'> Số THBC gốc</label><label><input type="radio" name="kv" value="de"'+(ev==='de'?' checked':'')+'> Số đề nghị điều chỉnh</label><label><input type="radio" name="kv" value="sau"'+(ev==='sau'?' checked':'')+'> Số sau điều chỉnh</label><span class="hint" style="margin:0 0 0 auto">Triệu đồng</span><div class="kph">'+hint[ev]+'</div></div>';
+  var hint={goc:(S.vt==='PGD'?'Số do Chuyên viên THBC cung cấp. Nếu đúng, Trưởng phòng bấm <b>Xác nhận</b> ở cuối trang.':'Số do Chuyên viên THBC cung cấp, giữ nguyên để đối chiếu.')+(q.sua&&!hasAdj?' Nếu muốn ghi nhận khác, chọn <b>Đề nghị điều chỉnh</b>.':''),de:(q.sua?'Nhập số thực tế vào các ô xanh; nếu khác THBC thì <b>bắt buộc nêu lý do</b>, rồi bấm <b>Lưu số điều chỉnh</b>.':'Các dòng phòng đề nghị ghi nhận khác THBC, kèm số đề nghị và lý do.'),sau:'Kết quả cuối: dòng đã điều chỉnh thay thế số THBC, các dòng còn lại theo THBC. Đây là số gửi Sở Tài chính.'};
+  var ops=[['goc','Số THBC gốc']];if(canDe)ops.push(['de','Số đề nghị điều chỉnh']);if(hasAdj)ops.push(['sau','Số sau điều chỉnh']);
+  h+='<div class="kpv"><b>'+(ops.length>1?'Xem:':'Số liệu:')+'</b> '+(ops.length>1?ops.map(function(o){return '<label><input type="radio" name="kv" value="'+o[0]+'"'+(ev===o[0]?' checked':'')+'> '+o[1]+'</label>'}).join(''):'<span>Số THBC</span>')+'<span class="hint" style="margin:0 0 0 auto">Triệu đồng</span><div class="kph">'+hint[ev]+'</div></div>';
   var rows=d.rows.filter(function(x){return !th||!S.kpP||x.k==='tot'||x.k==='khoi'||x.k==='nhom'||x.c===S.kpP});
   if(th&&S.kpP)rows=rows.filter(function(x){return x.k==='row'||x.k==='tot'});
-  h+='<div class="card" style="padding:0"><div class="kpw"><table class="bt kt">'+kpHdr()+'<tbody>';
+  h+='<div class="card" style="padding:0"><div class="kpw"><table class="bt kt"><colgroup><col style="width:46px"><col style="width:205px">'+'<col>'.repeat(9)+'</colgroup>'+kpHdr()+'<tbody>';
   rows.forEach(function(x){
     var leaf=x.k==='row',cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-n':(x.st==='sub'?'bt-s':'bt-i'))),adj=leaf&&x.ly!==undefined;
     h+='<tr class="'+cl+(adj&&ev==='sau'?' khac':'')+'"'+(leaf?' data-m="'+esc(x.khoa)+'"':'')+'><td class="bt-a">'+esc(x.a==null?'':x.a)+'</td><td style="text-align:left">'+esc(x.b)+(leaf&&x.c&&th?' <small>'+esc(x.c)+'</small>':'')+(adj&&ev==='sau'?' <small style="color:#b45309;font-weight:600">● đã điều chỉnh</small>':'')+'</td>'+kpCells(x).map(function(n,i){return '<td class="v c'+i+'">'+kpFmtC(n)+'</td>'}).join('')+'</tr>';
@@ -1017,7 +1022,7 @@ function kpBody(d){
     else if(adj&&ev==='sau'){h+='<tr class="kxl ro2 khac"><td></td><td class="kl">Lý do <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+' so với THBC)</small></td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}});
   h+='</tbody></table></div></div>';
   if(S.vt==='PGD'){h+='<div class="kpfoot card"><span id="kpMsg" class="hint" style="margin:0">'+(q.sua?'Chưa có thay đổi.':(q.moLai?'Phòng đã xác nhận.':''))+'</span><span style="margin-left:auto;display:flex;gap:8px">'+
-    (q.sua?'<button class="mini" id="kpSave" disabled>Lưu số ghi nhận</button>':'')+(q.xacNhan?'<button class="pri" id="kpXn">✔ Xác nhận số liệu của phòng</button>':'')+(q.moLai?'<button class="mini" id="kpMoLai">Mở lại để sửa</button>':'')+'</span></div>'}
+    (q.sua?'<button class="kpsave" id="kpSave" disabled>💾 Lưu số điều chỉnh</button>':'')+(q.xacNhan?'<button class="pri" id="kpXn">✔ Xác nhận số liệu của phòng</button>':'')+(q.moLai?'<button class="mini" id="kpMoLai">Mở lại để sửa</button>':'')+'</span></div>'}
   return h}
 function kpRowVals(tr){return [].map.call(tr.querySelectorAll('.ki'),function(i){return kpParse(i.value)})}
 function kpLy(tr){return tr.nextElementSibling.querySelector('.kly')}
@@ -1039,8 +1044,10 @@ function kpGather(){
     if(v.some(isNaN)){bad.push(s.b);return}
     var ch=v.some(function(x,i){return Math.abs(x-[s.e0,s.e1,s.e2,s.e3][i])>0.0005})||(l!==(s.ly||''));if(ch)items.push({khoa:r.getAttribute('data-k'),v:v,ly:l})});
   return {items:items,bad:bad}}
+function kpFit(){var w=document.querySelector('.kpw');if(!w)return;var f=document.querySelector('.kpfoot'),t=w.getBoundingClientRect().top;w.style.maxHeight=Math.max(380,window.innerHeight-t-(f?f.offsetHeight+26:20))+'px'}
+window.addEventListener('resize',function(){try{kpFit()}catch(e){}});
 function bindKp(){
-  var d=S.kp;
+  var d=S.kp;kpFit();
   var kt=$('main').querySelector('table.kt');if(kt){var hr=kt.querySelectorAll('thead tr'),h1=hr[0].getBoundingClientRect().height,h2=hr[1].getBoundingClientRect().height;kt.style.setProperty('--k1',h1+'px');kt.style.setProperty('--k2',(h1+h2)+'px')}
   if($('kpMoc'))$('kpMoc').onchange=function(){S.kpId=this.value;S.kp=null;drawKpi(S.tab)};
   if($('kpNewB'))$('kpNewB').onclick=function(){var n=$('kpNew');n.style.display=n.style.display==='none'?'block':'none'};
@@ -1061,13 +1068,13 @@ function bindKp(){
   if($('kvSave'))$('kvSave').onclick=function(){run('kpiVbLuu',S.token,d.moc.id,kvObj()).then(function(v){S.kp.vbInfo=v;toast('Đã lưu thông tin công văn.',3500)}).catch(function(e){toast(msg(e),8000)})};
   if($('kvWord'))$('kvWord').onclick=function(){var b=this;xuat(function(){return run('kpiVbLuu',S.token,d.moc.id,kvObj()).then(function(v){S.kp.vbInfo=v;return run('xuatCongVan',S.token,d.moc.id,S.kpChe||'sau')})},b,'docx')};
   if($('kpChe'))$('kpChe').onchange=function(){S.kpChe=this.value;drawKpi(S.tab)};
-  [].forEach.call($('main').querySelectorAll('input[name=kv]'),function(r){r.onchange=function(){if(S.kpDirty){toast('Có thay đổi chưa lưu, hãy bấm Lưu số ghi nhận trước khi đổi cách xem.',6000);[].forEach.call($('main').querySelectorAll('input[name=kv]'),function(x){x.checked=x.value===(S.kpView||'sau')});return}S.kpView=r.value;drawKpi(S.tab)}});
+  [].forEach.call($('main').querySelectorAll('input[name=kv]'),function(r){r.onchange=function(){if(S.kpDirty){toast('Có thay đổi chưa lưu, hãy bấm Lưu số điều chỉnh trước khi đổi cách xem.',6000);[].forEach.call($('main').querySelectorAll('input[name=kv]'),function(x){x.checked=x.value===(S.kpView||'sau')});return}S.kpView=r.value;drawKpi(S.tab)}});
   [].forEach.call($('main').querySelectorAll('tr.kedit2 .kdel'),function(a){a.onclick=function(){var tr=a.closest('tr').previousElementSibling,t=tr.getAttribute('data-t').split(',');[].forEach.call(tr.querySelectorAll('.ki'),function(i,k){i.value=kpVal(Number(t[k]))});kpLy(tr).value='';kpUpdRow(tr)}});
   if($('kpP'))$('kpP').onchange=function(){S.kpP=this.value;drawKpi(S.tab)};
   [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(tr){[].forEach.call(tr.querySelectorAll('input'),function(i){i.oninput=function(){kpUpdRow(tr)}});kpLy(tr).oninput=function(){kpUpdRow(tr)}});
   if($('kpSave'))$('kpSave').onclick=function(){var g=kpGather();if(g.bad.length){toast('Có ô nhập chưa đúng số: '+g.bad[0],7000);return}
-    run('kpiLuu',S.token,d.moc.id,g.items).then(function(r){S.kp=r;S.kpD={};toast('Đã lưu số ghi nhận KPI.',4000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),12000)})};
-  if($('kpXn'))$('kpXn').onclick=function(){if(S.kpDirty){toast('Hãy bấm "Lưu số ghi nhận" trước khi xác nhận.',6000);return}
+    run('kpiLuu',S.token,d.moc.id,g.items).then(function(r){S.kp=r;S.kpD={};toast('Đã lưu số điều chỉnh KPI.',4000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),12000)})};
+  if($('kpXn'))$('kpXn').onclick=function(){if(S.kpDirty){toast('Hãy bấm "Lưu số điều chỉnh" trước khi xác nhận.',6000);return}
     var nd=(S.kp.ds[0]||{}).nd||0;
     hoi('<b>Xác nhận số liệu KPI đến ngày '+esc(d.moc.nhan)+'?</b><br><small>'+(nd?'Phòng ghi nhận khác THBC ở '+nd+' dòng (đã nêu lý do). ':'Phòng ghi nhận đúng theo số THBC. ')+'Sau khi xác nhận, số liệu được chuyển cho Tổng hợp; muốn sửa phải "Mở lại để sửa".</small>','Xác nhận').then(function(v){if(!v)return;
       run('kpiXacNhan',S.token,d.moc.id).then(function(r){S.kp=r;toast('Đã xác nhận số liệu KPI của phòng.',5000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),10000)})})};
