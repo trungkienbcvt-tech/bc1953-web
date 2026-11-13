@@ -1003,6 +1003,7 @@ function viewB501(v) {
     <div class="bar"><label style="min-width:min(640px,100%)">Chỉ tiêu đối chiếu<select id="b5ct">
       <option value="KD" ${B5S.ct === 'KD' ? 'selected' : ''}>① "Kế hoạch vốn kéo dài năm trước chuyển sang" ↔ "Dư dự toán năm trước chuyển sang"</option>
       <option value="NAM" ${B5S.ct === 'NAM' ? 'selected' : ''}>② "Kế hoạch vốn giao trong năm" ↔ "Dự toán giao đầu năm" (cột M) + "Dự toán điều chỉnh (3)" (cột N)</option>
+      <option value="GN" ${B5S.ct === 'GN' ? 'selected' : ''}>③ "Lũy kế vốn thanh toán – Tổng số" (cột I) ↔ "Lũy kế chi từ đầu năm – Tổng số" (cột O) − "Dư tạm ứng năm trước chuyển sang" (cột L)</option>
     </select></label></div>
     <div class="src-grid">${o('TT15')}${o('XA')}${o('TINH')}</div>
     <div class="actions"><label class="btn primary">📂 Chọn 3 file (có thể chọn cùng lúc)…<input type="file" id="b5f" accept=".xls,.xlsx" multiple hidden></label>
@@ -1042,7 +1043,7 @@ function veKetQuaB501(box) {
     caHai: k.rows.filter(r => r.coLech && r.tt15 && r.b501).length };
   box.innerHTML = `<div class="card">
     ${k.kbLoc ? `<div class="okbox">File THBC gồm nhiều KBNN: chỉ lấy số của khối KBNN <b>${esc(k.kbLoc)}</b> (đơn vị lập B5-01).</div>` : ''}
-    ${!kd && !(B5S.file.TT15.coNam && B5S.file.XA.coNam && B5S.file.TINH.coNam) ? '<div class="warnbox">⚠ Có file không tìm thấy cột "Kế hoạch vốn giao trong năm" (THBC) hoặc "Dự toán giao đầu năm" / "Dự toán điều chỉnh" (B5-01) – số của file đó tính bằng 0.</div>' : ''}
+    ${['TT15', 'XA', 'TINH'].some(l => !B5S.file[l].co?.[k.ct]) ? `<div class="warnbox">⚠ Không tìm thấy cột cần đối chiếu trong file: ${['TT15', 'XA', 'TINH'].filter(l => !B5S.file[l].co?.[k.ct]).map(l => esc(B5_TEN[l])).join(', ')} – số của file đó tính bằng 0.</div>` : ''}
     <div class="${k.soLech ? 'warnbox' : 'okbox'}"><b>${esc(CT.ten)}:</b> ${k.soLech ? `Có <b>${k.soLech}</b> dự án chênh lệch, tổng chênh <b>${f3(t.lech)}</b> triệu đồng: ${nhom.caHai} dự án lệch số, ${nhom.chiTT} dự án chỉ có số trên THBC, ${nhom.chiB5} dự án chỉ có số trên B5-01.` : '✓ Số liệu THBC và B5-01 khớp đến từng dự án.'}</div>
     <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Chỉ tiêu (triệu đồng)</th><th>THBC (TT15/TT37)<br>${esc(CT.tt)}</th><th>B5-01 NS xã<br>${esc(CT.b5)}</th><th>B5-01 NS tỉnh<br>${esc(CT.b5)}</th><th>Cộng B5-01</th><th>Chênh lệch<br>THBC − B5-01</th></tr></thead>
     <tbody><tr><td>Cộng chi tiết các dự án</td><td class="num">${f3(t.tt15)}</td><td class="num">${f3(t.xa)}</td><td class="num">${f3(t.tinh)}</td><td class="num">${f3(t.b501)}</td><td class="num ${cls(t.lech)}"><b>${f3(t.lech)}</b></td></tr>
@@ -1066,7 +1067,8 @@ async function xuatB501(ds) {
   const ExcelJS = await loadExcelJS();
   const k = B5S.kq, f = B5S.file, cdt = new Map((S.cdt || []).map(x => [x.ma_da, x]));
   const CT = B5.CHI_TIEU[k.ct], kd = k.ct === 'KD';
-  const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet(kd ? 'Doi chieu KH keo dai' : 'Doi chieu KH trong nam', { views: [{ state: 'frozen', ySplit: 6 }] });
+  const tenSheet = { KD: 'Doi chieu KH keo dai', NAM: 'Doi chieu KH trong nam', GN: 'Doi chieu luy ke thanh toan' }[k.ct];
+  const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet(tenSheet, { views: [{ state: 'frozen', ySplit: 6 }] });
   ws.addRow([`ĐỐI CHIẾU ${CT.tt.toUpperCase()} (THBC) VỚI ${CT.b5.toUpperCase()} (B5-01)`]);
   ws.addRow([`Số liệu đến ngày: TT15 ${f.TT15.ky?.den || ''}; B5-01 NS xã ${f.XA.ky?.den || ''}; B5-01 NS tỉnh ${f.TINH.ky?.den || ''}. Đơn vị: triệu đồng`]);
   ws.addRow([]);
@@ -1085,7 +1087,7 @@ async function xuatB501(ds) {
   const buf = await wb.xlsx.writeBuffer();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-  a.download = `Doi chieu ${kd ? 'KH keo dai' : 'KH giao trong nam'} THBC - B5-01 ${(f.TT15.ky?.den || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`; a.click();
+  a.download = `${tenSheet} THBC - B5-01 ${(f.TT15.ky?.den || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`; a.click();
 }
 
 // ================================================================ TAB 3: CỘNG THÊM
