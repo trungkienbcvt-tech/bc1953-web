@@ -295,9 +295,12 @@ function viewDuLieu(v) {
 
 // ---- Đối chiếu tổng số
 async function tinhDoiChieu(id) {
-  const kq = await tinh(id);
+  const kq = await tinh(id, { loc: true }), k = kbLoc(id);
   const f = S.file[E.BAO_CAO[id].nguon];
-  return { f, dong: E.doiChieu(id, S.mau[id], nguonCua(id), E.chuyenTong(id, f?.tong), dcCua(id), kq) };
+  let tong = E.chuyenTong(id, f?.tong);
+  // lọc KBNN: đối chiếu với dòng tổng của khối KBNN đó trong file hệ thống
+  if (k && tong) tong = { ...tong, nhan: tong.kb?.[k]?.ten || 'KBNN ' + k, tong: tong.kb?.[k]?.so || {}, kb: tong.kb?.[k] ? { [k]: tong.kb[k] } : {} };
+  return { f: f && { ...f, tong }, dong: E.doiChieu(id, S.mau[id], nguonBC(id), tong, k ? [] : dcCua(id), kq) };
 }
 async function renderDoiChieu(box, id) {
   if (!nguonCua(id).length) { box.innerHTML = '<p class="muted">Chưa có dữ liệu nguồn.</p>'; return; }
@@ -317,7 +320,7 @@ async function renderDoiChieu(box, id) {
     if (thieu.length) ly.push(`<li><b>Dự án chưa có mã trong sheet CDT</b> (không vào báo cáo): ${thieu.map(d => `${ten(d)}: <b>${d0(d.thieuCDT)}</b> đ`).join('; ')}. ${canEdit() ? 'Xem danh sách ở tab <b>Dữ liệu đầu vào → Kiểm tra dữ liệu</b>.' : 'Phòng giao dịch bổ sung qua nút <b>Hoàn thiện dự án đã phát sinh giải ngân</b> ở tab Danh mục dự án.'}</li>`);
     const kk = dong.filter(d => lech(d.khongKhop));
     if (kk.length) {
-      const ds = E.kiemTra(id, S.mau[id], nguonCua(id)).filter(x => !x.ten.startsWith('(chưa có mã'));
+      const ds = E.kiemTra(id, S.mau[id], nguonBC(id)).filter(x => !x.ten.startsWith('(chưa có mã'));
       ly.push(`<li><b>Chủ đầu tư không có dòng tương ứng trên báo cáo</b> (không vào báo cáo): ${kk.map(d => `${ten(d)}: <b>${d0(d.khongKhop)}</b> đ`).join('; ')}.
         <br>Gồm: ${ds.map(x => `${esc(x.ten)} (${x.so_da} dự án)`).join('; ')}. ${laThang(id) ? 'Thường do dòng của chủ đầu tư trên mẫu chỉ lọc một số mã KBNN, trong khi có dự án giao dịch ở KBNN khác.' : 'Thường do tên chủ đầu tư trong sheet CDT khác tên trên mẫu báo cáo.'}</li>`);
     }
@@ -624,11 +627,16 @@ async function viewBaoCao(v) {
   if (!S.dongKy[id]) S.dongKy[id] = dongKyMacDinh(id);
   if (S.dongVB[id] === undefined) S.dongVB[id] = dongVBMacDinh(id);
   const kyOpts = S.ky.filter(k => k.bao_cao === id && k.chot);
+  S.locKB ||= {};
+  const kbs = dsKB(id);
+  if (kbLoc(id) && !kbs.some(x => x.k === kbLoc(id))) S.locKB[id] = '';
   v.innerHTML = `
     <div class="card no-print">
       <div class="bar">
         <label>Báo cáo<select id="bc">${Object.entries(E.BAO_CAO).map(([k, b]) => `<option value="${k}" ${k === id ? 'selected' : ''}>${esc(b.ten)}</option>`).join('')}</select></label>
-        ${tuan ? `<label>Lũy kế đến tuần trước lấy từ<select id="truoc"><option value="">— Để trống —</option>
+        <label>Lọc theo mã KBNN<select id="locKB"><option value="">Tất cả (toàn khu vực)</option>
+          ${kbs.map(x => `<option value="${esc(x.k)}" ${x.k === kbLoc(id) ? 'selected' : ''}>${esc(x.k)} – ${esc(x.ten)}</option>`).join('')}</select></label>
+        ${tuan && !kbLoc(id) ? `<label>Lũy kế đến tuần trước lấy từ<select id="truoc"><option value="">— Để trống —</option>
           ${kyOpts.map(k => `<option value="${k.id}" ${String(k.id) === String(S.truoc[id]) ? 'selected' : ''}>${esc(k.ten)} · ${esc(ngay(k.tao_luc))}</option>`).join('')}</select></label>
           ${canEdit() ? '<button class="btn small" id="nhapTruoc">Nhập lũy kế tuần trước từ file Excel…</button>' : ''}` : ''}
       </div>
@@ -639,25 +647,28 @@ async function viewBaoCao(v) {
       <div class="actions">
         ${coXuat() ? `<button class="btn primary" id="xuat">⬇ Xuất Excel</button>
         <button class="btn" onclick="window.print()">🖨 In</button>` : ''}
-        ${canEdit() ? '<button class="btn ok" id="luu">💾 Lưu kỳ báo cáo…</button>' : ''}
+        ${canEdit() && !kbLoc(id) ? '<button class="btn ok" id="luu">💾 Lưu kỳ báo cáo…</button>' : ''}
         <button class="btn" id="ss">🔍 So sánh TT15 / TT85 / TT37</button>
         <span class="muted small">Đơn vị: triệu đồng. Ô tô màu cam có khoản "cộng thêm".</span>
       </div>
     </div>
     <div id="rp"><div class="loading">Đang tính…</div></div>`;
   v.querySelector('#bc').onchange = e => { S.bc = e.target.value; show(); };
+  v.querySelector('#locKB').onchange = e => { S.locKB[id] = e.target.value; show(); };
   v.querySelector('#truoc')?.addEventListener('change', e => { S.truoc[id] = e.target.value; show(); });
   v.querySelector('#nhapTruoc')?.addEventListener('click', () => nhapTruocTuExcel(id));
   v.querySelector('#ss').onclick = () => viewSoSanh(v.querySelector('#rp'));
-  v.querySelector('#dk').oninput = e => { S.dongKy[id] = e.target.value; const t = v.querySelector('.rpt-title .ky'); if (t) t.textContent = e.target.value; };
+  v.querySelector('#dk').oninput = e => { S.dongKy[id] = e.target.value; const t = v.querySelector('.rpt-title .ky'); if (t) t.textContent = kyBC(id); };
   v.querySelector('#vb').oninput = e => { S.dongVB[id] = e.target.value; };
   try {
-    const kq = await tinh(id);
+    const kq = await tinh(id, { loc: true });
     S.kq = { id, kq };
-    v.querySelector('#rp').innerHTML = renderBang(id, kq, { dc: dcCua(id), coGhiChu: true });
+    const an = dongRong(id, kq);
+    v.querySelector('#rp').innerHTML = renderBang(id, kq, { dc: kbLoc(id) ? [] : dcCua(id), coGhiChu: !kbLoc(id), an });
     ganGhiChu(v.querySelector('#rp'), S.mau[id]);
     const ghi = [];
-    if (tuan && !S.truoc[id]) ghi.push('<div class="warnbox">Chưa chọn <b>lũy kế đến tuần trước</b> nên cột "Lũy kế đến tuần trước liền kề" đang bằng 0 và "Giá trị tăng thêm trong tuần" đang bằng toàn bộ lũy kế. Hãy chọn kỳ đã chốt hoặc bấm <b>Nhập lũy kế tuần trước từ file Excel…</b></div>');
+    if (kbLoc(id)) ghi.push(`<div class="okbox">🔎 Đang lọc theo <b>${esc(nhanKB(id))}</b>: chỉ tính dự án giao dịch tại KBNN này${an.size ? `, ẩn ${an.size} dòng không có số liệu` : ''}. Khi lọc: không áp dụng khoản "cộng thêm"${tuan ? '; cột "Lũy kế đến tuần trước" và "Giá trị tăng thêm trong tuần" để trống (kỳ đã lưu là số toàn khu vực)' : ''}; không lưu kỳ.</div>`);
+    if (tuan && !S.truoc[id] && !kbLoc(id)) ghi.push('<div class="warnbox">Chưa chọn <b>lũy kế đến tuần trước</b> nên cột "Lũy kế đến tuần trước liền kề" đang bằng 0 và "Giá trị tăng thêm trong tuần" đang bằng toàn bộ lũy kế. Hãy chọn kỳ đã chốt hoặc bấm <b>Nhập lũy kế tuần trước từ file Excel…</b></div>');
     try {
       const { f, dong } = await tinhDoiChieu(id);
       const conLech = dong.some(d => Math.abs(d.du) >= 1), khop = f?.tong && dong.every(d => Math.abs(d.f6 - d.f1) < 1);
@@ -669,23 +680,54 @@ async function viewBaoCao(v) {
     v.querySelector('#rp').insertAdjacentHTML('beforeend', `<div class="card no-print" id="doichieu"><h2>Đối chiếu tổng số: file hệ thống ↔ ${esc(E.BAO_CAO[id].ten)}</h2>
       <div id="dcbox"><div class="muted">Đang đối chiếu…</div></div></div>`);
     renderDoiChieu(v.querySelector('#dcbox'), id);
-    v.querySelector('#xuat')?.addEventListener('click', () => xuatExcel(id, kq).catch(fail));
+    v.querySelector('#xuat')?.addEventListener('click', () => xuatExcel(id, kq, kbLoc(id) ? { dongKy: kyBC(id), an, tenFile: `${S.mau[id].sheet} - KBNN ${kbLoc(id)} - ${(S.dongKy[id] || '').replace(/[\\/:*?"<>|]/g, '-')}.xlsx` } : {}).catch(fail));
     v.querySelector('#luu')?.addEventListener('click', () => luuKy(id, kq));
   } catch (e) { fail(e); v.querySelector('#rp').innerHTML = `<div class="card">${esc(viErr(e))}</div>`; }
 }
 const dcCua = id => S.dc.filter(d => d.bao_cao === id && d.su_dung);
 const anhChupCache = {};
-async function tinh(id, { boCT = false } = {}) {
+
+// ---- Lọc báo cáo theo mã KBNN (khối KBNN nơi dự án giao dịch trong file hệ thống)
+//   Khi lọc: chỉ tính dự án của KBNN đó; không áp dụng "cộng thêm" (không tách được theo KBNN);
+//   BC tuần: cột lũy kế đến tuần trước / tăng thêm trong tuần để trống (kỳ đã lưu là số toàn khu vực)
+const kbLoc = id => S.locKB?.[id] || '';
+const nguonBC = id => { const k = kbLoc(id), r = nguonCua(id); return k ? r.filter(x => x.kb === k) : r; };
+const COT_TUAN_TRUOC = ['H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'AC', 'AD', 'AE'];
+function dsKB(id) {
+  const l = E.BAO_CAO[id].nguon, ten = S.file?.[l]?.tong?.kb || {};
+  const ma = [...new Set(nguonCua(id).map(r => r.kb).filter(Boolean))].sort();
+  return ma.map(k => ({ k, ten: tenPhongKB(k, ten[k]?.ten) }));
+}
+function tenPhongKB(k, tenFile) {
+  const p = DTE.KB_PHONG[k];
+  if (p) return DTE.tenPhong(p);
+  return (tenFile || '').replace(/^.*?KBNN\s*/i, '').trim() || 'KBNN ' + k;
+}
+const nhanKB = id => { const k = kbLoc(id); return k ? `KBNN ${k} – ${tenPhongKB(k, S.file?.[E.BAO_CAO[id].nguon]?.tong?.kb?.[k]?.ten)}` : ''; };
+const kyBC = id => (S.dongKy[id] || '') + (kbLoc(id) ? ` (${nhanKB(id)})` : '');
+// Dòng không có số liệu (khi lọc KBNN): mọi cột số bằng 0
+function dongRong(id, kq) {
+  const an = new Set(), K = E.KIEU[id], pct = new Set(K.pct);
+  if (!kbLoc(id)) return an;
+  kq.forEach((o, i) => { if (i && Object.entries(o || {}).every(([c, v]) => pct.has(c) || COT_TUAN_TRUOC.includes(c) || !v || Math.abs(v) < 0.0005)) an.add(i); });
+  return an;
+}
+//   loc = true: áp dụng bộ lọc mã KBNN đang chọn ở tab Báo cáo
+async function tinh(id, { boCT = false, loc = false } = {}) {
+  const k = loc ? kbLoc(id) : '';
   const tr = S.truoc[id];
   let truoc = null;
-  if (E.BAO_CAO[id].loai === 'TUAN' && tr) {
+  if (E.BAO_CAO[id].loai === 'TUAN' && tr && !k) {
     truoc = anhChupCache[tr] ||= (await q(sb.from('th_ky').select('anh_chup').eq('id', tr).single())).anh_chup;
   }
-  return E.tinhBaoCao(id, S.mau[id], nguonCua(id), { dieuChinh: boCT ? [] : dcCua(id).map(d => ({ ...d, so_tien: Number(d.so_tien) })), truoc });
+  const rows = k ? nguonBC(id) : nguonCua(id);
+  const kq = E.tinhBaoCao(id, S.mau[id], rows, { dieuChinh: boCT || k ? [] : dcCua(id).map(d => ({ ...d, so_tien: Number(d.so_tien) })), truoc });
+  if (k && E.BAO_CAO[id].loai === 'TUAN') for (const o of kq) for (const c of COT_TUAN_TRUOC) if (o) o[c] = null;
+  return kq;
 }
 
 // Bảng HTML theo đúng tiêu đề cột của mẫu Excel
-function renderBang(id, kq, { dc = [], coGhiChu = false } = {}) {
+function renderBang(id, kq, { dc = [], coGhiChu = false, an = new Set() } = {}) {
   const mau = S.mau[id], bc = BO_CUC[id], cols = colLetters(bc.cuoi);
   const cells = new Map(mau.head.map(([a, v]) => [a, v]));
   const merges = mau.merges.map(m => { const [a, b] = m.split(':'); return { a: addr(a), b: addr(b) }; })
@@ -709,6 +751,7 @@ function renderBang(id, kq, { dc = [], coGhiChu = false } = {}) {
   const K = E.KIEU[id], pct = new Set(K.pct), dataCols = cols.slice(laThang(id) ? 3 : 2);
   const adj = new Map(); for (const d of dc) adj.set(d.dong + '|' + d.cot, (adj.get(d.dong + '|' + d.cot) || []).concat(d));
   const body = mau.rows.map((r, i) => {
+    if (an.has(i)) return '';
     const o = kq[i] || {};
     const lv = i === 0 ? 'l0' : r.loai === 'nhom' ? (/^[IVX]+$/.test(r.stt) ? 'l1' : 'l2') : '';
     return `<tr class="${lv}"><td class="c">${esc(r.stt)}</td><td class="nm" title="${esc(r.ten)}">${esc(r.ten || (i === 0 ? '' : ''))}</td>
@@ -722,11 +765,11 @@ function renderBang(id, kq, { dc = [], coGhiChu = false } = {}) {
   const tong = kq[0] || {};
   const kpi = laThang(id)
     ? [['Kế hoạch vốn', tong.D], ['Giải ngân', tong.G], ['Tỷ lệ giải ngân', null, tong.P]]
-    : [['Kế hoạch vốn', tong.C], ['Lũy kế giải ngân đến hết tuần', tong.Q], ['Tỷ lệ giải ngân', null, tong.Z], ['Tăng thêm trong tuần', tong.AC]];
+    : [['Kế hoạch vốn', tong.C], ['Lũy kế giải ngân đến hết tuần', tong.Q], ['Tỷ lệ giải ngân', null, tong.Z], ...(tong.AC === null ? [] : [['Tăng thêm trong tuần', tong.AC]])];
   const ttl = mau.head.filter(([a]) => addr(a).r < bc.dauBang && addr(a).c === 0).map(([a, v]) => [a, v]);
   return `<div class="card">
     <div class="kpi">${kpi.map(([t, v, p]) => `<div><span>${t}</span><b>${p !== undefined ? fmtPct(p) : fmt(v)}</b></div>`).join('')}</div>
-    <div class="rpt-title">${ttl.map(([a, v]) => a === bc.dongKy ? `<div class="ky">${esc(S.dongKy[id] || v)}</div>` : `<div class="${a === 'A1' || a === 'A2' ? 't1' : ''}">${esc(v)}</div>`).join('')}</div>
+    <div class="rpt-title">${ttl.map(([a, v]) => a === bc.dongKy ? `<div class="ky">${esc(kyBC(id) || v)}</div>` : `<div class="${a === 'A1' || a === 'A2' ? 't1' : ''}">${esc(v)}</div>`).join('')}</div>
     <div class="tbl-wrap tall"><table class="tbl rpt"><thead>${head}</thead><tbody>${body}</tbody></table></div>
     ${mau.ghi_chu ? `<p class="small muted"><i>${esc(mau.ghi_chu)}</i></p>` : ''}</div>`;
 }
@@ -804,7 +847,7 @@ document.addEventListener('change', async e => {
 });
 
 // ---------------------------------------------------------------- Xuất Excel
-async function xuatExcel(id, kq, { dongKy, dongVB, tenFile } = {}) {
+async function xuatExcel(id, kq, { dongKy, dongVB, tenFile, an = new Set() } = {}) {
   const ExcelJS = await loadExcelJS();
   const mau = S.mau[id], bc = BO_CUC[id], cols = colLetters(bc.cuoi), K = E.KIEU[id], pct = new Set(K.pct);
   const wbk = new ExcelJS.Workbook();
@@ -837,6 +880,7 @@ async function xuatExcel(id, kq, { dongKy, dongVB, tenFile } = {}) {
     const rn = mau.first + i, o = kq[i] || {};
     const bold = row.loai === 'nhom';
     const r = ws.getRow(rn);
+    if (an.has(i)) r.hidden = true;     // lọc KBNN: ẩn dòng không có số liệu
     const stt = row.stt !== '' && !Number.isNaN(Number(row.stt)) && !row.stt.includes('.') ? Number(row.stt) : row.stt;
     r.getCell(1).value = stt; r.getCell(2).value = row.ten;
     if (laThang(id) && row.kbnn) r.getCell(3).value = Number(row.kbnn) || row.kbnn;
