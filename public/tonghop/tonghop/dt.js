@@ -15,7 +15,7 @@ export const KB_PHONG = {
 export const tenPhong = p => !p ? '(chưa rõ KBNN)' : p === 'NV2' ? 'Phòng Nghiệp vụ 2' : 'Phòng giao dịch ' + p;
 
 // Cột số liệu lũy kế của file hệ thống: H/I = KHV kéo dài (KLHT/tạm ứng), K/L = KHV năm 2026
-const COT_NGUON = { TT15: { H: 'K', I: 'L', K: 'N', L: 'O' }, TT85: { H: 'L', I: 'M', K: 'R', L: 'S' } };
+const COT_NGUON = { TT15: { H: 'K', I: 'L', K: 'N', L: 'O' }, TT85: { H: 'L', I: 'M', K: 'R', L: 'S' }, TT37: { H: 'K', I: 'L', K: 'N', L: 'O' } };
 export const COT_KPI = ['D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 export const TEN_COT = {
   D: 'Tổng cộng', E: 'Thanh toán KLHT', F: 'Tạm ứng', G: 'Tổng cộng', H: 'Thanh toán KLHT', I: 'Tạm ứng',

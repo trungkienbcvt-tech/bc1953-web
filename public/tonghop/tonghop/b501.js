@@ -45,13 +45,20 @@ export function docTT15(rows) {
   if (!cMa || !cKD) throw new Error('File TT15: không tìm thấy cột "Mã số dự án" hoặc "Kế hoạch vốn kéo dài năm trước chuyển sang".');
   let start = rows.findIndex(r => txt(r?.[0]) === '1' && txt(r?.[1]) === '2');
   start = start < 0 ? Math.max(cMa.dong, cKD.dong) + 1 : start + 1;
-  const out = new Map(); let kb = '', tongDong = null;
+  const out = new Map(); let kb = '', tongDong = null, ghiThu = false;
+  const daCo = new Set();
   for (let i = start; i < rows.length; i++) {
     const r = rows[i] || [];
     const ma = txt(r[cMa.cot]);
-    if (tongDong === null && /tổng cộng/i.test(txt(r[1]))) tongDong = soTien(r[cKD.cot]);
-    if (!ma) { if (/^\d{4}$/.test(txt(r[0])) && /kbnn|kho bạc/i.test(txt(r[1]))) kb = txt(r[0]); continue; }
+    if (tongDong === null && /tổng cộng|tổng số/i.test(txt(r[1]))) tongDong = soTien(r[cKD.cot]);
+    if (!ma) {
+      if (/^\d{4}$/.test(txt(r[0])) && /kbnn|kho bạc/i.test(txt(r[1]))) kb = txt(r[0]);
+      // Báo cáo TT37: dự án vốn nước ngoài liệt kê 2 lần trong mục "Theo cơ chế ghi thu, ghi chi" → tính 1 lần
+      if (txt(r[0])) { ghiThu = /ghi thu/i.test(txt(r[1])); daCo.clear(); }
+      continue;
+    }
     if (!/^\d{4,}$/.test(ma)) continue;
+    if (ghiThu) { const k = ma + '|' + r.slice(cMa.cot + 1).map(txt).join('|'); if (daCo.has(k)) continue; daCo.add(k); }
     const x = out.get(ma) || { ma_da: ma, ten: txt(r[1]).replace(new RegExp('^' + ma + '\\s*-\\s*'), ''), kb, gt: 0, so_dong: 0 };
     x.gt += soTien(r[cKD.cot]); x.so_dong++;
     out.set(ma, x);

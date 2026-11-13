@@ -1,7 +1,7 @@
 // =====================================================================
 //  TỔNG HỢP GIẢI NGÂN THEO CHỦ ĐẦU TƯ
 //  Đầu vào : sheet CDT, BC TT 85, BC TT 15 (file xuất từ hệ thống)
-//  Đầu ra  : BC tuần CT (TT15), BC tuần CT (TT85), BC giải ngân tháng
+//  Đầu ra  : BC tuần CT (TT15, TT85, TT37), BC giải ngân tháng (TT85, TT37)
 //  Dữ liệu lưu trên Supabase; công thức tính ở tonghop/engine.js
 // =====================================================================
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -21,15 +21,18 @@ const TAB_THEO_VAI_TRO = { TH_PGD: ['da', 'bc', 'dt', 'b5'] };
 const coXuat = () => S.me?.vai_tro !== 'TH_PGD';
 const tabsCua = () => { const t = TAB_THEO_VAI_TRO[S.me?.vai_tro]; return t ? Object.fromEntries(Object.entries(TABS).filter(([k]) => t.includes(k))) : TABS; };
 const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo', dt: 'Biểu đối chiếu THBC', b5: 'Đối chiếu THBC – B5-01', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
-const NGUON_TEN = { CDT: 'Sheet CDT (danh mục dự án – chủ đầu tư)', TT85: 'Sheet BC TT 85', TT15: 'Sheet BC TT 15' };
+const NGUON_TEN = { CDT: 'Sheet CDT (danh mục dự án – chủ đầu tư)', TT85: 'Sheet BC TT 85', TT15: 'Sheet BC TT 15', TT37: 'Báo cáo TT37 (mẫu 01b/TTKHN)' };
+const LOAI_NGUON = ['TT85', 'TT15', 'TT37'];
 // Tên sheet thường gặp → loại dữ liệu
-const DOAN_SHEET = { CDT: /^\s*cdt\s*$/i, TT85: /tt\s*85/i, TT15: /tt\s*15/i };
+const DOAN_SHEET = { CDT: /^\s*cdt\s*$/i, TT85: /tt\s*85/i, TT15: /tt\s*15/i, TT37: /tt\s*_?37/i };
 // Bố cục mẫu
 const BO_CUC = {
   TT15: { cuoi: 'AE', dauBang: 6, dongKy: 'A4', dongVB: 'B5' },
   TT85: { cuoi: 'AE', dauBang: 6, dongKy: 'A4', dongVB: 'B5' },
   THANG: { cuoi: 'R', dauBang: 5, dongKy: 'A3', dongVB: 'B4' },
 };
+BO_CUC.TT37 = BO_CUC.TT15; BO_CUC.THANG37 = BO_CUC.THANG;
+const laThang = id => E.laThang(id);
 const COT_DC = {
   TUAN: { D: 'KHV kéo dài', E: 'KHV năm 2026', U: 'GN KHV kéo dài – Thanh toán KLHT', V: 'GN KHV kéo dài – Tạm ứng',
     X: 'GN KHV năm 2026 – Thanh toán KLHT', Y: 'GN KHV năm 2026 – Tạm ứng' },
@@ -123,6 +126,7 @@ const parseDMY = s => { const m = /(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s || '');
 async function boot() {
   try {
     S.mau = S.mau || await (await fetch(new URL('./mau.json', import.meta.url))).json();
+    for (const id of Object.keys(E.BAO_CAO)) S.mau[id] ||= S.mau[E.mauCua(id)];   // TT37 dùng mẫu TT15 / mẫu tháng
     const { data: { session } } = await sb.auth.getSession();
     if (!session) return renderLogin();
     S.me = (await q(sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle()));
@@ -227,7 +231,7 @@ async function taiDuLieu() {
   S.cdt = goi.cdt.map(([ma_da, ten_da, cdt, cdt2, kbnn, dac_thu, loai_ct, ctmt, thu_tu, sua_tay, them_tay, cap_nhat_luc, cap_nhat_boi, ctmt_2630]) =>
     ({ ma_da, ten_da, cdt, cdt2, kbnn, dac_thu, loai_ct, ctmt, ctmt_2630, thu_tu, sua_tay, them_tay, cap_nhat_luc, cap_nhat_boi }));
   const nguon = goi.nguon.map(([loai, ma_da, dia_diem, kb, so, ten]) => ({ loai, ma_da, dia_diem, kb, so, ten: ten || '' }));
-  S.nguon = { TT85: nguon.filter(r => r.loai === 'TT85'), TT15: nguon.filter(r => r.loai === 'TT15') };
+  S.nguon = Object.fromEntries(LOAI_NGUON.map(l => [l, nguon.filter(r => r.loai === l)]));
   S.dc = dc; S.ky = ky;
   S.ghiChu = coNguon ? await q(sb.from('th_ghi_chu').select('*')) : [];
   tinhGan();
@@ -254,10 +258,17 @@ function ganGhiChu(box, mau) {
 }
 function tinhGan() {
   S.gan = {};
-  for (const l of ['TT85', 'TT15']) S.gan[l] = E.ganCDT(S.nguon[l] || [], S.cdt || []);
-  S.kq = null;
+  for (const l of LOAI_NGUON) S.gan[l] = E.ganCDT(S.nguon[l] || [], S.cdt || []);
+  S.kq = null; nguonCache.clear();
 }
-const nguonCua = id => S.gan[E.BAO_CAO[id].nguon]?.rows || [];
+// Dòng nguồn của một báo cáo (BC tháng TT37: đổi cột về vị trí mẫu tháng đọc)
+const nguonCache = new Map();
+const nguonCua = id => {
+  const rows = S.gan[E.BAO_CAO[id].nguon]?.rows || [];
+  if (!E.BAO_CAO[id].doiCot) return rows;
+  let c = nguonCache.get(id); if (!c || c.rows !== rows) nguonCache.set(id, c = { rows, out: E.chuyenNguon(id, rows) });
+  return c.out;
+};
 
 // ================================================================ TAB 1: DỮ LIỆU ĐẦU VÀO
 function viewDuLieu(v) {
@@ -271,10 +282,10 @@ function viewDuLieu(v) {
   };
   v.innerHTML = `
     <div class="card"><h2>Dữ liệu đang dùng để lập báo cáo</h2>
-      <div class="src-grid">${card('CDT')}${card('TT85')}${card('TT15')}</div>
+      <div class="src-grid">${card('CDT')}${card('TT85')}${card('TT15')}${card('TT37')}</div>
       ${canEdit() ? `<div class="actions"><label class="btn primary">📂 Chọn file Excel để cập nhật…
         <input type="file" id="f" accept=".xlsx,.xls,.xlsm" hidden></label>
-        <span class="muted small">Có thể chọn cả file "BC Chủ đầu tư" (gồm 3 sheet) hoặc từng file xuất từ hệ thống. Dữ liệu mới sẽ thay toàn bộ dữ liệu cũ của sheet đó.</span></div>` : ''}
+        <span class="muted small">Có thể chọn cả file "BC Chủ đầu tư" (gồm 3 sheet) hoặc từng file xuất từ hệ thống (BC TT 85, BC TT 15, Báo cáo TT37 mẫu 01b/TTKHN). Dữ liệu mới sẽ thay toàn bộ dữ liệu cũ của loại đó.</span></div>` : ''}
       <div id="nhap"></div></div>
     <div class="card"><h2>Kiểm tra dữ liệu</h2><div id="kt"></div>
       <p class="small muted">Đối chiếu tổng số giữa file hệ thống và báo cáo: xem ở tab <b>Báo cáo</b>, cuối trang.</p></div>`;
@@ -286,7 +297,7 @@ function viewDuLieu(v) {
 async function tinhDoiChieu(id) {
   const kq = await tinh(id);
   const f = S.file[E.BAO_CAO[id].nguon];
-  return { f, dong: E.doiChieu(id, S.mau[id], nguonCua(id), f?.tong, dcCua(id), kq) };
+  return { f, dong: E.doiChieu(id, S.mau[id], nguonCua(id), E.chuyenTong(id, f?.tong), dcCua(id), kq) };
 }
 async function renderDoiChieu(box, id) {
   if (!nguonCua(id).length) { box.innerHTML = '<p class="muted">Chưa có dữ liệu nguồn.</p>'; return; }
@@ -297,7 +308,7 @@ async function renderDoiChieu(box, id) {
     const lech = n => Math.abs(n || 0) >= 1;
     const ten = d => `${d.cot} – ${esc(cot[d.cot] || d.cot)}`;
     const ly = [];
-    if (!coTong) ly.push(`<li>Chưa có số tổng của file hệ thống: hãy <b>tải lại file ${esc(E.BAO_CAO[id].nguon.replace('TT', 'BC TT '))}</b> để đối chiếu cột (1), (2).</li>`);
+    if (!coTong) ly.push(`<li>Chưa có số tổng của file hệ thống: hãy <b>tải lại file ${esc(NGUON_TEN[E.BAO_CAO[id].nguon])}</b> để đối chiếu cột (1), (2).</li>`);
     const l12 = dong.filter(d => coTong && lech(d.f1 - d.f2));
     if (l12.length) ly.push(`<li><b>File hệ thống tự lệch:</b> dòng "${esc(f.tong.nhan || 'TỔNG')}" khác cộng dòng tổng các KBNN – ${l12.map(d => `${ten(d)}: <b>${d0(d.f1 - d.f2)}</b> đ`).join('; ')}. Báo cáo tính theo chi tiết dự án nên không bị ảnh hưởng; nên kiểm tra lại số tổng trên hệ thống.</li>`);
     const kbl = dong.flatMap(d => d.kbLech.map(x => ({ ...x, d })));
@@ -308,7 +319,7 @@ async function renderDoiChieu(box, id) {
     if (kk.length) {
       const ds = E.kiemTra(id, S.mau[id], nguonCua(id)).filter(x => !x.ten.startsWith('(chưa có mã'));
       ly.push(`<li><b>Chủ đầu tư không có dòng tương ứng trên báo cáo</b> (không vào báo cáo): ${kk.map(d => `${ten(d)}: <b>${d0(d.khongKhop)}</b> đ`).join('; ')}.
-        <br>Gồm: ${ds.map(x => `${esc(x.ten)} (${x.so_da} dự án)`).join('; ')}. ${id === 'THANG' ? 'Thường do dòng của chủ đầu tư trên mẫu chỉ lọc một số mã KBNN, trong khi có dự án giao dịch ở KBNN khác.' : 'Thường do tên chủ đầu tư trong sheet CDT khác tên trên mẫu báo cáo.'}</li>`);
+        <br>Gồm: ${ds.map(x => `${esc(x.ten)} (${x.so_da} dự án)`).join('; ')}. ${laThang(id) ? 'Thường do dòng của chủ đầu tư trên mẫu chỉ lọc một số mã KBNN, trong khi có dự án giao dịch ở KBNN khác.' : 'Thường do tên chủ đầu tư trong sheet CDT khác tên trên mẫu báo cáo.'}</li>`);
     }
     const ct = dong.filter(d => lech(d.f5));
     if (ct.length) ly.push(`<li><b>Cộng thêm thủ công</b> (tab Cộng thêm): ${ct.map(d => `${ten(d)}: <b>${d0(d.f5)}</b> đ`).join('; ')}.</li>`);
@@ -335,7 +346,7 @@ async function renderDoiChieu(box, id) {
 function renderKiemTra(box) {
   if (!S.cdt?.length) { box.innerHTML = '<p class="muted">Chưa có sheet CDT.</p>'; return; }
   let h = '';
-  for (const l of ['TT85', 'TT15']) {
+  for (const l of LOAI_NGUON) {
     const g = S.gan[l];
     if (!g?.rows.length) { h += `<div class="warnbox">${esc(NGUON_TEN[l])}: chưa có dữ liệu.</div>`; continue; }
     if (g.thieu.length) {
@@ -344,11 +355,11 @@ function renderKiemTra(box) {
         ${g.thieu.map(t => `<tr><td>${esc(t.ma_da)}</td><td>${esc(t.ten)}</td>${canEditDM() ? `<td><button class="btn small" data-them="${esc(t.ma_da)}" data-ten="${esc(t.ten)}">+ Thêm vào danh mục</button></td>` : ''}</tr>`).join('')}</tbody></table></div></details></div>`;
     } else h += `<div class="okbox">${esc(NGUON_TEN[l])}: tất cả ${fmtDong(g.rows.length)} dòng dự án đều có trong sheet CDT.</div>`;
   }
-  for (const id of ['TT15', 'TT85', 'THANG']) {
+  for (const id of Object.keys(E.BAO_CAO)) {
     const rows = nguonCua(id); if (!rows.length) continue;
     const sot = E.kiemTra(id, S.mau[id], rows);
     h += sot.length
-      ? `<div class="warnbox"><b>${esc(E.BAO_CAO[id].ten)}: ${sot.length} chủ đầu tư không khớp dòng nào trên báo cáo</b> (tên trong sheet CDT khác tên trên mẫu báo cáo${id === 'THANG' ? ' hoặc khác mã KBNN' : ''}) – số liệu bị sót:
+      ? `<div class="warnbox"><b>${esc(E.BAO_CAO[id].ten)}: ${sot.length} chủ đầu tư không khớp dòng nào trên báo cáo</b> (tên trong sheet CDT khác tên trên mẫu báo cáo${laThang(id) ? ' hoặc khác mã KBNN' : ''}) – số liệu bị sót:
         <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Chủ đầu tư (theo sheet CDT)</th><th>Số dòng</th><th>Tổng số tiền các cột dùng (đồng)</th></tr></thead><tbody>
         ${sot.map(s => `<tr><td>${esc(s.ten)}</td><td class="num">${s.so_da}</td><td class="num">${fmtDong(s.tong)}</td></tr>`).join('')}</tbody></table></div></div>`
       : `<div class="okbox">${esc(E.BAO_CAO[id].ten)}: toàn bộ số liệu đều vào đúng dòng chủ đầu tư.</div>`;
@@ -368,10 +379,12 @@ async function docFile(file, box) {
     const names = wb.SheetNames;
     const doan = {};
     for (const [l, re] of Object.entries(DOAN_SHEET)) doan[l] = names.find(n => re.test(n) && !/tuan|tuần|thang|tháng/i.test(n)) || '';
+    // File xuất từ hệ thống (1 sheet "BaoCao"…): đoán theo tên file
+    for (const l of ['TT37', 'TT15', 'TT85']) if (!doan[l] && DOAN_SHEET[l].test(file.name) && !Object.values(doan).includes(names[0])) doan[l] = names[0];
     const opts = sel => `<option value="">— Không cập nhật —</option>` + names.map(n => `<option ${n === sel ? 'selected' : ''}>${esc(n)}</option>`).join('');
     box.innerHTML = `<div class="card form" style="margin-top:12px"><h3>File: ${esc(file.name)}</h3>
       <p class="muted small">Chọn sheet tương ứng cho từng loại dữ liệu:</p>
-      ${['CDT', 'TT85', 'TT15'].map(l => `<div class="map-row"><b>${l === 'CDT' ? 'CDT' : 'BC ' + l.replace('TT', 'TT ')}</b>
+      ${['CDT', ...LOAI_NGUON].map(l => `<div class="map-row"><b>${l === 'CDT' ? 'CDT' : 'BC ' + l.replace('TT', 'TT ')}</b>
         <select data-l="${l}">${opts(doan[l])}</select><span class="small muted" data-info="${l}"></span></div>`).join('')}
       <div class="actions"><button class="btn primary" id="go">⬆ Cập nhật lên máy chủ</button><button class="btn ghost" id="huy">Hủy</button></div></div>`;
     const parsed = {};
@@ -390,7 +403,7 @@ async function docFile(file, box) {
         info.textContent = `${fmtDong(parsed[l].rows.length)} dòng có mã DA${ky ? ' · ' + ky.tu + '–' + ky.den : ''}`;
       }
     };
-    ['CDT', 'TT85', 'TT15'].forEach(l => { doc(l); box.querySelector(`[data-l="${l}"]`).addEventListener('change', () => doc(l)); });
+    ['CDT', ...LOAI_NGUON].forEach(l => { doc(l); box.querySelector(`[data-l="${l}"]`).addEventListener('change', () => doc(l)); });
     box.querySelector('#huy').onclick = () => { box.innerHTML = ''; };
     box.querySelector('#go').onclick = async e => {
       const btn = e.target; btn.disabled = true;
@@ -508,7 +521,7 @@ function veHoanThien(v) {
       ${ds.map(x => `<tr><td>${esc(x.ma_da)}</td><td class="ten" title="${esc(x.ten)}">${esc(x.ten)}</td><td>${esc(x.kbnn || x.kb || '')}</td>
         <td class="small">${x.loi === 'CHUA_CO' ? '<span class="chip am">Chưa có trong danh mục</span>'
           : `<span class="chip am">Chủ đầu tư chưa đúng tên trên báo cáo</span><br>${esc(x.cdt2 || x.cdt || '(trống)')}`}</td>
-        <td class="num">${tr(x.khv)}</td><td class="num">${tr(x.gn)}</td><td class="c small">${[x.co85 && 'TT85', x.co15 && 'TT15'].filter(Boolean).join(', ')}</td>
+        <td class="num">${tr(x.khv)}</td><td class="num">${tr(x.gn)}</td><td class="c small">${[x.co85 && 'TT85', x.co15 && 'TT15', x.co37 && 'TT37'].filter(Boolean).join(', ')}</td>
         <td class="c"><button class="btn small primary" data-ht="${esc(x.ma_da)}">Hoàn thiện</button></td></tr>`).join('')}</tbody></table></div>`
       : '<div class="okbox" style="margin:8px 0 0">✓ Tất cả dự án đã phát sinh số liệu đều đã đủ thông tin.</div>'}</div>`;
   box.onclick = e => {
@@ -627,7 +640,7 @@ async function viewBaoCao(v) {
         ${coXuat() ? `<button class="btn primary" id="xuat">⬇ Xuất Excel</button>
         <button class="btn" onclick="window.print()">🖨 In</button>` : ''}
         ${canEdit() ? '<button class="btn ok" id="luu">💾 Lưu kỳ báo cáo…</button>' : ''}
-        <button class="btn" id="ss">🔍 So sánh TT15 ↔ TT85</button>
+        <button class="btn" id="ss">🔍 So sánh TT15 / TT85 / TT37</button>
         <span class="muted small">Đơn vị: triệu đồng. Ô tô màu cam có khoản "cộng thêm".</span>
       </div>
     </div>
@@ -693,21 +706,21 @@ function renderBang(id, kq, { dc = [], coGhiChu = false } = {}) {
     if (coGhiChu && r === bc.dauBang) head += `<th class="gc-col" rowspan="${mau.first - bc.dauBang}">Ghi chú</th>`;
     head += '</tr>';
   }
-  const K = E.KIEU[id], pct = new Set(K.pct), dataCols = cols.slice(id === 'THANG' ? 3 : 2);
+  const K = E.KIEU[id], pct = new Set(K.pct), dataCols = cols.slice(laThang(id) ? 3 : 2);
   const adj = new Map(); for (const d of dc) adj.set(d.dong + '|' + d.cot, (adj.get(d.dong + '|' + d.cot) || []).concat(d));
   const body = mau.rows.map((r, i) => {
     const o = kq[i] || {};
     const lv = i === 0 ? 'l0' : r.loai === 'nhom' ? (/^[IVX]+$/.test(r.stt) ? 'l1' : 'l2') : '';
     return `<tr class="${lv}"><td class="c">${esc(r.stt)}</td><td class="nm" title="${esc(r.ten)}">${esc(r.ten || (i === 0 ? '' : ''))}</td>
-      ${id === 'THANG' ? `<td class="c">${esc(r.kbnn || '')}</td>` : ''}
+      ${laThang(id) ? `<td class="c">${esc(r.kbnn || '')}</td>` : ''}
       ${dataCols.map(c => {
         const val = o[c]; const a = adj.get(i + '|' + c);
-        const t = pct.has(c) ? fmtPct(val) : ((c === 'F' || c === 'G') && id !== 'THANG' && !val ? '' : fmt(val));
+        const t = pct.has(c) ? fmtPct(val) : ((c === 'F' || c === 'G') && !laThang(id) && !val ? '' : fmt(val));
         return `<td class="num ${a ? 'adj' : ''} ${val < -0.5 ? 'neg' : ''}" ${a ? `title="${esc(a.map(x => `Cộng thêm ${x.so_tien} – ${x.ghi_chu || ''}`).join('\n'))}"` : ''}>${t}</td>`;
       }).join('')}${coGhiChu ? `<td class="gc-col">${i === 0 ? '' : oGhiChu(id, i)}</td>` : ''}</tr>`;
   }).join('');
   const tong = kq[0] || {};
-  const kpi = id === 'THANG'
+  const kpi = laThang(id)
     ? [['Kế hoạch vốn', tong.D], ['Giải ngân', tong.G], ['Tỷ lệ giải ngân', null, tong.P]]
     : [['Kế hoạch vốn', tong.C], ['Lũy kế giải ngân đến hết tuần', tong.Q], ['Tỷ lệ giải ngân', null, tong.Z], ['Tăng thêm trong tuần', tong.AC]];
   const ttl = mau.head.filter(([a]) => addr(a).r < bc.dauBang && addr(a).c === 0).map(([a, v]) => [a, v]);
@@ -819,18 +832,18 @@ async function xuatExcel(id, kq, { dongKy, dongVB, tenFile } = {}) {
   }
   for (const m of mau.merges) { try { ws.mergeCells(m); } catch { } }
   ws.getRow(bc.dauBang).height = 30;
-  const dataCols = cols.slice(id === 'THANG' ? 3 : 2);
+  const dataCols = cols.slice(laThang(id) ? 3 : 2);
   mau.rows.forEach((row, i) => {
     const rn = mau.first + i, o = kq[i] || {};
     const bold = row.loai === 'nhom';
     const r = ws.getRow(rn);
     const stt = row.stt !== '' && !Number.isNaN(Number(row.stt)) && !row.stt.includes('.') ? Number(row.stt) : row.stt;
     r.getCell(1).value = stt; r.getCell(2).value = row.ten;
-    if (id === 'THANG' && row.kbnn) r.getCell(3).value = Number(row.kbnn) || row.kbnn;
+    if (laThang(id) && row.kbnn) r.getCell(3).value = Number(row.kbnn) || row.kbnn;
     dataCols.forEach(L => {
       const cell = r.getCell(E.colIdx(L) + 1);
       let v = o[L];
-      if ((L === 'F' || L === 'G') && id !== 'THANG' && !v) v = null;
+      if ((L === 'F' || L === 'G') && !laThang(id) && !v) v = null;
       if (v !== null && v !== undefined && Number.isFinite(v)) cell.value = pct.has(L) ? v : Math.round(v * 1e6) / 1e6;
       cell.numFmt = pct.has(L) ? '0.0%' : '#,##0;[Red]-#,##0;"-"';
     });
@@ -850,31 +863,44 @@ async function xuatExcel(id, kq, { dongKy, dongVB, tenFile } = {}) {
   a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
 
-// ================================================================ SO SÁNH TT15 ↔ TT85
-const SS = { cot: 'Q', chiLech: true, sapXep: 'mau', boCT: false, nguong: 0.5 };
+// ================================================================ SO SÁNH BÁO CÁO TUẦN THEO CẶP NGUỒN (TT15 / TT85 / TT37)
+const SS = { cot: 'Q', chiLech: true, sapXep: 'mau', boCT: false, nguong: 0.5, cap: 'TT15|TT85' };
+const SS_CAP = { 'TT15|TT85': 'TT15 ↔ TT85', 'TT37|TT85': 'TT37 ↔ TT85', 'TT15|TT37': 'TT15 ↔ TT37' };
+const capSS = () => SS.cap.split('|');
+const khoaGhiChuSS = () => SS.cap === 'TT15|TT85' ? 'SS' : 'SS_' + SS.cap.replace('|', '_');
 async function viewSoSanh(box) {
   box.innerHTML = '<div class="loading">Đang so sánh…</div>';
   try {
-    if (!nguonCua('TT15').length || !nguonCua('TT85').length) throw new Error('Cần có đủ dữ liệu BC TT 15 và BC TT 85.');
-    const [k15, k85] = await Promise.all([tinh('TT15', { boCT: SS.boCT }), tinh('TT85', { boCT: SS.boCT })]);
+    const [A, B] = capSS(), KGC = khoaGhiChuSS();
+    const chon = `<label style="min-width:0">So sánh<select id="ssCap">${Object.entries(SS_CAP).map(([k, t]) => `<option value="${k}" ${k === SS.cap ? 'selected' : ''}>${t}</option>`).join('')}</select></label>`;
+    const thieu = [A, B].filter(l => !nguonCua(l).length);
+    if (thieu.length) {
+      box.innerHTML = `<div class="card"><div class="actions" style="margin-top:0"><button class="btn" id="ssBack">← Quay lại báo cáo</button>${chon}</div>
+        <p class="muted">Chưa có dữ liệu ${thieu.map(l => esc(NGUON_TEN[l])).join(', ')} – Phòng Nghiệp vụ 2 nạp ở mục <b>Dữ liệu đầu vào</b>.</p></div>`;
+      box.querySelector('#ssBack').onclick = () => show();
+      box.querySelector('#ssCap').onchange = e => { SS.cap = e.target.value; viewSoSanh(box); };
+      return;
+    }
+    const [k15, k85] = await Promise.all([tinh(A, { boCT: SS.boCT }), tinh(B, { boCT: SS.boCT })]);
     const ss = E.soSanhTuan(S.mau.TT15, k15, k85);
     const CT = E.SS_CHI_TIEU, ten = Object.fromEntries(CT.map(c => [c.cot, c.ten]));
     const lechNho = n => Math.abs(n || 0) < SS.nguong;
     const f1 = n => (n === null || n === undefined) ? '' : (Math.abs(n) < 0.05 ? '-' : n.toLocaleString('vi-VN', { maximumFractionDigits: 1 }));
     const cls = n => lechNho(n) ? '' : (n > 0 ? 'duong' : 'am');
     const tong = ss[0];
-    const k15ky = S.file.TT15?.ky_in?.match(/đến ngày\s*([\d/]+)/i)?.[1], k85ky = S.file.TT85?.ky_in?.match(/đến ngày\s*([\d/]+)/i)?.[1];
+    const k15ky = S.file[A]?.ky_in?.match(/đến ngày\s*([\d/]+)/i)?.[1], k85ky = S.file[B]?.ky_in?.match(/đến ngày\s*([\d/]+)/i)?.[1];
     let ds = ss.filter((r, i) => i > 0 && r.loai === 'ct' && (!SS.chiLech || CT.some(c => !lechNho(r.lech[c.cot]))));
     if (SS.sapXep === 'lech') ds = [...ds].sort((a, b) => Math.abs(b.lech[SS.cot]) - Math.abs(a.lech[SS.cot]));
     const soLech = ss.filter((r, i) => i > 0 && r.loai === 'ct' && CT.some(c => !lechNho(r.lech[c.cot]))).length;
     const ctCon = ['D', 'E', 'U', 'V', 'X', 'Y'];
     box.innerHTML = `<div class="card">
       <div class="actions" style="margin-top:0"><button class="btn" id="ssBack">← Quay lại báo cáo</button>
+        ${chon}
         ${coXuat() ? '<button class="btn" id="ssXuat">⬇ Xuất Excel so sánh</button>' : ''}
-        <b style="margin-left:8px;color:var(--navy)">So sánh Báo cáo tuần theo chủ đầu tư: TT15 ↔ TT85</b></div>
-      ${k15ky && k85ky && k15ky !== k85ky ? `<div class="warnbox">⚠ Hai file khác ngày: <b>BC TT 15 in đến ${esc(k15ky)}</b>, <b>BC TT 85 in đến ${esc(k85ky)}</b>. Một phần chênh lệch là do thời điểm số liệu. Nên tải 2 file cùng ngày để so sánh chính xác.</div>` : ''}
+        <b style="margin-left:8px;color:var(--navy)">So sánh Báo cáo tuần theo chủ đầu tư: ${A} ↔ ${B}</b></div>
+      ${k15ky && k85ky && k15ky !== k85ky ? `<div class="warnbox">⚠ Hai file khác ngày: <b>${A} in đến ${esc(k15ky)}</b>, <b>${B} in đến ${esc(k85ky)}</b>. Một phần chênh lệch là do thời điểm số liệu. Nên tải 2 file cùng ngày để so sánh chính xác.</div>` : ''}
       <h3>Tổng cộng toàn tỉnh</h3>
-      <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Chỉ tiêu (triệu đồng)</th><th>Báo cáo TT15</th><th>Báo cáo TT85</th><th>Chênh lệch<br>TT15 − TT85</th><th>Tỷ lệ chênh</th></tr></thead>
+      <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Chỉ tiêu (triệu đồng)</th><th>Báo cáo ${A}</th><th>Báo cáo ${B}</th><th>Chênh lệch<br>${A} − ${B}</th><th>Tỷ lệ chênh</th></tr></thead>
       <tbody>${CT.map(c => `<tr class="${c.cot === SS.cot ? 'chon' : ''}" data-cot="${c.cot}" style="cursor:pointer" title="Bấm để so sánh theo chỉ tiêu này">
         <td>${c.cot} – ${esc(c.ten)}</td><td class="num">${f1(tong.tt15[c.cot])}</td><td class="num">${f1(tong.tt85[c.cot])}</td>
         <td class="num ${cls(tong.lech[c.cot])}"><b>${f1(tong.lech[c.cot])}</b></td>
@@ -886,22 +912,23 @@ async function viewSoSanh(box) {
         <label style="flex-direction:row;align-items:center;gap:6px;min-width:0"><input type="checkbox" id="ssChi" ${SS.chiLech ? 'checked' : ''} style="width:auto"> Chỉ hiện dòng có chênh lệch</label>
         <label style="flex-direction:row;align-items:center;gap:6px;min-width:0"><input type="checkbox" id="ssBo" ${SS.boCT ? 'checked' : ''} style="width:auto"> Bỏ khoản cộng thêm khi so sánh</label>
       </div>
-      <div class="tbl-wrap tall"><table class="tbl ss"><thead><tr><th>STT</th><th>Chủ đầu tư</th><th>TT15</th><th>TT85</th><th>Chênh lệch</th><th>Lệch ở các chỉ tiêu khác</th><th>Ghi chú</th><th></th></tr></thead>
+      <div class="tbl-wrap tall"><table class="tbl ss"><thead><tr><th>STT</th><th>Chủ đầu tư</th><th>${A}</th><th>${B}</th><th>Chênh lệch</th><th>Lệch ở các chỉ tiêu khác</th><th>Ghi chú</th><th></th></tr></thead>
       <tbody>${ds.map(r => `<tr><td class="c">${esc(r.stt)}</td><td>${esc(r.ten)}</td>
         <td class="num">${f1(r.tt15[SS.cot])}</td><td class="num">${f1(r.tt85[SS.cot])}</td><td class="num ${cls(r.lech[SS.cot])}"><b>${f1(r.lech[SS.cot])}</b></td>
         <td class="small">${ctCon.filter(c => c !== SS.cot && !lechNho(r.lech[c])).map(c => `<span class="chip ${cls(r.lech[c])}" title="${esc(ten[c])}">${esc(ten[c])}: ${f1(r.lech[c])}</span>`).join(' ')}</td>
-        <td class="gc-col">${oGhiChu('SS', r.i)}</td>
+        <td class="gc-col">${oGhiChu(KGC, r.i)}</td>
         <td class="c"><button class="btn small" data-da="${r.i}">Xem dự án</button></td></tr>`).join('') || '<tr><td colspan="8" class="empty">Không có chênh lệch.</td></tr>'}</tbody></table></div>
-      <p class="small muted">Đơn vị: triệu đồng. Chênh lệch = TT15 − TT85; xanh: TT15 lớn hơn, đỏ: TT85 lớn hơn. Bỏ qua chênh dưới ${SS.nguong} triệu (làm tròn).</p></div>`;
+      <p class="small muted">Đơn vị: triệu đồng. Chênh lệch = ${A} − ${B}; xanh: ${A} lớn hơn, đỏ: ${B} lớn hơn. Bỏ qua chênh dưới ${SS.nguong} triệu (làm tròn).</p></div>`;
     const lai = () => viewSoSanh(box);
     box.querySelector('#ssBack').onclick = () => show();
     box.querySelector('#ssCot').onchange = e => { SS.cot = e.target.value; lai(); };
     box.querySelector('#ssSap').onchange = e => { SS.sapXep = e.target.value; lai(); };
     box.querySelector('#ssChi').onchange = e => { SS.chiLech = e.target.checked; lai(); };
     box.querySelector('#ssBo').onchange = e => { SS.boCT = e.target.checked; lai(); };
+    box.querySelector('#ssCap').onchange = e => { SS.cap = e.target.value; lai(); };
     box.querySelectorAll('tr[data-cot]').forEach(tr => tr.onclick = () => { SS.cot = tr.dataset.cot; lai(); });
     box.querySelector('#ssXuat')?.addEventListener('click', () => xuatSoSanh(ss).catch(fail));
-    ganGhiChu(box, S.mau.TT15);
+    ganGhiChu(box, S.mau[A]);
     box.querySelector('tbody:last-of-type') && box.querySelectorAll('[data-da]').forEach(b => b.onclick = () => xemDuAnLech(ss[+b.dataset.da]));
   } catch (e) { fail(e); box.innerHTML = `<div class="card">${esc(viErr(e))} <button class="btn" onclick="location.reload()">Tải lại</button></div>`; }
 }
@@ -909,39 +936,41 @@ async function viewSoSanh(box) {
 async function xemDuAnLech(r) {
   const CT = E.SS_CHI_TIEU, ten = Object.fromEntries(CT.map(c => [c.cot, c.ten]));
   const tenDA = new Map((S.cdt || []).map(x => [x.ma_da, x.ten_da]));
-  const tenNguon = new Map([...nguonCua('TT15'), ...nguonCua('TT85')].filter(x => x.ten).map(x => [x.ma_da, x.ten]));
+  const [A, B] = capSS();
+  const tenNguon = new Map([...nguonCua(A), ...nguonCua(B)].filter(x => x.ten).map(x => [x.ma_da, x.ten]));
   const lechNho = n => Math.abs(n || 0) < SS.nguong;
   const f1 = n => Math.abs(n || 0) < 0.05 ? '-' : n.toLocaleString('vi-VN', { maximumFractionDigits: 1 });
   const cls = n => lechNho(n) ? '' : (n > 0 ? 'duong' : 'am');
-  let ds = E.duAnCuaCDT(r.ten, nguonCua('TT15'), nguonCua('TT85'));
+  let ds = E.duAnCuaCDT(r.ten, nguonCua(A), nguonCua(B), A, B);
   const tongLech = ds.reduce((a, d) => a + d.lech[SS.cot], 0);
   const coLech = ds.filter(d => CT.some(c => !lechNho(d.lech[c.cot])) || d.co15 !== d.co85).sort((a, b) => Math.abs(b.lech[SS.cot]) - Math.abs(a.lech[SS.cot]));
   const ct = id => SS.boCT ? [] : dcCua(id).filter(d => d.dong === r.i);
-  const ct15 = ct('TT15'), ct85 = ct('TT85');
-  const ghiCT = [...ct15.map(d => `TT15 cộng thêm ${d.so_tien} triệu vào cột ${d.cot}`), ...ct85.map(d => `TT85 cộng thêm ${d.so_tien} triệu vào cột ${d.cot}`)];
+  const ct15 = ct(A), ct85 = ct(B);
+  const ghiCT = [...ct15.map(d => `${A} cộng thêm ${d.so_tien} triệu vào cột ${d.cot}`), ...ct85.map(d => `${B} cộng thêm ${d.so_tien} triệu vào cột ${d.cot}`)];
   const conLai = r.lech[SS.cot] - tongLech;
   await modal(`Chênh lệch theo dự án – ${esc(r.ten)}`, `<div style="min-width:min(1100px,90vw)">
-    <p>Chỉ tiêu <b>${esc(ten[SS.cot])}</b>: TT15 <b>${f1(r.tt15[SS.cot])}</b> · TT85 <b>${f1(r.tt85[SS.cot])}</b> · chênh <b class="${cls(r.lech[SS.cot])}">${f1(r.lech[SS.cot])}</b> triệu.
+    <p>Chỉ tiêu <b>${esc(ten[SS.cot])}</b>: ${A} <b>${f1(r.tt15[SS.cot])}</b> · ${B} <b>${f1(r.tt85[SS.cot])}</b> · chênh <b class="${cls(r.lech[SS.cot])}">${f1(r.lech[SS.cot])}</b> triệu.
       ${ds.length} dự án, <b>${coLech.length}</b> dự án có chênh lệch.</p>
     ${ghiCT.length ? `<div class="warnbox">Khoản cộng thêm ở dòng này: ${ghiCT.map(esc).join('; ')}.${lechNho(conLai) ? '' : ` Phần chênh do cộng thêm (chỉ tiêu đang xem): <b>${f1(conLai)}</b> triệu.`}</div>` : ''}
-    <div class="tbl-wrap" style="max-height:60vh;overflow:auto"><table class="tbl ss"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Có trong</th><th>TT15</th><th>TT85</th><th>Chênh lệch</th><th>Lệch ở chỉ tiêu khác</th></tr></thead>
+    <div class="tbl-wrap" style="max-height:60vh;overflow:auto"><table class="tbl ss"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Có trong</th><th>${A}</th><th>${B}</th><th>Chênh lệch</th><th>Lệch ở chỉ tiêu khác</th></tr></thead>
     <tbody>${coLech.map(d => `<tr><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || tenNguon.get(d.ma_da) || '')}">${esc(tenDA.get(d.ma_da) || tenNguon.get(d.ma_da) || '')}</td>
-      <td class="c">${d.co15 && d.co85 ? 'Cả hai' : d.co15 ? '<span class="chip duong">Chỉ TT15</span>' : '<span class="chip am">Chỉ TT85</span>'}</td>
+      <td class="c">${d.co15 && d.co85 ? 'Cả hai' : d.co15 ? `<span class="chip duong">Chỉ ${A}</span>` : `<span class="chip am">Chỉ ${B}</span>`}</td>
       <td class="num">${f1(d.tt15[SS.cot])}</td><td class="num">${f1(d.tt85[SS.cot])}</td><td class="num ${cls(d.lech[SS.cot])}"><b>${f1(d.lech[SS.cot])}</b></td>
       <td class="small">${['D', 'E', 'U', 'V', 'X', 'Y'].filter(c => c !== SS.cot && !lechNho(d.lech[c])).map(c => `<span class="chip ${cls(d.lech[c])}">${esc(ten[c])}: ${f1(d.lech[c])}</span>`).join(' ')}</td></tr>`).join('')
       || '<tr><td colspan="7" class="empty">Không có dự án nào chênh lệch' + (ghiCT.length ? ' – chênh lệch của dòng này do khoản cộng thêm.' : '.') + '</td></tr>'}</tbody></table></div>
-    <p class="small muted">"Chỉ TT15" / "Chỉ TT85": dự án chỉ xuất hiện trong một file hệ thống.</p></div>`, null, 'Đóng');
+    <p class="small muted">"Chỉ ${A}" / "Chỉ ${B}": dự án chỉ xuất hiện trong một file hệ thống.</p></div>`, null, 'Đóng');
 }
 
 async function xuatSoSanh(ss) {
   const ExcelJS = await loadExcelJS();
   const CT = E.SS_CHI_TIEU;
-  const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('So sanh TT15-TT85', { views: [{ state: 'frozen', xSplit: 2, ySplit: 2 }] });
+  const [A, B] = capSS();
+  const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet(`So sanh ${A}-${B}`, { views: [{ state: 'frozen', xSplit: 2, ySplit: 2 }] });
   ws.addRow(['STT', 'Chủ đầu tư', ...CT.flatMap(c => [c.ten, '', '']), 'Ghi chú']);
-  ws.addRow(['', '', ...CT.flatMap(() => ['TT15', 'TT85', 'Chênh lệch'])]);
+  ws.addRow(['', '', ...CT.flatMap(() => [A, B, 'Chênh lệch'])]);
   CT.forEach((c, i) => ws.mergeCells(1, 3 + i * 3, 1, 5 + i * 3));
   for (const r of ss) {
-    const row = ws.addRow([r.stt, r.ten, ...CT.flatMap(c => [r.tt15[c.cot] || 0, r.tt85[c.cot] || 0, r.lech[c.cot] || 0]), ghiChu('SS', r.i)?.noi_dung || '']);
+    const row = ws.addRow([r.stt, r.ten, ...CT.flatMap(c => [r.tt15[c.cot] || 0, r.tt85[c.cot] || 0, r.lech[c.cot] || 0]), ghiChu(khoaGhiChuSS(), r.i)?.noi_dung || '']);
     if (r.loai === 'nhom') row.font = { bold: true };
     CT.forEach((c, i) => { const cell = row.getCell(5 + i * 3); if (Math.abs(r.lech[c.cot]) >= SS.nguong) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF4E5' } }; });
   }
@@ -952,12 +981,12 @@ async function xuatSoSanh(ss) {
   const buf = await wb.xlsx.writeBuffer();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-  a.download = `So sanh BC tuan TT15 - TT85 ${ddmmyyyy(new Date()).replace(/\//g, '.')}.xlsx`; a.click();
+  a.download = `So sanh BC tuan ${A} - ${B} ${ddmmyyyy(new Date()).replace(/\//g, '.')}.xlsx`; a.click();
 }
 
 // ================================================================ ĐỐI CHIẾU THBC (TT15) ↔ B5-01
 const B5S = { file: {}, kq: null, loc: 'lech', tim: '' };
-const B5_TEN = { TT15: '2461_TT15 (THBC – mẫu 01b/TTKHN)', XA: 'B5-01 Ngân sách xã/phường', TINH: 'B5-01 Ngân sách tỉnh' };
+const B5_TEN = { TT15: '2461_TT15 hoặc Báo cáo TT37 (THBC – mẫu 01b/TTKHN)', XA: 'B5-01 Ngân sách xã/phường', TINH: 'B5-01 Ngân sách tỉnh' };
 function viewB501(v) {
   const f = B5S.file;
   const o = loai => {
@@ -1143,10 +1172,11 @@ async function viewMotKy(v, kyId) {
 boot();
 
 // ================================================================ BIỂU ĐỐI CHIẾU THBC (Đối chiếu KPI / Đối chiếu 1953)
-//   4 biểu: {KPI, 1953} × {TT15, TT85} + so sánh TT15 ↔ TT85 cho từng mẫu
-const DTS = { mau: 'KPI', nguon: 'TT15', chiLech: true, cache: null, mauDT: null };
+//   6 biểu: {KPI, 1953} × {TT15, TT85, TT37} + so sánh theo cặp nguồn cho từng mẫu
+const DTS = { mau: 'KPI', nguon: 'TT15', cap: 'TT15|TT85', chiLech: true, cache: null, mauDT: null };
 const DT_MAU = { KPI: 'Đối chiếu KPI', CV1953: 'Đối chiếu 1953' };
-const DT_NGUON = { TT15: 'Số liệu theo TT15', TT85: 'Số liệu theo TT85', SS: 'So sánh TT15 ↔ TT85' };
+const DT_NGUON = { TT15: 'Số liệu theo TT15', TT85: 'Số liệu theo TT85', TT37: 'Số liệu theo TT37', SS: 'So sánh hai nguồn' };
+const capDT = () => DTS.cap.split('|');
 const DT_SAI_SO = 0.0005;            // triệu đồng (< 1.000 đ coi như khớp)
 const dtCot = () => DTS.mau === 'KPI' ? DTE.COT_KPI : ['D'];
 const dtCotSS = () => DTS.mau === 'KPI' ? ['D', 'G', 'J'] : ['D'];
@@ -1156,8 +1186,7 @@ const kyDT = l => { const den = /đến ngày\s*([\d/]+)/i.exec(S.file?.[l]?.ky_
 async function tinhDTCache() {
   DTS.mauDT ||= await (await fetch(new URL('./mau_dt.json', import.meta.url))).json();
   if (DTS.cache?.gan === S.gan) return DTS.cache;
-  const kq = { TT15: DTE.tinhDT(DTS.mauDT, 'TT15', nguonCua('TT15'), S.cdt), TT85: DTE.tinhDT(DTS.mauDT, 'TT85', nguonCua('TT85'), S.cdt) };
-  kq.SS = DTE.soSanhDT(DTS.mauDT, kq.TT15, kq.TT85);
+  const kq = Object.fromEntries(LOAI_NGUON.map(l => [l, DTE.tinhDT(DTS.mauDT, l, nguonCua(l), S.cdt)]));
   return (DTS.cache = { gan: S.gan, kq });
 }
 
@@ -1169,7 +1198,8 @@ async function viewDT(v) {
       <div class="bar">
         <label>Mẫu biểu<select id="dtMau">${Object.entries(DT_MAU).map(([k, t]) => `<option value="${k}" ${k === DTS.mau ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
         <label>Số liệu<select id="dtNguon">${Object.entries(DT_NGUON).map(([k, t]) => `<option value="${k}" ${k === DTS.nguon ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
-        ${ss ? `<label class="chk"><input type="checkbox" id="dtLech" ${DTS.chiLech ? 'checked' : ''}> Chỉ hiện dòng chênh lệch</label>` : ''}
+        ${ss ? `<label>Cặp so sánh<select id="dtCap">${Object.entries(SS_CAP).map(([k, t]) => `<option value="${k}" ${k === DTS.cap ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+          <label class="chk"><input type="checkbox" id="dtLech" ${DTS.chiLech ? 'checked' : ''}> Chỉ hiện dòng chênh lệch</label>` : ''}
       </div>
       <div class="actions">
         ${coXuat() ? `<button class="btn primary" id="dtXuat">⬇ Xuất Excel</button>${ss ? '' : '<button class="btn" onclick="window.print()">🖨 In</button>'}` : ''}
@@ -1180,11 +1210,13 @@ async function viewDT(v) {
   v.querySelector('#dtMau').onchange = e => { DTS.mau = e.target.value; viewDT(v); };
   v.querySelector('#dtNguon').onchange = e => { DTS.nguon = e.target.value; viewDT(v); };
   v.querySelector('#dtLech')?.addEventListener('change', e => { DTS.chiLech = e.target.checked; viewDT(v); });
+  v.querySelector('#dtCap')?.addEventListener('change', e => { DTS.cap = e.target.value; viewDT(v); });
   const box = v.querySelector('#dtKq');
   try {
-    if (!S.nguon?.TT15?.length && !S.nguon?.TT85?.length) { box.innerHTML = '<div class="card"><p class="muted">Chưa có số liệu TT15/TT85. Phòng Nghiệp vụ 2 nạp file ở mục <b>Dữ liệu đầu vào</b>.</p></div>'; return; }
+    const can = ss ? capDT() : [DTS.nguon], thieu = can.filter(l => !S.nguon?.[l]?.length);
+    if (thieu.length) { box.innerHTML = `<div class="card"><p class="muted">Chưa có số liệu ${thieu.map(l => esc(NGUON_TEN[l])).join(', ')}. Phòng Nghiệp vụ 2 nạp file ở mục <b>Dữ liệu đầu vào</b>.</p></div>`; return; }
     const { kq } = await tinhDTCache();
-    if (ss) veSoSanhDT(box, kq); else veBieuDT(box, kq[DTS.nguon]);
+    if (ss) { const [A, B] = capDT(); kq.SS = DTE.soSanhDT(DTS.mauDT, kq[A], kq[B]); veSoSanhDT(box, kq); } else veBieuDT(box, kq[DTS.nguon]);
     v.querySelector('#dtXuat')?.addEventListener('click', () => xuatDT(kq).catch(fail));
   } catch (e) { fail(e); box.innerHTML = `<div class="card">${esc(viErr(e))}</div>`; }
 }
@@ -1242,7 +1274,7 @@ async function xemDuAnDT(x, l) {
 }
 
 function veSoSanhDT(box, kq) {
-  const mau = DTS.mauDT, s = kq.SS, cot = dtCotSS();
+  const mau = DTS.mauDT, s = kq.SS, cot = dtCotSS(), [A, B] = capDT();
   const ba = (a, b, lch) => cot.map(c => `<td class="num">${f3(a?.[c])}</td><td class="num">${f3(b?.[c])}</td><td class="num ${Math.abs(lch[c]) < DT_SAI_SO ? '' : lch[c] > 0 ? 'duong' : 'am'}"><b>${f3(lch[c])}</b></td>`).join('');
   const leafLech = s.dong.filter((d, i) => mau.rows[i].kieu === 'ct' && coLechDT(d.lech)).length + s.thua.filter(t => coLechDT(t.lech)).length;
   const hien = (i) => !DTS.chiLech || coLechDT(s.dong[i].lech);
@@ -1251,15 +1283,15 @@ function veSoSanhDT(box, kq) {
     + s.thua.map((t, j) => !DTS.chiLech || coLechDT(t.lech) ? `<tr class="click" data-t="${j}"><td class="c">-</td><td class="nm" title="${esc(t.ly_do)}">${esc(t.dv)}</td><td>${esc(DTE.tenPhong(t.phong))}</td>${ba(t.tt15, t.tt85, t.lech)}</tr>` : '').join('') : '';
   const t0 = s.dong[0];
   box.innerHTML = `<div class="card">
-      <h2>So sánh ${esc(DT_MAU[DTS.mau])}: TT15 ↔ TT85</h2>
-      <div class="kpi dt-kpi">${cot.map(c => `<div><span>${DTE.TEN_COT_DAY[c]}</span><b>TT15 ${f3(t0.tt15[c])}</b><b>TT85 ${f3(t0.tt85[c])}</b><b class="${Math.abs(t0.lech[c]) < DT_SAI_SO ? '' : t0.lech[c] > 0 ? 'duong' : 'am'}">Chênh ${f3(t0.lech[c])}</b></div>`).join('')}
+      <h2>So sánh ${esc(DT_MAU[DTS.mau])}: ${A} ↔ ${B}</h2>
+      <div class="kpi dt-kpi">${cot.map(c => `<div><span>${DTE.TEN_COT_DAY[c]}</span><b>${A} ${f3(t0.tt15[c])}</b><b>${B} ${f3(t0.tt85[c])}</b><b class="${Math.abs(t0.lech[c]) < DT_SAI_SO ? '' : t0.lech[c] > 0 ? 'duong' : 'am'}">Chênh ${f3(t0.lech[c])}</b></div>`).join('')}
         <div><span>Dòng chi tiết có chênh lệch</span><b>${leafLech}</b></div></div>
-      <p class="muted small">Chênh lệch = TT15 − TT85. ${esc(kyDT('TT15'))} (TT15) · ${esc(kyDT('TT85'))} (TT85). Hai file khác ngày số liệu thì chênh lệch có cả phần phát sinh giữa hai ngày.</p>
+      <p class="muted small">Chênh lệch = ${A} − ${B}. ${esc(kyDT(A))} (${A}) · ${esc(kyDT(B))} (${B}). Hai file khác ngày số liệu thì chênh lệch có cả phần phát sinh giữa hai ngày.</p>
       <div class="tbl-wrap"><table class="tbl rpt dt ss"><thead>
         <tr><th rowspan="2">STT</th><th rowspan="2" class="nm">Chủ đầu tư / đơn vị / xã, phường</th><th rowspan="2">KBNN nơi giao dịch</th>${cot.map(c => `<th colspan="3">${DTE.TEN_COT_DAY[c]}</th>`).join('')}</tr>
-        <tr>${cot.map(() => '<th>TT15</th><th>TT85</th><th>Chênh lệch</th>').join('')}</tr></thead>
+        <tr>${cot.map(() => `<th>${A}</th><th>${B}</th><th>Chênh lệch</th>`).join('')}</tr></thead>
         <tbody>${body}${thua}</tbody></table></div>
-      ${DTS.chiLech && !leafLech ? '<p class="okbox">✓ Không có dòng nào chênh lệch giữa TT15 và TT85.</p>' : ''}
+      ${DTS.chiLech && !leafLech ? `<p class="okbox">✓ Không có dòng nào chênh lệch giữa ${A} và ${B}.</p>` : ''}
     </div>`;
   box.querySelector('tbody').addEventListener('click', e => {
     const tr = e.target.closest('tr.click'); if (!tr) return;
@@ -1267,7 +1299,7 @@ function veSoSanhDT(box, kq) {
     const i = +tr.dataset.i, r = mau.rows[i];
     // dòng nhóm: gộp dự án của các dòng con
     const la = []; const gom = j => { const x = mau.rows[j]; if (x.con) x.con.forEach(gom); else la.push(j); }; gom(i);
-    xemLechDT(r.b === 'Giao dịch tại' ? r.dv : r.b, r.c || 'các nơi giao dịch', la.flatMap(j => kq.TT15.dong[j].duAn), la.flatMap(j => kq.TT85.dong[j].duAn), s.dong[i].lech);
+    xemLechDT(r.b === 'Giao dịch tại' ? r.dv : r.b, r.c || 'các nơi giao dịch', la.flatMap(j => kq[A].dong[j].duAn), la.flatMap(j => kq[B].dong[j].duAn), s.dong[i].lech);
   });
 }
 
@@ -1277,15 +1309,16 @@ async function xemLechDT(ten, noi, ds15, ds85, lech) {
   const ds = DTE.ghepDuAn(ds15, ds85);
   const co = ds.filter(d => cot.some(c => Math.abs(d.lech[c]) >= DT_SAI_SO)).sort((a, b) => Math.abs(b.lech.D) - Math.abs(a.lech.D));
   const cls = n => Math.abs(n) < DT_SAI_SO ? '' : n > 0 ? 'duong' : 'am';
-  await modal(`Chênh lệch TT15 ↔ TT85 – ${esc(ten)} (${esc(noi)})`, `<div style="min-width:min(1150px,92vw)">
+  const [A, B] = capDT();
+  await modal(`Chênh lệch ${A} ↔ ${B} – ${esc(ten)} (${esc(noi)})`, `<div style="min-width:min(1150px,92vw)">
     <p>Tổng giải ngân lũy kế chênh <b class="${cls(lech.D)}">${f3(lech.D)}</b> triệu. ${ds.length} dự án, <b>${co.length}</b> dự án có chênh lệch.</p>
-    <div class="tbl-wrap" style="max-height:60vh;overflow:auto"><table class="tbl ss"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Có trong</th><th>TT15 – tổng</th><th>TT85 – tổng</th><th>Chênh lệch tổng</th>${DTS.mau === 'KPI' ? '<th>Chênh ở chỉ tiêu</th>' : ''}</tr></thead>
+    <div class="tbl-wrap" style="max-height:60vh;overflow:auto"><table class="tbl ss"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Có trong</th><th>${A} – tổng</th><th>${B} – tổng</th><th>Chênh lệch tổng</th>${DTS.mau === 'KPI' ? '<th>Chênh ở chỉ tiêu</th>' : ''}</tr></thead>
     <tbody>${co.map(d => `<tr><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || d.ten)}">${esc(tenDA.get(d.ma_da) || d.ten)}</td>
-      <td class="c">${d.co15 && d.co85 ? 'Cả hai' : d.co15 ? '<span class="chip duong">Chỉ TT15</span>' : '<span class="chip am">Chỉ TT85</span>'}</td>
+      <td class="c">${d.co15 && d.co85 ? 'Cả hai' : d.co15 ? `<span class="chip duong">Chỉ ${A}</span>` : `<span class="chip am">Chỉ ${B}</span>`}</td>
       <td class="num">${f3(d.tt15.D)}</td><td class="num">${f3(d.tt85.D)}</td><td class="num ${cls(d.lech.D)}"><b>${f3(d.lech.D)}</b></td>
       ${DTS.mau === 'KPI' ? `<td class="small">${['H', 'I', 'K', 'L'].filter(c => Math.abs(d.lech[c]) >= DT_SAI_SO).map(c => `<span class="chip ${cls(d.lech[c])}">${DTE.TEN_COT_DAY[c]}: ${f3(d.lech[c])}</span>`).join(' ')}</td>` : ''}</tr>`).join('')
       || `<tr><td colspan="7" class="empty">Không có dự án nào chênh lệch.</td></tr>`}</tbody></table></div>
-    <p class="small muted">"Chỉ TT15" / "Chỉ TT85": dự án có giải ngân chỉ ở một file hệ thống. Chênh lệch = TT15 − TT85.</p></div>`, null, 'Đóng');
+    <p class="small muted">"Chỉ ${A}" / "Chỉ ${B}": dự án có giải ngân chỉ ở một file hệ thống. Chênh lệch = ${A} − ${B}.</p></div>`, null, 'Đóng');
 }
 
 // ---- Xuất Excel: biểu đang xem (giữ bố cục mẫu) hoặc bảng so sánh + danh sách dự án chênh lệch
@@ -1329,10 +1362,10 @@ async function xuatDT(kq) {
     for (let c = 4; c < n; c++) { ws.getColumn(c).width = 15; ws.getColumn(c).numFmt = NF; }
     tenFile = `${DT_MAU[DTS.mau]} - ${DTS.nguon}`;
   } else {
-    const s = kq.SS, cot = dtCotSS(), n = 3 + cot.length * 3;
-    const ws = wb.addWorksheet('So sanh TT15-TT85', { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
+    const s = kq.SS, cot = dtCotSS(), n = 3 + cot.length * 3, [A, B] = capDT();
+    const ws = wb.addWorksheet(`So sanh ${A}-${B}`, { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
     ws.addRow(['STT', 'Chủ đầu tư / đơn vị / xã, phường', 'KBNN nơi giao dịch', ...cot.flatMap(c => [DTE.TEN_COT_DAY[c], '', ''])]);
-    ws.addRow(['', '', '', ...cot.flatMap(() => ['TT15', 'TT85', 'Chênh lệch'])]);
+    ws.addRow(['', '', '', ...cot.flatMap(() => [A, B, 'Chênh lệch'])]);
     cot.forEach((c, i) => ws.mergeCells(1, 4 + i * 3, 1, 6 + i * 3)); ['A', 'B', 'C'].forEach(c => ws.mergeCells(`${c}1:${c}2`));
     [1, 2].forEach(r => { ws.getRow(r).font = { bold: true }; ws.getRow(r).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; for (let c = 1; c <= n; c++) ws.getRow(r).getCell(c).border = vien; });
     const ghi = (a, b, c, x, y, l, r) => { const row = ws.addRow([a, b, c, ...cot.flatMap(k => [lam(x?.[k]), lam(y?.[k]), lam(l[k])])]); kieuDong(row, r, n);
@@ -1344,19 +1377,19 @@ async function xuatDT(kq) {
     // Sheet 2: dự án chênh lệch (theo dòng chi tiết của mẫu)
     const w2 = wb.addWorksheet('Du an chenh lech', { views: [{ state: 'frozen', ySplit: 1 }] });
     const cotDA = kpi ? ['D', 'H', 'I', 'K', 'L'] : ['D'];
-    w2.addRow(['Chủ đầu tư / đơn vị', 'KBNN nơi giao dịch', 'Mã DA', 'Tên dự án', 'Có trong', ...cotDA.flatMap(c => [`TT15 – ${DTE.TEN_COT_DAY[c]}`, `TT85 – ${DTE.TEN_COT_DAY[c]}`, `Chênh – ${DTE.TEN_COT_DAY[c]}`])]);
+    w2.addRow(['Chủ đầu tư / đơn vị', 'KBNN nơi giao dịch', 'Mã DA', 'Tên dự án', 'Có trong', ...cotDA.flatMap(c => [`${A} – ${DTE.TEN_COT_DAY[c]}`, `${B} – ${DTE.TEN_COT_DAY[c]}`, `Chênh – ${DTE.TEN_COT_DAY[c]}`])]);
     w2.getRow(1).font = { bold: true }; w2.getRow(1).alignment = { wrapText: true, vertical: 'middle' };
     const tenDA = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));
-    const nhom = [...mau.rows.map((r, i) => r.kieu === 'ct' ? { dv: r.dv, c: r.c, a: kq.TT15.dong[i].duAn, b: kq.TT85.dong[i].duAn } : null).filter(Boolean),
+    const nhom = [...mau.rows.map((r, i) => r.kieu === 'ct' ? { dv: r.dv, c: r.c, a: kq[A].dong[i].duAn, b: kq[B].dong[i].duAn } : null).filter(Boolean),
       ...s.thua.map(t => ({ dv: t.dv, c: DTE.tenPhong(t.phong), a: t.tt15?.duAn, b: t.tt85?.duAn }))];
     for (const g of nhom) for (const d of DTE.ghepDuAn(g.a, g.b)) {
       if (!cotDA.some(c => Math.abs(d.lech[c]) >= DT_SAI_SO)) continue;
-      w2.addRow([g.dv, g.c, d.ma_da, tenDA.get(d.ma_da) || d.ten, d.co15 && d.co85 ? 'Cả hai' : d.co15 ? 'Chỉ TT15' : 'Chỉ TT85', ...cotDA.flatMap(c => [lam(d.tt15[c]), lam(d.tt85[c]), lam(d.lech[c])])]);
+      w2.addRow([g.dv, g.c, d.ma_da, tenDA.get(d.ma_da) || d.ten, d.co15 && d.co85 ? 'Cả hai' : d.co15 ? 'Chỉ ' + A : 'Chỉ ' + B, ...cotDA.flatMap(c => [lam(d.tt15[c]), lam(d.tt85[c]), lam(d.lech[c])])]);
     }
     w2.getColumn(1).width = 40; w2.getColumn(2).width = 20; w2.getColumn(3).width = 10; w2.getColumn(4).width = 60; w2.getColumn(5).width = 10;
     for (let c = 6; c < 6 + cotDA.length * 3; c++) { w2.getColumn(c).width = 14; w2.getColumn(c).numFmt = NF; }
     w2.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: 5 + cotDA.length * 3 } };
-    tenFile = `So sanh ${DT_MAU[DTS.mau]} TT15 - TT85`;
+    tenFile = `So sanh ${DT_MAU[DTS.mau]} ${A} - ${B}`;
   }
   const buf = await wb.xlsx.writeBuffer();
   const a = document.createElement('a');

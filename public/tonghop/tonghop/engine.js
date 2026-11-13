@@ -9,17 +9,42 @@
 export const NGUON = {
   TT85: { ten: 'BC TT 85', cotMa: 'D', cotDiaDiem: 'C', cotSo: ['J', 'L', 'M', 'P', 'R', 'S'] },
   TT15: { ten: 'BC TT 15', cotMa: 'D', cotDiaDiem: null, cotSo: ['F', 'H', 'K', 'L', 'N', 'O'] },
+  // Báo cáo TT37 (mẫu 01b/TTKHN, toàn KBNN khu vực) – cùng bố cục cột với BC TT 15
+  //   boLap: file liệt kê dự án vốn nước ngoài 2 lần trong mục "Theo cơ chế ghi thu, ghi chi"
+  //   (một lần ngay dưới mục, một lần dưới "Trong đó dự án khác") → chỉ tính một lần
+  TT37: { ten: 'BC TT 37', cotMa: 'D', cotDiaDiem: null, cotSo: ['F', 'H', 'K', 'L', 'N', 'O'], boLap: true },
 };
 // Cột "khóa" của sheet nguồn → cột lấy từ sheet CDT (VLOOKUP cột 3 / cột 4)
 //   TT85: Y = Chủ đầu tư (CDT cột C), Z = Chủ đầu tư 1 (CDT cột D)
 //   TT15: Q = Chủ đầu tư (CDT cột D)
-const KHOA = { TT85: { Y: 'cdt', Z: 'cdt2' }, TT15: { Q: 'cdt2' } };
+//   TT37: dùng mẫu BC tuần TT15 (khóa Q) và mẫu BC tháng (khóa Y, lọc theo mã KBNN)
+const KHOA = { TT85: { Y: 'cdt', Z: 'cdt2' }, TT15: { Q: 'cdt2' }, TT37: { Q: 'cdt2', Y: 'cdt', Z: 'cdt2' } };
 // Báo cáo → sheet nguồn
 export const BAO_CAO = {
   TT15: { ten: 'Báo cáo tuần theo chủ đầu tư (TT15)', nguon: 'TT15', loai: 'TUAN' },
   TT85: { ten: 'Báo cáo tuần theo chủ đầu tư (TT85)', nguon: 'TT85', loai: 'TUAN' },
-  THANG: { ten: 'Báo cáo giải ngân tháng', nguon: 'TT85', loai: 'THANG' },
+  TT37: { ten: 'Báo cáo tuần theo chủ đầu tư (TT37)', nguon: 'TT37', loai: 'TUAN', mau: 'TT15' },
+  THANG: { ten: 'Báo cáo giải ngân tháng (TT85)', nguon: 'TT85', loai: 'THANG' },
+  // Mẫu tháng đọc cột của BC TT 85 → đổi cột TT37 sang vị trí tương ứng (cột mẫu ← cột TT37)
+  THANG37: { ten: 'Báo cáo giải ngân tháng (TT37)', nguon: 'TT37', loai: 'THANG', mau: 'THANG', doiCot: { J: 'F', P: 'H', L: 'K', M: 'L', R: 'N', S: 'O' } },
 };
+// Mẫu dòng/cột (mau.json) mà báo cáo dùng
+export const mauCua = id => BAO_CAO[id]?.mau || id;
+export const laThang = id => BAO_CAO[id]?.loai === 'THANG';
+// Dòng nguồn theo đúng cột mà mẫu báo cáo đọc (chỉ đổi khi báo cáo có doiCot)
+export function chuyenNguon(id, rows) {
+  const d = BAO_CAO[id]?.doiCot; if (!d) return rows;
+  return rows.map(r => {
+    const so = {};
+    for (const [mau, src] of Object.entries(d)) if (r.so?.[src]) so[mau] = r.so[src];
+    return { ...r, so, dia_diem: r.dia_diem || r.kb };     // mẫu tháng lọc theo mã KBNN
+  });
+}
+export function chuyenTong(id, tong) {
+  const d = BAO_CAO[id]?.doiCot; if (!d || !tong) return tong;
+  const m = x => Object.fromEntries(Object.entries(d).map(([mau, src]) => [mau, x?.[src] || 0]));
+  return { ...tong, tong: m(tong.tong), kb: Object.fromEntries(Object.entries(tong.kb || {}).map(([k, v]) => [k, { ...v, so: m(v.so) }])) };
+}
 
 // ---- Tiện ích ------------------------------------------------------------
 export const colIdx = c => [...c].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0) - 1;
@@ -75,20 +100,33 @@ export function chuanHoaCDT(rows, mau) {
 // Bỏ phần tiêu đề: bắt đầu sau dòng đánh số cột (A=1, B=2). Chỉ giữ dòng có mã dự án.
 export function docNguon(rows, loai) {
   const cfg = NGUON[loai];
-  let start = rows.findIndex(r => txt(r?.[0]) === '1' && txt(r?.[1]) === '2');
-  start = start < 0 ? 0 : start + 1;
+  const start = dauBang(rows);
   const iMa = colIdx(cfg.cotMa), iDD = cfg.cotDiaDiem ? colIdx(cfg.cotDiaDiem) : -1;
   const out = [];
-  let kb = '';
+  let kb = '', ghiThu = false;
+  const daCo = new Set();
   for (let i = start; i < rows.length; i++) {
     const r = rows[i] || [];
     const ma = txt(r[iMa]);
-    if (!ma) { if (laDongKB(r)) kb = txt(r[0]); continue; }
+    if (!ma) {
+      if (laDongKB(r)) kb = txt(r[0]);
+      if (cfg.boLap && txt(r[0])) { ghiThu = /ghi thu/i.test(txt(r[1])); daCo.clear(); }   // sang mục mới (có số thứ tự)
+      continue;
+    }
     const so = {};
     for (const c of cfg.cotSo) { const v = soTien(r[colIdx(c)]); if (v) so[c] = v; }
+    if (cfg.boLap && ghiThu) { const k = ma + '|' + JSON.stringify(so); if (daCo.has(k)) continue; daCo.add(k); }
     out.push({ dong: i + 1, ma_da: ma, dia_diem: iDD >= 0 ? txt(r[iDD]) : '', kb, ten: txt(r[1]), so });
   }
   return out;
+}
+// Dòng đầu tiên của phần số liệu: sau dòng đánh số cột (1, 2, …); file không có dòng đánh số
+// (VD báo cáo TT37) thì bắt đầu từ dòng "TỔNG SỐ" / "TỔNG CỘNG" đầu bảng
+function dauBang(rows) {
+  const i = rows.findIndex(r => txt(r?.[0]) === '1' && txt(r?.[1]) === '2');
+  if (i >= 0) return i + 1;
+  const j = rows.findIndex(r => /^tổng\s*(số|cộng)/i.test(txt(r?.[1]).normalize('NFC')));
+  return j >= 0 ? j : 0;
 }
 // Dòng tiêu đề khối KBNN / PGD: cột A là mã 4 số, cột B có chữ "KBNN"
 const laDongKB = r => /^\d{4}$/.test(txt(r?.[0])) && /kbnn|kho bạc/i.test(txt(r?.[1]));
@@ -96,8 +134,7 @@ const laDongKB = r => /^\d{4}$/.test(txt(r?.[0])) && /kbnn|kho bạc/i.test(txt(
 // Số tổng do chính file hệ thống in ra: dòng TỔNG đầu bảng + dòng tổng từng KBNN
 export function docTong(rows, loai) {
   const cfg = NGUON[loai];
-  let start = rows.findIndex(r => txt(r?.[0]) === '1' && txt(r?.[1]) === '2');
-  start = start < 0 ? 0 : start + 1;
+  const start = dauBang(rows);
   const lay = r => Object.fromEntries(cfg.cotSo.map(c => [c, soTien(r?.[colIdx(c)])]));
   const tong = lay(rows[start]);
   const kb = {};
@@ -156,7 +193,7 @@ const THANG = {
   cols: ['D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'],
   pct: ['P', 'Q', 'R'],
 };
-export const KIEU = { TT15: TUAN, TT85: TUAN, THANG };
+export const KIEU = { TT15: TUAN, TT85: TUAN, TT37: TUAN, THANG, THANG37: THANG };
 
 // ---- Tính báo cáo -------------------------------------------------------
 // mau      : mẫu (từ mau.json) của báo cáo
@@ -237,7 +274,7 @@ export function kiemTra(id, mau, nguonRows) {
     const ten = r[field];
     const thieu = [...srcCols].filter(c => r.so[c] && !ps.coVao(c, ten, r.dia_diem));
     if (!thieu.length) continue;
-    const k = (ten || '(chưa có mã DA trong sheet CDT)') + (id === 'THANG' ? ' | KB ' + (r.dia_diem || '') : '');
+    const k = (ten || '(chưa có mã DA trong sheet CDT)') + (laThang(id) ? ' | KB ' + (r.dia_diem || '') : '');
     let a = sot.get(k); if (!a) sot.set(k, a = { ten: k, so_da: 0, tong: 0 });
     a.so_da++;
     for (const c of thieu) a.tong += r.so[c];
@@ -308,6 +345,7 @@ export const SS_CHI_TIEU = [
 const COT_NGUON_TUAN = {
   TT15: { D: 'F', E: 'H', U: 'K', V: 'L', X: 'N', Y: 'O' },
   TT85: { D: 'J', E: 'P', U: 'L', V: 'M', X: 'R', Y: 'S' },
+  TT37: { D: 'F', E: 'H', U: 'K', V: 'L', X: 'N', Y: 'O' },
 };
 const tinhChiTieu = o => {
   o.C = o.D + o.E; o.R = o.U + o.X; o.S = o.V + o.Y; o.Q = o.R + o.S; o.T = o.U + o.V; o.W = o.X + o.Y; return o;
@@ -324,19 +362,20 @@ export function soSanhTuan(mau, kq15, kq85) {
 }
 
 // Chi tiết từng dự án của 1 chủ đầu tư (triệu đồng)
-export function duAnCuaCDT(tenCDT, rows15, rows85) {
+//   so sánh nguồn A (la) với nguồn B (lb); kết quả để ở tt15/co15 (A) và tt85/co85 (B)
+export function duAnCuaCDT(tenCDT, rows15, rows85, la = 'TT15', lb = 'TT85') {
   const k = key(tenCDT), map = new Map();
-  const them = (rows, loai) => {
+  const them = (rows, loai, o_) => {
     for (const r of rows) {
       if (key(r.cdt2) !== k) continue;
       let d = map.get(r.ma_da);
       if (!d) map.set(r.ma_da, d = { ma_da: r.ma_da, co15: false, co85: false, tt15: { D: 0, E: 0, U: 0, V: 0, X: 0, Y: 0 }, tt85: { D: 0, E: 0, U: 0, V: 0, X: 0, Y: 0 } });
-      d['co' + loai.slice(2)] = true;
-      const o = d[loai.toLowerCase()];
+      d['co' + o_.slice(2)] = true;
+      const o = d[o_];
       for (const [c, src] of Object.entries(COT_NGUON_TUAN[loai])) o[c] += (r.so[src] || 0) / 1e6;
     }
   };
-  them(rows15, 'TT15'); them(rows85, 'TT85');
+  them(rows15, la, 'tt15'); them(rows85, lb, 'tt85');
   return [...map.values()].map(d => {
     tinhChiTieu(d.tt15); tinhChiTieu(d.tt85);
     d.lech = Object.fromEntries(SS_CHI_TIEU.map(({ cot }) => [cot, d.tt15[cot] - d.tt85[cot]]));

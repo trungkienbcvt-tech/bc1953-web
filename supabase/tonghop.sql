@@ -317,3 +317,38 @@ create policy th_ghi_chu_sua on public.th_ghi_chu for all to authenticated using
 alter table public.th_cdt add column if not exists ctmt_2630 text;
 -- th_tai_du_lieu trả thêm phần tử thứ 14 = ctmt_2630; th_thay_nguon đọc ctmt_2630 (nếu sheet CDT có cột tiêu đề "…2026-2030")
 -- và giữ giá trị đã nhập trên web khi tải lại sheet CDT. Xem migration "tonghop_ctmt_2026_2030" trên Supabase.
+
+-- =====================================================================
+-- 11/2026: Nguồn dữ liệu "Báo cáo TT37" (mẫu 01b/TTKHN) + báo cáo TT37 (tuần, tháng) + so sánh theo cặp
+-- (đã chạy trên Supabase bằng migration th_them_nguon_tt37)
+-- =====================================================================
+alter table public.th_nguon_file drop constraint th_nguon_file_loai_check;
+alter table public.th_nguon_file add constraint th_nguon_file_loai_check check (loai in ('CDT','TT85','TT15','TT37'));
+alter table public.th_nguon drop constraint th_nguon_loai_check;
+alter table public.th_nguon add constraint th_nguon_loai_check check (loai in ('TT85','TT15','TT37'));
+alter table public.th_dieu_chinh drop constraint th_dieu_chinh_bao_cao_check;
+alter table public.th_dieu_chinh add constraint th_dieu_chinh_bao_cao_check check (bao_cao in ('TT15','TT85','TT37','THANG','THANG37'));
+alter table public.th_ky drop constraint th_ky_bao_cao_check;
+alter table public.th_ky add constraint th_ky_bao_cao_check check (bao_cao in ('TT15','TT85','TT37','THANG','THANG37'));
+alter table public.th_ghi_chu drop constraint th_ghi_chu_bao_cao_check;
+alter table public.th_ghi_chu add constraint th_ghi_chu_bao_cao_check check (bao_cao in ('TT15','TT85','TT37','THANG','THANG37','SS','SS_TT37_TT85','SS_TT15_TT37'));
+do $$
+declare d text;
+begin
+  d := pg_get_functiondef('public.th_thay_nguon(text,jsonb,text,text,jsonb)'::regprocedure);
+  d := replace(d, $x$p_loai in ('TT85','TT15')$x$, $x$p_loai in ('TT85','TT15','TT37')$x$);
+  execute d;
+  for d in select pg_get_functiondef(p.oid) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+            where n.nspname = 'public' and p.proname in ('th_du_an_can_hoan_thien','cv_dm_can_ht') loop
+    d := replace(d, $x$f.loai in ('TT85','TT15')$x$, $x$f.loai in ('TT85','TT15','TT37')$x$);
+    d := replace(d, $x$bool_or(n.loai = 'TT15') co15,$x$, $x$bool_or(n.loai = 'TT15') co15, bool_or(n.loai = 'TT37') co37,
+           sum(case when n.loai = 'TT37' then coalesce((n.so->>'F')::numeric,0) + coalesce((n.so->>'H')::numeric,0) else 0 end) khv37,
+           sum(case when n.loai = 'TT37' then coalesce((n.so->>'K')::numeric,0) + coalesce((n.so->>'L')::numeric,0)
+                                             + coalesce((n.so->>'N')::numeric,0) + coalesce((n.so->>'O')::numeric,0) else 0 end) gn37,$x$);
+    d := replace(d, $x$'co15', ng.co15,$x$, $x$'co15', ng.co15, 'co37', ng.co37,$x$);
+    d := replace(d, 'greatest(ng.khv85, ng.khv15)', 'greatest(ng.khv85, ng.khv15, ng.khv37)');
+    d := replace(d, 'greatest(ng.gn85, ng.gn15)', 'greatest(ng.gn85, ng.gn15, ng.gn37)');
+    d := replace(d, 'ng.khv85 <> 0 or ng.khv15 <> 0)', 'ng.khv85 <> 0 or ng.khv15 <> 0 or ng.gn37 <> 0 or ng.khv37 <> 0)');
+    execute d;
+  end loop;
+end $$;
