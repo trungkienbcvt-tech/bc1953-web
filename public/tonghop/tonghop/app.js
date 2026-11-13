@@ -985,7 +985,8 @@ async function xuatSoSanh(ss) {
 }
 
 // ================================================================ ĐỐI CHIẾU THBC (TT15) ↔ B5-01
-const B5S = { file: {}, kq: null, loc: 'lech', tim: '' };
+const B5S = { file: {}, kq: null, loc: 'lech', tim: '', ct: 'KD' };
+const tinhB5 = () => { const f = B5S.file; B5S.kq = (f.TT15 && f.XA && f.TINH) ? B5.soSanhB501(f.TT15, f.XA, f.TINH, B5S.ct) : null; };
 const B5_TEN = { TT15: '2461_TT15 hoặc Báo cáo TT37 (THBC – mẫu 01b/TTKHN)', XA: 'B5-01 Ngân sách xã/phường', TINH: 'B5-01 Ngân sách tỉnh' };
 function viewB501(v) {
   const f = B5S.file;
@@ -998,10 +999,14 @@ function viewB501(v) {
   const lechNgay = new Set(ky).size > 1;
   v.innerHTML = `<div class="card">
     <h2>Đối chiếu số liệu THBC và B5-01</h2>
-    <p class="muted small">So sánh cột <b>"Kế hoạch vốn kéo dài năm trước chuyển sang"</b> của 2461_TT15 với cột <b>"Dư dự toán năm trước chuyển sang"</b> của B5-01 NS xã + B5-01 NS tỉnh, chi tiết đến từng dự án. Đơn vị: triệu đồng.</p>
+    <p class="muted small">So sánh chi tiết đến từng dự án giữa file THBC (2461_TT15 / TT37) và B5-01 NS xã + B5-01 NS tỉnh. Đơn vị: triệu đồng.</p>
+    <div class="bar"><label style="min-width:min(640px,100%)">Chỉ tiêu đối chiếu<select id="b5ct">
+      <option value="KD" ${B5S.ct === 'KD' ? 'selected' : ''}>① "Kế hoạch vốn kéo dài năm trước chuyển sang" ↔ "Dư dự toán năm trước chuyển sang"</option>
+      <option value="NAM" ${B5S.ct === 'NAM' ? 'selected' : ''}>② "Kế hoạch vốn giao trong năm" ↔ "Dự toán giao đầu năm" (cột M) + "Dự toán điều chỉnh (3)" (cột N)</option>
+    </select></label></div>
     <div class="src-grid">${o('TT15')}${o('XA')}${o('TINH')}</div>
     <div class="actions"><label class="btn primary">📂 Chọn 3 file (có thể chọn cùng lúc)…<input type="file" id="b5f" accept=".xls,.xlsx" multiple hidden></label>
-      <span class="muted small">Phần mềm tự nhận ra file nào là TT15, B5-01 NS xã, B5-01 NS tỉnh. Số liệu chỉ xử lý trên máy bạn, không lưu lên máy chủ.</span></div>
+      <span class="muted small">Phần mềm tự nhận ra file nào là THBC (2461_TT15 hoặc TT37), B5-01 NS xã, B5-01 NS tỉnh. Số liệu chỉ xử lý trên máy bạn, không lưu lên máy chủ.</span></div>
     ${lechNgay ? `<div class="warnbox">⚠ Các file khác ngày số liệu (${[...new Set(ky)].map(esc).join(', ')}). Nên dùng cùng ngày để đối chiếu chính xác.</div>` : ''}
   </div><div id="b5kq"></div>`;
   v.querySelector('#b5f').addEventListener('change', async e => {
@@ -1017,16 +1022,16 @@ function viewB501(v) {
         x.ten_file = fl.name; B5S.file[loai] = x;
         toast(`Đã đọc ${B5_TEN[loai]}: ${fmtDong(x.ds.size)} dự án.`, 'ok');
       }
-      B5S.kq = (B5S.file.TT15 && B5S.file.XA && B5S.file.TINH) ? B5.soSanhB501(B5S.file.TT15, B5S.file.XA, B5S.file.TINH) : null;
-      viewB501(v);
+      tinhB5(); viewB501(v);
     } catch (err) { fail(err); }
   });
+  v.querySelector('#b5ct').onchange = e => { B5S.ct = e.target.value; tinhB5(); viewB501(v); };
   if (B5S.kq) veKetQuaB501(v.querySelector('#b5kq'));
   else if (Object.keys(f).length) v.querySelector('#b5kq').innerHTML = `<div class="card"><p class="muted">Còn thiếu: ${['TT15', 'XA', 'TINH'].filter(l => !f[l]).map(l => B5_TEN[l]).join(', ')}.</p></div>`;
 }
 const f3 = n => (n === null || n === undefined) ? '' : (Math.abs(n) < 0.0005 ? '-' : n.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 }));
 function veKetQuaB501(box) {
-  const k = B5S.kq, t = k.tong, d = k.dongTong;
+  const k = B5S.kq, t = k.tong, d = k.dongTong, CT = B5.CHI_TIEU[k.ct], kd = k.ct === 'KD';
   const cdt = new Map((S.cdt || []).map(x => [x.ma_da, x]));
   const cls = n => Math.abs(n) < B5.SAI_SO ? '' : (n > 0 ? 'duong' : 'am');
   let ds = k.rows.filter(r => B5S.loc === 'tat' || r.coLech);
@@ -1036,8 +1041,10 @@ function veKetQuaB501(box) {
   const nhom = { chiTT: k.rows.filter(r => r.coLech && r.tt15 && !r.b501).length, chiB5: k.rows.filter(r => r.coLech && !r.tt15 && r.b501).length,
     caHai: k.rows.filter(r => r.coLech && r.tt15 && r.b501).length };
   box.innerHTML = `<div class="card">
-    <div class="${k.soLech ? 'warnbox' : 'okbox'}">${k.soLech ? `Có <b>${k.soLech}</b> dự án chênh lệch, tổng chênh <b>${f3(t.lech)}</b> triệu đồng: ${nhom.caHai} dự án lệch số, ${nhom.chiTT} dự án chỉ có số trên TT15, ${nhom.chiB5} dự án chỉ có số trên B5-01.` : '✓ Số liệu TT15 và B5-01 khớp đến từng dự án.'}</div>
-    <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Chỉ tiêu (triệu đồng)</th><th>2461_TT15<br>KH vốn kéo dài năm trước chuyển sang</th><th>B5-01 NS xã<br>Dư dự toán năm trước chuyển sang</th><th>B5-01 NS tỉnh<br>Dư dự toán năm trước chuyển sang</th><th>Cộng B5-01</th><th>Chênh lệch<br>TT15 − B5-01</th></tr></thead>
+    ${k.kbLoc ? `<div class="okbox">File THBC gồm nhiều KBNN: chỉ lấy số của khối KBNN <b>${esc(k.kbLoc)}</b> (đơn vị lập B5-01).</div>` : ''}
+    ${!kd && !(B5S.file.TT15.coNam && B5S.file.XA.coNam && B5S.file.TINH.coNam) ? '<div class="warnbox">⚠ Có file không tìm thấy cột "Kế hoạch vốn giao trong năm" (THBC) hoặc "Dự toán giao đầu năm" / "Dự toán điều chỉnh" (B5-01) – số của file đó tính bằng 0.</div>' : ''}
+    <div class="${k.soLech ? 'warnbox' : 'okbox'}"><b>${esc(CT.ten)}:</b> ${k.soLech ? `Có <b>${k.soLech}</b> dự án chênh lệch, tổng chênh <b>${f3(t.lech)}</b> triệu đồng: ${nhom.caHai} dự án lệch số, ${nhom.chiTT} dự án chỉ có số trên THBC, ${nhom.chiB5} dự án chỉ có số trên B5-01.` : '✓ Số liệu THBC và B5-01 khớp đến từng dự án.'}</div>
+    <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Chỉ tiêu (triệu đồng)</th><th>THBC (TT15/TT37)<br>${esc(CT.tt)}</th><th>B5-01 NS xã<br>${esc(CT.b5)}</th><th>B5-01 NS tỉnh<br>${esc(CT.b5)}</th><th>Cộng B5-01</th><th>Chênh lệch<br>THBC − B5-01</th></tr></thead>
     <tbody><tr><td>Cộng chi tiết các dự án</td><td class="num">${f3(t.tt15)}</td><td class="num">${f3(t.xa)}</td><td class="num">${f3(t.tinh)}</td><td class="num">${f3(t.b501)}</td><td class="num ${cls(t.lech)}"><b>${f3(t.lech)}</b></td></tr>
     <tr class="muted"><td>Dòng tổng của file</td><td class="num">${f3(d.tt15)}</td><td class="num">${f3(d.xa)}</td><td class="num">${f3(d.tinh)}</td><td class="num">${f3((d.xa || 0) + (d.tinh || 0))}</td><td class="num">${f3((d.tt15 || 0) - (d.xa || 0) - (d.tinh || 0))}</td></tr></tbody></table></div>
     <h3 style="margin-top:18px">Chi tiết theo dự án</h3>
@@ -1046,11 +1053,11 @@ function veKetQuaB501(box) {
       <label style="min-width:260px">Tìm mã / tên dự án / chủ đầu tư<input id="b5tim" value="${esc(B5S.tim)}"></label>
       ${coXuat() ? '<button class="btn" id="b5xuat" style="align-self:flex-end">⬇ Xuất Excel</button>' : ''}
     </div>
-    <div class="tbl-wrap tall"><table class="tbl ss"><thead><tr><th>STT</th><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư</th><th>TT15<br>KH kéo dài</th><th>B5-01<br>NS xã</th><th>B5-01<br>NS tỉnh</th><th>Cộng<br>B5-01</th><th>Chênh lệch</th><th>Dư tạm ứng năm trước<br>(B5-01, tham khảo)</th><th>Nhận xét</th></tr></thead>
+    <div class="tbl-wrap tall"><table class="tbl ss"><thead><tr><th>STT</th><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư</th><th>THBC<br>${esc(CT.ttNgan)}</th><th>B5-01<br>NS xã</th><th>B5-01<br>NS tỉnh</th><th>Cộng<br>B5-01</th><th>Chênh lệch</th>${kd ? '<th>Dư tạm ứng năm trước<br>(B5-01, tham khảo)</th>' : ''}<th>Nhận xét</th></tr></thead>
     <tbody>${ds.map((r, i) => `<tr><td class="c">${i + 1}</td><td>${esc(r.ma_da)}</td><td class="ten" title="${esc(r.ten)}">${esc(r.ten)}</td><td>${esc(cdt.get(r.ma_da)?.cdt || '')}</td>
       <td class="num">${f3(r.tt15)}</td><td class="num">${f3(r.xa)}</td><td class="num">${f3(r.tinh)}</td><td class="num">${f3(r.b501)}</td>
-      <td class="num ${cls(r.lech)}"><b>${r.coLech ? f3(r.lech) : '-'}</b></td><td class="num">${f3(r.tu)}</td><td class="small">${esc(r.ly_do)}</td></tr>`).join('') || '<tr><td colspan="11" class="empty">Không có dự án phù hợp.</td></tr>'}</tbody></table></div>
-    <p class="small muted">Đơn vị: triệu đồng. Bỏ qua chênh dưới 0,001 triệu (làm tròn). Xanh: TT15 lớn hơn; đỏ: B5-01 lớn hơn.</p></div>`;
+      <td class="num ${cls(r.lech)}"><b>${r.coLech ? f3(r.lech) : '-'}</b></td>${kd ? `<td class="num">${f3(r.tu)}</td>` : ''}<td class="small">${esc(r.ly_do)}</td></tr>`).join('') || '<tr><td colspan="11" class="empty">Không có dự án phù hợp.</td></tr>'}</tbody></table></div>
+    <p class="small muted">Đơn vị: triệu đồng. Bỏ qua chênh dưới 0,001 triệu (làm tròn). Xanh: THBC lớn hơn; đỏ: B5-01 lớn hơn.</p></div>`;
   box.querySelector('#b5loc').onchange = e => { B5S.loc = e.target.value; veKetQuaB501(box); };
   let hen; box.querySelector('#b5tim').oninput = e => { B5S.tim = e.target.value; clearTimeout(hen); hen = setTimeout(() => { veKetQuaB501(box); const i = box.querySelector('#b5tim'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 300); };
   const bx = box.querySelector('#b5xuat'); if (bx) bx.onclick = () => xuatB501(ds).catch(fail);
@@ -1058,15 +1065,16 @@ function veKetQuaB501(box) {
 async function xuatB501(ds) {
   const ExcelJS = await loadExcelJS();
   const k = B5S.kq, f = B5S.file, cdt = new Map((S.cdt || []).map(x => [x.ma_da, x]));
-  const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('Doi chieu TT15 - B5-01', { views: [{ state: 'frozen', ySplit: 6 }] });
-  ws.addRow(['ĐỐI CHIẾU KẾ HOẠCH VỐN KÉO DÀI NĂM TRƯỚC CHUYỂN SANG (THBC 2461_TT15) VỚI DƯ DỰ TOÁN NĂM TRƯỚC CHUYỂN SANG (B5-01)']);
+  const CT = B5.CHI_TIEU[k.ct], kd = k.ct === 'KD';
+  const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet(kd ? 'Doi chieu KH keo dai' : 'Doi chieu KH trong nam', { views: [{ state: 'frozen', ySplit: 6 }] });
+  ws.addRow([`ĐỐI CHIẾU ${CT.tt.toUpperCase()} (THBC) VỚI ${CT.b5.toUpperCase()} (B5-01)`]);
   ws.addRow([`Số liệu đến ngày: TT15 ${f.TT15.ky?.den || ''}; B5-01 NS xã ${f.XA.ky?.den || ''}; B5-01 NS tỉnh ${f.TINH.ky?.den || ''}. Đơn vị: triệu đồng`]);
   ws.addRow([]);
-  ws.addRow(['Tổng cộng', '', '', '', k.tong.tt15, k.tong.xa, k.tong.tinh, k.tong.b501, k.tong.lech, k.tong.tu, `${k.soLech} dự án chênh lệch`]);
+  ws.addRow(['Tổng cộng', '', '', '', k.tong.tt15, k.tong.xa, k.tong.tinh, k.tong.b501, k.tong.lech, kd ? k.tong.tu : '', `${k.soLech} dự án chênh lệch`]);
   ws.addRow([]);
-  ws.addRow(['STT', 'Mã DA', 'Tên dự án', 'Chủ đầu tư', 'TT15 – KH vốn kéo dài năm trước chuyển sang', 'B5-01 NS xã – Dư dự toán năm trước chuyển sang', 'B5-01 NS tỉnh – Dư dự toán năm trước chuyển sang', 'Cộng B5-01', 'Chênh lệch (TT15 − B5-01)', 'Dư tạm ứng năm trước chuyển sang (B5-01)', 'Nhận xét']);
+  ws.addRow(['STT', 'Mã DA', 'Tên dự án', 'Chủ đầu tư', `THBC – ${CT.tt}`, `B5-01 NS xã – ${CT.b5}`, `B5-01 NS tỉnh – ${CT.b5}`, 'Cộng B5-01', 'Chênh lệch (THBC − B5-01)', kd ? 'Dư tạm ứng năm trước chuyển sang (B5-01)' : '', 'Nhận xét']);
   ds.forEach((r, i) => {
-    const row = ws.addRow([i + 1, r.ma_da, r.ten, cdt.get(r.ma_da)?.cdt || '', r.tt15, r.xa, r.tinh, r.b501, r.lech, r.tu, r.ly_do]);
+    const row = ws.addRow([i + 1, r.ma_da, r.ten, cdt.get(r.ma_da)?.cdt || '', r.tt15, r.xa, r.tinh, r.b501, r.lech, kd ? r.tu : '', r.ly_do]);
     if (r.coLech) row.getCell(9).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF4E5' } };
   });
   [6, 11, 60, 34, 16, 16, 16, 16, 16, 16, 40].forEach((w, i) => ws.getColumn(i + 1).width = w);
@@ -1077,7 +1085,7 @@ async function xuatB501(ds) {
   const buf = await wb.xlsx.writeBuffer();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-  a.download = `Doi chieu TT15 - B5-01 ${(f.TT15.ky?.den || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`; a.click();
+  a.download = `Doi chieu ${kd ? 'KH keo dai' : 'KH giao trong nam'} THBC - B5-01 ${(f.TT15.ky?.den || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`; a.click();
 }
 
 // ================================================================ TAB 3: CỘNG THÊM
