@@ -302,6 +302,7 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kmo{cursor:pointer;color:#b9a6aa;font-size:12px}.kmo:hover{color:var(--acc);text-decoration:underline}
 .kt tr.kedit td.in{padding:3px 4px}.kt tr.kedit input.ki{width:100%;min-width:0;box-sizing:border-box;text-align:right;padding:5px 6px;font-size:13px}.kt tr.kedit td.v{font-weight:600}
 .kt tr.kedit2 td.ly{text-align:left;padding:2px 8px 6px}.kt tr.kedit2 input.kly{width:calc(100% - 150px);min-width:0;box-sizing:border-box;text-align:left;margin-right:10px}
+.kpdet{padding:12px 16px;margin-bottom:12px}.kpdet>summary{cursor:pointer;font-weight:700;color:var(--acc2);font-size:15px}.kpdet>summary small{font-weight:400;color:var(--mut)}.kpdl td,.kpdl th{vertical-align:top}.kpdl td:nth-child(1){text-align:center}.kpph td.p,.kpph td:first-child{white-space:nowrap}.kpph th{white-space:nowrap}.kpph .dck{white-space:nowrap}
 .kdel{cursor:pointer;color:#b91c1c;font-size:12px;align-self:center}
 .bt.kt{border-collapse:separate;border-spacing:0}.bt.kt{table-layout:fixed;width:100%}.kt{font-size:12.5px}.kt thead th{min-width:0!important}.kt tbody td{padding:6px 5px}.kt tbody td:nth-child(2){min-width:0!important;max-width:none!important;overflow-wrap:anywhere}.kt tbody td:nth-child(1){min-width:0!important}.kt tbody td.v{font-variant-numeric:tabular-nums}
 .kt tr.kedit input.ki{padding:4px 4px;font-size:12.5px}
@@ -964,7 +965,7 @@ function kpTong(d){
   return h}
 function kpPhong(d){
   var th=S.vt!=='PGD';
-  var h='<div class="card" style="margin-bottom:14px"><h3>🏢 Tình hình xác nhận của các phòng</h3><div style="overflow:auto"><table class="mini-t"><thead><tr><th style="text-align:left">Phòng</th><th style="text-align:left">Trạng thái</th><th>Số dòng</th><th>Dòng điều chỉnh</th><th>Tổng ghi nhận</th><th>Chênh lệch THBC</th><th style="text-align:left">Xác nhận bởi</th>'+(th?'<th></th>':'')+'</tr></thead><tbody>';
+  var h='<div class="card" style="margin-bottom:14px"><h3>🏢 Tình hình xác nhận của các phòng</h3><div style="overflow:auto"><table class="mini-t kpph"><thead><tr><th style="text-align:left">Phòng</th><th style="text-align:left">Trạng thái</th><th>Số dòng</th><th>Điều chỉnh</th><th>Tổng ghi nhận</th><th>Chênh THBC</th><th style="text-align:left">Xác nhận bởi</th>'+(th?'<th></th>':'')+'</tr></thead><tbody>';
   d.ds.forEach(function(x){h+='<tr><td class="p" style="font-weight:600;text-align:left">'+esc(x.pgd)+'</td><td style="text-align:left">'+kpChip(x.tt)+'</td>'+(x.tt==='khong'?'<td colspan="'+(th?6:5)+'" style="color:var(--mut);text-align:left">Không có trong file THBC</td>':'<td>'+x.soDong+'</td><td>'+(x.nd||'–')+'</td><td>'+fmt(x.tong)+'</td><td>'+kpLech(x.tong-x.tongThbc)+'</td><td style="text-align:left;font-size:12.5px">'+(x.nguoi?esc(x.nguoi)+'<br><span style="color:var(--mut)">'+esc(x.luc||'')+'</span>':'–')+'</td>'+(th?'<td>'+((x.tt==='xn'||x.tt==='xn_dc'||x.tt==='duyet')&&!d.moc.chot?'<button class="mini" data-kmo="'+esc(x.pgd)+'">Mở lại</button>':'')+'</td>':''))+'</tr>'});
   return h+'</tbody></table></div></div>'}
 function kpVb(d){
@@ -1004,14 +1005,17 @@ function kpCells(x){var v=S.kpView||'sau';if(v==='goc'||v==='de')return kp9(x,'t
 function kpFmtC(n){if((S.kpView||'sau')==='lech')return Math.abs(n)<0.5?'–':(n<0?'−':'+')+fmt(Math.abs(n));return fmt(n)}
 function kpHdr(){var l=['Tổng số','Thanh toán KLHT','Tạm ứng'];return '<thead><tr><th rowspan="2" style="width:50px">STT</th><th rowspan="2" style="text-align:left;min-width:250px">Chủ đầu tư / đơn vị</th><th colspan="3">Tổng cộng</th><th colspan="3">Giải ngân KHV kéo dài</th><th colspan="3">Giải ngân KHV năm</th></tr><tr>'+l.concat(l,l).map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead>'}
 function kpBody(d){
-  var q=d.quyen||{},th=S.vt!=='PGD',h='',hasAdj=d.rows.some(function(x){return x.k==='row'&&x.ok>0}),hasProp=d.rows.some(function(x){return x.k==='row'&&x.ly!==undefined}),ev=S.kpView||((q.pheDuyet||(q.sua&&hasProp))?'de':(hasAdj?'sau':'goc')),canDe=!!q.sua||hasProp;if(ev==='sau'&&!hasAdj)ev='goc';if(ev==='de'&&!canDe)ev='goc';var ed=!!q.sua&&ev==='de';S.kpDirty=0;S.kpEv=ev;
+  var q=d.quyen||{},th=S.vt!=='PGD',h='',hasAdj=d.rows.some(function(x){return x.k==='row'&&x.ok>0}),hasProp=d.rows.some(function(x){return x.k==='row'&&x.ly!==undefined}),ev=S.kpView||((q.pheDuyet||(q.sua&&hasProp))?'de':(hasAdj?'sau':'goc')),canDe=!!q.sua||hasProp;if(ev==='sau'&&!hasAdj)ev='goc';if(ev==='de'&&!canDe)ev='goc';var tq=S.vt==='PGD'&&!['LAP','ALL'].includes(d.cv);if(tq){canDe=false;if(S.kpView==='de')ev='goc'}if(ev==='de'&&!canDe)ev='goc';var ed=!!q.sua&&ev==='de';S.kpDirty=0;S.kpEv=ev;
   if(S.vt==='PGD'){var m=d.ds[0]||{};h+='<div class="card kpgo" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>'+esc(S.pgd||'')+'</b>'+kpChip(m.tt)+(m.nguoi?'<span class="hint" style="margin:0">'+esc(m.nguoi)+' · '+esc(m.luc||'')+'</span>':'')+'</div></div>'}
+  if(tq)h+=kpDuyet(d,hasProp);
   else{h+='<div class="card" style="margin-bottom:12px"><label style="display:inline">Lọc theo phòng: </label><select id="kpP" style="width:auto"><option value="">Toàn tỉnh</option>'+d.ds.map(function(x){return '<option'+(S.kpP===x.pgd?' selected':'')+'>'+esc(x.pgd)+'</option>'}).join('')+'</select> <span class="hint" style="margin:0 0 0 8px">Chỉ xem; số điều chỉnh do phòng giao dịch nhập.</span></div>'}
   var hint={goc:(S.vt==='PGD'?(q.xnThbc?'Số do Chuyên viên THBC cung cấp. Nếu đúng, bấm <b>Xác nhận số liệu</b> ở cuối trang.':'Số do Chuyên viên THBC cung cấp.'):'Số do Chuyên viên THBC cung cấp, giữ nguyên để đối chiếu.')+(q.sua&&!hasProp?' Nếu cần ghi nhận khác, chọn <b>Số đề nghị điều chỉnh</b>.':''),de:(q.sua?'Nhập số thực tế vào các ô xanh; nếu khác THBC thì <b>bắt buộc nêu lý do</b>. Bấm <b>Lưu tạm</b> để giữ lại, <b>Gửi phê duyệt điều chỉnh</b> khi xong.':(q.pheDuyet?'Người lập đã gửi số đề nghị điều chỉnh. Xem số và lý do rồi bấm <b>Phê duyệt số điều chỉnh</b> (hoặc <b>Trả lại</b> để người lập sửa).':'Các dòng phòng đề nghị ghi nhận khác THBC, kèm số đề nghị và lý do.')),sau:'Kết quả cuối: dòng đã phê duyệt điều chỉnh thay thế số THBC, các dòng còn lại theo THBC. Đây là số gửi Sở Tài chính.'+(q.xnDc?' Bấm <b>Xác nhận số điều chỉnh</b> ở cuối trang.':'')};
   var ops=[['goc','Số THBC gốc']];if(canDe)ops.push(['de','Số đề nghị điều chỉnh']);if(hasAdj)ops.push(['sau','Số sau điều chỉnh']);
-  h+='<div class="kpv"><b>'+(ops.length>1?'Xem:':'Số liệu:')+'</b> '+(ops.length>1?ops.map(function(o){return '<label><input type="radio" name="kv" value="'+o[0]+'"'+(ev===o[0]?' checked':'')+'> '+o[1]+'</label>'}).join(''):'<span>Số THBC</span>')+'<span class="hint" style="margin:0 0 0 auto">Triệu đồng</span><div class="kph">'+hint[ev]+'</div></div>';
+  var rv='<div class="kpv"><b>'+(ops.length>1?'Xem:':'Số liệu:')+'</b> '+(ops.length>1?ops.map(function(o){return '<label><input type="radio" name="kv" value="'+o[0]+'"'+(ev===o[0]?' checked':'')+'> '+o[1]+'</label>'}).join(''):'<span>Số THBC</span>')+'<span class="hint" style="margin:0 0 0 auto">Triệu đồng</span><div class="kph">'+hint[ev]+'</div></div>';
+  if(!tq)h+=rv;
   var rows=d.rows.filter(function(x){return !th||!S.kpP||x.k==='tot'||x.k==='khoi'||x.k==='nhom'||x.c===S.kpP});
   if(th&&S.kpP)rows=rows.filter(function(x){return x.k==='row'||x.k==='tot'});
+  if(tq)h+='<details class="kpdet card"'+(hasProp?'':' open')+'><summary>📋 Biểu số liệu của phòng <small>(bản xem, cùng khuôn với biểu gửi Sở Tài chính)</small></summary><div style="margin-top:8px">'+rv;
   h+='<div class="card" style="padding:0"><div class="kpw"><table class="bt kt"><colgroup><col style="width:46px"><col style="width:205px">'+'<col>'.repeat(9)+'</colgroup>'+kpHdr()+'<tbody>';
   rows.forEach(function(x){
     var leaf=x.k==='row',cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-n':(x.st==='sub'?'bt-s':'bt-i'))),adj=leaf&&(ev==='sau'?x.ok>0:x.ly!==undefined);
@@ -1021,17 +1025,33 @@ function kpBody(d){
       h+='<tr class="kxl kedit2 khac'+(adj?' open':'')+'" '+at+'><td></td><td class="kl">Lý do (bắt buộc)</td><td colspan="9" class="ly"><input class="kly" maxlength="300" value="'+esc(x.ly||'')+'" placeholder="VD: Chủ đầu tư đã gửi hồ sơ đến KBNN, đơn vị đang xử lý hồ sơ"><a class="kdel">Hủy điều chỉnh</a></td></tr>'}
     else if(adj&&ev==='de'){h+='<tr class="kxl ro khac"><td></td><td class="kl">Số đề nghị điều chỉnh <small>(chênh '+kpLech(kpPr(x)-kpTh(x))+')</small></td>'+kp9(x,'p').map(function(n){return '<td class="v">'+fmt(n)+'</td>'}).join('')+'</tr><tr class="kxl ro2 khac"><td></td><td class="kl">Lý do</td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}
     else if(adj&&ev==='sau'){h+='<tr class="kxl ro2 khac"><td></td><td class="kl">Lý do <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+' so với THBC)</small></td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}});
-  h+='</tbody></table></div></div>';
+  h+='</tbody></table></div></div>';if(tq)h+='</div></details>';
   if(S.vt==='PGD'){var tt=q.tt||(d.ds[0]||{}).tt,btn='',msg='';
     var TM={xn:'Phòng đã xác nhận số liệu.',xn_dc:'Phòng đã xác nhận số điều chỉnh.',gui:'Số điều chỉnh đã gửi, chờ Trưởng phòng phê duyệt.',duyet:'Số điều chỉnh đã được phê duyệt, chờ Trưởng phòng xác nhận.',nhap:'Người lập đang soạn số điều chỉnh, chưa gửi phê duyệt.'};
     msg=TM[tt]||'';
-    if(ev==='goc'&&q.xnThbc)btn+='<button class="pri" id="kpXn" data-lo="thbc">✔ Xác nhận số liệu</button>';
+    if((ev==='goc'||tq)&&q.xnThbc)btn+='<button class="pri" id="kpXn" data-lo="thbc">✔ Xác nhận số liệu</button>';
     if(ev==='de'&&q.sua){msg='Chưa có thay đổi.';btn+='<button class="mini" id="kpSave" disabled>💾 Lưu tạm</button><button class="kpsave" id="kpGui" disabled>📨 Gửi phê duyệt điều chỉnh</button>'}
-    if(ev==='de'&&q.pheDuyet)btn+='<button class="mini" id="kpTra">↩ Trả lại người lập</button><button class="pri" id="kpDuyet">✔ Phê duyệt số điều chỉnh</button>';
-    if(ev==='sau'&&q.xnDc)btn+='<button class="pri" id="kpXn" data-lo="dc">✔ Xác nhận số điều chỉnh</button>';
+    if((ev==='de'||tq)&&q.pheDuyet)btn+='<button class="mini" id="kpTra">↩ Trả lại người lập</button><button class="pri" id="kpDuyet">✔ Phê duyệt số điều chỉnh</button>';
+    if((ev==='sau'||tq)&&q.xnDc)btn+='<button class="pri" id="kpXn" data-lo="dc">✔ Xác nhận số điều chỉnh</button>';
     if(q.moLai)btn+='<button class="mini" id="kpMoLai">Mở lại để sửa</button>';
     if(btn||msg)h+='<div class="kpfoot card"><span id="kpMsg" class="hint" style="margin:0">'+msg+'</span><span style="margin-left:auto;display:flex;gap:8px">'+btn+'</span></div>'}
   return h}
+function kpDuyet(d,hasProp){
+  var m=d.ds[0]||{},tot=d.rows.filter(function(x){return x.k==='tot'})[0]||{t0:0,t1:0,t2:0,t3:0,p0:0,p1:0,p2:0,p3:0,e0:0,e1:0,e2:0,e3:0,nd:0},q=d.quyen||{},tt=q.tt||m.tt,cho=tt==='gui',
+    sau=(tt==='duyet'||tt==='xn_dc')?kpSt(tot):kpPr(tot),dl=kpPr(tot)-kpTh(tot);
+  var h='<div class="ovg" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 12px">'+
+    kpTile('','💰','Giải ngân lũy kế theo THBC',fmt(kpTh(tot)),'triệu đồng · đến '+esc(d.moc.nhan))+
+    kpTile(hasProp?'bad':'ok','✏️','Dòng đề nghị điều chỉnh',tot.nd||0,hasProp?(cho?'Đang chờ Trưởng phòng phê duyệt':(tt==='duyet'||tt==='xn_dc'?'Đã phê duyệt':'')):'Phòng ghi nhận đúng số THBC')+
+    (hasProp?kpTile(Math.abs(dl)<0.5?'ok':'bad','⚖','Chênh lệch so với THBC',kpLech(dl),'triệu đồng')+kpTile('','🎯',(tt==='duyet'||tt==='xn_dc')?'Số sau điều chỉnh':'Tổng nếu được duyệt',fmt(sau),'triệu đồng'):'')+'</div>';
+  if(!hasProp){
+    var TX={nhap:'Người lập đang soạn số đề nghị điều chỉnh, chưa gửi phê duyệt.',xn:'Phòng đã xác nhận số liệu THBC.'};
+    return h+'<div class="card" style="margin-bottom:12px"><h3>Số liệu của phòng</h3><p class="hint" style="margin:2px 0 0">'+(TX[tt]||'Phòng chưa có đề nghị điều chỉnh. Nếu số THBC trong biểu bên dưới đúng, bấm <b>Xác nhận số liệu</b> ở cuối trang.')+'</p></div>'}
+  var LB=['Kéo dài · thanh toán KLHT','Kéo dài · tạm ứng','Vốn năm · thanh toán KLHT','Vốn năm · tạm ứng'];
+  h+='<div class="card" style="margin-bottom:12px"><h3>📝 Các dòng đề nghị điều chỉnh</h3><p class="hint" style="margin:2px 0 8px">'+(m.guiNguoi?'Người lập <b>'+esc(m.guiNguoi)+'</b> gửi'+(m.guiLuc?' lúc '+esc(m.guiLuc):'')+'. ':'')+'Chỉ liệt kê nội dung khác số THBC.</p><div style="overflow:auto"><table class="mini-t kpdl"><thead><tr><th style="width:44px">STT</th><th style="text-align:left">Chủ đầu tư</th><th style="text-align:left">Nội dung thay đổi (triệu đồng)</th><th style="width:110px">Chênh tổng</th><th style="text-align:left;min-width:220px">Lý do</th></tr></thead><tbody>';
+  var n=0;d.rows.forEach(function(x){if(x.k!=='row'||x.ly===undefined)return;n++;
+    var t=[x.t0,x.t1,x.t2,x.t3],p=[x.p0,x.p1,x.p2,x.p3],ch=[];t.forEach(function(v,i){if(Math.abs(p[i]-v)>0.0005)ch.push('<div>'+LB[i]+': <s style="color:#9a8a8e">'+fmt(v)+'</s> → <b>'+fmt(p[i])+'</b></div>')});
+    h+='<tr><td>'+n+'</td><td style="text-align:left;font-weight:600">'+esc(x.b)+'</td><td style="text-align:left;font-size:13px">'+ch.join('')+'</td><td><b>'+kpLech(kpPr(x)-kpTh(x))+'</b></td><td style="text-align:left;font-style:italic">'+esc(x.ly)+'</td></tr>'});
+  return h+'</tbody></table></div></div>'}
 function kpRowVals(tr){return [].map.call(tr.querySelectorAll('.ki'),function(i){return kpParse(i.value)})}
 function kpLy(tr){return tr.nextElementSibling.querySelector('.kly')}
 function kpUpdRow(tr){
