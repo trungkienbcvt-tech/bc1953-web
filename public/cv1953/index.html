@@ -303,6 +303,7 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kt tr.kedit td.in{padding:3px 4px}.kt tr.kedit input.ki{width:100%;min-width:0;box-sizing:border-box;text-align:right;padding:5px 6px;font-size:13px}.kt tr.kedit td.v{font-weight:600}
 .kt tr.kedit2 td.ly{text-align:left;padding:2px 8px 6px}.kt tr.kedit2 input.kly{width:calc(100% - 150px);min-width:0;box-sizing:border-box;text-align:left;margin-right:10px}
 .kpdet{padding:12px 16px;margin-bottom:12px}.kpdet>summary{cursor:pointer;font-weight:700;color:var(--acc2);font-size:15px}.kpdet>summary small{font-weight:400;color:var(--mut)}.kpdl td,.kpdl th{vertical-align:top}.kpdl td:nth-child(1){text-align:center}.kpph td.p,.kpph td:first-child{white-space:nowrap}.kpph th{white-space:nowrap}.kpph .dck{white-space:nowrap}
+.kpchg{display:grid;grid-template-columns:minmax(320px,1fr) minmax(320px,1.2fr);gap:12px;margin-bottom:12px}.kpchg .hb{grid-template-columns:minmax(100px,170px) 1fr 84px}.kpchg .kpwide .hb{grid-template-columns:minmax(120px,330px) 1fr 90px}@media(max-width:900px){.kpchg{grid-template-columns:1fr}}
 .kdel{cursor:pointer;color:#b91c1c;font-size:12px;align-self:center}
 .bt.kt{border-collapse:separate;border-spacing:0}.bt.kt{table-layout:fixed;width:100%}.kt{font-size:12.5px}.kt thead th{min-width:0!important}.kt tbody td{padding:6px 5px}.kt tbody td:nth-child(2){min-width:0!important;max-width:none!important;overflow-wrap:anywhere}.kt tbody td:nth-child(1){min-width:0!important}.kt tbody td.v{font-variant-numeric:tabular-nums}
 .kt tr.kedit input.ki{padding:4px 4px;font-size:12.5px}
@@ -954,6 +955,24 @@ function kpBar(d){
       '<input type="file" id="kpFile" accept=".xlsx" style="display:none"><button class="pri" id="kpUp" style="margin-top:8px">📂 Chọn file .xlsx và tải lên</button> <button class="mini" id="kpTam" style="margin-top:8px" title="Lấy số tổng BC 1953 của kỳ hiện tại làm số KPI để xem giao diện">Dùng tạm số tổng BC 1953</button></div>'}
   return h+'</div>'}
 function kpTile(cls,ic,lab,val,sub){return ovTile(cls,ic,lab,val,sub)}
+function kpTq(d){
+  var th=S.vt!=='PGD',ds=d.ds.filter(function(x){return x.tt!=='khong'}),n=ds.length,xn=ds.filter(function(x){return x.tt==='xn'||x.tt==='xn_dc'}).length,m=d.ds[0]||{},
+    tot=d.rows.filter(function(x){return x.k==='tot'})[0]||{t0:0,t1:0,t2:0,t3:0},T=kpTh(tot),kd=tot.t0+tot.t1,nm=tot.t2+tot.t3,tu=tot.t1+tot.t3,yr=String(d.moc.nhan).slice(-4),
+    pct=function(a){return T?Math.round(a*100/T)+'% tổng giải ngân':''},han=d.moc.han||'',end=han?new Date(han).getTime():0,done=th?(n>0&&xn===n):(m.tt==='xn'||m.tt==='xn_dc');
+  var hs='<div class="hs">Số THBC cập nhật <b>'+esc(d.moc.luc||'')+'</b>'+(d.moc.nguoi?' · '+esc(d.moc.nguoi):'')+(d.moc.chot?' <span class="oldk">ĐÃ CHỐT</span>':'')+'</div>';
+  var h='<div class="hero"><div class="hl card"><div class="hi">'+(th?'Phạm vi theo dõi':'Đơn vị báo cáo')+'</div><h2>'+esc(th?'Toàn tỉnh · '+n+' đơn vị':(S.info.donvi||S.pgd||''))+'</h2><div class="hs" style="font-size:15px;color:var(--acc2);margin-bottom:4px">Số liệu giải ngân đến ngày <b>'+esc(d.moc.nhan)+'</b></div>'+hs+
+    '<div style="margin-top:8px"><button class="mini pri" data-kgo="kpib">📝 Số liệu &amp; xác nhận →</button></div></div><div class="hr">'+dl('Hạn xác nhận số liệu',han?isoDmy(han)+' '+han.slice(11,16):'',end,done,th?(xn+'/'+n+' phòng đã xác nhận'):'Phòng đã xác nhận')+'</div></div>';
+  h+='<div class="ovg" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:12px 0">'+
+    kpTile('','💰','Giải ngân lũy kế',fmt(T),'triệu đồng · số THBC')+
+    kpTile('','📚','Vốn kéo dài',fmt(kd),pct(kd))+kpTile('','📅','Vốn năm '+yr,fmt(nm),pct(nm))+kpTile('','💳','Tạm ứng',fmt(tu),pct(tu))+
+    (th?kpTile(xn===n&&n?'ok':'','✅','Phòng đã xác nhận',xn+' <small style="font-size:13px;font-weight:500">/ '+n+'</small>',xn===n&&n?'Đủ cả '+n+' phòng':(n-xn)+' phòng chưa xác nhận'):'')+'</div>';
+  var leaves=d.rows.filter(function(x){return x.k==='row'&&kpTh(x)>0}).sort(function(a,b){return kpTh(b)-kpTh(a)}).slice(0,10).map(function(x,i){return {l:(i+1)+'. '+x.b,lk:kpTh(x),th:x.t2+x.t3}});
+  var cards=chartCard('Cơ cấu giải ngân (số THBC)',donut([{l:'Kéo dài · thanh toán KLHT',v:tot.t0,c:VC[0]},{l:'Kéo dài · tạm ứng',v:tot.t1,c:VC[1]},{l:'Vốn năm · thanh toán KLHT',v:tot.t2,c:VC[2]},{l:'Vốn năm · tạm ứng',v:tot.t3,c:VC[3]}],fmt(Math.round(T/1000)),'tỷ đồng'));
+  if(th){var rk=ds.map(function(x){var t=x.t||[0,0,0,0];return {l:x.pgd,lk:t[0]+t[1]+t[2]+t[3],th:t[2]+t[3]}}).sort(function(a,b){return b.lk-a.lk});rk.forEach(function(x,i){x.l=(i+1)+'. '+x.l});
+    cards+=chartCard('Xếp hạng giải ngân các phòng',hbars(rk,'lk','th')+'<p class="hint" style="margin:6px 0 0">Thanh đậm: phần vốn năm '+yr+'</p>')}
+  cards+=chartCard('10 chủ đầu tư giải ngân cao nhất'+(th?'':' của phòng'),hbars(leaves,'lk','th')+'<p class="hint" style="margin:6px 0 0">Thanh đậm: phần vốn năm '+yr+'</p>').replace('class="card chc"','class="card chc kpwide"'+(th?' style="grid-column:1/-1"':''));
+  h+='<div class="kpchg">'+cards+'</div>';
+  return h+kpHuong(d)+(th?kpPhong(d)+kpVb(d):'')}
 function kpTong(d){
   var th=S.vt!=='PGD',ds=d.ds.filter(function(x){return x.tt!=='khong'}),xn=ds.filter(function(x){return x.tt==='xn'||x.tt==='xn_dc'}).length,dc=0,tot=d.rows.filter(function(x){return x.k==='tot'})[0]||{e0:0,e1:0,e2:0,e3:0,t0:0,t1:0,t2:0,t3:0,nd:0};
   ds.forEach(function(x){dc+=x.nd});
@@ -989,7 +1008,7 @@ function drawKpi(t){
   $('sbar').style.display='none';
   kpLoad(function(){var d=S.kp,h=kpBar(d);
     if(!d.co){$('main').innerHTML=h+'<div class="card"><h3>Chưa có số liệu KPI</h3><p class="hint">'+(S.vt==='PGD'?'Chuyên viên THBC chưa tải bảng đối chiếu. Khi có, số THBC của phòng sẽ hiện ở đây để bạn xem và xác nhận.':'Bấm <b>Mốc mới / tải file</b>, chọn ngày số liệu và tải file bảng đối chiếu THBC.')+'</p></div>';bindKp();return}
-    if(t==='kpi')h+=kpTong(d)+kpHuong(d)+(S.vt!=='PGD'?kpVb(d):'')+kpPhong(d);
+    if(t==='kpi')h+=kpTq(d);
     else if(t==='kpib')h+=kpBody(d);
     else h+=kpDc(d);
     $('main').innerHTML=h;bindKp()})}
@@ -1040,7 +1059,6 @@ function kpDuyet(d,hasProp){
   var m=d.ds[0]||{},tot=d.rows.filter(function(x){return x.k==='tot'})[0]||{t0:0,t1:0,t2:0,t3:0,p0:0,p1:0,p2:0,p3:0,e0:0,e1:0,e2:0,e3:0,nd:0},q=d.quyen||{},tt=q.tt||m.tt,cho=tt==='gui',
     sau=(tt==='duyet'||tt==='xn_dc')?kpSt(tot):kpPr(tot),dl=kpPr(tot)-kpTh(tot);
   var h='<div class="ovg" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 12px">'+
-    kpTile('','💰','Giải ngân lũy kế theo THBC',fmt(kpTh(tot)),'triệu đồng · đến '+esc(d.moc.nhan))+
     kpTile(hasProp?'bad':'ok','✏️','Dòng đề nghị điều chỉnh',tot.nd||0,hasProp?(cho?'Đang chờ Trưởng phòng phê duyệt':(tt==='duyet'||tt==='xn_dc'?'Đã phê duyệt':'')):'Phòng ghi nhận đúng số THBC')+
     (hasProp?kpTile(Math.abs(dl)<0.5?'ok':'bad','⚖','Chênh lệch so với THBC',kpLech(dl),'triệu đồng')+kpTile('','🎯',(tt==='duyet'||tt==='xn_dc')?'Số sau điều chỉnh':'Tổng nếu được duyệt',fmt(sau),'triệu đồng'):'')+'</div>';
   if(!hasProp){
