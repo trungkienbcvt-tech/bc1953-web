@@ -1181,7 +1181,11 @@ boot();
 
 // ================================================================ BIỂU ĐỐI CHIẾU THBC (Đối chiếu KPI / Đối chiếu 1953)
 //   6 biểu: {KPI, 1953} × {TT15, TT85, TT37} + so sánh theo cặp nguồn cho từng mẫu
-const DTS = { mau: 'KPI', nguon: 'TT15', cap: 'TT15|TT85', chiLech: true, cache: null, mauDT: null };
+const DTS = { mau: 'KPI', nguon: 'TT15', cap: 'TT15|TT85', chiLech: true, cache: null, mauDT: null, donVi: 'TR' };
+// Đơn vị hiển thị / xuất Excel: triệu đồng (3 số lẻ) hoặc đồng (số nguyên). Số tính toán luôn giữ theo triệu đồng.
+const laDong = () => DTS.donVi === 'DONG';
+const tenDV = () => laDong() ? 'đồng' : 'triệu đồng';
+const fdt = n => (n === null || n === undefined) ? '' : laDong() ? (Math.abs(n) < 0.0005 ? '-' : Math.round(n * 1e6).toLocaleString('vi-VN')) : f3(n);
 const DT_MAU = { KPI: 'Đối chiếu KPI', CV1953: 'Đối chiếu 1953' };
 const DT_NGUON = { TT15: 'Số liệu theo TT15', TT85: 'Số liệu theo TT85', TT37: 'Số liệu theo TT37', SS: 'So sánh hai nguồn' };
 const capDT = () => DTS.cap.split('|');
@@ -1202,9 +1206,10 @@ async function viewDT(v) {
   const ss = DTS.nguon === 'SS';
   v.innerHTML = `<div class="card no-print">
       <h2>Biểu đối chiếu THBC</h2>
-      <p class="muted small">Tổng hợp lũy kế giải ngân theo chủ đầu tư / đơn vị / xã, phường và KBNN nơi giao dịch (mẫu "Biểu đối chiếu THBC"), lấy từ chi tiết dự án của file hệ thống TT15 hoặc TT85 đã nạp ở mục Dữ liệu đầu vào. Đơn vị: triệu đồng.</p>
+      <p class="muted small">Tổng hợp lũy kế giải ngân theo chủ đầu tư / đơn vị / xã, phường và KBNN nơi giao dịch (mẫu "Biểu đối chiếu THBC"), lấy từ chi tiết dự án của file hệ thống TT15, TT85 hoặc TT37 đã nạp ở mục Dữ liệu đầu vào. Đơn vị: ${tenDV()}.</p>
       <div class="bar">
         <label>Mẫu biểu<select id="dtMau">${Object.entries(DT_MAU).map(([k, t]) => `<option value="${k}" ${k === DTS.mau ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+        <label>Đơn vị<select id="dtDV"><option value="TR" ${laDong() ? '' : 'selected'}>Triệu đồng</option><option value="DONG" ${laDong() ? 'selected' : ''}>Đồng</option></select></label>
         <label>Số liệu<select id="dtNguon">${Object.entries(DT_NGUON).map(([k, t]) => `<option value="${k}" ${k === DTS.nguon ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
         ${ss ? `<label>Cặp so sánh<select id="dtCap">${Object.entries(SS_CAP).map(([k, t]) => `<option value="${k}" ${k === DTS.cap ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
           <label class="chk"><input type="checkbox" id="dtLech" ${DTS.chiLech ? 'checked' : ''}> Chỉ hiện dòng chênh lệch</label>` : ''}
@@ -1217,6 +1222,7 @@ async function viewDT(v) {
     <div id="dtKq"><div class="loading">Đang tính…</div></div>`;
   v.querySelector('#dtMau').onchange = e => { DTS.mau = e.target.value; viewDT(v); };
   v.querySelector('#dtNguon').onchange = e => { DTS.nguon = e.target.value; viewDT(v); };
+  v.querySelector('#dtDV').onchange = e => { DTS.donVi = e.target.value; viewDT(v); };
   v.querySelector('#dtLech')?.addEventListener('change', e => { DTS.chiLech = e.target.checked; viewDT(v); });
   v.querySelector('#dtCap')?.addEventListener('change', e => { DTS.cap = e.target.value; viewDT(v); });
   const box = v.querySelector('#dtKq');
@@ -1245,7 +1251,7 @@ const lopDT = r => r.kieu === 'tong' ? 'l0' : r.kieu === 'khoi' ? 'l1' : r.kieu 
 
 function veBieuDT(box, k) {
   const mau = DTS.mauDT, cot = dtCot(), l = k.loai;
-  const td = o => cot.map(c => `<td class="num">${f3(o[c])}</td>`).join('');
+  const td = o => cot.map(c => `<td class="num">${fdt(o[c])}</td>`).join('');
   const f = S.file?.[l];
   const body = mau.rows.map((r, i) => {
     const o = k.dong[i];
@@ -1254,14 +1260,14 @@ function veBieuDT(box, k) {
   const thua = k.thua.length ? `<tr class="l1"><td class="c">III</td><td class="nm">CHƯA KHỚP MẪU BIỂU</td><td></td>${td(k.khoiThua)}<td class="gc-col small">Cần bổ sung vào mẫu hoặc sửa danh mục dự án</td></tr>`
     + k.thua.map((t, j) => `<tr class="click" data-t="${j}"><td class="c">-</td><td class="nm" title="${esc(t.dv)}">${esc(t.dv)}</td><td>${esc(DTE.tenPhong(t.phong))}</td>${td(t)}<td class="gc-col small">${esc(t.ly_do)}</td></tr>`).join('') : '';
   box.innerHTML = `<div class="no-print">
-      ${k.thua.length ? `<div class="warnbox">⚠ Có <b>${k.thua.length}</b> nhóm dự án (tổng <b>${f3(k.khoiThua.D)}</b> triệu) chưa khớp được vào dòng nào của mẫu biểu – xem mục <b>III. CHƯA KHỚP MẪU BIỂU</b> cuối bảng. Dòng TỔNG CỘNG vẫn bao gồm số này.</div>`
+      ${k.thua.length ? `<div class="warnbox">⚠ Có <b>${k.thua.length}</b> nhóm dự án (tổng <b>${fdt(k.khoiThua.D)}</b> ${tenDV()}) chưa khớp được vào dòng nào của mẫu biểu – xem mục <b>III. CHƯA KHỚP MẪU BIỂU</b> cuối bảng. Dòng TỔNG CỘNG vẫn bao gồm số này.</div>`
         : `<div class="okbox">✓ Toàn bộ số liệu giải ngân của ${fmtDong(k.soDuAn)} dòng dự án trong file ${l} đã khớp vào mẫu biểu. Tổng cộng = cộng chi tiết dự án của file.</div>`}
     </div>
     <div class="card rpt-card">
       <div class="rpt-org small"><b>KHO BẠC NHÀ NƯỚC</b><br><b>KHO BẠC NHÀ NƯỚC KHU VỰC VIII</b></div>
       <div class="rpt-title"><div class="t1">TỔNG HỢP KẾT QUẢ GIẢI NGÂN VỐN ĐẦU TƯ THEO CHỦ ĐẦU TƯ</div>
         <div class="ky">${esc(kyDT(l) || 'Kỳ báo cáo: …')}</div><div class="small muted">(${esc(DT_MAU[DTS.mau])} – số liệu theo ${l}${f?.ten_file ? ', file ' + esc(f.ten_file) : ''})</div></div>
-      <div class="small" style="text-align:right">Đơn vị: triệu đồng</div>
+      <div class="small" style="text-align:right">Đơn vị: ${tenDV()}</div>
       <div class="tbl-wrap"><table class="tbl rpt dt">${dauBangDT()}<tbody>${body}${thua}</tbody></table></div>
     </div>`;
   box.querySelector('tbody').addEventListener('click', e => {
@@ -1277,14 +1283,14 @@ async function xemDuAnDT(x, l) {
   const ds = [...x.duAn].sort((a, b) => b.v.D - a.v.D);
   const tenDA = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));
   await modal(`Dự án – ${esc(x.ten)} (${esc(x.c)}) – ${l}`, `<div style="min-width:min(1000px,90vw)">
-    <p>${ds.length} dự án; tổng giải ngân lũy kế <b>${f3(ds.reduce((s, d) => s + d.v.D, 0))}</b> triệu đồng.</p>
+    <p>${ds.length} dự án; tổng giải ngân lũy kế <b>${fdt(ds.reduce((s, d) => s + d.v.D, 0))}</b> ${tenDV()}.</p>
     <div class="tbl-wrap" style="max-height:60vh;overflow:auto"><table class="tbl ss"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư (danh mục)</th>${cot.map(c => `<th>${DTE.TEN_COT_DAY[c]}</th>`).join('')}</tr></thead>
-    <tbody>${ds.map(d => `<tr><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || d.ten)}">${esc(tenDA.get(d.ma_da) || d.ten)}</td><td class="small">${esc(d.dv)}</td>${cot.map(c => `<td class="num">${f3(d.v[c])}</td>`).join('')}</tr>`).join('') || '<tr><td colspan="6" class="empty">Không có dự án.</td></tr>'}</tbody></table></div></div>`, null, 'Đóng');
+    <tbody>${ds.map(d => `<tr><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || d.ten)}">${esc(tenDA.get(d.ma_da) || d.ten)}</td><td class="small">${esc(d.dv)}</td>${cot.map(c => `<td class="num">${fdt(d.v[c])}</td>`).join('')}</tr>`).join('') || '<tr><td colspan="6" class="empty">Không có dự án.</td></tr>'}</tbody></table></div></div>`, null, 'Đóng');
 }
 
 function veSoSanhDT(box, kq) {
   const mau = DTS.mauDT, s = kq.SS, cot = dtCotSS(), [A, B] = capDT();
-  const ba = (a, b, lch) => cot.map(c => `<td class="num">${f3(a?.[c])}</td><td class="num">${f3(b?.[c])}</td><td class="num ${Math.abs(lch[c]) < DT_SAI_SO ? '' : lch[c] > 0 ? 'duong' : 'am'}"><b>${f3(lch[c])}</b></td>`).join('');
+  const ba = (a, b, lch) => cot.map(c => `<td class="num">${fdt(a?.[c])}</td><td class="num">${fdt(b?.[c])}</td><td class="num ${Math.abs(lch[c]) < DT_SAI_SO ? '' : lch[c] > 0 ? 'duong' : 'am'}"><b>${fdt(lch[c])}</b></td>`).join('');
   const leafLech = s.dong.filter((d, i) => mau.rows[i].kieu === 'ct' && coLechDT(d.lech)).length + s.thua.filter(t => coLechDT(t.lech)).length;
   const hien = (i) => !DTS.chiLech || coLechDT(s.dong[i].lech);
   const body = mau.rows.map((r, i) => hien(i) ? `<tr class="${lopDT(r)} ${r.kieu === 'ct' || r.kieu === 'nhom' ? 'click' : ''}" data-i="${i}"><td class="c">${esc(r.a)}</td><td class="nm" title="${esc(r.b === 'Giao dịch tại' ? r.dv : r.b)}">${esc(r.b)}</td><td>${esc(r.c)}</td>${ba(s.dong[i].tt15, s.dong[i].tt85, s.dong[i].lech)}</tr>` : '').join('');
@@ -1293,7 +1299,7 @@ function veSoSanhDT(box, kq) {
   const t0 = s.dong[0];
   box.innerHTML = `<div class="card">
       <h2>So sánh ${esc(DT_MAU[DTS.mau])}: ${A} ↔ ${B}</h2>
-      <div class="kpi dt-kpi">${cot.map(c => `<div><span>${DTE.TEN_COT_DAY[c]}</span><b>${A} ${f3(t0.tt15[c])}</b><b>${B} ${f3(t0.tt85[c])}</b><b class="${Math.abs(t0.lech[c]) < DT_SAI_SO ? '' : t0.lech[c] > 0 ? 'duong' : 'am'}">Chênh ${f3(t0.lech[c])}</b></div>`).join('')}
+      <div class="kpi dt-kpi">${cot.map(c => `<div><span>${DTE.TEN_COT_DAY[c]}</span><b>${A} ${fdt(t0.tt15[c])}</b><b>${B} ${fdt(t0.tt85[c])}</b><b class="${Math.abs(t0.lech[c]) < DT_SAI_SO ? '' : t0.lech[c] > 0 ? 'duong' : 'am'}">Chênh ${fdt(t0.lech[c])}</b></div>`).join('')}
         <div><span>Dòng chi tiết có chênh lệch</span><b>${leafLech}</b></div></div>
       <p class="muted small">Chênh lệch = ${A} − ${B}. ${esc(kyDT(A))} (${A}) · ${esc(kyDT(B))} (${B}). Hai file khác ngày số liệu thì chênh lệch có cả phần phát sinh giữa hai ngày.</p>
       <div class="tbl-wrap"><table class="tbl rpt dt ss"><thead>
@@ -1317,7 +1323,7 @@ const DTP = { phong: '*', tim: '', chiLech: true };
 function veLechPhongDT(box, kq) {
   const [A, B] = capDT(), cot = dtCotSS(), L = kq.LP;
   const cls = n => Math.abs(n) < DT_SAI_SO ? '' : n > 0 ? 'duong' : 'am';
-  const ba = (x, y, l) => cot.map(c => `<td class="num">${f3(x[c])}</td><td class="num">${f3(y[c])}</td><td class="num ${cls(l[c])}"><b>${f3(l[c])}</b></td>`).join('');
+  const ba = (x, y, l) => cot.map(c => `<td class="num">${fdt(x[c])}</td><td class="num">${fdt(y[c])}</td><td class="num ${cls(l[c])}"><b>${fdt(l[c])}</b></td>`).join('');
   const dau = cot.map(c => `<th colspan="3">${DTE.TEN_COT_DAY[c]}</th>`).join(''), dau2 = cot.map(() => `<th>${A}</th><th>${B}</th><th>Chênh lệch</th>`).join('');
   const tong = L.phong.reduce((s, p) => { for (const c of cot) { s.a[c] = (s.a[c] || 0) + p.tt15[c]; s.b[c] = (s.b[c] || 0) + p.tt85[c]; s.l[c] = (s.l[c] || 0) + p.lech[c]; } s.n += p.soLech; s.m += p.soDA; return s; }, { a: {}, b: {}, l: {}, n: 0, m: 0 });
   const c1 = document.createElement('div'); c1.className = 'card';
@@ -1349,15 +1355,15 @@ function veDuAnLechDT(c2, kq) {
       <label style="min-width:260px">Tìm mã / tên dự án / chủ đầu tư<input id="dpTim" value="${esc(DTP.tim)}"></label>
       <label class="chk"><input type="checkbox" id="dpLech" ${DTP.chiLech ? 'checked' : ''}> Chỉ dự án chênh lệch</label>
     </div>
-    <p class="small">${fmtDong(ds.length)} dự án · tổng giải ngân lũy kế: ${A} <b>${f3(tong.a)}</b> · ${B} <b>${f3(tong.b)}</b> · chênh <b class="${cls(tong.l)}">${f3(tong.l)}</b> triệu đồng.${ds.length > GH ? ` Đang hiện ${GH} dự án chênh lớn nhất – xuất Excel để xem đủ.` : ''}</p>
+    <p class="small">${fmtDong(ds.length)} dự án · tổng giải ngân lũy kế: ${A} <b>${fdt(tong.a)}</b> · ${B} <b>${fdt(tong.b)}</b> · chênh <b class="${cls(tong.l)}">${fdt(tong.l)}</b> ${tenDV()}.${ds.length > GH ? ` Đang hiện ${GH} dự án chênh lớn nhất – xuất Excel để xem đủ.` : ''}</p>
     <div class="tbl-wrap tall"><table class="tbl ss dt"><thead><tr><th rowspan="2">STT</th><th rowspan="2">Mã DA</th><th rowspan="2">Tên dự án</th><th rowspan="2">Chủ đầu tư</th><th rowspan="2">Phòng giao dịch</th><th rowspan="2">Có trong</th>
       ${cot.map(c => `<th colspan="3">${DTE.TEN_COT_DAY[c]}</th>`).join('')}${DTS.mau === 'KPI' ? '<th rowspan="2">Chênh ở chỉ tiêu chi tiết</th>' : ''}</tr>
       <tr>${cot.map(() => `<th>${A}</th><th>${B}</th><th>Chênh lệch</th>`).join('')}</tr></thead>
     <tbody>${hien.map((d, i) => `<tr><td class="c">${i + 1}</td><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || d.ten)}">${esc(tenDA.get(d.ma_da) || d.ten)}</td>
       <td class="small">${esc(d.dv || '(chưa có trong danh mục)')}</td><td class="small">${esc(DTE.tenPhong(d.phong))}</td>
       <td class="c">${d.co15 && d.co85 ? 'Cả hai' : d.co15 ? `<span class="chip duong">Chỉ ${A}</span>` : `<span class="chip am">Chỉ ${B}</span>`}</td>
-      ${cot.map(c => `<td class="num">${f3(d.tt15[c])}</td><td class="num">${f3(d.tt85[c])}</td><td class="num ${cls(d.lech[c])}"><b>${f3(d.lech[c])}</b></td>`).join('')}
-      ${DTS.mau === 'KPI' ? `<td class="small">${['H', 'I', 'K', 'L'].filter(c => Math.abs(d.lech[c]) >= DT_SAI_SO).map(c => `<span class="chip ${cls(d.lech[c])}">${DTE.TEN_COT_DAY[c]}: ${f3(d.lech[c])}</span>`).join(' ')}</td>` : ''}</tr>`).join('')
+      ${cot.map(c => `<td class="num">${fdt(d.tt15[c])}</td><td class="num">${fdt(d.tt85[c])}</td><td class="num ${cls(d.lech[c])}"><b>${fdt(d.lech[c])}</b></td>`).join('')}
+      ${DTS.mau === 'KPI' ? `<td class="small">${['H', 'I', 'K', 'L'].filter(c => Math.abs(d.lech[c]) >= DT_SAI_SO).map(c => `<span class="chip ${cls(d.lech[c])}">${DTE.TEN_COT_DAY[c]}: ${fdt(d.lech[c])}</span>`).join(' ')}</td>` : ''}</tr>`).join('')
       || `<tr><td colspan="${7 + cot.length * 3}" class="empty">Không có dự án phù hợp.</td></tr>`}</tbody></table></div>
     <p class="small muted">Chênh lệch = ${A} − ${B}; xanh: ${A} lớn hơn, đỏ: ${B} lớn hơn. "Chỉ ${A}" / "Chỉ ${B}": dự án có giải ngân ở một file (hoặc giao dịch ở phòng khác trong file kia). Sắp xếp: chênh lệch lớn nhất trước.</p>`;
   c2.querySelector('#dpPhong').onchange = e => { DTP.phong = e.target.value; veDuAnLechDT(c2, kq); };
@@ -1373,12 +1379,12 @@ async function xemLechDT(ten, noi, ds15, ds85, lech) {
   const cls = n => Math.abs(n) < DT_SAI_SO ? '' : n > 0 ? 'duong' : 'am';
   const [A, B] = capDT();
   await modal(`Chênh lệch ${A} ↔ ${B} – ${esc(ten)} (${esc(noi)})`, `<div style="min-width:min(1150px,92vw)">
-    <p>Tổng giải ngân lũy kế chênh <b class="${cls(lech.D)}">${f3(lech.D)}</b> triệu. ${ds.length} dự án, <b>${co.length}</b> dự án có chênh lệch.</p>
+    <p>Tổng giải ngân lũy kế chênh <b class="${cls(lech.D)}">${fdt(lech.D)}</b> ${tenDV()}. ${ds.length} dự án, <b>${co.length}</b> dự án có chênh lệch.</p>
     <div class="tbl-wrap" style="max-height:60vh;overflow:auto"><table class="tbl ss"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Có trong</th><th>${A} – tổng</th><th>${B} – tổng</th><th>Chênh lệch tổng</th>${DTS.mau === 'KPI' ? '<th>Chênh ở chỉ tiêu</th>' : ''}</tr></thead>
     <tbody>${co.map(d => `<tr><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || d.ten)}">${esc(tenDA.get(d.ma_da) || d.ten)}</td>
       <td class="c">${d.co15 && d.co85 ? 'Cả hai' : d.co15 ? `<span class="chip duong">Chỉ ${A}</span>` : `<span class="chip am">Chỉ ${B}</span>`}</td>
-      <td class="num">${f3(d.tt15.D)}</td><td class="num">${f3(d.tt85.D)}</td><td class="num ${cls(d.lech.D)}"><b>${f3(d.lech.D)}</b></td>
-      ${DTS.mau === 'KPI' ? `<td class="small">${['H', 'I', 'K', 'L'].filter(c => Math.abs(d.lech[c]) >= DT_SAI_SO).map(c => `<span class="chip ${cls(d.lech[c])}">${DTE.TEN_COT_DAY[c]}: ${f3(d.lech[c])}</span>`).join(' ')}</td>` : ''}</tr>`).join('')
+      <td class="num">${fdt(d.tt15.D)}</td><td class="num">${fdt(d.tt85.D)}</td><td class="num ${cls(d.lech.D)}"><b>${fdt(d.lech.D)}</b></td>
+      ${DTS.mau === 'KPI' ? `<td class="small">${['H', 'I', 'K', 'L'].filter(c => Math.abs(d.lech[c]) >= DT_SAI_SO).map(c => `<span class="chip ${cls(d.lech[c])}">${DTE.TEN_COT_DAY[c]}: ${fdt(d.lech[c])}</span>`).join(' ')}</td>` : ''}</tr>`).join('')
       || `<tr><td colspan="7" class="empty">Không có dự án nào chênh lệch.</td></tr>`}</tbody></table></div>
     <p class="small muted">"Chỉ ${A}" / "Chỉ ${B}": dự án có giải ngân chỉ ở một file hệ thống. Chênh lệch = ${A} − ${B}.</p></div>`, null, 'Đóng');
 }
@@ -1387,8 +1393,9 @@ async function xemLechDT(ten, noi, ds15, ds85, lech) {
 async function xuatDT(kq) {
   const ExcelJS = await loadExcelJS();
   const mau = DTS.mauDT, wb = new ExcelJS.Workbook(), kpi = DTS.mau === 'KPI';
-  const NF = '#,##0.000;[Red]-#,##0.000;"-"';
-  const lam = x => { const n = Math.round((Number(x) || 0) * 1e6) / 1e6; return Math.abs(n) < 1e-6 ? 0 : n; };   // bỏ sai số dấu phẩy động
+  const NF = laDong() ? '#,##0;[Red]-#,##0;"-"' : '#,##0.000;[Red]-#,##0.000;"-"';
+  // bỏ sai số dấu phẩy động; đơn vị đồng → nhân 1.000.000, làm tròn đồng
+  const lam = x => { const n = laDong() ? Math.round((Number(x) || 0) * 1e6) : Math.round((Number(x) || 0) * 1e6) / 1e6; return Math.abs(n) < 1e-6 ? 0 : n; };
   const vien = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
   const kieuDong = (row, r, n) => { const b = r.kieu === 'tong' || r.kieu === 'khoi', nh = r.kieu === 'nhom';
     for (let c = 1; c <= n; c++) { const cell = row.getCell(c); cell.border = vien; if (b || nh) cell.font = { bold: true }; if (r.kieu === 'tong') cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3CC' } }; } };
@@ -1399,7 +1406,7 @@ async function xuatDT(kq) {
     ws.addRow(['KHO BẠC NHÀ NƯỚC']); ws.addRow(['KHO BẠC NHÀ NƯỚC KHU VỰC VIII']); ws.addRow([]);
     ws.addRow(['TỔNG HỢP KẾT QUẢ GIẢI NGÂN VỐN ĐẦU TƯ THEO CHỦ ĐẦU TƯ']); ws.mergeCells(4, 1, 4, n);
     ws.addRow([(kyDT(DTS.nguon) || 'KỲ BÁO CÁO: …') + ` (số liệu theo ${DTS.nguon})`]); ws.mergeCells(5, 1, 5, n);
-    const r6 = ws.addRow([]); r6.getCell(n).value = 'Đơn vị: triệu đồng';
+    const r6 = ws.addRow([]); r6.getCell(n).value = `Đơn vị: ${tenDV()}`;
     [1, 2].forEach(i => ws.getRow(i).font = { bold: true }); [4, 5].forEach(i => { ws.getRow(i).font = { bold: true, size: i === 4 ? 13 : 11 }; ws.getRow(i).alignment = { horizontal: 'center' }; });
     let h0 = 7;
     if (kpi) {
@@ -1421,8 +1428,8 @@ async function xuatDT(kq) {
       for (const t of k.thua) kieuDong(ws.addRow(['-', t.dv, DTE.tenPhong(t.phong), ...cot.map(c => lam(t[c])), t.ly_do]), { kieu: 'ct' }, n);
     }
     ws.getColumn(1).width = 7; ws.getColumn(2).width = 48; ws.getColumn(3).width = 20; ws.getColumn(n).width = 30;
-    for (let c = 4; c < n; c++) { ws.getColumn(c).width = 15; ws.getColumn(c).numFmt = NF; }
-    tenFile = `${DT_MAU[DTS.mau]} - ${DTS.nguon}`;
+    for (let c = 4; c < n; c++) { ws.getColumn(c).width = laDong() ? 20 : 15; ws.getColumn(c).numFmt = NF; }
+    tenFile = `${DT_MAU[DTS.mau]} - ${DTS.nguon}${laDong() ? ' (dong)' : ''}`;
   } else {
     const s = kq.SS, cot = dtCotSS(), n = 3 + cot.length * 3, [A, B] = capDT();
     const ws = wb.addWorksheet(`So sanh ${A}-${B}`, { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
@@ -1435,7 +1442,7 @@ async function xuatDT(kq) {
     mau.rows.forEach((r, i) => ghi(r.a, r.b, r.c, s.dong[i].tt15, s.dong[i].tt85, s.dong[i].lech, r));
     if (s.thua.length) { ghi('III', 'CHƯA KHỚP MẪU BIỂU', '', s.khoi.tt15, s.khoi.tt85, s.khoi.lech, { kieu: 'khoi' }); s.thua.forEach(t => ghi('-', t.dv, DTE.tenPhong(t.phong), t.tt15, t.tt85, t.lech, { kieu: 'ct' })); }
     ws.getColumn(1).width = 7; ws.getColumn(2).width = 48; ws.getColumn(3).width = 20;
-    for (let c = 4; c <= n; c++) { ws.getColumn(c).width = 15; ws.getColumn(c).numFmt = NF; }
+    for (let c = 4; c <= n; c++) { ws.getColumn(c).width = laDong() ? 20 : 15; ws.getColumn(c).numFmt = NF; }
     // Sheet 2: theo phòng giao dịch; Sheet 3: dự án chênh lệch (dự án × phòng giao dịch)
     const L = kq.LP || DTE.lechTheoPhong(kq[A], kq[B]);
     const cotDA = kpi ? ['D', 'G', 'H', 'I', 'J', 'K', 'L'] : ['D'];
@@ -1444,7 +1451,7 @@ async function xuatDT(kq) {
     for (const p of L.phong) w1.addRow([DTE.tenPhong(p.phong), p.soLech, p.soDA, ...cotDA.flatMap(c => [lam(p.tt15[c]), lam(p.tt85[c]), lam(p.lech[c])])]);
     w1.getRow(1).font = { bold: true }; w1.getRow(1).alignment = { wrapText: true, vertical: 'middle' };
     w1.getColumn(1).width = 26; w1.getColumn(2).width = 12; w1.getColumn(3).width = 10;
-    for (let c = 4; c < 4 + cotDA.length * 3; c++) { w1.getColumn(c).width = 15; w1.getColumn(c).numFmt = NF; }
+    for (let c = 4; c < 4 + cotDA.length * 3; c++) { w1.getColumn(c).width = laDong() ? 20 : 15; w1.getColumn(c).numFmt = NF; }
     const w2 = wb.addWorksheet('Du an chenh lech', { views: [{ state: 'frozen', ySplit: 1 }] });
     w2.addRow(['Phòng giao dịch', 'Chủ đầu tư / đơn vị', 'Mã DA', 'Tên dự án', 'Có trong', ...cotDA.flatMap(c => [`${A} – ${DTE.TEN_COT_DAY[c]}`, `${B} – ${DTE.TEN_COT_DAY[c]}`, `Chênh – ${DTE.TEN_COT_DAY[c]}`])]);
     w2.getRow(1).font = { bold: true }; w2.getRow(1).alignment = { wrapText: true, vertical: 'middle' };
@@ -1454,9 +1461,9 @@ async function xuatDT(kq) {
       .sort((x, y) => thuTu(x.phong) - thuTu(y.phong) || Math.abs(y.lech.D) - Math.abs(x.lech.D));
     for (const d of dsDA) w2.addRow([DTE.tenPhong(d.phong), d.dv || '', d.ma_da, tenDA.get(d.ma_da) || d.ten, d.co15 && d.co85 ? 'Cả hai' : d.co15 ? 'Chỉ ' + A : 'Chỉ ' + B, ...cotDA.flatMap(c => [lam(d.tt15[c]), lam(d.tt85[c]), lam(d.lech[c])])]);
     w2.getColumn(1).width = 20; w2.getColumn(2).width = 40; w2.getColumn(3).width = 10; w2.getColumn(4).width = 60; w2.getColumn(5).width = 10;
-    for (let c = 6; c < 6 + cotDA.length * 3; c++) { w2.getColumn(c).width = 14; w2.getColumn(c).numFmt = NF; }
+    for (let c = 6; c < 6 + cotDA.length * 3; c++) { w2.getColumn(c).width = laDong() ? 19 : 14; w2.getColumn(c).numFmt = NF; }
     w2.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: 5 + cotDA.length * 3 } };
-    tenFile = `So sanh ${DT_MAU[DTS.mau]} ${A} - ${B}`;
+    tenFile = `So sanh ${DT_MAU[DTS.mau]} ${A} - ${B}${laDong() ? ' (dong)' : ''}`;
   }
   const buf = await wb.xlsx.writeBuffer();
   const a = document.createElement('a');
