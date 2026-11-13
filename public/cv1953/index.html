@@ -303,6 +303,10 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kt tr.kedit td.in{padding:3px 4px}.kt tr.kedit input.ki{width:100%;min-width:0;box-sizing:border-box;text-align:right;padding:5px 6px;font-size:13px}.kt tr.kedit td.v{font-weight:600}
 .kt tr.kedit2 td.ly{text-align:left;padding:2px 8px 6px}.kt tr.kedit2 input.kly{width:calc(100% - 150px);min-width:0;box-sizing:border-box;text-align:left;margin-right:10px}
 .kdel{cursor:pointer;color:#b91c1c;font-size:12px;align-self:center}
+.bt.kt{border-collapse:separate;border-spacing:0}.kt thead th{position:sticky;background:#f6e3e6;z-index:3;padding:4px 6px}.kt thead tr:first-child th{top:0;height:32px}.kt thead tr:nth-child(2) th{top:var(--k1,32px);height:44px}.kt thead tr:first-child th[rowspan]{z-index:6;vertical-align:middle}
+.kt tr.bt-t td{top:var(--k2,76px)!important;z-index:2}.kt tr.bt-t td:nth-child(1),.kt tr.bt-t td:nth-child(2){z-index:3}
+.kpv{flex-wrap:wrap}.kpv .kph{flex-basis:100%;margin:2px 0 0;color:var(--mut);font-size:12.5px}
+.kt tr.kxl td.kl small{font-weight:400}.kt tr.kedit td.kl{color:#92400e}.kt tr.tagd td.kl{color:#92400e}
 </style>
 </head>
 <body>
@@ -922,7 +926,7 @@ function kpChip(t){var x=KTT[t]||KTT.khong;return '<span class="dck" style="back
 function kpSt(x){return x.e0+x.e1+x.e2+x.e3}
 function kpTh(x){return x.t0+x.t1+x.t2+x.t3}
 function kpParse(s){s=String(s==null?'':s).replace(/\s/g,'');if(s==='')return NaN;if(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s))s=s.replace(/\./g,'').replace(',','.');else s=s.replace(',','.');return /^\d+(\.\d+)?$/.test(s)?Number(s):NaN}
-function kpVal(x){return String(Math.round(x*1000)/1000)}
+function kpVal(x){return String(Math.round(x*1e6)/1e6).replace('.',',')}
 function kpLech(l){var a=Math.round(Math.abs(l)*10)/10;return a<0.5?'–':(l<0?'−':'+')+a.toLocaleString('vi-VN',{maximumFractionDigits:1})}
 function kpLoad(cb,force){
   if(S.kp&&!force&&!S.kp.stale){cb();return}
@@ -991,25 +995,26 @@ function kpDc(d){
   rows.forEach(function(x){h+='<tr><td style="text-align:left">'+esc(x.c)+'</td><td style="text-align:left">'+esc(x.b)+'</td><td>'+fmt(kpTh(x))+'</td><td><b>'+fmt(kpSt(x))+'</b></td><td>'+kpLech(kpSt(x)-kpTh(x))+'</td><td style="text-align:left;max-width:380px">'+esc(x.ly)+'</td></tr>'});
   return h+'</tbody></table></div></div>'}
 function kp9(x,p){var a=x[p+'0'],b=x[p+'1'],c=x[p+'2'],d=x[p+'3'];return [a+b+c+d,a+c,b+d,a+b,a,b,c+d,c,d]}
-function kpCells(x){var v=S.kpView||'sau';if(v==='goc')return kp9(x,'t');if(v==='sau')return kp9(x,'e');var e=kp9(x,'e'),t=kp9(x,'t');return e.map(function(y,i){return y-t[i]})}
+function kpCells(x){var v=S.kpView||'sau';if(v==='goc'||v==='de')return kp9(x,'t');if(v==='sau')return kp9(x,'e');var e=kp9(x,'e'),t=kp9(x,'t');return e.map(function(y,i){return y-t[i]})}
 function kpFmtC(n){if((S.kpView||'sau')==='lech')return Math.abs(n)<0.5?'–':(n<0?'−':'+')+fmt(Math.abs(n));return fmt(n)}
 function kpHdr(){var l=['Tổng số','Thanh toán KLHT','Tạm ứng'];return '<thead><tr><th rowspan="2" style="width:50px">STT</th><th rowspan="2" style="text-align:left;min-width:250px">Chủ đầu tư / đơn vị</th><th colspan="3">Tổng cộng</th><th colspan="3">Giải ngân KHV kéo dài</th><th colspan="3">Giải ngân KHV năm</th></tr><tr>'+l.concat(l,l).map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead>'}
 function kpBody(d){
-  var q=d.quyen||{},th=S.vt!=='PGD',ed=!!q.sua,h='',ev=S.kpView||'sau';
-  if(S.vt==='PGD'){var m=d.ds[0]||{};h+='<div class="card kpgo" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>'+esc(S.pgd||'')+'</b>'+kpChip(m.tt)+(m.nguoi?'<span class="hint" style="margin:0">'+esc(m.nguoi)+' · '+esc(m.luc||'')+'</span>':'')+'</div><p class="hint" style="margin:6px 0 0">Số liệu do Chuyên viên THBC cung cấp. Nếu <b>đúng</b>, Trưởng phòng bấm <b>Xác nhận</b>. Nếu muốn ghi nhận <b>khác</b>, bấm dòng mờ <b>＋ Ghi nhận số khác THBC</b> dưới chủ đầu tư đó, nhập số thực tế và <b>nêu lý do</b> (bắt buộc), rồi lưu.</p></div>'}
+  var q=d.quyen||{},th=S.vt!=='PGD',h='',ev=S.kpView||'sau',ed=!!q.sua&&ev==='de';S.kpDirty=0;
+  if(S.vt==='PGD'){var m=d.ds[0]||{};h+='<div class="card kpgo" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>'+esc(S.pgd||'')+'</b>'+kpChip(m.tt)+(m.nguoi?'<span class="hint" style="margin:0">'+esc(m.nguoi)+' · '+esc(m.luc||'')+'</span>':'')+'</div><p class="hint" style="margin:6px 0 0">Số liệu do Chuyên viên THBC cung cấp. Nếu <b>đúng</b>, Trưởng phòng bấm <b>Xác nhận</b>. Nếu muốn ghi nhận <b>khác</b>, chọn mục <b>Số đề nghị điều chỉnh</b> bên dưới, nhập số thực tế và <b>nêu lý do</b> (bắt buộc), rồi lưu. Mục <b>Số sau điều chỉnh</b> cho thấy kết quả.</p></div>'}
   else{h+='<div class="card" style="margin-bottom:12px"><label style="display:inline">Lọc theo phòng: </label><select id="kpP" style="width:auto"><option value="">Toàn tỉnh</option>'+d.ds.map(function(x){return '<option'+(S.kpP===x.pgd?' selected':'')+'>'+esc(x.pgd)+'</option>'}).join('')+'</select> <span class="hint" style="margin:0 0 0 8px">Chỉ xem; số điều chỉnh do phòng giao dịch nhập.</span></div>'}
-  h+='<div class="kpv"><b>Xem:</b> <label><input type="radio" name="kv" value="goc"'+(ev==='goc'?' checked':'')+'> Số THBC</label><label><input type="radio" name="kv" value="sau"'+(ev==='sau'?' checked':'')+'> Sau điều chỉnh</label><label><input type="radio" name="kv" value="lech"'+(ev==='lech'?' checked':'')+'> Chênh lệch</label><span class="hint" style="margin:0 0 0 auto">Triệu đồng</span></div>';
+  var hint={goc:'Số do Chuyên viên THBC cung cấp, giữ nguyên để đối chiếu.',de:(q.sua?'Đây là nơi <b>duy nhất</b> để sửa: nhập số thực tế vào các ô xanh; nếu khác THBC thì <b>bắt buộc nêu lý do</b>, rồi bấm Lưu.':'Các dòng phòng đề nghị ghi nhận khác THBC, kèm số đề nghị và lý do.'),sau:'Kết quả cuối: dòng đã điều chỉnh thay thế số THBC, các dòng còn lại theo THBC. Đây là số gửi Sở Tài chính.'};
+  h+='<div class="kpv"><b>Xem:</b> <label><input type="radio" name="kv" value="goc"'+(ev==='goc'?' checked':'')+'> Số THBC gốc</label><label><input type="radio" name="kv" value="de"'+(ev==='de'?' checked':'')+'> Số đề nghị điều chỉnh</label><label><input type="radio" name="kv" value="sau"'+(ev==='sau'?' checked':'')+'> Số sau điều chỉnh</label><span class="hint" style="margin:0 0 0 auto">Triệu đồng</span><div class="kph">'+hint[ev]+'</div></div>';
   var rows=d.rows.filter(function(x){return !th||!S.kpP||x.k==='tot'||x.k==='khoi'||x.k==='nhom'||x.c===S.kpP});
   if(th&&S.kpP)rows=rows.filter(function(x){return x.k==='row'||x.k==='tot'});
   h+='<div class="card" style="padding:0"><div class="kpw"><table class="bt kt">'+kpHdr()+'<tbody>';
   rows.forEach(function(x){
     var leaf=x.k==='row',cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-n':(x.st==='sub'?'bt-s':'bt-i'))),adj=leaf&&x.ly!==undefined;
-    h+='<tr class="'+cl+(adj?' khac':'')+'"'+(leaf?' data-m="'+esc(x.khoa)+'"':'')+'><td class="bt-a">'+esc(x.a==null?'':x.a)+'</td><td style="text-align:left">'+esc(x.b)+(leaf&&x.c&&th?' <small>'+esc(x.c)+'</small>':'')+'</td>'+kpCells(x).map(function(n,i){return '<td class="v c'+i+'">'+kpFmtC(n)+'</td>'}).join('')+'</tr>';
-    if(leaf&&ed){var at='data-k="'+esc(x.khoa)+'" data-t="'+[x.t0,x.t1,x.t2,x.t3].join(',')+'"',o=adj?' open':'',c9=kp9(x,'e'),KI={4:0,5:1,7:2,8:3},ek=['e0','e1','e2','e3'];
-      h+='<tr class="kxl klink'+o+'" '+at+'><td colspan="11"><a class="kmo">＋ Ghi nhận số khác THBC</a></td></tr>';
-      h+='<tr class="kxl kedit khac'+o+'" '+at+'><td></td><td class="kl">Phòng ghi nhận khác</td>'+c9.map(function(n,i){return KI[i]!==undefined?'<td class="in"><input class="ki" data-i="'+KI[i]+'" inputmode="decimal" value="'+kpVal(x[ek[KI[i]]])+'"></td>':'<td class="v s'+i+'">'+fmt(n)+'</td>'}).join('')+'</tr>';
-      h+='<tr class="kxl kedit2 khac'+o+'" '+at+'><td></td><td class="kl">Lý do (bắt buộc)</td><td colspan="9" class="ly"><input class="kly" maxlength="300" value="'+esc(x.ly||'')+'" placeholder="VD: chứng từ hạch toán sau ngày chốt"><a class="kdel">Hủy điều chỉnh</a></td></tr>'}
-    else if(adj){h+='<tr class="kxl ro khac"><td></td><td class="kl">↳ Phòng ghi nhận khác <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+')</small></td>'+kp9(x,'e').map(function(n){return '<td class="v">'+fmt(n)+'</td>'}).join('')+'</tr><tr class="kxl ro2 khac"><td></td><td class="kl">Lý do</td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}});
+    h+='<tr class="'+cl+(adj&&ev==='sau'?' khac':'')+'"'+(leaf?' data-m="'+esc(x.khoa)+'"':'')+'><td class="bt-a">'+esc(x.a==null?'':x.a)+'</td><td style="text-align:left">'+esc(x.b)+(leaf&&x.c&&th?' <small>'+esc(x.c)+'</small>':'')+(adj&&ev==='sau'?' <small style="color:#b45309;font-weight:600">● đã điều chỉnh</small>':'')+'</td>'+kpCells(x).map(function(n,i){return '<td class="v c'+i+'">'+kpFmtC(n)+'</td>'}).join('')+'</tr>';
+    if(leaf&&ed){var at='data-k="'+esc(x.khoa)+'" data-t="'+[x.t0,x.t1,x.t2,x.t3].join(',')+'"',c9=kp9(x,'e'),KI={4:0,5:1,7:2,8:3},ek=['e0','e1','e2','e3'];
+      h+='<tr class="kxl kedit khac open" '+at+'><td></td><td class="kl">Số đề nghị điều chỉnh</td>'+c9.map(function(n,i){return KI[i]!==undefined?'<td class="in"><input class="ki" data-i="'+KI[i]+'" inputmode="decimal" value="'+kpVal(x[ek[KI[i]]])+'"></td>':'<td class="v s'+i+'">'+fmt(n)+'</td>'}).join('')+'</tr>';
+      h+='<tr class="kxl kedit2 khac'+(adj?' open':'')+'" '+at+'><td></td><td class="kl">Lý do (bắt buộc)</td><td colspan="9" class="ly"><input class="kly" maxlength="300" value="'+esc(x.ly||'')+'" placeholder="VD: Chủ đầu tư đã gửi hồ sơ đến KBNN, đơn vị đang xử lý hồ sơ"><a class="kdel">Hủy điều chỉnh</a></td></tr>'}
+    else if(adj&&ev==='de'){h+='<tr class="kxl ro khac"><td></td><td class="kl">Số đề nghị điều chỉnh <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+')</small></td>'+kp9(x,'e').map(function(n){return '<td class="v">'+fmt(n)+'</td>'}).join('')+'</tr><tr class="kxl ro2 khac"><td></td><td class="kl">Lý do</td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}
+    else if(adj&&ev==='sau'){h+='<tr class="kxl ro2 khac"><td></td><td class="kl">Lý do <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+' so với THBC)</small></td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}});
   h+='</tbody></table></div></div>';
   if(S.vt==='PGD'){h+='<div class="kpfoot card"><span id="kpMsg" class="hint" style="margin:0">'+(q.sua?'Chưa có thay đổi.':(q.moLai?'Phòng đã xác nhận.':''))+'</span><span style="margin-left:auto;display:flex;gap:8px">'+
     (q.sua?'<button class="mini" id="kpSave" disabled>Lưu số ghi nhận</button>':'')+(q.xacNhan?'<button class="pri" id="kpXn">✔ Xác nhận số liệu của phòng</button>':'')+(q.moLai?'<button class="mini" id="kpMoLai">Mở lại để sửa</button>':'')+'</span></div>'}
@@ -1018,10 +1023,8 @@ function kpRowVals(tr){return [].map.call(tr.querySelectorAll('.ki'),function(i)
 function kpLy(tr){return tr.nextElementSibling.querySelector('.kly')}
 function kpUpdRow(tr){
   var t=tr.getAttribute('data-t').split(',').map(Number),v=kpRowVals(tr),ok=v.every(function(x){return !isNaN(x)}),khac=ok&&v.some(function(x,i){return Math.abs(x-t[i])>0.0005}),ly=kpLy(tr);
-  tr.classList.toggle('sai',!ok);ly.classList.toggle('thieu',khac&&ly.value.trim().length<3);
-  var mr=$('main').querySelector('tr[data-m="'+tr.getAttribute('data-k').replace(/"/g,'\\"')+'"]');
-  if(ok){var c=kp9({e0:v[0],e1:v[1],e2:v[2],e3:v[3]},'e');[0,1,2,3,6].forEach(function(i){var e=tr.querySelector('.s'+i);if(e)e.textContent=fmt(c[i])});
-    if(mr){mr.classList.toggle('khac',khac);if((S.kpView||'sau')==='sau')c.forEach(function(n,i){mr.querySelector('.c'+i).textContent=fmt(n)})}}
+  tr.classList.toggle('sai',!ok);ly.classList.toggle('thieu',khac&&ly.value.trim().length<3);tr.nextElementSibling.classList.toggle('open',khac||ly.value.trim().length>0);
+  if(ok){var c=kp9({e0:v[0],e1:v[1],e2:v[2],e3:v[3]},'e');[0,1,2,3,6].forEach(function(i){var e=tr.querySelector('.s'+i);if(e)e.textContent=fmt(c[i])})}
   var dirty=0,thieu=0,sai=0;
   [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},vv=kpRowVals(r),l=kpLy(r).value.trim();
     if(vv.some(isNaN)){sai++;return}
@@ -1038,6 +1041,7 @@ function kpGather(){
   return {items:items,bad:bad}}
 function bindKp(){
   var d=S.kp;
+  var kt=$('main').querySelector('table.kt');if(kt){var hr=kt.querySelectorAll('thead tr'),h1=hr[0].getBoundingClientRect().height,h2=hr[1].getBoundingClientRect().height;kt.style.setProperty('--k1',h1+'px');kt.style.setProperty('--k2',(h1+h2)+'px')}
   if($('kpMoc'))$('kpMoc').onchange=function(){S.kpId=this.value;S.kp=null;drawKpi(S.tab)};
   if($('kpNewB'))$('kpNewB').onclick=function(){var n=$('kpNew');n.style.display=n.style.display==='none'?'block':'none'};
   if($('kpUp'))$('kpUp').onclick=function(){if(!$('kpNgay').value){toast('Chọn ngày số liệu trước.',5000);return}$('kpFile').click()};
@@ -1057,8 +1061,7 @@ function bindKp(){
   if($('kvSave'))$('kvSave').onclick=function(){run('kpiVbLuu',S.token,d.moc.id,kvObj()).then(function(v){S.kp.vbInfo=v;toast('Đã lưu thông tin công văn.',3500)}).catch(function(e){toast(msg(e),8000)})};
   if($('kvWord'))$('kvWord').onclick=function(){var b=this;xuat(function(){return run('kpiVbLuu',S.token,d.moc.id,kvObj()).then(function(v){S.kp.vbInfo=v;return run('xuatCongVan',S.token,d.moc.id,S.kpChe||'sau')})},b,'docx')};
   if($('kpChe'))$('kpChe').onchange=function(){S.kpChe=this.value;drawKpi(S.tab)};
-  [].forEach.call($('main').querySelectorAll('input[name=kv]'),function(r){r.onchange=function(){S.kpView=r.value;drawKpi(S.tab)}});
-  [].forEach.call($('main').querySelectorAll('tr.klink .kmo'),function(a){a.onclick=function(){var l=a.closest('tr'),e1=l.nextElementSibling,e2=e1.nextElementSibling;[l,e1,e2].forEach(function(r){r.classList.add('open')});e1.querySelector('.ki').focus()}});
+  [].forEach.call($('main').querySelectorAll('input[name=kv]'),function(r){r.onchange=function(){if(S.kpDirty){toast('Có thay đổi chưa lưu, hãy bấm Lưu số ghi nhận trước khi đổi cách xem.',6000);[].forEach.call($('main').querySelectorAll('input[name=kv]'),function(x){x.checked=x.value===(S.kpView||'sau')});return}S.kpView=r.value;drawKpi(S.tab)}});
   [].forEach.call($('main').querySelectorAll('tr.kedit2 .kdel'),function(a){a.onclick=function(){var tr=a.closest('tr').previousElementSibling,t=tr.getAttribute('data-t').split(',');[].forEach.call(tr.querySelectorAll('.ki'),function(i,k){i.value=kpVal(Number(t[k]))});kpLy(tr).value='';kpUpdRow(tr)}});
   if($('kpP'))$('kpP').onchange=function(){S.kpP=this.value;drawKpi(S.tab)};
   [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(tr){[].forEach.call(tr.querySelectorAll('input'),function(i){i.oninput=function(){kpUpdRow(tr)}});kpLy(tr).oninput=function(){kpUpdRow(tr)}});
