@@ -300,7 +300,7 @@ async function tinhDoiChieu(id) {
   let tong = E.chuyenTong(id, f?.tong);
   // lọc KBNN: đối chiếu với dòng tổng của khối KBNN đó trong file hệ thống
   if (k && tong) tong = { ...tong, nhan: tong.kb?.[k]?.ten || 'KBNN ' + k, tong: tong.kb?.[k]?.so || {}, kb: tong.kb?.[k] ? { [k]: tong.kb[k] } : {} };
-  return { f: f && { ...f, tong }, dong: E.doiChieu(id, S.mau[id], nguonBC(id), tong, k ? [] : dcCua(id), kq) };
+  return { f: f && { ...f, tong }, dong: E.doiChieu(id, S.mau[id], nguonBC(id), tong, k ? dcLoc(id) : dcCua(id), kq) };
 }
 async function renderDoiChieu(box, id) {
   if (!nguonCua(id).length) { box.innerHTML = '<p class="muted">Chưa có dữ liệu nguồn.</p>'; return; }
@@ -664,10 +664,10 @@ async function viewBaoCao(v) {
     const kq = await tinh(id, { loc: true });
     S.kq = { id, kq };
     const an = dongRong(id, kq);
-    v.querySelector('#rp').innerHTML = renderBang(id, kq, { dc: kbLoc(id) ? [] : dcCua(id), coGhiChu: !kbLoc(id), an });
+    v.querySelector('#rp').innerHTML = renderBang(id, kq, { dc: dcLoc(id), coGhiChu: !kbLoc(id), an });
     ganGhiChu(v.querySelector('#rp'), S.mau[id]);
     const ghi = [];
-    if (kbLoc(id)) ghi.push(`<div class="okbox">🔎 Đang lọc theo <b>${esc(nhanKB(id))}</b>: chỉ tính dự án giao dịch tại KBNN này${an.size ? `, ẩn ${an.size} dòng không có số liệu` : ''}. Khi lọc: không áp dụng khoản "cộng thêm"${tuan ? '; cột "Lũy kế đến tuần trước" và "Giá trị tăng thêm trong tuần" để trống (kỳ đã lưu là số toàn khu vực)' : ''}; không lưu kỳ.</div>`);
+    if (kbLoc(id)) ghi.push(`<div class="okbox">🔎 Đang lọc theo <b>${esc(nhanKB(id))}</b>: chỉ tính dự án giao dịch tại KBNN này${an.size ? `, ẩn ${an.size} dòng không có số liệu` : ''}. Khi lọc: ${tuan ? 'không áp dụng khoản "cộng thêm" (BC tuần không tách được theo KBNN); cột "Lũy kế đến tuần trước" và "Giá trị tăng thêm trong tuần" để trống (kỳ đã lưu là số toàn khu vực)' : `chỉ áp dụng khoản "cộng thêm" ghi ở dòng của KBNN ${esc(kbLoc(id))} (${dcLoc(id).length}/${dcCua(id).length} khoản)`}; không lưu kỳ.</div>`);
     if (tuan && !S.truoc[id] && !kbLoc(id)) ghi.push('<div class="warnbox">Chưa chọn <b>lũy kế đến tuần trước</b> nên cột "Lũy kế đến tuần trước liền kề" đang bằng 0 và "Giá trị tăng thêm trong tuần" đang bằng toàn bộ lũy kế. Hãy chọn kỳ đã chốt hoặc bấm <b>Nhập lũy kế tuần trước từ file Excel…</b></div>');
     try {
       const { f, dong } = await tinhDoiChieu(id);
@@ -705,6 +705,22 @@ function tenPhongKB(k, tenFile) {
 }
 const nhanKB = id => { const k = kbLoc(id); return k ? `KBNN ${k} – ${tenPhongKB(k, S.file?.[E.BAO_CAO[id].nguon]?.tong?.kb?.[k]?.ten)}` : ''; };
 const kyBC = id => (S.dongKy[id] || '') + (kbLoc(id) ? ` (${nhanKB(id)})` : '');
+// Khoản cộng thêm áp dụng khi lọc KBNN (chỉ BC tháng – mẫu có cột "Mã KBNN"):
+//   - dòng có mã KBNN = KBNN đang lọc → áp dụng;
+//   - dòng tổng của chủ đầu tư (không có mã KBNN) → áp dụng nếu dòng KBNN đang lọc của chủ đầu tư đó cũng có khoản cộng thêm cùng cột.
+function dcLoc(id) {
+  const k = kbLoc(id), ds = dcCua(id);
+  if (!k) return ds;
+  if (!laThang(id)) return [];
+  const rows = S.mau[id].rows, co = new Set(ds.map(d => d.dong + '|' + d.cot));
+  return ds.filter(d => {
+    const r = rows[d.dong]; if (!r) return false;
+    if (r.kbnn) return String(r.kbnn) === k;
+    for (let j = d.dong + 1; j < rows.length && rows[j].kbnn && rows[j].ten === r.ten; j++)
+      if (String(rows[j].kbnn) === k && co.has(j + '|' + d.cot)) return true;
+    return false;
+  });
+}
 // Dòng không có số liệu (khi lọc KBNN): mọi cột số bằng 0
 function dongRong(id, kq) {
   const an = new Set(), K = E.KIEU[id], pct = new Set(K.pct);
@@ -721,7 +737,7 @@ async function tinh(id, { boCT = false, loc = false } = {}) {
     truoc = anhChupCache[tr] ||= (await q(sb.from('th_ky').select('anh_chup').eq('id', tr).single())).anh_chup;
   }
   const rows = k ? nguonBC(id) : nguonCua(id);
-  const kq = E.tinhBaoCao(id, S.mau[id], rows, { dieuChinh: boCT || k ? [] : dcCua(id).map(d => ({ ...d, so_tien: Number(d.so_tien) })), truoc });
+  const kq = E.tinhBaoCao(id, S.mau[id], rows, { dieuChinh: boCT ? [] : (k ? dcLoc(id) : dcCua(id)).map(d => ({ ...d, so_tien: Number(d.so_tien) })), truoc });
   if (k && E.BAO_CAO[id].loai === 'TUAN') for (const o of kq) for (const c of COT_TUAN_TRUOC) if (o) o[c] = null;
   return kq;
 }
