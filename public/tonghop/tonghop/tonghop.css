@@ -108,3 +108,6 @@ td.gc-col input.gc.sua{background:#eef7ff;border-color:#8bb8e8}
 .rpt-org{margin-bottom:4px;line-height:1.35}
 label.chk{display:flex;align-items:center;gap:6px;flex-direction:row!important}
 .tbl.rpt.dt td:nth-child(3){white-space:nowrap}
+#dtDA td:nth-child(4){min-width:190px}
+#dtDA td:nth-child(5),#dtDA td:nth-child(6){white-space:nowrap}
+#dtDA td.ten{min-width:260px}

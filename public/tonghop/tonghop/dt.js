@@ -112,11 +112,32 @@ export function soSanhDT(mau, a, b) {
 }
 
 // Danh sách dự án ghép từ 2 nguồn (để xem chi tiết chênh lệch một dòng)
-export function ghepDuAn(ds15 = [], ds85 = []) {
+//   theoPhong = true: tách theo dự án + phòng giao dịch (một dự án giao dịch ở 2 nơi thành 2 dòng)
+export function ghepDuAn(ds15 = [], ds85 = [], theoPhong = false) {
   const m = new Map();
   for (const [ds, nh] of [[ds15, 'tt15'], [ds85, 'tt85']]) for (const d of ds) {
-    const e = m.get(d.ma_da) || { ma_da: d.ma_da, ten: d.ten, dv: d.dv, phong: d.phong, tt15: rong(), tt85: rong(), co15: false, co85: false };
-    cong(e[nh], d.v); e['co' + nh.slice(2)] = true; if (!e.ten) e.ten = d.ten; m.set(d.ma_da, e);
+    const k = theoPhong ? d.ma_da + '|' + d.phong : d.ma_da;
+    const e = m.get(k) || { ma_da: d.ma_da, ten: d.ten, dv: d.dv, phong: d.phong, tt15: rong(), tt85: rong(), co15: false, co85: false };
+    cong(e[nh], d.v); e['co' + nh.slice(2)] = true; if (!e.ten) e.ten = d.ten; if (!e.dv) e.dv = d.dv; m.set(k, e);
   }
   return [...m.values()].map(e => ({ ...e, lech: Object.fromEntries(COT_KPI.map(c => [c, e.tt15[c] - e.tt85[c]])) }));
+}
+
+// Mọi dự án của một biểu (dòng chi tiết + phần chưa khớp mẫu)
+export const tatCaDuAn = k => [...k.dong.flatMap(o => o.duAn), ...k.thua.flatMap(t => t.duAn)];
+
+// Chênh lệch theo dự án và theo phòng giao dịch giữa 2 biểu (A − B)
+export function lechTheoPhong(a, b) {
+  const da = ghepDuAn(tatCaDuAn(a), tatCaDuAn(b), true);
+  const ph = new Map();
+  for (const d of da) {
+    const p = ph.get(d.phong) || { phong: d.phong, tt15: rong(), tt85: rong(), soDA: 0, soLech: 0 };
+    cong(p.tt15, d.tt15); cong(p.tt85, d.tt85); p.soDA++;
+    if (COT_KPI.some(c => Math.abs(d.lech[c]) >= 0.0005)) p.soLech++;
+    ph.set(d.phong, p);
+  }
+  const thuTu = p => p === 'NV2' ? 0 : p ? Number(p) : 999;
+  const phong = [...ph.values()].map(p => ({ ...p, lech: Object.fromEntries(COT_KPI.map(c => [c, p.tt15[c] - p.tt85[c]])) }))
+    .sort((x, y) => thuTu(x.phong) - thuTu(y.phong));
+  return { duAn: da, phong };
 }

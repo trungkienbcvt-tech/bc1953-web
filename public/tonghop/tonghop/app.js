@@ -1224,7 +1224,8 @@ async function viewDT(v) {
     const can = ss ? capDT() : [DTS.nguon], thieu = can.filter(l => !S.nguon?.[l]?.length);
     if (thieu.length) { box.innerHTML = `<div class="card"><p class="muted">Chưa có số liệu ${thieu.map(l => esc(NGUON_TEN[l])).join(', ')}. Phòng Nghiệp vụ 2 nạp file ở mục <b>Dữ liệu đầu vào</b>.</p></div>`; return; }
     const { kq } = await tinhDTCache();
-    if (ss) { const [A, B] = capDT(); kq.SS = DTE.soSanhDT(DTS.mauDT, kq[A], kq[B]); veSoSanhDT(box, kq); } else veBieuDT(box, kq[DTS.nguon]);
+    if (ss) { const [A, B] = capDT(); kq.SS = DTE.soSanhDT(DTS.mauDT, kq[A], kq[B]); kq.LP = DTE.lechTheoPhong(kq[A], kq[B]); veSoSanhDT(box, kq); veLechPhongDT(box, kq); }
+    else veBieuDT(box, kq[DTS.nguon]);
     v.querySelector('#dtXuat')?.addEventListener('click', () => xuatDT(kq).catch(fail));
   } catch (e) { fail(e); box.innerHTML = `<div class="card">${esc(viErr(e))}</div>`; }
 }
@@ -1311,6 +1312,59 @@ function veSoSanhDT(box, kq) {
   });
 }
 
+// ---- Chênh lệch theo phòng giao dịch và chi tiết từng dự án (chế độ so sánh)
+const DTP = { phong: '*', tim: '', chiLech: true };
+function veLechPhongDT(box, kq) {
+  const [A, B] = capDT(), cot = dtCotSS(), L = kq.LP;
+  const cls = n => Math.abs(n) < DT_SAI_SO ? '' : n > 0 ? 'duong' : 'am';
+  const ba = (x, y, l) => cot.map(c => `<td class="num">${f3(x[c])}</td><td class="num">${f3(y[c])}</td><td class="num ${cls(l[c])}"><b>${f3(l[c])}</b></td>`).join('');
+  const dau = cot.map(c => `<th colspan="3">${DTE.TEN_COT_DAY[c]}</th>`).join(''), dau2 = cot.map(() => `<th>${A}</th><th>${B}</th><th>Chênh lệch</th>`).join('');
+  const tong = L.phong.reduce((s, p) => { for (const c of cot) { s.a[c] = (s.a[c] || 0) + p.tt15[c]; s.b[c] = (s.b[c] || 0) + p.tt85[c]; s.l[c] = (s.l[c] || 0) + p.lech[c]; } s.n += p.soLech; s.m += p.soDA; return s; }, { a: {}, b: {}, l: {}, n: 0, m: 0 });
+  const c1 = document.createElement('div'); c1.className = 'card';
+  c1.innerHTML = `<h2>Chênh lệch theo phòng giao dịch: ${A} ↔ ${B}</h2>
+    <p class="muted small">Phòng giao dịch theo khối KBNN nơi dự án giao dịch trong file hệ thống. Bấm vào một phòng để xem chi tiết dự án chênh lệch của phòng đó.</p>
+    <div class="tbl-wrap"><table class="tbl rpt dt ss"><thead><tr><th rowspan="2">Phòng giao dịch</th><th rowspan="2">Dự án chênh lệch</th>${dau}</tr><tr>${dau2}</tr></thead>
+    <tbody><tr class="l0"><td>Tổng cộng</td><td class="c">${tong.n} / ${tong.m}</td>${ba(tong.a, tong.b, tong.l)}</tr>
+    ${L.phong.map(p => `<tr class="click ${p.soLech ? '' : 'muted'}" data-p="${esc(p.phong)}"><td>${esc(DTE.tenPhong(p.phong))}</td><td class="c">${p.soLech ? `<b>${p.soLech}</b>` : '0'} / ${p.soDA}</td>${ba(p.tt15, p.tt85, p.lech)}</tr>`).join('')}</tbody></table></div>`;
+  const c2 = document.createElement('div'); c2.className = 'card'; c2.id = 'dtDA';
+  box.append(c1, c2);
+  c1.querySelector('tbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-p]'); if (!tr) return; DTP.phong = tr.dataset.p; veDuAnLechDT(c2, kq); c2.scrollIntoView({ behavior: 'smooth' }); });
+  veDuAnLechDT(c2, kq);
+}
+function veDuAnLechDT(c2, kq) {
+  const [A, B] = capDT(), cot = dtCotSS(), L = kq.LP;
+  const cls = n => Math.abs(n) < DT_SAI_SO ? '' : n > 0 ? 'duong' : 'am';
+  const dm = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));
+  const tenDA = { get: ma => (dm.get(ma) || L.duAn.find(d => d.ma_da === ma)?.ten || '').replace(new RegExp('^\\s*' + ma + '\\s*-\\s*'), '') };
+  const coLech = d => DTE.COT_KPI.some(c => Math.abs(d.lech[c]) >= DT_SAI_SO);
+  const q = DTP.tim.trim().toLowerCase();
+  let ds = L.duAn.filter(d => (DTP.phong === '*' || d.phong === DTP.phong) && (!DTP.chiLech || coLech(d))
+    && (!q || d.ma_da.toLowerCase().includes(q) || (tenDA.get(d.ma_da) || d.ten || '').toLowerCase().includes(q) || (d.dv || '').toLowerCase().includes(q)));
+  ds.sort((x, y) => Math.abs(y.lech.D) - Math.abs(x.lech.D) || Math.abs(y.lech.G) - Math.abs(x.lech.G) || x.ma_da.localeCompare(y.ma_da));
+  const tong = ds.reduce((s, d) => { s.a += d.tt15.D; s.b += d.tt85.D; s.l += d.lech.D; return s; }, { a: 0, b: 0, l: 0 });
+  const GH = 1000, hien = ds.slice(0, GH);
+  c2.innerHTML = `<h2>Chênh lệch chi tiết theo dự án: ${A} ↔ ${B}</h2>
+    <div class="bar">
+      <label>Phòng giao dịch<select id="dpPhong"><option value="*">Tất cả các phòng</option>${L.phong.map(p => `<option value="${esc(p.phong)}" ${p.phong === DTP.phong ? 'selected' : ''}>${esc(DTE.tenPhong(p.phong))} (${p.soLech} dự án lệch)</option>`).join('')}</select></label>
+      <label style="min-width:260px">Tìm mã / tên dự án / chủ đầu tư<input id="dpTim" value="${esc(DTP.tim)}"></label>
+      <label class="chk"><input type="checkbox" id="dpLech" ${DTP.chiLech ? 'checked' : ''}> Chỉ dự án chênh lệch</label>
+    </div>
+    <p class="small">${fmtDong(ds.length)} dự án · tổng giải ngân lũy kế: ${A} <b>${f3(tong.a)}</b> · ${B} <b>${f3(tong.b)}</b> · chênh <b class="${cls(tong.l)}">${f3(tong.l)}</b> triệu đồng.${ds.length > GH ? ` Đang hiện ${GH} dự án chênh lớn nhất – xuất Excel để xem đủ.` : ''}</p>
+    <div class="tbl-wrap tall"><table class="tbl ss dt"><thead><tr><th rowspan="2">STT</th><th rowspan="2">Mã DA</th><th rowspan="2">Tên dự án</th><th rowspan="2">Chủ đầu tư</th><th rowspan="2">Phòng giao dịch</th><th rowspan="2">Có trong</th>
+      ${cot.map(c => `<th colspan="3">${DTE.TEN_COT_DAY[c]}</th>`).join('')}${DTS.mau === 'KPI' ? '<th rowspan="2">Chênh ở chỉ tiêu chi tiết</th>' : ''}</tr>
+      <tr>${cot.map(() => `<th>${A}</th><th>${B}</th><th>Chênh lệch</th>`).join('')}</tr></thead>
+    <tbody>${hien.map((d, i) => `<tr><td class="c">${i + 1}</td><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || d.ten)}">${esc(tenDA.get(d.ma_da) || d.ten)}</td>
+      <td class="small">${esc(d.dv || '(chưa có trong danh mục)')}</td><td class="small">${esc(DTE.tenPhong(d.phong))}</td>
+      <td class="c">${d.co15 && d.co85 ? 'Cả hai' : d.co15 ? `<span class="chip duong">Chỉ ${A}</span>` : `<span class="chip am">Chỉ ${B}</span>`}</td>
+      ${cot.map(c => `<td class="num">${f3(d.tt15[c])}</td><td class="num">${f3(d.tt85[c])}</td><td class="num ${cls(d.lech[c])}"><b>${f3(d.lech[c])}</b></td>`).join('')}
+      ${DTS.mau === 'KPI' ? `<td class="small">${['H', 'I', 'K', 'L'].filter(c => Math.abs(d.lech[c]) >= DT_SAI_SO).map(c => `<span class="chip ${cls(d.lech[c])}">${DTE.TEN_COT_DAY[c]}: ${f3(d.lech[c])}</span>`).join(' ')}</td>` : ''}</tr>`).join('')
+      || `<tr><td colspan="${7 + cot.length * 3}" class="empty">Không có dự án phù hợp.</td></tr>`}</tbody></table></div>
+    <p class="small muted">Chênh lệch = ${A} − ${B}; xanh: ${A} lớn hơn, đỏ: ${B} lớn hơn. "Chỉ ${A}" / "Chỉ ${B}": dự án có giải ngân ở một file (hoặc giao dịch ở phòng khác trong file kia). Sắp xếp: chênh lệch lớn nhất trước.</p>`;
+  c2.querySelector('#dpPhong').onchange = e => { DTP.phong = e.target.value; veDuAnLechDT(c2, kq); };
+  c2.querySelector('#dpLech').onchange = e => { DTP.chiLech = e.target.checked; veDuAnLechDT(c2, kq); };
+  let hen; c2.querySelector('#dpTim').oninput = e => { DTP.tim = e.target.value; clearTimeout(hen); hen = setTimeout(() => { veDuAnLechDT(c2, kq); const i = c2.querySelector('#dpTim'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 300); };
+}
+
 async function xemLechDT(ten, noi, ds15, ds85, lech) {
   const cot = DTS.mau === 'KPI' ? ['D', 'H', 'I', 'K', 'L'] : ['D'];
   const tenDA = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));
@@ -1382,19 +1436,24 @@ async function xuatDT(kq) {
     if (s.thua.length) { ghi('III', 'CHƯA KHỚP MẪU BIỂU', '', s.khoi.tt15, s.khoi.tt85, s.khoi.lech, { kieu: 'khoi' }); s.thua.forEach(t => ghi('-', t.dv, DTE.tenPhong(t.phong), t.tt15, t.tt85, t.lech, { kieu: 'ct' })); }
     ws.getColumn(1).width = 7; ws.getColumn(2).width = 48; ws.getColumn(3).width = 20;
     for (let c = 4; c <= n; c++) { ws.getColumn(c).width = 15; ws.getColumn(c).numFmt = NF; }
-    // Sheet 2: dự án chênh lệch (theo dòng chi tiết của mẫu)
+    // Sheet 2: theo phòng giao dịch; Sheet 3: dự án chênh lệch (dự án × phòng giao dịch)
+    const L = kq.LP || DTE.lechTheoPhong(kq[A], kq[B]);
+    const cotDA = kpi ? ['D', 'G', 'H', 'I', 'J', 'K', 'L'] : ['D'];
+    const w1 = wb.addWorksheet('Theo phong giao dich', { views: [{ state: 'frozen', ySplit: 1 }] });
+    w1.addRow(['Phòng giao dịch', 'Số dự án chênh lệch', 'Số dự án', ...cotDA.flatMap(c => [`${A} – ${DTE.TEN_COT_DAY[c]}`, `${B} – ${DTE.TEN_COT_DAY[c]}`, `Chênh – ${DTE.TEN_COT_DAY[c]}`])]);
+    for (const p of L.phong) w1.addRow([DTE.tenPhong(p.phong), p.soLech, p.soDA, ...cotDA.flatMap(c => [lam(p.tt15[c]), lam(p.tt85[c]), lam(p.lech[c])])]);
+    w1.getRow(1).font = { bold: true }; w1.getRow(1).alignment = { wrapText: true, vertical: 'middle' };
+    w1.getColumn(1).width = 26; w1.getColumn(2).width = 12; w1.getColumn(3).width = 10;
+    for (let c = 4; c < 4 + cotDA.length * 3; c++) { w1.getColumn(c).width = 15; w1.getColumn(c).numFmt = NF; }
     const w2 = wb.addWorksheet('Du an chenh lech', { views: [{ state: 'frozen', ySplit: 1 }] });
-    const cotDA = kpi ? ['D', 'H', 'I', 'K', 'L'] : ['D'];
-    w2.addRow(['Chủ đầu tư / đơn vị', 'KBNN nơi giao dịch', 'Mã DA', 'Tên dự án', 'Có trong', ...cotDA.flatMap(c => [`${A} – ${DTE.TEN_COT_DAY[c]}`, `${B} – ${DTE.TEN_COT_DAY[c]}`, `Chênh – ${DTE.TEN_COT_DAY[c]}`])]);
+    w2.addRow(['Phòng giao dịch', 'Chủ đầu tư / đơn vị', 'Mã DA', 'Tên dự án', 'Có trong', ...cotDA.flatMap(c => [`${A} – ${DTE.TEN_COT_DAY[c]}`, `${B} – ${DTE.TEN_COT_DAY[c]}`, `Chênh – ${DTE.TEN_COT_DAY[c]}`])]);
     w2.getRow(1).font = { bold: true }; w2.getRow(1).alignment = { wrapText: true, vertical: 'middle' };
     const tenDA = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));
-    const nhom = [...mau.rows.map((r, i) => r.kieu === 'ct' ? { dv: r.dv, c: r.c, a: kq[A].dong[i].duAn, b: kq[B].dong[i].duAn } : null).filter(Boolean),
-      ...s.thua.map(t => ({ dv: t.dv, c: DTE.tenPhong(t.phong), a: t.tt15?.duAn, b: t.tt85?.duAn }))];
-    for (const g of nhom) for (const d of DTE.ghepDuAn(g.a, g.b)) {
-      if (!cotDA.some(c => Math.abs(d.lech[c]) >= DT_SAI_SO)) continue;
-      w2.addRow([g.dv, g.c, d.ma_da, tenDA.get(d.ma_da) || d.ten, d.co15 && d.co85 ? 'Cả hai' : d.co15 ? 'Chỉ ' + A : 'Chỉ ' + B, ...cotDA.flatMap(c => [lam(d.tt15[c]), lam(d.tt85[c]), lam(d.lech[c])])]);
-    }
-    w2.getColumn(1).width = 40; w2.getColumn(2).width = 20; w2.getColumn(3).width = 10; w2.getColumn(4).width = 60; w2.getColumn(5).width = 10;
+    const thuTu = p => p === 'NV2' ? 0 : p ? Number(p) : 999;
+    const dsDA = L.duAn.filter(d => cotDA.some(c => Math.abs(d.lech[c]) >= DT_SAI_SO))
+      .sort((x, y) => thuTu(x.phong) - thuTu(y.phong) || Math.abs(y.lech.D) - Math.abs(x.lech.D));
+    for (const d of dsDA) w2.addRow([DTE.tenPhong(d.phong), d.dv || '', d.ma_da, tenDA.get(d.ma_da) || d.ten, d.co15 && d.co85 ? 'Cả hai' : d.co15 ? 'Chỉ ' + A : 'Chỉ ' + B, ...cotDA.flatMap(c => [lam(d.tt15[c]), lam(d.tt85[c]), lam(d.lech[c])])]);
+    w2.getColumn(1).width = 20; w2.getColumn(2).width = 40; w2.getColumn(3).width = 10; w2.getColumn(4).width = 60; w2.getColumn(5).width = 10;
     for (let c = 6; c < 6 + cotDA.length * 3; c++) { w2.getColumn(c).width = 14; w2.getColumn(c).numFmt = NF; }
     w2.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: 5 + cotDA.length * 3 } };
     tenFile = `So sanh ${DT_MAU[DTS.mau]} ${A} - ${B}`;
