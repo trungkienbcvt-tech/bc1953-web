@@ -8,6 +8,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import { CONFIG } from '../config.js';
 import * as E from './engine.js';
 import * as B5 from './b501.js';
+import * as DTE from './dt.js';
 
 const sb = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 const app = document.getElementById('app');
@@ -15,11 +16,11 @@ const app = document.getElementById('app');
 const QUYEN_XEM = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'XEM', 'TH_PGD', 'TH_NV2'];
 const QUYEN_SUA = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'TH_NV2'];
 // Tab được xem theo vai trò (mặc định: tất cả)
-const TAB_THEO_VAI_TRO = { TH_PGD: ['da', 'bc', 'b5'] };
+const TAB_THEO_VAI_TRO = { TH_PGD: ['da', 'bc', 'dt', 'b5'] };
 // Phòng giao dịch: xem báo cáo, so sánh; không in, không xuất Excel
 const coXuat = () => S.me?.vai_tro !== 'TH_PGD';
 const tabsCua = () => { const t = TAB_THEO_VAI_TRO[S.me?.vai_tro]; return t ? Object.fromEntries(Object.entries(TABS).filter(([k]) => t.includes(k))) : TABS; };
-const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo', b5: 'Đối chiếu THBC – B5-01', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
+const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo', dt: 'Biểu đối chiếu THBC', b5: 'Đối chiếu THBC – B5-01', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
 const NGUON_TEN = { CDT: 'Sheet CDT (danh mục dự án – chủ đầu tư)', TT85: 'Sheet BC TT 85', TT15: 'Sheet BC TT 15' };
 // Tên sheet thường gặp → loại dữ liệu
 const DOAN_SHEET = { CDT: /^\s*cdt\s*$/i, TT85: /tt\s*85/i, TT15: /tt\s*15/i };
@@ -209,7 +210,7 @@ const view = () => document.getElementById('view');
 
 function show() {
   const v = view(); if (!v) return;
-  ({ dl: viewDuLieu, da: viewDanhMuc, bc: viewBaoCao, b5: viewB501, dc: viewCongThem, ky: viewKy })[S.tab](v);
+  ({ dl: viewDuLieu, da: viewDanhMuc, bc: viewBaoCao, dt: viewDT, b5: viewB501, dc: viewCongThem, ky: viewKy })[S.tab](v);
 }
 
 // ---------------------------------------------------------------- Dữ liệu
@@ -1140,3 +1141,225 @@ async function viewMotKy(v, kyId) {
 }
 
 boot();
+
+// ================================================================ BIỂU ĐỐI CHIẾU THBC (Đối chiếu KPI / Đối chiếu 1953)
+//   4 biểu: {KPI, 1953} × {TT15, TT85} + so sánh TT15 ↔ TT85 cho từng mẫu
+const DTS = { mau: 'KPI', nguon: 'TT15', chiLech: true, cache: null, mauDT: null };
+const DT_MAU = { KPI: 'Đối chiếu KPI', CV1953: 'Đối chiếu 1953' };
+const DT_NGUON = { TT15: 'Số liệu theo TT15', TT85: 'Số liệu theo TT85', SS: 'So sánh TT15 ↔ TT85' };
+const DT_SAI_SO = 0.0005;            // triệu đồng (< 1.000 đ coi như khớp)
+const dtCot = () => DTS.mau === 'KPI' ? DTE.COT_KPI : ['D'];
+const dtCotSS = () => DTS.mau === 'KPI' ? ['D', 'G', 'J'] : ['D'];
+const coLechDT = l => dtCot().some(c => Math.abs(l?.[c] || 0) >= DT_SAI_SO);
+const kyDT = l => { const den = /đến ngày\s*([\d/]+)/i.exec(S.file?.[l]?.ky_in || '')?.[1]; return den ? `Lũy kế đến ngày ${den}` : ''; };
+
+async function tinhDTCache() {
+  DTS.mauDT ||= await (await fetch(new URL('./mau_dt.json', import.meta.url))).json();
+  if (DTS.cache?.gan === S.gan) return DTS.cache;
+  const kq = { TT15: DTE.tinhDT(DTS.mauDT, 'TT15', nguonCua('TT15'), S.cdt), TT85: DTE.tinhDT(DTS.mauDT, 'TT85', nguonCua('TT85'), S.cdt) };
+  kq.SS = DTE.soSanhDT(DTS.mauDT, kq.TT15, kq.TT85);
+  return (DTS.cache = { gan: S.gan, kq });
+}
+
+async function viewDT(v) {
+  const ss = DTS.nguon === 'SS';
+  v.innerHTML = `<div class="card no-print">
+      <h2>Biểu đối chiếu THBC</h2>
+      <p class="muted small">Tổng hợp lũy kế giải ngân theo chủ đầu tư / đơn vị / xã, phường và KBNN nơi giao dịch (mẫu "Biểu đối chiếu THBC"), lấy từ chi tiết dự án của file hệ thống TT15 hoặc TT85 đã nạp ở mục Dữ liệu đầu vào. Đơn vị: triệu đồng.</p>
+      <div class="bar">
+        <label>Mẫu biểu<select id="dtMau">${Object.entries(DT_MAU).map(([k, t]) => `<option value="${k}" ${k === DTS.mau ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+        <label>Số liệu<select id="dtNguon">${Object.entries(DT_NGUON).map(([k, t]) => `<option value="${k}" ${k === DTS.nguon ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+        ${ss ? `<label class="chk"><input type="checkbox" id="dtLech" ${DTS.chiLech ? 'checked' : ''}> Chỉ hiện dòng chênh lệch</label>` : ''}
+      </div>
+      <div class="actions">
+        ${coXuat() ? `<button class="btn primary" id="dtXuat">⬇ Xuất Excel</button>${ss ? '' : '<button class="btn" onclick="window.print()">🖨 In</button>'}` : ''}
+        <span class="muted small">${ss ? 'Bấm vào một dòng để xem chênh lệch đến từng dự án.' : 'Bấm vào một dòng chi tiết để xem danh sách dự án.'}</span>
+      </div>
+    </div>
+    <div id="dtKq"><div class="loading">Đang tính…</div></div>`;
+  v.querySelector('#dtMau').onchange = e => { DTS.mau = e.target.value; viewDT(v); };
+  v.querySelector('#dtNguon').onchange = e => { DTS.nguon = e.target.value; viewDT(v); };
+  v.querySelector('#dtLech')?.addEventListener('change', e => { DTS.chiLech = e.target.checked; viewDT(v); });
+  const box = v.querySelector('#dtKq');
+  try {
+    if (!S.nguon?.TT15?.length && !S.nguon?.TT85?.length) { box.innerHTML = '<div class="card"><p class="muted">Chưa có số liệu TT15/TT85. Phòng Nghiệp vụ 2 nạp file ở mục <b>Dữ liệu đầu vào</b>.</p></div>'; return; }
+    const { kq } = await tinhDTCache();
+    if (ss) veSoSanhDT(box, kq); else veBieuDT(box, kq[DTS.nguon]);
+    v.querySelector('#dtXuat')?.addEventListener('click', () => xuatDT(kq).catch(fail));
+  } catch (e) { fail(e); box.innerHTML = `<div class="card">${esc(viErr(e))}</div>`; }
+}
+
+// Tiêu đề bảng theo mẫu
+function dauBangDT(them = '') {
+  if (DTS.mau === 'KPI') return `<thead>
+    <tr><th rowspan="3">STT</th><th rowspan="3" class="nm">Chủ đầu tư / đơn vị / xã, phường</th><th rowspan="3">KBNN nơi giao dịch</th>
+      <th colspan="9">Tổng giải ngân lũy kế đến thời điểm báo cáo</th><th rowspan="3" class="gc-col">Ghi chú</th>${them}</tr>
+    <tr><th colspan="3">Tổng cộng</th><th colspan="3">Giải ngân KHV kéo dài</th><th colspan="3">Giải ngân KHV năm 2026</th></tr>
+    <tr>${['D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'].map(c => `<th>${DTE.TEN_COT[c]}</th>`).join('')}</tr>
+    <tr class="so">${['A', 'B', 'C', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(x => `<th>${x}</th>`).join('')}</tr></thead>`;
+  return `<thead><tr><th>STT</th><th class="nm">Chủ đầu tư / đơn vị / xã, phường</th><th>KBNN nơi giao dịch</th><th>Tổng giải ngân lũy kế</th><th class="gc-col">Ghi chú</th></tr>
+    <tr class="so">${['A', 'B', 'C', 1, 2].map(x => `<th>${x}</th>`).join('')}</tr></thead>`;
+}
+const lopDT = r => r.kieu === 'tong' ? 'l0' : r.kieu === 'khoi' ? 'l1' : r.kieu === 'nhom' ? 'l2' : '';
+
+function veBieuDT(box, k) {
+  const mau = DTS.mauDT, cot = dtCot(), l = k.loai;
+  const td = o => cot.map(c => `<td class="num">${f3(o[c])}</td>`).join('');
+  const f = S.file?.[l];
+  const body = mau.rows.map((r, i) => {
+    const o = k.dong[i];
+    return `<tr class="${lopDT(r)} ${r.kieu === 'ct' ? 'click' : ''}" ${r.kieu === 'ct' ? `data-i="${i}"` : ''}><td class="c">${esc(r.a)}</td><td class="nm" title="${esc(r.b)}">${esc(r.b)}</td><td>${esc(r.c)}</td>${td(o)}<td class="gc-col"></td></tr>`;
+  }).join('');
+  const thua = k.thua.length ? `<tr class="l1"><td class="c">III</td><td class="nm">CHƯA KHỚP MẪU BIỂU</td><td></td>${td(k.khoiThua)}<td class="gc-col small">Cần bổ sung vào mẫu hoặc sửa danh mục dự án</td></tr>`
+    + k.thua.map((t, j) => `<tr class="click" data-t="${j}"><td class="c">-</td><td class="nm" title="${esc(t.dv)}">${esc(t.dv)}</td><td>${esc(DTE.tenPhong(t.phong))}</td>${td(t)}<td class="gc-col small">${esc(t.ly_do)}</td></tr>`).join('') : '';
+  box.innerHTML = `<div class="no-print">
+      ${k.thua.length ? `<div class="warnbox">⚠ Có <b>${k.thua.length}</b> nhóm dự án (tổng <b>${f3(k.khoiThua.D)}</b> triệu) chưa khớp được vào dòng nào của mẫu biểu – xem mục <b>III. CHƯA KHỚP MẪU BIỂU</b> cuối bảng. Dòng TỔNG CỘNG vẫn bao gồm số này.</div>`
+        : `<div class="okbox">✓ Toàn bộ số liệu giải ngân của ${fmtDong(k.soDuAn)} dòng dự án trong file ${l} đã khớp vào mẫu biểu. Tổng cộng = cộng chi tiết dự án của file.</div>`}
+    </div>
+    <div class="card rpt-card">
+      <div class="rpt-org small"><b>KHO BẠC NHÀ NƯỚC</b><br><b>KHO BẠC NHÀ NƯỚC KHU VỰC VIII</b></div>
+      <div class="rpt-title"><div class="t1">TỔNG HỢP KẾT QUẢ GIẢI NGÂN VỐN ĐẦU TƯ THEO CHỦ ĐẦU TƯ</div>
+        <div class="ky">${esc(kyDT(l) || 'Kỳ báo cáo: …')}</div><div class="small muted">(${esc(DT_MAU[DTS.mau])} – số liệu theo ${l}${f?.ten_file ? ', file ' + esc(f.ten_file) : ''})</div></div>
+      <div class="small" style="text-align:right">Đơn vị: triệu đồng</div>
+      <div class="tbl-wrap"><table class="tbl rpt dt">${dauBangDT()}<tbody>${body}${thua}</tbody></table></div>
+    </div>`;
+  box.querySelector('tbody').addEventListener('click', e => {
+    const tr = e.target.closest('tr.click'); if (!tr) return;
+    const x = tr.dataset.i !== undefined ? { ten: mau.rows[+tr.dataset.i].b === 'Giao dịch tại' ? mau.rows[+tr.dataset.i].dv : mau.rows[+tr.dataset.i].b, c: mau.rows[+tr.dataset.i].c, duAn: k.dong[+tr.dataset.i].duAn }
+      : { ten: k.thua[+tr.dataset.t].dv, c: DTE.tenPhong(k.thua[+tr.dataset.t].phong), duAn: k.thua[+tr.dataset.t].duAn };
+    xemDuAnDT(x, l);
+  });
+}
+
+async function xemDuAnDT(x, l) {
+  const cot = DTS.mau === 'KPI' ? ['D', 'G', 'J'] : ['D'];
+  const ds = [...x.duAn].sort((a, b) => b.v.D - a.v.D);
+  const tenDA = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));
+  await modal(`Dự án – ${esc(x.ten)} (${esc(x.c)}) – ${l}`, `<div style="min-width:min(1000px,90vw)">
+    <p>${ds.length} dự án; tổng giải ngân lũy kế <b>${f3(ds.reduce((s, d) => s + d.v.D, 0))}</b> triệu đồng.</p>
+    <div class="tbl-wrap" style="max-height:60vh;overflow:auto"><table class="tbl ss"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư (danh mục)</th>${cot.map(c => `<th>${DTE.TEN_COT_DAY[c]}</th>`).join('')}</tr></thead>
+    <tbody>${ds.map(d => `<tr><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || d.ten)}">${esc(tenDA.get(d.ma_da) || d.ten)}</td><td class="small">${esc(d.dv)}</td>${cot.map(c => `<td class="num">${f3(d.v[c])}</td>`).join('')}</tr>`).join('') || '<tr><td colspan="6" class="empty">Không có dự án.</td></tr>'}</tbody></table></div></div>`, null, 'Đóng');
+}
+
+function veSoSanhDT(box, kq) {
+  const mau = DTS.mauDT, s = kq.SS, cot = dtCotSS();
+  const ba = (a, b, lch) => cot.map(c => `<td class="num">${f3(a?.[c])}</td><td class="num">${f3(b?.[c])}</td><td class="num ${Math.abs(lch[c]) < DT_SAI_SO ? '' : lch[c] > 0 ? 'duong' : 'am'}"><b>${f3(lch[c])}</b></td>`).join('');
+  const leafLech = s.dong.filter((d, i) => mau.rows[i].kieu === 'ct' && coLechDT(d.lech)).length + s.thua.filter(t => coLechDT(t.lech)).length;
+  const hien = (i) => !DTS.chiLech || coLechDT(s.dong[i].lech);
+  const body = mau.rows.map((r, i) => hien(i) ? `<tr class="${lopDT(r)} ${r.kieu === 'ct' || r.kieu === 'nhom' ? 'click' : ''}" data-i="${i}"><td class="c">${esc(r.a)}</td><td class="nm" title="${esc(r.b === 'Giao dịch tại' ? r.dv : r.b)}">${esc(r.b)}</td><td>${esc(r.c)}</td>${ba(s.dong[i].tt15, s.dong[i].tt85, s.dong[i].lech)}</tr>` : '').join('');
+  const thua = s.thua.length ? `<tr class="l1"><td class="c">III</td><td class="nm">CHƯA KHỚP MẪU BIỂU</td><td></td>${ba(s.khoi.tt15, s.khoi.tt85, s.khoi.lech)}</tr>`
+    + s.thua.map((t, j) => !DTS.chiLech || coLechDT(t.lech) ? `<tr class="click" data-t="${j}"><td class="c">-</td><td class="nm" title="${esc(t.ly_do)}">${esc(t.dv)}</td><td>${esc(DTE.tenPhong(t.phong))}</td>${ba(t.tt15, t.tt85, t.lech)}</tr>` : '').join('') : '';
+  const t0 = s.dong[0];
+  box.innerHTML = `<div class="card">
+      <h2>So sánh ${esc(DT_MAU[DTS.mau])}: TT15 ↔ TT85</h2>
+      <div class="kpi dt-kpi">${cot.map(c => `<div><span>${DTE.TEN_COT_DAY[c]}</span><b>TT15 ${f3(t0.tt15[c])}</b><b>TT85 ${f3(t0.tt85[c])}</b><b class="${Math.abs(t0.lech[c]) < DT_SAI_SO ? '' : t0.lech[c] > 0 ? 'duong' : 'am'}">Chênh ${f3(t0.lech[c])}</b></div>`).join('')}
+        <div><span>Dòng chi tiết có chênh lệch</span><b>${leafLech}</b></div></div>
+      <p class="muted small">Chênh lệch = TT15 − TT85. ${esc(kyDT('TT15'))} (TT15) · ${esc(kyDT('TT85'))} (TT85). Hai file khác ngày số liệu thì chênh lệch có cả phần phát sinh giữa hai ngày.</p>
+      <div class="tbl-wrap"><table class="tbl rpt dt ss"><thead>
+        <tr><th rowspan="2">STT</th><th rowspan="2" class="nm">Chủ đầu tư / đơn vị / xã, phường</th><th rowspan="2">KBNN nơi giao dịch</th>${cot.map(c => `<th colspan="3">${DTE.TEN_COT_DAY[c]}</th>`).join('')}</tr>
+        <tr>${cot.map(() => '<th>TT15</th><th>TT85</th><th>Chênh lệch</th>').join('')}</tr></thead>
+        <tbody>${body}${thua}</tbody></table></div>
+      ${DTS.chiLech && !leafLech ? '<p class="okbox">✓ Không có dòng nào chênh lệch giữa TT15 và TT85.</p>' : ''}
+    </div>`;
+  box.querySelector('tbody').addEventListener('click', e => {
+    const tr = e.target.closest('tr.click'); if (!tr) return;
+    if (tr.dataset.t !== undefined) { const t = s.thua[+tr.dataset.t]; return xemLechDT(t.dv, DTE.tenPhong(t.phong), t.tt15?.duAn, t.tt85?.duAn, t.lech); }
+    const i = +tr.dataset.i, r = mau.rows[i];
+    // dòng nhóm: gộp dự án của các dòng con
+    const la = []; const gom = j => { const x = mau.rows[j]; if (x.con) x.con.forEach(gom); else la.push(j); }; gom(i);
+    xemLechDT(r.b === 'Giao dịch tại' ? r.dv : r.b, r.c || 'các nơi giao dịch', la.flatMap(j => kq.TT15.dong[j].duAn), la.flatMap(j => kq.TT85.dong[j].duAn), s.dong[i].lech);
+  });
+}
+
+async function xemLechDT(ten, noi, ds15, ds85, lech) {
+  const cot = DTS.mau === 'KPI' ? ['D', 'H', 'I', 'K', 'L'] : ['D'];
+  const tenDA = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));
+  const ds = DTE.ghepDuAn(ds15, ds85);
+  const co = ds.filter(d => cot.some(c => Math.abs(d.lech[c]) >= DT_SAI_SO)).sort((a, b) => Math.abs(b.lech.D) - Math.abs(a.lech.D));
+  const cls = n => Math.abs(n) < DT_SAI_SO ? '' : n > 0 ? 'duong' : 'am';
+  await modal(`Chênh lệch TT15 ↔ TT85 – ${esc(ten)} (${esc(noi)})`, `<div style="min-width:min(1150px,92vw)">
+    <p>Tổng giải ngân lũy kế chênh <b class="${cls(lech.D)}">${f3(lech.D)}</b> triệu. ${ds.length} dự án, <b>${co.length}</b> dự án có chênh lệch.</p>
+    <div class="tbl-wrap" style="max-height:60vh;overflow:auto"><table class="tbl ss"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Có trong</th><th>TT15 – tổng</th><th>TT85 – tổng</th><th>Chênh lệch tổng</th>${DTS.mau === 'KPI' ? '<th>Chênh ở chỉ tiêu</th>' : ''}</tr></thead>
+    <tbody>${co.map(d => `<tr><td>${esc(d.ma_da)}</td><td class="ten" title="${esc(tenDA.get(d.ma_da) || d.ten)}">${esc(tenDA.get(d.ma_da) || d.ten)}</td>
+      <td class="c">${d.co15 && d.co85 ? 'Cả hai' : d.co15 ? '<span class="chip duong">Chỉ TT15</span>' : '<span class="chip am">Chỉ TT85</span>'}</td>
+      <td class="num">${f3(d.tt15.D)}</td><td class="num">${f3(d.tt85.D)}</td><td class="num ${cls(d.lech.D)}"><b>${f3(d.lech.D)}</b></td>
+      ${DTS.mau === 'KPI' ? `<td class="small">${['H', 'I', 'K', 'L'].filter(c => Math.abs(d.lech[c]) >= DT_SAI_SO).map(c => `<span class="chip ${cls(d.lech[c])}">${DTE.TEN_COT_DAY[c]}: ${f3(d.lech[c])}</span>`).join(' ')}</td>` : ''}</tr>`).join('')
+      || `<tr><td colspan="7" class="empty">Không có dự án nào chênh lệch.</td></tr>`}</tbody></table></div>
+    <p class="small muted">"Chỉ TT15" / "Chỉ TT85": dự án có giải ngân chỉ ở một file hệ thống. Chênh lệch = TT15 − TT85.</p></div>`, null, 'Đóng');
+}
+
+// ---- Xuất Excel: biểu đang xem (giữ bố cục mẫu) hoặc bảng so sánh + danh sách dự án chênh lệch
+async function xuatDT(kq) {
+  const ExcelJS = await loadExcelJS();
+  const mau = DTS.mauDT, wb = new ExcelJS.Workbook(), kpi = DTS.mau === 'KPI';
+  const NF = '#,##0.000;[Red]-#,##0.000;"-"';
+  const lam = x => { const n = Math.round((Number(x) || 0) * 1e6) / 1e6; return Math.abs(n) < 1e-6 ? 0 : n; };   // bỏ sai số dấu phẩy động
+  const vien = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+  const kieuDong = (row, r, n) => { const b = r.kieu === 'tong' || r.kieu === 'khoi', nh = r.kieu === 'nhom';
+    for (let c = 1; c <= n; c++) { const cell = row.getCell(c); cell.border = vien; if (b || nh) cell.font = { bold: true }; if (r.kieu === 'tong') cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3CC' } }; } };
+  let tenFile;
+  if (DTS.nguon !== 'SS') {
+    const k = kq[DTS.nguon], cot = dtCot(), n = 4 + cot.length;
+    const ws = wb.addWorksheet(DT_MAU[DTS.mau], { views: [{ state: 'frozen', xSplit: 3, ySplit: kpi ? 10 : 8 }], pageSetup: { orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0 } });
+    ws.addRow(['KHO BẠC NHÀ NƯỚC']); ws.addRow(['KHO BẠC NHÀ NƯỚC KHU VỰC VIII']); ws.addRow([]);
+    ws.addRow(['TỔNG HỢP KẾT QUẢ GIẢI NGÂN VỐN ĐẦU TƯ THEO CHỦ ĐẦU TƯ']); ws.mergeCells(4, 1, 4, n);
+    ws.addRow([(kyDT(DTS.nguon) || 'KỲ BÁO CÁO: …') + ` (số liệu theo ${DTS.nguon})`]); ws.mergeCells(5, 1, 5, n);
+    const r6 = ws.addRow([]); r6.getCell(n).value = 'Đơn vị: triệu đồng';
+    [1, 2].forEach(i => ws.getRow(i).font = { bold: true }); [4, 5].forEach(i => { ws.getRow(i).font = { bold: true, size: i === 4 ? 13 : 11 }; ws.getRow(i).alignment = { horizontal: 'center' }; });
+    let h0 = 7;
+    if (kpi) {
+      ws.addRow(['STT', 'Chủ đầu tư / đơn vị / xã, phường', 'KBNN nơi giao dịch', 'Tổng giải ngân lũy kế đến thời điểm báo cáo', '', '', '', '', '', '', '', '', 'Ghi chú']);
+      ws.addRow(['', '', '', 'Tổng cộng', '', '', 'Giải ngân KHV kéo dài', '', '', 'Giải ngân KHV năm 2026', '', '', '']);
+      ws.addRow(['', '', '', ...['D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'].map(c => DTE.TEN_COT[c]), '']);
+      ws.addRow(['A', 'B', 'C', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      ws.mergeCells('D7:L7'); ws.mergeCells('A7:A9'); ws.mergeCells('B7:B9'); ws.mergeCells('C7:C9'); ws.mergeCells('M7:M9');
+      ws.mergeCells('D8:F8'); ws.mergeCells('G8:I8'); ws.mergeCells('J8:L8');
+    } else {
+      ws.addRow(['STT', 'Chủ đầu tư / đơn vị / xã, phường', 'KBNN nơi giao dịch', 'Tổng giải ngân lũy kế', 'Ghi chú']);
+      ws.addRow(['A', 'B', 'C', 1, 2]);
+    }
+    const hEnd = ws.rowCount;
+    for (let r = h0; r <= hEnd; r++) { const row = ws.getRow(r); row.font = { bold: true }; row.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; for (let c = 1; c <= n; c++) row.getCell(c).border = vien; }
+    mau.rows.forEach((r, i) => { const row = ws.addRow([r.a, r.b, r.c, ...cot.map(c => lam(k.dong[i][c])), '']); kieuDong(row, r, n); });
+    if (k.thua.length) {
+      kieuDong(ws.addRow(['III', 'CHƯA KHỚP MẪU BIỂU', '', ...cot.map(c => lam(k.khoiThua[c])), 'Cần bổ sung vào mẫu hoặc sửa danh mục dự án']), { kieu: 'khoi' }, n);
+      for (const t of k.thua) kieuDong(ws.addRow(['-', t.dv, DTE.tenPhong(t.phong), ...cot.map(c => lam(t[c])), t.ly_do]), { kieu: 'ct' }, n);
+    }
+    ws.getColumn(1).width = 7; ws.getColumn(2).width = 48; ws.getColumn(3).width = 20; ws.getColumn(n).width = 30;
+    for (let c = 4; c < n; c++) { ws.getColumn(c).width = 15; ws.getColumn(c).numFmt = NF; }
+    tenFile = `${DT_MAU[DTS.mau]} - ${DTS.nguon}`;
+  } else {
+    const s = kq.SS, cot = dtCotSS(), n = 3 + cot.length * 3;
+    const ws = wb.addWorksheet('So sanh TT15-TT85', { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
+    ws.addRow(['STT', 'Chủ đầu tư / đơn vị / xã, phường', 'KBNN nơi giao dịch', ...cot.flatMap(c => [DTE.TEN_COT_DAY[c], '', ''])]);
+    ws.addRow(['', '', '', ...cot.flatMap(() => ['TT15', 'TT85', 'Chênh lệch'])]);
+    cot.forEach((c, i) => ws.mergeCells(1, 4 + i * 3, 1, 6 + i * 3)); ['A', 'B', 'C'].forEach(c => ws.mergeCells(`${c}1:${c}2`));
+    [1, 2].forEach(r => { ws.getRow(r).font = { bold: true }; ws.getRow(r).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; for (let c = 1; c <= n; c++) ws.getRow(r).getCell(c).border = vien; });
+    const ghi = (a, b, c, x, y, l, r) => { const row = ws.addRow([a, b, c, ...cot.flatMap(k => [lam(x?.[k]), lam(y?.[k]), lam(l[k])])]); kieuDong(row, r, n);
+      cot.forEach((k, i) => { if (Math.abs(l[k]) >= DT_SAI_SO) row.getCell(6 + i * 3).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF4E5' } }; }); };
+    mau.rows.forEach((r, i) => ghi(r.a, r.b, r.c, s.dong[i].tt15, s.dong[i].tt85, s.dong[i].lech, r));
+    if (s.thua.length) { ghi('III', 'CHƯA KHỚP MẪU BIỂU', '', s.khoi.tt15, s.khoi.tt85, s.khoi.lech, { kieu: 'khoi' }); s.thua.forEach(t => ghi('-', t.dv, DTE.tenPhong(t.phong), t.tt15, t.tt85, t.lech, { kieu: 'ct' })); }
+    ws.getColumn(1).width = 7; ws.getColumn(2).width = 48; ws.getColumn(3).width = 20;
+    for (let c = 4; c <= n; c++) { ws.getColumn(c).width = 15; ws.getColumn(c).numFmt = NF; }
+    // Sheet 2: dự án chênh lệch (theo dòng chi tiết của mẫu)
+    const w2 = wb.addWorksheet('Du an chenh lech', { views: [{ state: 'frozen', ySplit: 1 }] });
+    const cotDA = kpi ? ['D', 'H', 'I', 'K', 'L'] : ['D'];
+    w2.addRow(['Chủ đầu tư / đơn vị', 'KBNN nơi giao dịch', 'Mã DA', 'Tên dự án', 'Có trong', ...cotDA.flatMap(c => [`TT15 – ${DTE.TEN_COT_DAY[c]}`, `TT85 – ${DTE.TEN_COT_DAY[c]}`, `Chênh – ${DTE.TEN_COT_DAY[c]}`])]);
+    w2.getRow(1).font = { bold: true }; w2.getRow(1).alignment = { wrapText: true, vertical: 'middle' };
+    const tenDA = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));
+    const nhom = [...mau.rows.map((r, i) => r.kieu === 'ct' ? { dv: r.dv, c: r.c, a: kq.TT15.dong[i].duAn, b: kq.TT85.dong[i].duAn } : null).filter(Boolean),
+      ...s.thua.map(t => ({ dv: t.dv, c: DTE.tenPhong(t.phong), a: t.tt15?.duAn, b: t.tt85?.duAn }))];
+    for (const g of nhom) for (const d of DTE.ghepDuAn(g.a, g.b)) {
+      if (!cotDA.some(c => Math.abs(d.lech[c]) >= DT_SAI_SO)) continue;
+      w2.addRow([g.dv, g.c, d.ma_da, tenDA.get(d.ma_da) || d.ten, d.co15 && d.co85 ? 'Cả hai' : d.co15 ? 'Chỉ TT15' : 'Chỉ TT85', ...cotDA.flatMap(c => [lam(d.tt15[c]), lam(d.tt85[c]), lam(d.lech[c])])]);
+    }
+    w2.getColumn(1).width = 40; w2.getColumn(2).width = 20; w2.getColumn(3).width = 10; w2.getColumn(4).width = 60; w2.getColumn(5).width = 10;
+    for (let c = 6; c < 6 + cotDA.length * 3; c++) { w2.getColumn(c).width = 14; w2.getColumn(c).numFmt = NF; }
+    w2.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: 5 + cotDA.length * 3 } };
+    tenFile = `So sanh ${DT_MAU[DTS.mau]} TT15 - TT85`;
+  }
+  const buf = await wb.xlsx.writeBuffer();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  a.download = `${tenFile} ${ddmmyyyy(new Date()).replace(/\//g, '.')}.xlsx`; a.click();
+}

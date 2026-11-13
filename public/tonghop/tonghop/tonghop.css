@@ -56,6 +56,7 @@ td.gc-col input.gc{width:100%;min-width:200px;padding:3px 6px;font-size:12px}
 td.gc-col input.gc.sua{background:#eef7ff;border-color:#8bb8e8}
 @media print{
   td.gc-col,th.gc-col{display:none}
+  .tbl.dt td.gc-col,.tbl.dt th.gc-col{display:table-cell}
   body.khong-in #app{display:none!important}
   body.khong-in::after{content:"Tài khoản Phòng giao dịch không có quyền in báo cáo.";display:block;padding:40px;font-size:18px}
 }
@@ -97,3 +98,13 @@ td.gc-col input.gc.sua{background:#eef7ff;border-color:#8bb8e8}
 .tckb-chu b{font-size:22px;letter-spacing:.3px;color:#f6d77a}
 .tckb-chu span{font-size:14.5px;color:#dbe6f4}
 .tckb-mo{font-size:18px;color:#f6d77a;margin-left:4px}
+/* Biểu đối chiếu THBC */
+.tbl.rpt.dt tbody tr.click{cursor:pointer}
+.tbl.rpt.dt tbody tr.click:hover td{background:#fffbe8}
+.tbl.rpt.dt thead tr.so th{font-weight:400;font-style:italic;font-size:10.5px}
+.tbl.rpt.dt td.num{white-space:nowrap}
+.tbl.rpt.dt td.nm{max-width:330px}
+.dt-kpi b{font-size:14px!important}
+.rpt-org{margin-bottom:4px;line-height:1.35}
+label.chk{display:flex;align-items:center;gap:6px;flex-direction:row!important}
+.tbl.rpt.dt td:nth-child(3){white-space:nowrap}
