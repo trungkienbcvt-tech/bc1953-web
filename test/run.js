@@ -191,8 +191,9 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const xn = await K.xacNhan(tp20, '2026-10-15'); assert.strictEqual(xn.ds.find((d) => d.pgd === P20).tt, 'xn_dc'); assert(!xn.quyen.sua && xn.quyen.moLai);
     await assert.rejects(() => K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v: null }]), /đã xác nhận/);
     const tt = await K.lay(th, '2026-10-15'); assert(Math.abs(tt.rows.find((x) => x.k === 'tot').e0 - tt.rows.find((x) => x.k === 'tot').t0 - 5) < 1e-6, 'tổng toàn tỉnh lấy số phòng ghi nhận'); assert(tt.vb && tt.vb.tong.tong > 0);
-    for (const f of ['xlsx', 'pdf']) { const ex = await X.xuatKpi(th, '2026-10-15', f); assert(ex.b64.length > 1000); }
-    assert((await X.xuatKpi(lap20, '2026-10-15', 'xlsx')).b64.length > 1000);
+    for (const f of ['xlsx', 'pdf']) { const ex = await X.xuatKpi(th, '2026-10-15', f, 'sau'); assert(ex.b64.length > 1000); }
+    assert((await X.xuatKpi(lap20, '2026-10-15', 'xlsx', 'goc')).b64.length > 1000);
+    await assert.rejects(() => K.vbLay(lap20, '2026-10-15'), /Không có quyền/); await K.vbLuu(th, '2026-10-15', { so: '1725', ngay: '16/10/2026', nguoiKy: 'Đặng Kim Liên' }); const cv = await X.xuatCongVan(th, '2026-10-15', 'sau'); assert(cv.name.endsWith('.docx') && cv.b64.length > 1500); require('fs').writeFileSync('/tmp/cv_test.docx', Buffer.from(cv.b64, 'base64'));
     await K.moLai(tp20, '2026-10-15'); const bo = await K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v: [x0.t0, x0.t1, x0.t2, x0.t3] }]); assert.strictEqual(bo.ds.find((d) => d.pgd === P20).tt, 'cho', 'nhập lại đúng THBC = không còn điều chỉnh');
     await K.chotMoc(th, '2026-10-15', true); await assert.rejects(() => K.xacNhan(tp20, '2026-10-15'), /đã chốt/); await K.chotMoc(th, '2026-10-15', false);
     // sheet 1953 của cùng file vẫn đọc được ở mục THBC 1953 (chỉ có cột lũy kế)
