@@ -173,6 +173,32 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert((await M.dmXuat(th, {})).b64.length > 300);
     M.api.goi = null; delete process.env.TONGHOP_KHOA; await assert.rejects(() => M.dmDs(th, {}, 0), /TONGHOP_KHOA/);
   }
+  // ---- BC KPI: đối chiếu THBC theo mốc ngày, PGD xác nhận / ghi nhận số khác kèm lý do ----
+  {
+    const K = require('../lib/kpi'), b64 = require('fs').readFileSync(require('path').join(__dirname, 'fixtures', 'doichieu_thbc.xlsx')).toString('base64');
+    await assert.rejects(() => K.taiThbc(lap20, '2026-10-15', '', 'x.xlsx', b64), /Chỉ Chuyên viên THBC/);
+    await assert.rejects(() => K.taiThbc(th, '2026-02-31', '', 'x.xlsx', b64), /ngày mốc/);
+    const r0 = await K.taiThbc(th, '2026-10-15', '', 'doichieu.xlsx', b64); assert(r0.co && r0.full); assert.strictEqual(r0.rows.filter((x) => x.k === 'row').length, 195);
+    assert(Math.abs(r0.rows.find((x) => x.k === 'tot').e0 - r0.rows.find((x) => x.k === 'tot').t0) < 1e-6);
+    const r20 = await K.lay(lap20, '2026-10-15'), l20 = r20.rows.filter((x) => x.k === 'row'); assert(l20.length > 0 && l20.every((x) => x.c === P20) && r20.quyen.sua && !r20.quyen.xacNhan, 'người lập sửa được, không xác nhận được');
+    const kk = await K.lay(ktt20, '2026-10-15'); assert(!kk.quyen.sua && !kk.quyen.xacNhan, 'KTT chỉ xem');
+    const x0 = l20[0], v = [x0.t0 + 5, x0.t1, x0.t2, x0.t3];
+    await assert.rejects(() => K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v, ly: '' }]), /bắt buộc ghi lý do/);
+    await assert.rejects(() => K.luuDc(th, '2026-10-15', [{ khoa: x0.khoa, v, ly: 'abc' }]), /Chỉ phòng giao dịch/);
+    const o = await K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v, ly: 'chứng từ hạch toán sau ngày chốt' }]); const y0 = o.rows.find((x) => x.khoa === x0.khoa);
+    assert(Math.abs(y0.e0 - (x0.t0 + 5)) < 1e-6 && y0.ly && o.ds.find((d) => d.pgd === P20).tt === 'nhap');
+    await assert.rejects(() => K.xacNhan(lap20, '2026-10-15'), /Chỉ Trưởng phòng/); await assert.rejects(() => K.xacNhan(ktt20, '2026-10-15'), /Chỉ Trưởng phòng/);
+    const xn = await K.xacNhan(tp20, '2026-10-15'); assert.strictEqual(xn.ds.find((d) => d.pgd === P20).tt, 'xn_dc'); assert(!xn.quyen.sua && xn.quyen.moLai);
+    await assert.rejects(() => K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v: null }]), /đã xác nhận/);
+    const tt = await K.lay(th, '2026-10-15'); assert(Math.abs(tt.rows.find((x) => x.k === 'tot').e0 - tt.rows.find((x) => x.k === 'tot').t0 - 5) < 1e-6, 'tổng toàn tỉnh lấy số phòng ghi nhận'); assert(tt.vb && tt.vb.tong.tong > 0);
+    for (const f of ['xlsx', 'pdf']) { const ex = await X.xuatKpi(th, '2026-10-15', f); assert(ex.b64.length > 1000); }
+    assert((await X.xuatKpi(lap20, '2026-10-15', 'xlsx')).b64.length > 1000);
+    await K.moLai(tp20, '2026-10-15'); const bo = await K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v: [x0.t0, x0.t1, x0.t2, x0.t3] }]); assert.strictEqual(bo.ds.find((d) => d.pgd === P20).tt, 'cho', 'nhập lại đúng THBC = không còn điều chỉnh');
+    await K.chotMoc(th, '2026-10-15', true); await assert.rejects(() => K.xacNhan(tp20, '2026-10-15'), /đã chốt/); await K.chotMoc(th, '2026-10-15', false);
+    // sheet 1953 của cùng file vẫn đọc được ở mục THBC 1953 (chỉ có cột lũy kế)
+    const TB = require('../lib/thbc'); const r1953 = await TB.nhap(th, 'doichieu.xlsx', b64); assert.strictEqual(r1953.rows.filter((x) => x.k === 'row' && x.tlk != null).length, 195); await TB.xoa(th);
+    await K.xoaMoc(th, '2026-10-15'); assert.strictEqual((await K.dsKy(th)).ds.length, 0);
+  }
   {   // giao diện: script nhúng trong index.html phải đúng cú pháp (lỗi cú pháp làm hỏng cả trang, kể cả đăng nhập)
     const html = require('fs').readFileSync(require('path').join(__dirname, '..', 'public', 'cv1953', 'index.html'), 'utf8');
     const m = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].pop();
