@@ -180,14 +180,24 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await assert.rejects(() => K.taiThbc(th, '2026-02-31', '', 'x.xlsx', b64), /ngày mốc/);
     const r0 = await K.taiThbc(th, '2026-10-15', '', 'doichieu.xlsx', b64); assert(r0.co && r0.full); assert.strictEqual(r0.rows.filter((x) => x.k === 'row').length, 195);
     assert(Math.abs(r0.rows.find((x) => x.k === 'tot').e0 - r0.rows.find((x) => x.k === 'tot').t0) < 1e-6);
-    const r20 = await K.lay(lap20, '2026-10-15'), l20 = r20.rows.filter((x) => x.k === 'row'); assert(l20.length > 0 && l20.every((x) => x.c === P20) && r20.quyen.sua && !r20.quyen.xacNhan, 'người lập sửa được, không xác nhận được');
+    const r20 = await K.lay(lap20, '2026-10-15'), l20 = r20.rows.filter((x) => x.k === 'row'); assert(l20.length > 0 && l20.every((x) => x.c === P20) && r20.quyen.sua && !r20.quyen.xacNhan, 'người lập sửa được, không xác nhận được'); { const tp0 = await K.lay(tp20, '2026-10-15'); assert(!tp0.quyen.sua && tp0.quyen.xnThbc && tp0.quyen.xacNhan, 'Trưởng phòng chỉ xác nhận số THBC'); }
     const kk = await K.lay(ktt20, '2026-10-15'); assert(!kk.quyen.sua && !kk.quyen.xacNhan, 'KTT chỉ xem');
     const x0 = l20[0], v = [x0.t0 + 5, x0.t1, x0.t2, x0.t3];
     await assert.rejects(() => K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v, ly: '' }]), /bắt buộc ghi lý do/);
     await assert.rejects(() => K.luuDc(th, '2026-10-15', [{ khoa: x0.khoa, v, ly: 'abc' }]), /Chỉ phòng giao dịch/);
+    await assert.rejects(() => K.luuDc(tp20, '2026-10-15', [{ khoa: x0.khoa, v, ly: 'abc xyz' }]), /không sửa trực tiếp/); await assert.rejects(() => K.luuDc(ktt20, '2026-10-15', [{ khoa: x0.khoa, v, ly: 'abc xyz' }]), /chỉ xem/);
     const o = await K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v, ly: 'chứng từ hạch toán sau ngày chốt' }]); const y0 = o.rows.find((x) => x.khoa === x0.khoa);
-    assert(Math.abs(y0.e0 - (x0.t0 + 5)) < 1e-6 && y0.ly && o.ds.find((d) => d.pgd === P20).tt === 'nhap');
+    assert(Math.abs(y0.p0 - (x0.t0 + 5)) < 1e-6 && Math.abs(y0.e0 - x0.t0) < 1e-6 && y0.ly && o.ds.find((d) => d.pgd === P20).tt === 'nhap' && o.quyen.gui, 'bản nháp: chưa tính vào số sau điều chỉnh');
+    { const tk = await K.lay(tp20, '2026-10-15'); assert.strictEqual(tk.rows.find((x) => x.khoa === x0.khoa).ly, undefined, 'bản nháp Trưởng phòng chưa thấy'); assert(!tk.quyen.xacNhan, 'có điều chỉnh nháp thì chưa xác nhận được'); }
+    await assert.rejects(() => K.xacNhan(tp20, '2026-10-15'), /chưa gửi phê duyệt/);
+    await assert.rejects(() => K.pheDuyet(tp20, '2026-10-15'), /Không có số điều chỉnh nào đang chờ/); await assert.rejects(() => K.guiDuyet(tp20, '2026-10-15'), /Chỉ người lập/);
     await assert.rejects(() => K.xacNhan(lap20, '2026-10-15'), /Chỉ Trưởng phòng/); await assert.rejects(() => K.xacNhan(ktt20, '2026-10-15'), /Chỉ Trưởng phòng/);
+    const g = await K.guiDuyet(lap20, '2026-10-15'); assert.strictEqual(g.ds.find((d) => d.pgd === P20).tt, 'gui'); assert(!g.quyen.sua && !g.quyen.gui);
+    await assert.rejects(() => K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v: null }]), /đã gửi phê duyệt/);
+    { const tk = await K.lay(tp20, '2026-10-15'); assert(tk.quyen.pheDuyet && tk.quyen.traLai && !tk.quyen.xacNhan && !tk.quyen.sua); assert(Math.abs(tk.rows.find((x) => x.khoa === x0.khoa).p0 - (x0.t0 + 5)) < 1e-6 && Math.abs(tk.rows.find((x) => x.khoa === x0.khoa).e0 - x0.t0) < 1e-6); }
+    await assert.rejects(() => K.xacNhan(tp20, '2026-10-15'), /chờ phê duyệt/); await assert.rejects(() => K.pheDuyet(lap20, '2026-10-15'), /Chỉ Trưởng phòng/);
+    const tl = await K.traLai(tp20, '2026-10-15'); assert.strictEqual(tl.ds.find((d) => d.pgd === P20).tt, 'nhap'); await K.guiDuyet(lap20, '2026-10-15');
+    const pd = await K.pheDuyet(tp20, '2026-10-15'); assert.strictEqual(pd.ds.find((d) => d.pgd === P20).tt, 'duyet'); assert(pd.quyen.xnDc && !pd.quyen.xnThbc && Math.abs(pd.rows.find((x) => x.khoa === x0.khoa).e0 - (x0.t0 + 5)) < 1e-6, 'duyệt xong số sau điều chỉnh thay số THBC');
     const xn = await K.xacNhan(tp20, '2026-10-15'); assert.strictEqual(xn.ds.find((d) => d.pgd === P20).tt, 'xn_dc'); assert(!xn.quyen.sua && xn.quyen.moLai);
     await assert.rejects(() => K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v: null }]), /đã xác nhận/);
     const tt = await K.lay(th, '2026-10-15'); assert(Math.abs(tt.rows.find((x) => x.k === 'tot').e0 - tt.rows.find((x) => x.k === 'tot').t0 - 5) < 1e-6, 'tổng toàn tỉnh lấy số phòng ghi nhận'); assert(tt.vb && tt.vb.tong.tong > 0);
