@@ -296,10 +296,12 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 
 .kpv{display:flex;align-items:center;gap:14px;margin:0 0 10px;font-size:13.5px}.kpv label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin:0;font-weight:500}.kpv input{width:auto}
 .kche{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin:0}.kche select{width:auto;padding:4px 8px}
-.kt tr.kxl td{position:static!important;padding:1px 10px 3px 56px;border-bottom:1px solid #f0e4e6;background:#fcfafa!important;color:#9a8a8e;font-size:12px;min-width:0!important;max-width:none!important;box-shadow:none!important}
-.kt tr.kxl.khac td{background:#fff7e6!important;color:#7c2d12}.kt tr.kxl.ro td{padding-top:3px;padding-bottom:4px}
-.kmo{cursor:pointer;color:#b9a6aa}.kmo:hover{color:var(--acc);text-decoration:underline}.kt tr.kxl.open .kmo{display:none}.ked{display:none;flex-wrap:wrap;align-items:flex-end;gap:10px;padding:4px 0 6px}.kt tr.kxl.open .ked{display:flex}
-.ked label{display:flex;flex-direction:column;gap:2px;margin:0;font-size:11.5px;color:#7a6a6e;font-weight:500}.ked .kl{font-weight:700;color:#7c2d12;align-self:center}.ked label.lyl{flex:1;min-width:240px}
+.kt tr.kxl td{position:static!important;padding:2px 8px;border-bottom:1px solid #f0e4e6;background:#fcfafa!important;color:#9a8a8e;font-size:12.5px;min-width:0!important;max-width:none!important;box-shadow:none!important}
+.kt tr.kxl.khac td{background:#fff7e6!important;color:#7c2d12}.kt tr.kxl td.kl{text-align:left;font-weight:600;padding-left:20px;font-size:12.5px}
+.kt tr.klink td{text-align:left;padding-left:56px;padding-top:0;padding-bottom:0;line-height:1.5}.kt tr.klink.open,.kt tr.kedit,.kt tr.kedit2{display:none}.kt tr.kedit.open,.kt tr.kedit2.open{display:table-row}
+.kmo{cursor:pointer;color:#b9a6aa;font-size:12px}.kmo:hover{color:var(--acc);text-decoration:underline}
+.kt tr.kedit td.in{padding:3px 4px}.kt tr.kedit input.ki{width:100%;min-width:0;box-sizing:border-box;text-align:right;padding:5px 6px;font-size:13px}.kt tr.kedit td.v{font-weight:600}
+.kt tr.kedit2 td.ly{text-align:left;padding:2px 8px 6px}.kt tr.kedit2 input.kly{width:calc(100% - 150px);min-width:0;box-sizing:border-box;text-align:left;margin-right:10px}
 .kdel{cursor:pointer;color:#b91c1c;font-size:12px;align-self:center}
 </style>
 </head>
@@ -935,10 +937,11 @@ function kpBar(d){
     if(th)h+=(d.moc.chot?'<button class="mini" id="kpMo">🔓 Mở lại mốc</button>':'<button class="mini" id="kpChot">🔒 Chốt mốc</button><button class="mini" id="kpXoa">Xóa mốc</button>')}
   if(th)h+='<button class="pri mini" id="kpNewB">➕ Mốc mới / tải file</button>';
   h+='</span></div>';
+  if(d.co&&/^Số tạm/.test(d.moc.file||''))h+='<div class="rsn" style="margin-top:8px">⚠ Đang dùng <b>số tạm lấy từ BC 1953</b> để xem giao diện: chưa tách thanh toán KLHT / tạm ứng (toàn bộ ghi ở cột Thanh toán KLHT). Khi có file đối chiếu KPI thật, tải lên cùng ngày mốc để thay thế.</div>';
   if(th){var td=new Date(),iso=td.getFullYear()+'-'+('0'+(td.getMonth()+1)).slice(-2)+'-'+('0'+td.getDate()).slice(-2);
     h+='<div id="kpNew" class="kpnew" style="display:'+(d.co?'none':'block')+'"><p class="hint" style="margin:6px 0">Tải file <b>bảng đối chiếu THBC</b> (mẫu có sheet <b>"Đối chiếu KPI"</b>, đơn vị triệu đồng). Số THBC của từng phòng được gửi đến phòng đó để xem và xác nhận. Tải lại cùng ngày mốc sẽ cập nhật số THBC; phòng nào có số thay đổi phải xác nhận lại.</p>'+
       '<div class="row2" style="max-width:900px"><div><label>Số liệu đến ngày</label><input type="date" id="kpNgay" value="'+(d.co?d.moc.id:iso)+'"></div><div><label>Hạn phòng xác nhận (tùy chọn)</label><input type="datetime-local" id="kpHan" value="'+esc(d.co&&d.moc.han||'')+'"></div></div>'+
-      '<input type="file" id="kpFile" accept=".xlsx" style="display:none"><button class="pri" id="kpUp" style="margin-top:8px">📂 Chọn file .xlsx và tải lên</button></div>'}
+      '<input type="file" id="kpFile" accept=".xlsx" style="display:none"><button class="pri" id="kpUp" style="margin-top:8px">📂 Chọn file .xlsx và tải lên</button> <button class="mini" id="kpTam" style="margin-top:8px" title="Lấy số tổng BC 1953 của kỳ hiện tại làm số KPI để xem giao diện">Dùng tạm số tổng BC 1953</button></div>'}
   return h+'</div>'}
 function kpTile(cls,ic,lab,val,sub){return ovTile(cls,ic,lab,val,sub)}
 function kpTong(d){
@@ -1002,22 +1005,25 @@ function kpBody(d){
   rows.forEach(function(x){
     var leaf=x.k==='row',cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-n':(x.st==='sub'?'bt-s':'bt-i'))),adj=leaf&&x.ly!==undefined;
     h+='<tr class="'+cl+(adj?' khac':'')+'"'+(leaf?' data-m="'+esc(x.khoa)+'"':'')+'><td class="bt-a">'+esc(x.a==null?'':x.a)+'</td><td style="text-align:left">'+esc(x.b)+(leaf&&x.c&&th?' <small>'+esc(x.c)+'</small>':'')+'</td>'+kpCells(x).map(function(n,i){return '<td class="v c'+i+'">'+kpFmtC(n)+'</td>'}).join('')+'</tr>';
-    if(leaf&&ed){h+='<tr class="kxl'+(adj?' open khac':'')+'" data-k="'+esc(x.khoa)+'" data-t="'+[x.t0,x.t1,x.t2,x.t3].join(',')+'"><td colspan="11"><a class="kmo">＋ Ghi nhận số khác THBC</a><div class="ked"><span class="kl">Phòng ghi nhận:</span>'+
-      [['e0','Kéo dài · TT KLHT'],['e1','Kéo dài · Tạm ứng'],['e2','Năm · TT KLHT'],['e3','Năm · Tạm ứng']].map(function(f,i){return '<label>'+f[1]+'<input class="ki" data-i="'+i+'" inputmode="decimal" value="'+kpVal(x[f[0]])+'"></label>'}).join('')+
-      '<label class="lyl">Lý do (bắt buộc)<input class="kly" maxlength="300" value="'+esc(x.ly||'')+'" placeholder="VD: chứng từ hạch toán sau ngày chốt"></label><a class="kdel">Hủy điều chỉnh</a></div></td></tr>'}
-    else if(adj){h+='<tr class="kxl ro khac"><td colspan="11">↳ Phòng ghi nhận <b>'+fmt(kpSt(x))+'</b> (THBC '+fmt(kpTh(x))+', chênh '+kpLech(kpSt(x)-kpTh(x))+') · <i>'+esc(x.ly)+'</i></td></tr>'}});
+    if(leaf&&ed){var at='data-k="'+esc(x.khoa)+'" data-t="'+[x.t0,x.t1,x.t2,x.t3].join(',')+'"',o=adj?' open':'',c9=kp9(x,'e'),KI={4:0,5:1,7:2,8:3},ek=['e0','e1','e2','e3'];
+      h+='<tr class="kxl klink'+o+'" '+at+'><td colspan="11"><a class="kmo">＋ Ghi nhận số khác THBC</a></td></tr>';
+      h+='<tr class="kxl kedit khac'+o+'" '+at+'><td></td><td class="kl">Phòng ghi nhận khác</td>'+c9.map(function(n,i){return KI[i]!==undefined?'<td class="in"><input class="ki" data-i="'+KI[i]+'" inputmode="decimal" value="'+kpVal(x[ek[KI[i]]])+'"></td>':'<td class="v s'+i+'">'+fmt(n)+'</td>'}).join('')+'</tr>';
+      h+='<tr class="kxl kedit2 khac'+o+'" '+at+'><td></td><td class="kl">Lý do (bắt buộc)</td><td colspan="9" class="ly"><input class="kly" maxlength="300" value="'+esc(x.ly||'')+'" placeholder="VD: chứng từ hạch toán sau ngày chốt"><a class="kdel">Hủy điều chỉnh</a></td></tr>'}
+    else if(adj){h+='<tr class="kxl ro khac"><td></td><td class="kl">↳ Phòng ghi nhận khác <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+')</small></td>'+kp9(x,'e').map(function(n){return '<td class="v">'+fmt(n)+'</td>'}).join('')+'</tr><tr class="kxl ro2 khac"><td></td><td class="kl">Lý do</td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}});
   h+='</tbody></table></div></div>';
   if(S.vt==='PGD'){h+='<div class="kpfoot card"><span id="kpMsg" class="hint" style="margin:0">'+(q.sua?'Chưa có thay đổi.':(q.moLai?'Phòng đã xác nhận.':''))+'</span><span style="margin-left:auto;display:flex;gap:8px">'+
     (q.sua?'<button class="mini" id="kpSave" disabled>Lưu số ghi nhận</button>':'')+(q.xacNhan?'<button class="pri" id="kpXn">✔ Xác nhận số liệu của phòng</button>':'')+(q.moLai?'<button class="mini" id="kpMoLai">Mở lại để sửa</button>':'')+'</span></div>'}
   return h}
 function kpRowVals(tr){return [].map.call(tr.querySelectorAll('.ki'),function(i){return kpParse(i.value)})}
+function kpLy(tr){return tr.nextElementSibling.querySelector('.kly')}
 function kpUpdRow(tr){
-  var t=tr.getAttribute('data-t').split(',').map(Number),v=kpRowVals(tr),ok=v.every(function(x){return !isNaN(x)}),khac=ok&&v.some(function(x,i){return Math.abs(x-t[i])>0.0005}),ly=tr.querySelector('.kly');
-  tr.classList.toggle('khac',khac);tr.classList.toggle('sai',!ok);ly.classList.toggle('thieu',khac&&ly.value.trim().length<3);
+  var t=tr.getAttribute('data-t').split(',').map(Number),v=kpRowVals(tr),ok=v.every(function(x){return !isNaN(x)}),khac=ok&&v.some(function(x,i){return Math.abs(x-t[i])>0.0005}),ly=kpLy(tr);
+  tr.classList.toggle('sai',!ok);ly.classList.toggle('thieu',khac&&ly.value.trim().length<3);
   var mr=$('main').querySelector('tr[data-m="'+tr.getAttribute('data-k').replace(/"/g,'\\"')+'"]');
-  if(mr){mr.classList.toggle('khac',khac);if(ok&&(S.kpView||'sau')==='sau'){var c=kp9({e0:v[0],e1:v[1],e2:v[2],e3:v[3]},'e');c.forEach(function(n,i){mr.querySelector('.c'+i).textContent=fmt(n)})}}
+  if(ok){var c=kp9({e0:v[0],e1:v[1],e2:v[2],e3:v[3]},'e');[0,1,2,3,6].forEach(function(i){var e=tr.querySelector('.s'+i);if(e)e.textContent=fmt(c[i])});
+    if(mr){mr.classList.toggle('khac',khac);if((S.kpView||'sau')==='sau')c.forEach(function(n,i){mr.querySelector('.c'+i).textContent=fmt(n)})}}
   var dirty=0,thieu=0,sai=0;
-  [].forEach.call($('main').querySelectorAll('tr.kxl[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},vv=kpRowVals(r),l=r.querySelector('.kly').value.trim();
+  [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},vv=kpRowVals(r),l=kpLy(r).value.trim();
     if(vv.some(isNaN)){sai++;return}
     var tt=r.getAttribute('data-t').split(',').map(Number),kh=vv.some(function(x,i){return Math.abs(x-tt[i])>0.0005}),ch=vv.some(function(x,i){return Math.abs(x-[s.e0,s.e1,s.e2,s.e3][i])>0.0005})||(kh&&l!==(s.ly||''));
     if(ch)dirty++;if(kh&&l.length<3)thieu++});
@@ -1026,7 +1032,7 @@ function kpUpdRow(tr){
   if(b)b.disabled=!dirty||!!sai;S.kpDirty=dirty}
 function kpGather(){
   var items=[],bad=[];
-  [].forEach.call($('main').querySelectorAll('tr.kxl[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},v=kpRowVals(r),l=r.querySelector('.kly').value.trim();
+  [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},v=kpRowVals(r),l=kpLy(r).value.trim();
     if(v.some(isNaN)){bad.push(s.b);return}
     var ch=v.some(function(x,i){return Math.abs(x-[s.e0,s.e1,s.e2,s.e3][i])>0.0005})||(l!==(s.ly||''));if(ch)items.push({khoa:r.getAttribute('data-k'),v:v,ly:l})});
   return {items:items,bad:bad}}
@@ -1035,6 +1041,7 @@ function bindKp(){
   if($('kpMoc'))$('kpMoc').onchange=function(){S.kpId=this.value;S.kp=null;drawKpi(S.tab)};
   if($('kpNewB'))$('kpNewB').onclick=function(){var n=$('kpNew');n.style.display=n.style.display==='none'?'block':'none'};
   if($('kpUp'))$('kpUp').onclick=function(){if(!$('kpNgay').value){toast('Chọn ngày số liệu trước.',5000);return}$('kpFile').click()};
+  if($('kpTam'))$('kpTam').onclick=function(){if(!$('kpNgay').value){toast('Chọn ngày số liệu trước.',5000);return}run('kpiTaoTam',S.token,$('kpNgay').value,$('kpHan').value).then(function(r){S.kpId=r.moc.id;S.kp=null;toast('Đã lấy tạm số tổng BC 1953 làm số KPI đến ngày '+r.moc.nhan+'.',7000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),10000)})};
   if($('kpFile'))$('kpFile').onchange=function(){var f=this.files[0],inp=this;if(!f)return;if(f.size>3e6){toast('File quá lớn (tối đa 3 MB).',6000);return}
     var fr=new FileReader();fr.onload=function(){var u=new Uint8Array(fr.result),s='';for(var i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));toast('Đang đọc file KPI...',4000);
       run('kpiTai',S.token,$('kpNgay').value,$('kpHan').value,f.name,btoa(s)).then(function(r){S.kpId=r.moc.id;S.kp=null;var n=(r.canXacNhanLai||[]).length;toast('Đã tải số THBC KPI đến ngày '+r.moc.nhan+'.'+(n?' '+n+' phòng có số thay đổi, cần xác nhận lại.':''),7000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),12000)})};
@@ -1051,10 +1058,10 @@ function bindKp(){
   if($('kvWord'))$('kvWord').onclick=function(){var b=this;xuat(function(){return run('kpiVbLuu',S.token,d.moc.id,kvObj()).then(function(v){S.kp.vbInfo=v;return run('xuatCongVan',S.token,d.moc.id,S.kpChe||'sau')})},b,'docx')};
   if($('kpChe'))$('kpChe').onchange=function(){S.kpChe=this.value;drawKpi(S.tab)};
   [].forEach.call($('main').querySelectorAll('input[name=kv]'),function(r){r.onchange=function(){S.kpView=r.value;drawKpi(S.tab)}});
-  [].forEach.call($('main').querySelectorAll('tr.kxl .kmo'),function(a){a.onclick=function(){var tr=a.closest('tr');tr.classList.add('open');tr.querySelector('.ki').focus()}});
-  [].forEach.call($('main').querySelectorAll('tr.kxl .kdel'),function(a){a.onclick=function(){var tr=a.closest('tr'),t=tr.getAttribute('data-t').split(',');[].forEach.call(tr.querySelectorAll('.ki'),function(i,k){i.value=kpVal(Number(t[k]))});tr.querySelector('.kly').value='';kpUpdRow(tr)}});
+  [].forEach.call($('main').querySelectorAll('tr.klink .kmo'),function(a){a.onclick=function(){var l=a.closest('tr'),e1=l.nextElementSibling,e2=e1.nextElementSibling;[l,e1,e2].forEach(function(r){r.classList.add('open')});e1.querySelector('.ki').focus()}});
+  [].forEach.call($('main').querySelectorAll('tr.kedit2 .kdel'),function(a){a.onclick=function(){var tr=a.closest('tr').previousElementSibling,t=tr.getAttribute('data-t').split(',');[].forEach.call(tr.querySelectorAll('.ki'),function(i,k){i.value=kpVal(Number(t[k]))});kpLy(tr).value='';kpUpdRow(tr)}});
   if($('kpP'))$('kpP').onchange=function(){S.kpP=this.value;drawKpi(S.tab)};
-  [].forEach.call($('main').querySelectorAll('tr.kxl[data-k]'),function(tr){[].forEach.call(tr.querySelectorAll('input'),function(i){i.oninput=function(){kpUpdRow(tr)}})});
+  [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(tr){[].forEach.call(tr.querySelectorAll('input'),function(i){i.oninput=function(){kpUpdRow(tr)}});kpLy(tr).oninput=function(){kpUpdRow(tr)}});
   if($('kpSave'))$('kpSave').onclick=function(){var g=kpGather();if(g.bad.length){toast('Có ô nhập chưa đúng số: '+g.bad[0],7000);return}
     run('kpiLuu',S.token,d.moc.id,g.items).then(function(r){S.kp=r;S.kpD={};toast('Đã lưu số ghi nhận KPI.',4000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),12000)})};
   if($('kpXn'))$('kpXn').onclick=function(){if(S.kpDirty){toast('Hãy bấm "Lưu số ghi nhận" trước khi xác nhận.',6000);return}

@@ -198,6 +198,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await K.chotMoc(th, '2026-10-15', true); await assert.rejects(() => K.xacNhan(tp20, '2026-10-15'), /đã chốt/); await K.chotMoc(th, '2026-10-15', false);
     // sheet 1953 của cùng file vẫn đọc được ở mục THBC 1953 (chỉ có cột lũy kế)
     const TB = require('../lib/thbc'); const r1953 = await TB.nhap(th, 'doichieu.xlsx', b64); assert.strictEqual(r1953.rows.filter((x) => x.k === 'row' && x.tlk != null).length, 195); await TB.xoa(th);
+    { const tm = await K.taoTuBc1953(th, '2026-10-20', ''); assert(tm.co && tm.moc.file.startsWith('Số tạm') && tm.rows.find((x) => x.k === 'tot').e0 + tm.rows.find((x) => x.k === 'tot').e2 > 0); await K.xoaMoc(th, '2026-10-20'); }
     await K.xoaMoc(th, '2026-10-15'); assert.strictEqual((await K.dsKy(th)).ds.length, 0);
   }
   {   // giao diện: script nhúng trong index.html phải đúng cú pháp (lỗi cú pháp làm hỏng cả trang, kể cả đăng nhập)

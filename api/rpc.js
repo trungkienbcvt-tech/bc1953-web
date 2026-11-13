@@ -10,7 +10,7 @@ const FN = {
   thuHoi: L.thuHoi, deNghiSua: L.deNghiSua, tiepNhan: L.tiepNhan, chuyenTra: L.chuyenTra, nopTongHop: L.nopTongHop, tongHop: L.tongHop,
   lamTron: L.lamTron, chotKy: L.chotKy, luuNguoiKy: L.luuNguoiKy, xuatBieu: X.xuatBieu, xuatTong: X.xuatTong, xuatThongKe: X.xuatThongKe,
   duyet: L.duyet, tinhTrang: require('../lib/tinhtrang').tinh, xuatTinhTrang: X.xuatTinhTrang, nhapThbc: require('../lib/thbc').nhap, xoaThbc: require('../lib/thbc').xoa, canhBaoThbc: require('../lib/thbc').canhBao, bieuTong: require('../lib/bieutong').bieuTong, xuatBieuTong: X.xuatBieuTong, doiChieu: D.doiChieu, nhapKbnn: D.nhapKbnn, xoaKbnn: D.xoaKbnn,
-  kpiDs: K.dsKy, kpiLay: K.lay, kpiTai: K.taiThbc, kpiLuu: K.luuDc, kpiXacNhan: K.xacNhan, kpiMoLai: K.moLai, kpiChot: K.chotMoc, kpiXoa: K.xoaMoc, xuatKpi: X.xuatKpi, xuatCongVan: X.xuatCongVan, kpiVbLay: K.vbLay, kpiVbLuu: K.vbLuu,
+  kpiDs: K.dsKy, kpiLay: K.lay, kpiTai: K.taiThbc, kpiTaoTam: K.taoTuBc1953, kpiLuu: K.luuDc, kpiXacNhan: K.xacNhan, kpiMoLai: K.moLai, kpiChot: K.chotMoc, kpiXoa: K.xoaMoc, xuatKpi: X.xuatKpi, xuatCongVan: X.xuatCongVan, kpiVbLay: K.vbLay, kpiVbLuu: K.vbLuu,
   dmTuyChon: M.dmTuyChon, dmDs: M.dmDs, dmSua: M.dmSua, dmThem: M.dmThem, dmHangLoat: M.dmHangLoat, dmCanHT: M.dmCanHT, dmXuat: M.dmXuat,
 };
 async function xuLy(body) {
