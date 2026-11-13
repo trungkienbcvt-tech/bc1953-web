@@ -937,7 +937,7 @@ function kpBar(d){
     if(th)h+=(d.moc.chot?'<button class="mini" id="kpMo">🔓 Mở lại mốc</button>':'<button class="mini" id="kpChot">🔒 Chốt mốc</button><button class="mini" id="kpXoa">Xóa mốc</button>')}
   if(th)h+='<button class="pri mini" id="kpNewB">➕ Mốc mới / tải file</button>';
   h+='</span></div>';
-  if(d.co&&/^Số tạm/.test(d.moc.file||''))h+='<div class="rsn" style="margin-top:8px">⚠ Đang dùng <b>số tạm lấy từ BC 1953</b> để xem giao diện: chưa tách thanh toán KLHT / tạm ứng (toàn bộ ghi ở cột Thanh toán KLHT). Khi có file đối chiếu KPI thật, tải lên cùng ngày mốc để thay thế.</div>';
+  if(d.co&&/^Số tạm/.test(d.moc.file||''))h+='<div class="rsn" style="margin-top:8px">⚠ Đang dùng <b>số giả định lấy từ BC 1953</b> để xem giao diện: tổng lũy kế mỗi dòng đúng theo BC 1953, còn việc tách vốn kéo dài / vốn năm và thanh toán KLHT / tạm ứng chỉ là giả định. Khi có file đối chiếu KPI thật, tải lên cùng ngày mốc để thay thế.</div>';
   if(th){var td=new Date(),iso=td.getFullYear()+'-'+('0'+(td.getMonth()+1)).slice(-2)+'-'+('0'+td.getDate()).slice(-2);
     h+='<div id="kpNew" class="kpnew" style="display:'+(d.co?'none':'block')+'"><p class="hint" style="margin:6px 0">Tải file <b>bảng đối chiếu THBC</b> (mẫu có sheet <b>"Đối chiếu KPI"</b>, đơn vị triệu đồng). Số THBC của từng phòng được gửi đến phòng đó để xem và xác nhận. Tải lại cùng ngày mốc sẽ cập nhật số THBC; phòng nào có số thay đổi phải xác nhận lại.</p>'+
       '<div class="row2" style="max-width:900px"><div><label>Số liệu đến ngày</label><input type="date" id="kpNgay" value="'+(d.co?d.moc.id:iso)+'"></div><div><label>Hạn phòng xác nhận (tùy chọn)</label><input type="datetime-local" id="kpHan" value="'+esc(d.co&&d.moc.han||'')+'"></div></div>'+
