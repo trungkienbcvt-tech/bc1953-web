@@ -381,3 +381,17 @@ create policy th_td_dm_sua on public.th_td_dm for all to authenticated using (pu
 create policy th_td_ky_xem on public.th_td_ky for select to authenticated using (public.th_xem());
 create policy th_td_ky_sua on public.th_td_ky for all to authenticated using (public.th_sua()) with check (public.th_sua());
 grant select, insert, update, delete on public.th_td_dm, public.th_td_ky to authenticated;
+
+-- ---------------------------------------------------------------- Dự án chuyển đổi số: lưu số liệu đã nạp (BC chuyển đổi số, B5-01 NS tỉnh, NS xã)
+create table if not exists public.th_cds_luu (
+  loai text primary key check (loai in ('CDS','TINH','XA')),
+  ten_file text,
+  ky jsonb,
+  du_lieu jsonb not null,
+  tao_luc timestamptz not null default now(),
+  tao_boi text
+);
+alter table public.th_cds_luu enable row level security;
+create policy th_cds_luu_xem on public.th_cds_luu for select to authenticated using (public.th_xem());
+create policy th_cds_luu_sua on public.th_cds_luu for all to authenticated using (public.th_sua()) with check (public.th_sua());
+grant select, insert, update, delete on public.th_cds_luu to authenticated;

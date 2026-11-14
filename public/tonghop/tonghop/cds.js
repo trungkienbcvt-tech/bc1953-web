@@ -82,3 +82,13 @@ export function soSanhCDS(cds, tinh, xa, saiSo = 0.5) {
   const tong = rows.reduce((s, r) => { for (const k of ['kp', 'gn', 'tinh', 'xa', 'b5', 'lech']) s[k] += r[k]; return s; }, { kp: 0, gn: 0, tinh: 0, xa: 0, b5: 0, lech: 0 });
   return { rows, phong, tong, soLech: rows.filter(r => r.coLech).length, saiSo };
 }
+
+// ---- Lưu lên máy chủ: B5-01 chỉ giữ phần cần cho đối chiếu (O − L, L, mã kho bạc) để gọn
+const tron = n => Math.round((n || 0) * 1e6) / 1e6;
+export function goiB5(x) {
+  return { kb: x.kb || '', tongGN: x.tongGN ?? null, ds: [...x.ds.values()].map(d => [d.ma_da, tron(d.gtGN), tron(d.tu), Object.keys(d.theoKB || {})]) };
+}
+export function moB5(d, loai) {
+  const ds = new Map((d.ds || []).map(([ma, gn, tu, kb]) => [ma, { ma_da: ma, gtGN: gn, tu, theoKB: Object.fromEntries((kb || []).map(k => [k, {}])) }]));
+  return { loai, ds, kb: d.kb, tongGN: d.tongGN, co: { GN: true }, gon: true };
+}
