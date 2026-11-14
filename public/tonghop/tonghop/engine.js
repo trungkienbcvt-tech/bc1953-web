@@ -13,6 +13,8 @@ export const NGUON = {
   //   boLap: file liệt kê dự án vốn nước ngoài 2 lần trong mục "Theo cơ chế ghi thu, ghi chi"
   //   (một lần ngay dưới mục, một lần dưới "Trong đó dự án khác") → chỉ tính một lần
   TT37: { ten: 'BC TT 37', cotMa: 'D', cotDiaDiem: null, cotSo: ['F', 'H', 'K', 'L', 'N', 'O'], boLap: true },
+  // Sheet TW / ĐP của báo cáo dự án trọng điểm (01b/TTKHN): J = TT KHV kéo dài (tổng), M = TT KHV năm (tổng)
+  TD: { ten: 'TW / ĐP (01b/TTKHN)', cotMa: 'D', cotDiaDiem: null, cotSo: ['F', 'H', 'J', 'M'], boLap: true },
 };
 // Cột "khóa" của sheet nguồn → cột lấy từ sheet CDT (VLOOKUP cột 3 / cột 4)
 //   TT85: Y = Chủ đầu tư (CDT cột C), Z = Chủ đầu tư 1 (CDT cột D)

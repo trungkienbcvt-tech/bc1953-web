@@ -111,3 +111,16 @@ label.chk{display:flex;align-items:center;gap:6px;flex-direction:row!important}
 #dtDA td:nth-child(4){min-width:190px}
 #dtDA td:nth-child(5),#dtDA td:nth-child(6){white-space:nowrap}
 #dtDA td.ten{min-width:260px}
+/* Dự án trọng điểm */
+.tbl.rpt.td td.td-ten{min-width:300px;max-width:420px;white-space:normal}
+.tbl.rpt.td td.small{min-width:150px;white-space:normal}
+.tbl.rpt.td thead th{font-size:11px}
+dialog.modal.wide{width:min(1500px,96vw)}
+.tbl.td-dm textarea{width:330px;font:inherit;font-size:12.5px}
+.tbl.td-dm input,.tbl.td-dm select{font-size:12.5px;padding:3px 5px}
+.tbl.td-dm td.nowrap{white-space:nowrap}
+.tbl.td-dm tr.l1 td{background:#fff7d6}
+.tbl.td-dm tr.l2 td{background:#f2f6fb}
+.tbl.td-dm select[data-f=kieu]{min-width:170px}
+.tbl.td-dm input[data-f=dia_diem]{width:210px}
+.tbl.td-dm input[data-f=ghi_chu]{width:150px}

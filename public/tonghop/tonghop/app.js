@@ -9,6 +9,7 @@ import { CONFIG } from '../config.js';
 import * as E from './engine.js';
 import * as B5 from './b501.js';
 import * as DTE from './dt.js';
+import * as TD from './td.js';
 
 const sb = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 const app = document.getElementById('app');
@@ -16,11 +17,11 @@ const app = document.getElementById('app');
 const QUYEN_XEM = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'XEM', 'TH_PGD', 'TH_NV2'];
 const QUYEN_SUA = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'TH_NV2'];
 // Tab được xem theo vai trò (mặc định: tất cả)
-const TAB_THEO_VAI_TRO = { TH_PGD: ['da', 'bc', 'dt', 'b5'] };
+const TAB_THEO_VAI_TRO = { TH_PGD: ['da', 'bc', 'dt', 'td', 'b5'] };
 // Phòng giao dịch: xem báo cáo, so sánh; không in, không xuất Excel
 const coXuat = () => S.me?.vai_tro !== 'TH_PGD';
 const tabsCua = () => { const t = TAB_THEO_VAI_TRO[S.me?.vai_tro]; return t ? Object.fromEntries(Object.entries(TABS).filter(([k]) => t.includes(k))) : TABS; };
-const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo', dt: 'Biểu đối chiếu THBC', b5: 'Đối chiếu THBC – B5-01', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
+const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo', dt: 'Biểu đối chiếu THBC', td: 'Dự án trọng điểm', b5: 'Đối chiếu THBC – B5-01', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
 const NGUON_TEN = { CDT: 'Sheet CDT (danh mục dự án – chủ đầu tư)', TT85: 'Sheet BC TT 85', TT15: 'Sheet BC TT 15', TT37: 'Báo cáo TT37 (mẫu 01b/TTKHN)' };
 const LOAI_NGUON = ['TT85', 'TT15', 'TT37'];
 // Tên sheet thường gặp → loại dữ liệu
@@ -214,7 +215,7 @@ const view = () => document.getElementById('view');
 
 function show() {
   const v = view(); if (!v) return;
-  ({ dl: viewDuLieu, da: viewDanhMuc, bc: viewBaoCao, dt: viewDT, b5: viewB501, dc: viewCongThem, ky: viewKy })[S.tab](v);
+  ({ dl: viewDuLieu, da: viewDanhMuc, bc: viewBaoCao, dt: viewDT, td: viewTD, b5: viewB501, dc: viewCongThem, ky: viewKy })[S.tab](v);
 }
 
 // ---------------------------------------------------------------- Dữ liệu
@@ -1553,4 +1554,315 @@ async function xuatDT(kq) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
   a.download = `${tenFile} ${ddmmyyyy(new Date()).replace(/\//g, '.')}.xlsx`; a.click();
+}
+
+// ================================================================ BÁO CÁO DỰ ÁN TRỌNG ĐIỂM (Biểu 01)
+//   Đầu vào: sheet TW, ĐP (01b/TTKHN). Mỗi lần nạp lưu thành một kỳ theo ngày số liệu (đối chiếu thứ 6 hằng tuần).
+const TDS = { id: null, soSanh: undefined, dm: null, ky: [], cache: {}, dongVB: '' };
+const THU = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+const thuCua = iso => { const d = new Date(iso + 'T00:00:00'); return Number.isNaN(+d) ? '' : THU[d.getDay()]; };
+const tenKyTD = k => `Ngày ${TD.ngayVN(k.ngay)} (${thuCua(k.ngay)})`;
+const fTD = n => (n === null || n === undefined || Number.isNaN(n)) ? '' : (Math.abs(n) < 0.5 ? '-' : nf0.format(Math.round(n)));
+const pTD = n => (n === null || n === undefined || !Number.isFinite(n)) ? '' : Math.round(n * 100) + '%';
+
+async function taiTD() {
+  const [dm, ky] = await Promise.all([
+    q(sb.from('th_td_dm').select('*').eq('id', 1).maybeSingle()),
+    q(sb.from('th_td_ky').select('id,ngay,ten,ky_in,ten_file,tao_luc,tao_boi').order('ngay', { ascending: false })),
+  ]);
+  TDS.dm = dm; TDS.ky = ky || [];
+  if (!TDS.ky.some(k => k.id === TDS.id)) { TDS.id = TDS.ky[0]?.id ?? null; TDS.soSanh = undefined; }
+}
+async function layKyTD(id) {
+  return TDS.cache[id] ||= await q(sb.from('th_td_ky').select('*').eq('id', id).single());
+}
+
+async function viewTD(v) {
+  v.innerHTML = '<div class="loading">Đang tải…</div>';
+  try { await taiTD(); } catch (e) { fail(e); v.innerHTML = `<div class="card">${esc(viErr(e))}</div>`; return; }
+  const sua = canEdit();
+  if (!TDS.ky.length) {
+    v.innerHTML = `<div class="card"><h2>Báo cáo dự án trọng điểm (Biểu 01)</h2>
+      <p>Chưa có kỳ số liệu nào. ${sua ? 'Bấm <b>Nạp số liệu</b> và chọn file Excel có 2 sheet <b>TW</b>, <b>ĐP</b> (báo cáo 01b/TTKHN xuất từ hệ thống). Lần đầu, file cần có thêm sheet <b>Biểu 01</b> để lấy danh mục dự án trọng điểm và kế hoạch vốn.' : 'Phòng Nghiệp vụ 2 sẽ nạp số liệu hằng tuần.'}</p>
+      ${sua ? '<div class="actions"><button class="btn primary" id="tdNap">📂 Nạp số liệu (sheet TW, ĐP)…</button></div>' : ''}</div>`;
+    v.querySelector('#tdNap')?.addEventListener('click', () => napTD(v));
+    return;
+  }
+  const k = await layKyTD(TDS.id);
+  const truoc = TDS.ky.filter(x => x.ngay < k.ngay);
+  if (TDS.soSanh === undefined) TDS.soSanh = truoc[0]?.id ?? '';     // mặc định: so với kỳ liền trước
+  const dm = k.dm?.length ? k.dm : (TDS.dm?.dong || []);
+  const kq = TD.tinhBieu(dm, k.so);
+  const kp = TDS.soSanh ? await layKyTD(TDS.soSanh) : null;
+  const kqp = kp ? TD.tinhBieu(dm, kp.so) : null;
+  const [, mm, yy] = TD.ngayVN(k.ngay).split('/');
+  if (!TDS.dongVB) TDS.dongVB = `(Kèm theo Công văn số                              /KBVIII-NV2 ngày                      /${mm}/${yy} của  Kho bạc Nhà nước khu vực VIII)`;
+  v.innerHTML = `<div class="card no-print">
+      <h2>Báo cáo dự án trọng điểm (Biểu 01)</h2>
+      <div class="bar">
+        <label>Kỳ số liệu<select id="tdKy">${TDS.ky.map(x => `<option value="${x.id}" ${x.id === k.id ? 'selected' : ''}>${esc(tenKyTD(x))}</option>`).join('')}</select></label>
+        <label>Đối chiếu với kỳ<select id="tdSS"><option value="">— Không đối chiếu —</option>${truoc.map(x => `<option value="${x.id}" ${x.id === TDS.soSanh ? 'selected' : ''}>${esc(tenKyTD(x))}</option>`).join('')}</select></label>
+        <label style="flex:1;min-width:320px">Dòng "Kèm theo Công văn số…"<input id="tdVB" value="${esc(TDS.dongVB)}"></label>
+      </div>
+      <div class="actions">
+        ${sua ? '<button class="btn primary" id="tdNap">📂 Nạp số liệu tuần (sheet TW, ĐP)…</button><button class="btn" id="tdDM">📝 Danh mục & kế hoạch vốn…</button>' : ''}
+        ${coXuat() ? '<button class="btn" id="tdXuat">⬇ Xuất Excel</button><button class="btn" onclick="window.print()">🖨 In</button>' : ''}
+        ${sua ? '<button class="btn ghost" id="tdXoa">🗑 Xóa kỳ này</button>' : ''}
+      </div>
+      <p class="muted small">Số liệu ${esc(k.ky_in || '')} · file ${esc(k.ten_file || '')} · nạp ${esc(ngay(k.tao_luc))}${k.tao_boi ? ' · ' + esc(k.tao_boi) : ''}. Đơn vị: triệu đồng.
+        Giải ngân lấy theo mã dự án: KHV kéo dài = cột J, KHV năm 2026 = cột M của sheet TW (NSTW) và ĐP (NSĐP). Mỗi lần nạp được lưu thành một kỳ để đối chiếu thứ 6 hằng tuần.</p>
+      ${kq.thieu.length ? `<div class="warnbox">⚠ ${kq.thieu.length} mã dự án không có trong sheet TW và ĐP của kỳ này (giải ngân = 0): ${kq.thieu.map(i => `<b>${esc(dm[i].ma_da)}</b> ${esc(dm[i].ten.slice(0, 60))}`).join('; ')}.</div>` : ''}
+    </div>
+    <div id="tdBieu">${bangTD(dm, kq, k)}</div>
+    ${kqp ? `<div id="tdDC">${bangDoiChieuTD(dm, kq, kqp, k, kp)}</div>` : ''}`;
+  v.querySelector('#tdKy').onchange = e => { TDS.id = Number(e.target.value); TDS.soSanh = undefined; viewTD(v); };
+  v.querySelector('#tdSS').onchange = e => { TDS.soSanh = e.target.value ? Number(e.target.value) : ''; viewTD(v); };
+  v.querySelector('#tdVB').oninput = e => { TDS.dongVB = e.target.value; const t = v.querySelector('.td-vb'); if (t) t.textContent = e.target.value; };
+  v.querySelector('#tdNap')?.addEventListener('click', () => napTD(v));
+  v.querySelector('#tdDM')?.addEventListener('click', () => suaDMTD(v, k));
+  v.querySelector('#tdXuat')?.addEventListener('click', () => xuatTD(dm, kq, k, kp ? { kqp, kp } : null).catch(fail));
+  v.querySelector('#tdXoa')?.addEventListener('click', async () => {
+    if (!await modal('Xóa kỳ', `<p>Xóa kỳ số liệu <b>${esc(tenKyTD(k))}</b>? Danh mục dự án vẫn giữ nguyên.</p>`, null, 'Xóa')) return;
+    try { await q(sb.from('th_td_ky').delete().eq('id', k.id)); delete TDS.cache[k.id]; TDS.id = null; toast('Đã xóa kỳ.', 'ok'); viewTD(v); } catch (e) { fail(e); }
+  });
+}
+
+function bangTD(dm, kq, k) {
+  const cot = TD.COT;
+  const o = (x, b = false) => cot.map(c => `<td class="num${TD.PCT.has(c) ? ' c' : ''}">${b ? '<b>' : ''}${TD.PCT.has(c) ? pTD(x[c]) : fTD(x[c])}${b ? '</b>' : ''}</td>`).join('');
+  const body = dm.map((d, i) => {
+    const lv = d.kieu === 'cdt' ? 'l1' : d.kieu === 'nda' ? 'l2' : '';
+    return `<tr class="${lv}"><td class="c">${esc(kq.stt[i])}</td><td class="nm td-ten" title="${esc(d.ten)}">${esc(d.ten)}</td><td class="c">${esc(d.ma_da || '')}</td>
+      <td class="small">${esc(d.dia_diem || '')}</td>${o(kq.dong[i], lv !== '')}<td class="small">${esc(d.ghi_chu || '')}</td></tr>`;
+  }).join('');
+  return `<div class="card"><div class="kpi">
+      <div><span>Tổng kế hoạch vốn</span><b>${fTD(kq.tong.E)}</b></div><div><span>Tổng giải ngân</span><b>${fTD(kq.tong.L)}</b></div>
+      <div><span>Tỷ lệ giải ngân</span><b>${pTD(kq.tong.S)}</b></div><div><span>Vốn còn lại chưa giải ngân</span><b>${fTD(kq.tong.V)}</b></div></div>
+    <div class="rpt-title"><div class="t1">BÁO CÁO TÌNH HÌNH, TIẾN ĐỘ THỰC HIỆN GIẢI NGÂN CÁC DỰ ÁN TRỌNG ĐIỂM TRÊN ĐỊA BÀN TỈNH TUYÊN QUANG NĂM ${esc(k.ngay.slice(0, 4))}</div>
+      <div class="t1">ĐẾN NGÀY ${esc(TD.ngayVN(k.ngay))}</div><div class="td-vb small"><i>${esc(TDS.dongVB)}</i></div></div>
+    <div class="small" style="text-align:right">Đơn vị tính: Triệu đồng</div>
+    <div class="tbl-wrap tall"><table class="tbl rpt td"><thead>
+      <tr><th rowspan="5">STT</th><th rowspan="5" class="nm">TÊN CÔNG TRÌNH, DỰ ÁN, CHỦ ĐẦU TƯ</th><th rowspan="5">Mã QHNS</th><th rowspan="5">Địa điểm mở tài khoản</th>
+        <th rowspan="5">Tổng số kế hoạch vốn</th><th colspan="6">Tổng kế hoạch vốn</th><th rowspan="5">Tổng số giải ngân</th><th colspan="6">Giải ngân kế hoạch vốn</th>
+        <th rowspan="5">Tỷ lệ đạt so với tổng số KHV</th><th rowspan="5">Tỷ lệ đạt so với KHV kéo dài</th><th rowspan="5">Tỷ lệ đạt so với KHV năm ${esc(k.ngay.slice(0, 4))}</th>
+        <th rowspan="5">Số vốn còn lại chưa giải ngân</th><th rowspan="5" class="gc-col">Ghi chú</th></tr>
+      <tr><th rowspan="4">Tổng số KHV được phép kéo dài sang năm ${esc(k.ngay.slice(0, 4))}</th><th colspan="2" rowspan="2">KHV được phép kéo dài</th><th rowspan="4">Tổng số KHV năm ${esc(k.ngay.slice(0, 4))}</th><th colspan="2" rowspan="2">KHV năm ${esc(k.ngay.slice(0, 4))}</th>
+        <th rowspan="4">Tổng số giải ngân KHV kéo dài</th><th colspan="2" rowspan="2">KHV được phép kéo dài</th><th rowspan="4">Tổng giải ngân KHV năm ${esc(k.ngay.slice(0, 4))}</th><th colspan="2" rowspan="2">KHV năm ${esc(k.ngay.slice(0, 4))}</th></tr>
+      <tr></tr>
+      <tr><th rowspan="2">NSTW</th><th rowspan="2">NSĐP</th><th rowspan="2">NSTW</th><th rowspan="2">NSĐP</th><th rowspan="2">NSTW</th><th rowspan="2">NSĐP</th><th rowspan="2">NSTW</th><th rowspan="2">NSĐP</th></tr>
+      <tr></tr>
+      <tr class="so">${['1', '2', '3', '4', '5=6+9', '6=7+8', '7', '8', '9=10+11', '10', '11', '12=13+16', '13=14+15', '14', '15', '16=17+18', '17', '18', '19=12/5', '20=13/6', '21=16/9', '22=5-12', '23'].map(x => `<th>${x}</th>`).join('')}</tr></thead>
+    <tbody><tr class="l0"><td></td><td class="nm">TỔNG SỐ</td><td></td><td></td>${o(kq.tong, true)}<td></td></tr>${body}</tbody></table></div></div>`;
+}
+
+// Đối chiếu giải ngân với kỳ trước (tăng thêm trong khoảng giữa 2 kỳ)
+function bangDoiChieuTD(dm, kq, kqp, k, kp) {
+  const cls = n => Math.abs(n) < 0.5 ? '' : n > 0 ? 'duong' : 'am';
+  const ba = (a, b) => `<td class="num">${fTD(b)}</td><td class="num">${fTD(a)}</td><td class="num ${cls(a - b)}"><b>${fTD(a - b)}</b></td>`;
+  const dong = (x, y) => `${ba(x.L, y.L)}${ba(x.M, y.M)}${ba(x.P, y.P)}<td class="c">${pTD(y.S)}</td><td class="c">${pTD(x.S)}</td>`;
+  const da = dm.map((d, i) => ({ d, i })).filter(({ d }) => d.kieu === 'da' || d.kieu === 'dac');
+  const khongTang = da.filter(({ i }) => Math.abs(kq.dong[i].L - kqp.dong[i].L) < 0.5);
+  const tang = kq.tong.L - kqp.tong.L;
+  return `<div class="card"><h2>Đối chiếu với kỳ ${esc(tenKyTD(kp))}</h2>
+    <div class="kpi"><div><span>Giải ngân kỳ trước</span><b>${fTD(kqp.tong.L)}</b></div><div><span>Giải ngân kỳ này</span><b>${fTD(kq.tong.L)}</b></div>
+      <div><span>Tăng thêm giữa 2 kỳ</span><b class="${cls(tang)}">${fTD(tang)}</b></div><div><span>Tỷ lệ giải ngân</span><b>${pTD(kqp.tong.S)} → ${pTD(kq.tong.S)}</b></div>
+      <div><span>Dự án chưa tăng giải ngân</span><b>${khongTang.length} / ${da.length}</b></div></div>
+    <p class="muted small">So sánh giải ngân theo cùng danh mục và kế hoạch vốn của kỳ ${esc(TD.ngayVN(k.ngay))}. Đơn vị: triệu đồng.</p>
+    <div class="tbl-wrap tall"><table class="tbl rpt td ss"><thead>
+      <tr><th rowspan="2">STT</th><th rowspan="2" class="nm">Dự án / chủ đầu tư</th><th rowspan="2">Mã DA</th>
+        <th colspan="3">Tổng số giải ngân</th><th colspan="3">Giải ngân KHV kéo dài</th><th colspan="3">Giải ngân KHV năm ${esc(k.ngay.slice(0, 4))}</th><th colspan="2">Tỷ lệ so với tổng KHV</th></tr>
+      <tr>${[0, 1, 2].map(() => `<th>${esc(TD.ngayVN(kp.ngay))}</th><th>${esc(TD.ngayVN(k.ngay))}</th><th>Tăng thêm</th>`).join('')}<th>${esc(TD.ngayVN(kp.ngay))}</th><th>${esc(TD.ngayVN(k.ngay))}</th></tr></thead>
+    <tbody><tr class="l0"><td></td><td class="nm">TỔNG SỐ</td><td></td>${dong(kq.tong, kqp.tong)}</tr>
+      ${dm.map((d, i) => `<tr class="${d.kieu === 'cdt' ? 'l1' : d.kieu === 'nda' ? 'l2' : ''}"><td class="c">${esc(kq.stt[i])}</td><td class="nm td-ten" title="${esc(d.ten)}">${esc(d.ten)}</td><td class="c">${esc(d.ma_da || '')}</td>${dong(kq.dong[i], kqp.dong[i])}</tr>`).join('')}
+    </tbody></table></div>
+    ${khongTang.length ? `<p class="small"><b>Dự án chưa tăng giải ngân giữa 2 kỳ:</b> ${khongTang.map(({ d, i }) => `${esc(kq.stt[i])}. ${esc(d.ten.slice(0, 70))}${d.ten.length > 70 ? '…' : ''} (${esc(d.ma_da)})`).join('; ')}.</p>` : ''}</div>`;
+}
+
+// ---- Nạp số liệu tuần: file có sheet TW, ĐP (và có thể có sheet Biểu 01)
+async function napTD(v) {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.xlsx,.xls,.xlsm'; inp.multiple = true;
+  inp.onchange = async () => {
+    if (!inp.files.length) return;
+    try {
+      const XLSX = await loadXLSX();
+      const gap = {}; const ten = [];
+      for (const fl of inp.files) {
+        ten.push(fl.name);
+        const wb = XLSX.read(await fl.arrayBuffer(), { type: 'array' });
+        for (const n of wb.SheetNames) {
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: null, raw: true, blankrows: true });
+          const l = TD.nhanDang(n, rows);
+          if (l && !gap[l]) gap[l] = { n, rows, file: fl.name };
+        }
+      }
+      if (!gap.TW || !gap.DP) throw new Error(`Không tìm thấy ${[!gap.TW && 'sheet TW', !gap.DP && 'sheet ĐP'].filter(Boolean).join(' và ')} (báo cáo 01b/TTKHN) trong file đã chọn.`);
+      const tw = TD.docNguonTD(gap.TW.rows), dp = TD.docNguonTD(gap.DP.rows);
+      const ngayTW = TD.ngayTuKy(tw.ky?.text), ngayDP = TD.ngayTuKy(dp.ky?.text);
+      const dmMoi = gap.BIEU ? TD.docBieu01(gap.BIEU.rows) : null;
+      const dmCu = TDS.dm?.dong || [];
+      if (!dmMoi && !dmCu.length) throw new Error('Chưa có danh mục dự án trọng điểm: lần đầu cần chọn file có thêm sheet "Biểu 01".');
+      const ngayMoi = ngayTW || ngayDP || new Date().toISOString().slice(0, 10);
+      const daCo = TDS.ky.find(x => x.ngay === ngayMoi);
+      const ok = await modal('Nạp số liệu dự án trọng điểm', `<div style="min-width:min(640px,90vw)">
+        <p>File: <b>${ten.map(esc).join(', ')}</b></p>
+        <ul>
+          <li>Sheet <b>${esc(gap.TW.n)}</b> (NSTW): ${fmtDong(tw.soDong)} dòng dự án, ${esc(tw.ky?.text || 'không rõ ngày')}</li>
+          <li>Sheet <b>${esc(gap.DP.n)}</b> (NSĐP): ${fmtDong(dp.soDong)} dòng dự án, ${esc(dp.ky?.text || 'không rõ ngày')}</li>
+          ${gap.BIEU ? `<li>Sheet <b>${esc(gap.BIEU.n)}</b>: ${dmMoi.filter(d => d.ma_da).length} dự án trọng điểm</li>` : ''}
+        </ul>
+        ${ngayTW && ngayDP && ngayTW !== ngayDP ? `<div class="warnbox">⚠ Hai sheet khác ngày số liệu: TW đến ${esc(TD.ngayVN(ngayTW))}, ĐP đến ${esc(TD.ngayVN(ngayDP))}.</div>` : ''}
+        <label>Lưu thành kỳ số liệu ngày<input type="date" name="ngay" required value="${esc(ngayMoi)}"></label>
+        ${daCo ? `<div class="warnbox">Đã có kỳ ngày ${esc(TD.ngayVN(ngayMoi))} – số liệu của kỳ này sẽ được <b>thay bằng file mới</b>.</div>` : ''}
+        ${dmMoi ? `<label class="chk"><input type="checkbox" name="capDM" ${dmCu.length ? '' : 'checked disabled'} checked> Cập nhật danh mục dự án và kế hoạch vốn theo sheet "${esc(gap.BIEU.n)}"</label>` : `<p class="muted small">Dùng danh mục và kế hoạch vốn hiện có (${dmCu.filter(d => d.ma_da).length} dự án).</p>`}
+      </div>`, async fd => {
+        const ngayLuu = fd.get('ngay');
+        const capDM = dmMoi && (!dmCu.length || fd.get('capDM'));
+        const dm = capDM ? dmMoi : dmCu;
+        if (capDM) await q(sb.from('th_td_dm').upsert({ id: 1, dong: dmMoi, cap_nhat_luc: new Date().toISOString(), cap_nhat_boi: S.me?.ho_ten || null }));
+        const rec = { ngay: ngayLuu, ten: 'Ngày ' + TD.ngayVN(ngayLuu), ky_in: tw.ky?.text || dp.ky?.text || '', ten_file: ten.join(', '), dm,
+          so: TD.goiSo(tw, dp), tong: { tw: tw.tong, dp: dp.tong }, tao_luc: new Date().toISOString(), tao_boi: S.me?.ho_ten || null };
+        const [luu] = await q(sb.from('th_td_ky').upsert(rec, { onConflict: 'ngay' }).select('id'));
+        TDS.cache = {}; TDS.id = luu?.id ?? null; TDS.soSanh = undefined;
+      }, 'Lưu kỳ');
+      if (ok) { toast('Đã lưu kỳ số liệu dự án trọng điểm.', 'ok'); viewTD(v); }
+    } catch (e) { fail(e); }
+  };
+  inp.click();
+}
+
+// ---- Sửa danh mục dự án trọng điểm và kế hoạch vốn
+async function suaDMTD(v, k) {
+  let ds = structuredClone(k.dm?.length ? k.dm : (TDS.dm?.dong || []));
+  const d = document.createElement('dialog'); d.className = 'modal wide';
+  const ve = () => {
+    const { stt } = TD.cauTruc(ds);
+    d.querySelector('tbody').innerHTML = ds.map((x, i) => {
+      const nhom = x.kieu === 'cdt' || x.kieu === 'nda';
+      return `<tr data-i="${i}" class="${x.kieu === 'cdt' ? 'l1' : x.kieu === 'nda' ? 'l2' : ''}">
+        <td class="c">${esc(stt[i])}</td>
+        <td><select data-f="kieu">${Object.entries(TD.KIEU).map(([a, t]) => `<option value="${a}" ${a === x.kieu ? 'selected' : ''}>${t}</option>`).join('')}</select></td>
+        <td><textarea data-f="ten" rows="2">${esc(x.ten || '')}</textarea></td>
+        <td><input data-f="ma_da" value="${esc(x.ma_da || '')}" ${nhom ? 'disabled' : ''} style="width:90px"></td>
+        <td><input data-f="dia_diem" value="${esc(x.dia_diem || '')}" ${nhom ? 'disabled' : ''}></td>
+        ${['g', 'h', 'j', 'k'].map(c => `<td><input data-f="${c}" type="number" step="any" value="${nhom ? '' : (x[c] ?? 0)}" ${nhom ? 'disabled' : ''} style="width:110px"></td>`).join('')}
+        <td><input data-f="ghi_chu" value="${esc(x.ghi_chu || '')}"></td>
+        <td class="nowrap"><button type="button" class="btn small" data-a="len" title="Chuyển lên">↑</button><button type="button" class="btn small" data-a="xuong" title="Chuyển xuống">↓</button><button type="button" class="btn small" data-a="them" title="Thêm dòng bên dưới">＋</button><button type="button" class="btn small ghost" data-a="xoa" title="Xóa dòng">✕</button></td></tr>`;
+    }).join('');
+  };
+  d.innerHTML = `<form method="dialog"><h3>Danh mục dự án trọng điểm và kế hoạch vốn</h3>
+    <p class="muted small">Kế hoạch vốn đơn vị triệu đồng: G, H = KHV được phép kéo dài (NSTW, NSĐP); J, K = KHV năm (NSTW, NSĐP). Số thứ tự tự đánh theo loại dòng. Dự án phải có mã để lấy số giải ngân từ sheet TW, ĐP.</p>
+    <div class="tbl-wrap" style="max-height:62vh;overflow:auto"><table class="tbl td-dm"><thead><tr><th>STT</th><th>Loại dòng</th><th>Tên công trình, dự án, chủ đầu tư</th><th>Mã DA</th><th>Địa điểm mở TK</th>
+      <th>G – Kéo dài NSTW</th><th>H – Kéo dài NSĐP</th><th>J – Năm NSTW</th><th>K – Năm NSĐP</th><th>Ghi chú</th><th></th></tr></thead><tbody></tbody></table></div>
+    <label class="chk"><input type="checkbox" name="apKy" checked> Áp dụng luôn cho kỳ đang xem (${esc(tenKyTD(k))}); bỏ tích nếu chỉ dùng từ kỳ nạp sau</label>
+    <div class="actions"><button type="button" class="btn" id="dmThem">＋ Thêm dòng cuối</button><span style="flex:1"></span>
+      <button class="btn ghost" value="cancel" formnovalidate>Hủy</button><button class="btn primary" value="ok">Lưu danh mục</button></div></form>`;
+  document.body.append(d); ve(); d.showModal();
+  d.addEventListener('close', () => d.remove());
+  d.querySelector('tbody').addEventListener('input', e => {
+    const tr = e.target.closest('tr'), f = e.target.dataset.f; if (!tr || !f) return;
+    const x = ds[+tr.dataset.i];
+    x[f] = ['g', 'h', 'j', 'k'].includes(f) ? (Number(e.target.value) || 0) : e.target.value;
+    if (f === 'kieu') { if (x.kieu === 'cdt' || x.kieu === 'nda') { delete x.ma_da; } ve(); }
+  });
+  d.querySelector('tbody').addEventListener('click', e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    const i = +b.closest('tr').dataset.i, a = b.dataset.a;
+    if (a === 'len' && i > 0) [ds[i - 1], ds[i]] = [ds[i], ds[i - 1]];
+    if (a === 'xuong' && i < ds.length - 1) [ds[i + 1], ds[i]] = [ds[i], ds[i + 1]];
+    if (a === 'them') ds.splice(i + 1, 0, { kieu: ds[i].kieu === 'cdt' ? 'da' : ds[i].kieu === 'nda' ? 'dac' : ds[i].kieu, ten: '', ma_da: '', dia_diem: ds[i].dia_diem || '', g: 0, h: 0, j: 0, k: 0, ghi_chu: '' });
+    if (a === 'xoa') ds.splice(i, 1);
+    ve();
+  });
+  d.querySelector('#dmThem').onclick = () => { ds.push({ kieu: 'da', ten: '', ma_da: '', dia_diem: '', g: 0, h: 0, j: 0, k: 0, ghi_chu: '' }); ve(); d.querySelector('.tbl-wrap').scrollTop = 1e9; };
+  d.querySelector('form').addEventListener('submit', async e => {
+    if (e.submitter?.value !== 'ok') return;
+    e.preventDefault();
+    try {
+      ds = ds.filter(x => (x.ten || '').trim());
+      const loi = ds.filter(x => (x.kieu === 'da' || x.kieu === 'dac') && !String(x.ma_da || '').trim());
+      if (loi.length && !await modal('Thiếu mã dự án', `<p>${loi.length} dự án chưa có mã nên sẽ không có số giải ngân. Vẫn lưu?</p>`, null, 'Vẫn lưu')) return;
+      for (const x of ds) { x.ten = x.ten.trim(); if (x.ma_da) x.ma_da = String(x.ma_da).replace(/\s+/g, ''); }
+      await q(sb.from('th_td_dm').upsert({ id: 1, dong: ds, cap_nhat_luc: new Date().toISOString(), cap_nhat_boi: S.me?.ho_ten || null }));
+      if (new FormData(e.target).get('apKy')) { await q(sb.from('th_td_ky').update({ dm: ds }).eq('id', k.id)); delete TDS.cache[k.id]; }
+      d.close(); toast('Đã lưu danh mục dự án trọng điểm.', 'ok'); viewTD(v);
+    } catch (err) { fail(err); }
+  });
+}
+
+// ---- Xuất Excel: Biểu 01 theo mẫu (+ sheet đối chiếu với kỳ trước nếu đang chọn)
+async function xuatTD(dm, kq, k, dc) {
+  const ExcelJS = await loadExcelJS();
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet('Biểu 01', { pageSetup: { orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, margins: { left: 0.3, right: 0.3, top: 0.4, bottom: 0.4, header: 0.2, footer: 0.2 } },
+    views: [{ state: 'frozen', xSplit: 2, ySplit: 13 }] });
+  const nam = k.ngay.slice(0, 4);
+  const W = { A: 11.3, B: 57.8, C: 14.4, D: 25, E: 19.6, F: 18, G: 18, H: 16.4, I: 18, J: 16.4, K: 16.4, L: 16.4, M: 16.4, N: 16.4, O: 16.4, P: 16.4, Q: 16.4, R: 16.4, S: 16.4, T: 16.4, U: 16.4, V: 17.1, W: 15.9 };
+  Object.entries(W).forEach(([c, w]) => ws.getColumn(c).width = w);
+  const font = (o = {}) => ({ name: 'Times New Roman', size: 14, ...o });
+  const vien = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+  const NF = '_(* #,##0_);_(* \\(#,##0\\);_(* "-"??_);_(@_)';
+  ws.getCell('A1').value = 'KHO BẠC NHÀ NƯỚC'; ws.getCell('A2').value = 'KHO BẠC NHÀ NƯỚC KHU VỰC VIII';
+  ws.mergeCells('A1:C1'); ws.mergeCells('A2:C2');
+  ['A1', 'A2'].forEach(a => { ws.getCell(a).font = font({ bold: a === 'A2' }); ws.getCell(a).alignment = { horizontal: 'center' }; });
+  ws.getCell('A4').value = `BÁO CÁO TÌNH HÌNH, TIẾN ĐỘ THỰC HIỆN GIẢI NGÂN CÁC DỰ ÁN TRỌNG ĐIỂM TRÊN ĐỊA BÀN TỈNH TUYÊN QUANG NĂM ${nam}\n ĐẾN NGÀY ${TD.ngayVN(k.ngay)}`;
+  ws.mergeCells('A4:W4'); ws.getCell('A4').font = font({ size: 18, bold: true }); ws.getCell('A4').alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; ws.getRow(4).height = 54.6;
+  ws.getCell('A5').value = TDS.dongVB; ws.mergeCells('A5:W5'); ws.getCell('A5').font = font({ italic: true }); ws.getCell('A5').alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; ws.getRow(5).height = 36.75;
+  ws.getCell('V6').value = 'đơn vị tính: Triệu đồng'; ws.mergeCells('V6:W6'); ws.getCell('V6').font = font({ italic: true }); ws.getCell('V6').alignment = { horizontal: 'center' };
+  const H = {
+    A7: 'STT', B7: 'TÊN CÔNG TRÌNH, DỰ ÁN, CHỦ ĐẦU TƯ', C7: 'Mã QHNS', D7: 'Địa điểm mở tài khoản', E7: 'Tổng số kế hoạch vốn', F7: 'Tổng kế hoạch vốn', L7: 'Tổng số giải ngân', M7: 'Giải ngân kế hoạch vốn',
+    S7: 'Tỷ lệ thực hiện đạt so với tổng số kế hoạch vốn', T7: 'Tỷ lệ thực hiện đạt so với KHV kéo dài', U7: `Tỷ lệ thực hiện đạt so với KHV năm ${nam}`, V7: 'Số vốn còn lại chưa giải ngân', W7: 'Ghi chú',
+    F8: `Tổng số kế hoạch vốn được phép kéo dài sang năm ${nam}`, G8: `Kế hoạch vốn được phép kéo dài sang năm ${nam}`, I8: `Tổng số kế hoạch vốn năm ${nam}`, J8: `Kế hoạch vốn năm ${nam}`,
+    M8: `Tổng số giải ngân kế hoạch vốn được phép kéo dài sang năm ${nam}`, N8: `Kế hoạch vốn được phép kéo dài sang năm ${nam}`, P8: `Tổng giải ngân kế hoạch vốn năm ${nam}`, Q8: `Kế hoạch vốn năm ${nam}`,
+    G10: 'NSTW', H10: 'NSĐP', J10: 'NSTW', K10: 'NSĐP', N10: 'NSTW', O10: 'NSĐP', Q10: 'NSTW', R10: 'NSĐP',
+  };
+  Object.entries(H).forEach(([a, t]) => ws.getCell(a).value = t);
+  ['A7:A11', 'B7:B11', 'C7:C11', 'D7:D11', 'E7:E11', 'F7:K7', 'L7:L11', 'M7:R7', 'S7:S11', 'T7:T11', 'U7:U11', 'V7:V11', 'W7:W11', 'F8:F11', 'G8:H9', 'I8:I11', 'J8:K9',
+    'M8:M11', 'N8:O9', 'P8:P11', 'Q8:R9', 'G10:G11', 'H10:H11', 'J10:J11', 'K10:K11', 'N10:N11', 'O10:O11', 'Q10:Q11', 'R10:R11'].forEach(m => ws.mergeCells(m));
+  ['1', '2', '3', '4', '5=6+9', '6=7+8', 7, 8, '9=10+11', 10, 11, '12=13+16', '13=14+15', 14, 15, '16=17+18', 17, 18, '19=12/5', '20=13/6', '21=16/9', '22=5-12', 23].forEach((x, i) => ws.getRow(12).getCell(i + 1).value = x);
+  [[7, 32.25], [8, 23.25], [9, 17.4], [10, 17.4], [11, 63.75], [12, 23.25]].forEach(([r, h]) => ws.getRow(r).height = h);
+  for (let r = 7; r <= 12; r++) for (let c = 1; c <= 23; c++) {
+    const cell = ws.getRow(r).getCell(c); cell.border = vien;
+    cell.font = font({ bold: r < 12, italic: r === 10 || r === 12 }); cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+  }
+  const ghi = (rn, stt, ten, ma, dd, x, gc, kieu) => {
+    const row = ws.getRow(rn);
+    row.getCell(1).value = /^\d+$/.test(stt) ? Number(stt) : stt; row.getCell(2).value = ten; row.getCell(3).value = ma ? (/^\d+$/.test(ma) ? Number(ma) : ma) : null; row.getCell(4).value = dd || null;
+    TD.COT.forEach(c => {
+      const cell = row.getCell(E.colIdx(c) + 1), val = x[c];
+      if (TD.PCT.has(c)) { if (val !== null && Number.isFinite(val)) cell.value = val; cell.numFmt = '0%'; }
+      else { cell.value = Math.round((val || 0) * 1e6) / 1e6; cell.numFmt = NF; }
+    });
+    row.getCell(23).value = gc || null;
+    const dam = kieu === 'tong' || kieu === 'cdt' || kieu === 'nda';
+    for (let c = 1; c <= 23; c++) {
+      const cell = row.getCell(c); cell.border = vien; cell.font = font({ bold: dam });
+      cell.alignment = { horizontal: c === 2 ? (dam ? 'left' : 'justify') : 'center', vertical: 'middle', wrapText: true };
+      if (kieu === 'cdt') cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
+    }
+    row.height = kieu === 'tong' || kieu === 'cdt' ? 30.75 : Math.max(36, Math.ceil(String(ten).length / 52) * 19);
+  };
+  ghi(13, '', 'TỔNG SỐ', '', '', kq.tong, '', 'tong');
+  dm.forEach((d, i) => ghi(14 + i, kq.stt[i], d.ten, d.ma_da, d.dia_diem, kq.dong[i], d.ghi_chu, d.kieu));
+  if (dc) {
+    const { kqp, kp } = dc;
+    const w2 = wb.addWorksheet(`Doi chieu ${TD.ngayVN(kp.ngay).replace(/\//g, '.')}`, { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
+    const n1 = TD.ngayVN(kp.ngay), n2 = TD.ngayVN(k.ngay);
+    w2.addRow(['STT', 'Dự án / chủ đầu tư', 'Mã DA', 'Tổng số giải ngân', '', '', 'Giải ngân KHV kéo dài', '', '', `Giải ngân KHV năm ${nam}`, '', '', 'Tỷ lệ so với tổng KHV', '']);
+    w2.addRow(['', '', '', n1, n2, 'Tăng thêm', n1, n2, 'Tăng thêm', n1, n2, 'Tăng thêm', n1, n2]);
+    ['A1:A2', 'B1:B2', 'C1:C2', 'D1:F1', 'G1:I1', 'J1:L1', 'M1:N1'].forEach(m => w2.mergeCells(m));
+    const g2 = (stt, ten, ma, x, y, dam) => {
+      const r = w2.addRow([stt, ten, ma ? Number(ma) || ma : '', y.L, x.L, x.L - y.L, y.M, x.M, x.M - y.M, y.P, x.P, x.P - y.P, y.S ?? null, x.S ?? null]);
+      if (dam) r.font = { bold: true };
+    };
+    g2('', 'TỔNG SỐ', '', kq.tong, kqp.tong, true);
+    dm.forEach((d, i) => g2(kq.stt[i], d.ten, d.ma_da, kq.dong[i], kqp.dong[i], d.kieu === 'cdt' || d.kieu === 'nda'));
+    [1, 2].forEach(r => { w2.getRow(r).font = { bold: true }; w2.getRow(r).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; });
+    w2.getColumn(1).width = 7; w2.getColumn(2).width = 60; w2.getColumn(3).width = 11;
+    for (let c = 4; c <= 12; c++) { w2.getColumn(c).width = 15; w2.getColumn(c).numFmt = '#,##0;[Red]-#,##0;"-"'; }
+    for (const c of [13, 14]) { w2.getColumn(c).width = 11; w2.getColumn(c).numFmt = '0%'; }
+  }
+  const buf = await wb.xlsx.writeBuffer();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  a.download = `Bieu 01 - DA trong diem ${TD.ngayVN(k.ngay).replace(/\//g, '.')}.xlsx`; a.click();
 }

@@ -352,3 +352,32 @@ begin
     execute d;
   end loop;
 end $$;
+
+-- =====================================================================
+-- 11/2026: Báo cáo dự án trọng điểm (Biểu 01) – danh mục + KH vốn, số liệu TW/ĐP lưu theo kỳ (thứ 6 hằng tuần)
+-- (đã chạy trên Supabase bằng migration th_du_an_trong_diem)
+-- =====================================================================
+create table if not exists public.th_td_dm (
+  id int primary key default 1 check (id = 1),
+  dong jsonb not null default '[]'::jsonb,
+  cap_nhat_luc timestamptz not null default now(),
+  cap_nhat_boi text
+);
+create table if not exists public.th_td_ky (
+  id bigint generated always as identity primary key,
+  ngay date not null unique,
+  ten text, ky_in text, ten_file text,
+  dm jsonb not null default '[]'::jsonb,
+  so jsonb not null default '{}'::jsonb,
+  tong jsonb,
+  tao_luc timestamptz not null default now(),
+  tao_boi text
+);
+create index if not exists idx_th_td_ky on public.th_td_ky(ngay desc);
+alter table public.th_td_dm enable row level security;
+alter table public.th_td_ky enable row level security;
+create policy th_td_dm_xem on public.th_td_dm for select to authenticated using (public.th_xem());
+create policy th_td_dm_sua on public.th_td_dm for all to authenticated using (public.th_sua()) with check (public.th_sua());
+create policy th_td_ky_xem on public.th_td_ky for select to authenticated using (public.th_xem());
+create policy th_td_ky_sua on public.th_td_ky for all to authenticated using (public.th_sua()) with check (public.th_sua());
+grant select, insert, update, delete on public.th_td_dm, public.th_td_ky to authenticated;
