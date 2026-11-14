@@ -111,18 +111,24 @@ export function docB501(rows, loai) {
   const hs = heSo(rows), so = v => soTien(v) * hs;
   const nam = r => (cM ? so(r[cM.cot]) : 0) + (cN ? so(r[cN.cot]) : 0);
   const gn = r => (cO ? so(r[cO.cot]) : 0) - (cTU ? so(r[cTU.cot]) : 0);
-  const out = new Map(); let muc = '', tongDong = null, tongNam = null, tongGN = null;
+  const cKB = timCot(rows, /mã kho bạc/);
+  const out = new Map(); let muc = '', tongDong = null, tongNam = null, tongGN = null, cur = null;
   for (let i = cDT.dong + 1; i < rows.length; i++) {
     const r = rows[i] || [];
     const a = txt(r[0]), b = txt(r[1]);
     if (tongDong === null && /^tổng số$/i.test(b)) { tongDong = so(r[cDT.cot]); tongNam = nam(r); tongGN = gn(r); continue; }
-    if (/^[IVX]+$/.test(a)) { muc = b; continue; }
+    if (/^[IVX]+$/.test(a)) { muc = b; cur = null; continue; }
     const m = /^(\d{5,})\s*\.\s*(.*)$/.exec(b);
-    if (!m) continue;   // dòng nguồn vốn chi tiết: số đã cộng lên dòng dự án
+    if (!m) {
+      // dòng nguồn vốn chi tiết: số đã cộng lên dòng dự án; chỉ ghi nhận theo mã kho bạc (file nhiều KBNN)
+      const k = cKB ? txt(r[cKB.cot]) : '';
+      if (cur && /^\d{4}$/.test(k)) { const t = (cur.theoKB ||= {})[k] ||= { gt: 0, gtNam: 0, gtGN: 0 }; t.gt += so(r[cDT.cot]); t.gtNam += nam(r); t.gtGN += gn(r); }
+      continue;
+    }
     const x = out.get(m[1]) || { ma_da: m[1], ten: m[2], gt: 0, gtNam: 0, gtGN: 0, tu: 0, muc: [] };
     x.gt += so(r[cDT.cot]); x.gtNam += nam(r); x.gtGN += gn(r); if (cTU) x.tu += so(r[cTU.cot]);
     if (muc && !x.muc.includes(muc)) x.muc.push(muc);
-    out.set(m[1], x);
+    out.set(m[1], x); cur = x;
   }
   // Đơn vị lập báo cáo → mã KBNN (để lọc file THBC gồm nhiều KBNN)
   let kb = '';
