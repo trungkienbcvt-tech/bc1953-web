@@ -124,3 +124,41 @@ dialog.modal.wide{width:min(1500px,96vw)}
 .tbl.td-dm select[data-f=kieu]{min-width:170px}
 .tbl.td-dm input[data-f=dia_diem]{width:210px}
 .tbl.td-dm input[data-f=ghi_chu]{width:150px}
+
+/* ---------------- Menu dọc bên trái */
+.khung{display:grid;grid-template-columns:250px minmax(0,1fr);align-items:start;transition:grid-template-columns .2s}
+.khung main{max-width:none;margin:0;min-width:0}
+.tabs.side{display:flex;flex-direction:column;gap:2px;padding:10px 10px 20px;border-bottom:0;border-right:1px solid var(--line);
+  position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;background:#fff;z-index:5}
+.tabs.side .tab-thu{align-self:flex-end;border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;width:28px;height:26px;cursor:pointer;font-weight:700;margin-bottom:4px}
+.tabs.side .nhom{margin-bottom:8px}
+.tabs.side .nhom-dau{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,var(--navy),var(--navy-2));color:#fff;
+  font-weight:700;font-size:13px;padding:7px 10px;border-radius:8px;cursor:pointer;user-select:none}
+.tabs.side .nhom-dau span{font-size:11px;transition:transform .15s}
+.tabs.side .nhom.dong .nhom-dau span{transform:rotate(-90deg)}
+.tabs.side .nhom.dong .tab{display:none}
+.tabs.side .tab{display:flex;align-items:center;gap:8px;width:100%;text-align:left;white-space:normal;line-height:1.3;
+  padding:8px 10px 8px 14px;margin-top:2px;border:0;border-left:3px solid transparent;border-radius:0 6px 6px 0;font-size:14px;color:#334}
+.tabs.side .tab i{font-style:normal;width:20px;flex:none;text-align:center}
+.tabs.side .tab:hover{background:#f2f6fb;color:var(--navy)}
+.tabs.side .tab.on{background:#eaf1fb;color:var(--navy);font-weight:700;border-left-color:var(--gold);border-bottom-color:transparent}
+.tabs.side .tab-link{margin-left:0;color:var(--navy);font-weight:600;text-decoration:none}
+/* thu gọn: chỉ còn biểu tượng để bảng báo cáo rộng hơn */
+.khung.an-menu{grid-template-columns:58px minmax(0,1fr)}
+.khung.an-menu .tabs.side{padding:10px 6px}
+.khung.an-menu .tab-thu{transform:rotate(180deg);align-self:center}
+.khung.an-menu .nhom-dau{font-size:0;padding:3px;justify-content:center;min-height:6px}
+.khung.an-menu .nhom-dau span{display:none}
+.khung.an-menu .nhom.dong .tab{display:flex}
+.khung.an-menu .tabs.side .tab{font-size:0;padding:8px 0;justify-content:center;border-radius:6px;border-left-width:0}
+.khung.an-menu .tabs.side .tab i{font-size:17px}
+.khung.an-menu .tabs.side .tab.on{outline:2px solid var(--gold)}
+@media (max-width:900px){
+  .khung,.khung.an-menu{grid-template-columns:1fr}
+  .tabs.side{position:static;height:auto;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .tabs.side .tab-thu,.tabs.side .nhom-dau{display:none}
+  .tabs.side .nhom{display:flex;margin:0}
+  .tabs.side .tab{white-space:nowrap;width:auto;border-left:0;border-bottom:3px solid transparent}
+  .tabs.side .tab.on{border-bottom-color:var(--navy)}
+}
+@media print{ .khung{display:block} .tabs.side{display:none!important} }
