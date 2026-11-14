@@ -162,3 +162,8 @@ dialog.modal.wide{width:min(1500px,96vw)}
   .tabs.side .tab.on{border-bottom-color:var(--navy)}
 }
 @media print{ .khung{display:block} .tabs.side{display:none!important} }
+.tabs.side .tab.con{padding-left:38px;font-size:13px;color:#556}
+.tabs.side .tab.con i{width:16px;font-size:12px}
+.tabs.side .tab.con::before{content:'';position:absolute}
+.khung.an-menu .tabs.side .tab.con{padding-left:0}
+.khung.an-menu .tabs.side .tab.con i{font-size:14px}

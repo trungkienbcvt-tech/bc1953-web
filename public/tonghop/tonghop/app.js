@@ -18,18 +18,19 @@ const app = document.getElementById('app');
 const QUYEN_XEM = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'XEM', 'TH_PGD', 'TH_NV2'];
 const QUYEN_SUA = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'TH_NV2'];
 // Tab được xem theo vai trò (mặc định: tất cả)
-const TAB_THEO_VAI_TRO = { TH_PGD: ['da', 'bc', 'dt', 'td', 'b5', 'cds'] };
+const TAB_THEO_VAI_TRO = { TH_PGD: ['dl', 'da', 'bc', 'dt', 'td', 'b5', 'cds'] };
 // Phòng giao dịch: xem báo cáo, so sánh; không in, không xuất Excel
 const coXuat = () => S.me?.vai_tro !== 'TH_PGD';
 const tabsCua = () => { const t = TAB_THEO_VAI_TRO[S.me?.vai_tro]; return t ? Object.fromEntries(Object.entries(TABS).filter(([k]) => t.includes(k))) : TABS; };
 // Menu dọc bên trái: nhóm và biểu tượng của từng mục
 const NHOM_MENU = [
-  ['📥', 'Dữ liệu', ['dl', 'da', 'dc', 'ky']],
-  ['📊', 'Báo cáo', ['bc', 'dt', 'td', 'cds']],
+  ['📥', 'Dữ liệu', ['dl', 'da']],
+  ['📊', 'Báo cáo', ['bc', 'dc', 'ky', 'dt', 'td', 'cds']],
   ['⚖️', 'Đối chiếu', ['b5']],
 ];
+const TAB_CON = new Set(['dc', 'ky']);      // mục con của "Báo cáo theo chủ đầu tư"
 const ICON_TAB = { dl: '📂', da: '🗂️', dc: '➕', ky: '🗄️', bc: '📑', dt: '🏅', td: '⭐', cds: '💻', b5: '🔍' };
-const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo theo chủ đầu tư', dt: 'Báo cáo chấm điểm KPI', td: 'Dự án trọng điểm', b5: 'Đối chiếu THBC – B5-01', cds: 'Dự án chuyển đổi số', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
+const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo theo chủ đầu tư', dt: 'Báo cáo đánh giá KPI', td: 'Dự án trọng điểm', b5: 'Đối chiếu THBC – B5-01', cds: 'Dự án chuyển đổi số', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
 const NGUON_TEN = { CDT: 'Sheet CDT (danh mục dự án – chủ đầu tư)', TT85: 'Sheet BC TT 85', TT15: 'Sheet BC TT 15', TT37: 'Báo cáo TT37 (mẫu 01b/TTKHN)' };
 const LOAI_NGUON = ['TT85', 'TT15', 'TT37'];
 // Tên sheet thường gặp → loại dữ liệu
@@ -147,7 +148,8 @@ async function boot() {
       app.querySelector('#out').onclick = async () => { await sb.auth.signOut(); renderLogin(); };
       return;
     }
-    if (!tabsCua()[S.tab]) S.tab = Object.keys(tabsCua())[0];
+    if (!tabsCua()[S.tab] || (S.me.vai_tro === 'TH_PGD' && S.tab === 'dl' && !S.daVao)) S.tab = S.me.vai_tro === 'TH_PGD' ? 'da' : Object.keys(tabsCua())[0];
+    S.daVao = true;
     document.body.classList.toggle('khong-in', !coXuat());
     renderShell();
     await taiDuLieu();
@@ -213,7 +215,7 @@ function renderShell() {
       <button class="tab-thu" id="thuMenu" title="Thu gọn / mở menu">«</button>
       ${NHOM_MENU.map(([ic, ten, ds]) => { const co = ds.filter(k => tabsCua()[k]); return co.length ? `<div class="nhom">
         <div class="nhom-dau" data-nhom="${esc(ten)}">${ic} ${esc(ten)}<span>▾</span></div>
-        ${co.map(k => `<button class="tab ${k === S.tab ? 'on' : ''}" data-tab="${k}" title="${esc(TABS[k])}"><i>${ICON_TAB[k] || '•'}</i>${esc(TABS[k])}</button>`).join('')}</div>` : ''; }).join('')}
+        ${co.map(k => `<button class="tab ${TAB_CON.has(k) ? 'con' : ''} ${k === S.tab ? 'on' : ''}" data-tab="${k}" title="${esc(TABS[k])}"><i>${ICON_TAB[k] || '•'}</i>${esc(TABS[k])}</button>`).join('')}</div>` : ''; }).join('')}
       <div class="nhom"><div class="nhom-dau">🔗 Tiện ích<span></span></div>
         <a class="tab tab-link" href="https://tckb-kbviii.vercel.app/" target="_blank" rel="noopener" title="Mở Ứng dụng tra cứu Kho bạc (TCKB+) ở tab mới"><i>🏛️</i>Ứng dụng tra cứu Kho bạc ↗</a></div>
     </nav>
@@ -305,9 +307,10 @@ function viewDuLieu(v) {
       ${canEdit() ? `<div class="actions"><label class="btn primary">📂 Chọn file Excel để cập nhật…
         <input type="file" id="f" accept=".xlsx,.xls,.xlsm" hidden></label>
         <span class="muted small">Có thể chọn cả file "BC Chủ đầu tư" (gồm 3 sheet) hoặc từng file xuất từ hệ thống (BC TT 85, BC TT 15, Báo cáo TT37 mẫu 01b/TTKHN). Dữ liệu mới sẽ thay toàn bộ dữ liệu cũ của loại đó.</span></div>` : ''}
+      ${canEdit() ? '' : '<p class="muted small">Dữ liệu do Phòng Nghiệp vụ 2 cập nhật; tài khoản của bạn chỉ xem.</p>'}
       <div id="nhap"></div></div>
     <div class="card"><h2>Kiểm tra dữ liệu</h2><div id="kt"></div>
-      <p class="small muted">Đối chiếu tổng số giữa file hệ thống và báo cáo: xem ở tab <b>Báo cáo</b>, cuối trang.</p></div>`;
+      <p class="small muted">Đối chiếu tổng số giữa file hệ thống và báo cáo: xem ở mục <b>Báo cáo theo chủ đầu tư</b>, cuối trang.</p></div>`;
   v.querySelector('#f')?.addEventListener('change', e => { const f = e.target.files[0]; if (f) docFile(f, v.querySelector('#nhap')); e.target.value = ''; });
   renderKiemTra(v.querySelector('#kt'));
 }
@@ -1308,7 +1311,7 @@ async function tinhDTCache() {
 async function viewDT(v) {
   const ss = DTS.nguon === 'SS';
   v.innerHTML = `<div class="card no-print">
-      <h2>Báo cáo chấm điểm KPI</h2>
+      <h2>Báo cáo đánh giá KPI</h2>
       <p class="muted small">Tổng hợp lũy kế giải ngân theo chủ đầu tư / đơn vị / xã, phường và KBNN nơi giao dịch (mẫu "Biểu đối chiếu THBC"), lấy từ chi tiết dự án của file hệ thống TT15, TT85 hoặc TT37 đã nạp ở mục Dữ liệu đầu vào. Đơn vị: ${tenDV()}.</p>
       <div class="bar">
         <label>Mẫu biểu<select id="dtMau">${Object.entries(DT_MAU).map(([k, t]) => `<option value="${k}" ${k === DTS.mau ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
