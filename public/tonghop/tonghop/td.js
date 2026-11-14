@@ -123,3 +123,37 @@ export function ngayTuKy(kyIn) {
   return m ? `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}` : '';
 }
 export const ngayVN = iso => { const [y, m, d] = String(iso || '').split('-'); return d ? `${d}/${m}/${y}` : ''; };
+
+// ---- Đối chiếu cột 12 "Tổng số giải ngân" (L) với B5-01 NS tỉnh + NS xã:
+//      Lũy kế chi từ đầu năm – Tổng số (cột O) − Dư tạm ứng năm trước chuyển sang (cột L)
+//      tinh, xa: kết quả b501.docB501 (triệu đồng; gtGN = O − L, tu = L). saiSo: triệu đồng
+export function doiChieuB5(dm, kq, tinh, xa, saiSo = 0.001) {
+  const rong = () => ({ td: 0, o: 0, l: 0, tinh: 0, xa: 0, b5: 0, lech: 0, soDA: 0, soLech: 0 });
+  const dong = dm.map(() => null), tong = rong();
+  dm.forEach((d, i) => {
+    if (d.kieu !== 'da' && d.kieu !== 'dac') return;
+    const t = tinh?.ds.get(d.ma_da), x = xa?.ds.get(d.ma_da);
+    const r = {
+      td: kq.dong[i].L, tinh: t?.gtGN || 0, xa: x?.gtGN || 0,
+      l: (t?.tu || 0) + (x?.tu || 0), coB5: !!(t || x),
+      kb: [...new Set([...Object.keys(t?.theoKB || {}), ...Object.keys(x?.theoKB || {})])],
+    };
+    r.b5 = r.tinh + r.xa; r.o = r.b5 + r.l; r.lech = r.td - r.b5;
+    r.coLech = Math.abs(r.lech) > saiSo;
+    const ly = [];
+    if (!d.ma_da) ly.push('Dòng chưa có mã dự án');
+    else if (!r.coB5) ly.push('Không có trên B5-01 NS tỉnh, NS xã');
+    if (r.coLech && r.coB5) {
+      ly.push(r.lech > 0 ? 'Biểu 01 lớn hơn B5-01' : 'B5-01 lớn hơn Biểu 01');
+      if (r.l && Math.abs(Math.abs(r.lech) - r.l) <= saiSo) ly.push('chênh lệch đúng bằng dư tạm ứng năm trước (cột L)');
+      if (r.b5 < 0) ly.push('dư tạm ứng năm trước (L) lớn hơn lũy kế chi (O)');
+    }
+    if (t && x) ly.push('có ở cả B5-01 NS tỉnh và NS xã');
+    r.ly_do = ly.join('; ');
+    dong[i] = r;
+    const cong = s => { for (const c of ['td', 'o', 'l', 'tinh', 'xa', 'b5', 'lech']) s[c] += r[c]; s.soDA++; if (r.coLech) s.soLech++; };
+    for (let p = kq.cha[i]; p >= 0; p = kq.cha[p]) cong(dong[p] ||= rong());
+    cong(tong);
+  });
+  return { dong, tong, saiSo, soLech: tong.soLech };
+}
