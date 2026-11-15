@@ -174,3 +174,51 @@ export function soSanhB501(tt, xa, tinh, ct = 'KD') {
     soLech: rows.filter(r => r.coLech).length,
   };
 }
+
+// ---- THBC lấy từ số liệu đã nạp ở "Dữ liệu đầu vào" (đơn vị đồng, toàn khu vực, theo mã KBNN)
+//   Đổi về cùng dạng kết quả docTT15 để dùng chung các phép đối chiếu.
+//   KD: KH vốn kéo dài năm trước chuyển sang; NAM: KH vốn giao trong năm; GN: Lũy kế thanh toán – Tổng số
+export const COT_THBC = {
+  TT37: { KD: ['F'], NAM: ['H'], GN: ['K', 'L', 'N', 'O'] },
+  TT85: { KD: ['J'], NAM: ['P'], GN: ['L', 'M', 'R', 'S'] },
+};
+export function tuNguonLuu(rows, file, loai) {
+  const C = COT_THBC[loai], tr = (so, cs) => cs.reduce((s, c) => s + (so?.[c] || 0), 0) / 1e6;
+  const out = new Map();
+  for (const r of rows || []) {
+    const ma = String(r.ma_da || '').trim(); if (!ma) continue;
+    const g = tr(r.so, C.KD), gNam = tr(r.so, C.NAM), gGN = tr(r.so, C.GN), kb = r.kb || '';
+    const x = out.get(ma) || { ma_da: ma, ten: String(r.ten || '').replace(new RegExp('^(' + ma + '\\s*-\\s*)+'), ''), kb, gt: 0, gtNam: 0, gtGN: 0, so_dong: 0, theoKB: {} };
+    x.gt += g; x.gtNam += gNam; x.gtGN += gGN; x.so_dong++;
+    const t = x.theoKB[kb] ||= { gt: 0, gtNam: 0, gtGN: 0 }; t.gt += g; t.gtNam += gNam; t.gtGN += gGN;
+    out.set(ma, x);
+  }
+  const kbTong = {};
+  for (const [k, v] of Object.entries(file?.tong?.kb || {})) kbTong[k] = { tong: tr(v.so, C.KD), tongNam: tr(v.so, C.NAM), tongGN: tr(v.so, C.GN) };
+  const t = file?.tong?.tong;
+  const m = /từ ngày\s*([\d/]+)\s*đến ngày\s*([\d/]+)/i.exec(file?.ky_in || '');
+  return { loai, ds: out, tong: t ? tr(t, C.KD) : null, tongNam: t ? tr(t, C.NAM) : null, tongGN: t ? tr(t, C.GN) : null,
+    co: { KD: true, NAM: true, GN: true }, ky: m ? { tu: m[1], den: m[2], text: file.ky_in } : null, kbTong, nhieuKB: true,
+    ten_file: file?.ten_file || '', luu: true, tai_luc: file?.tai_luc };
+}
+
+// ---- Đối chiếu 2 biểu THBC (TT37 ↔ TT85) theo từng dự án và mã KBNN
+export function soSanhTHBC(a, b, ct = 'GN') {
+  const [f, ft] = TRUONG[ct];
+  const rows = [];
+  for (const m of new Set([...a.ds.keys(), ...b.ds.keys()])) {
+    const x = a.ds.get(m), y = b.ds.get(m);
+    for (const kb of new Set([...Object.keys(x?.theoKB || {}), ...Object.keys(y?.theoKB || {})])) {
+      const r = { ma_da: m, ten: x?.ten || y?.ten || '', kb, a: x?.theoKB?.[kb]?.[f] || 0, b: y?.theoKB?.[kb]?.[f] || 0, coA: !!x?.theoKB?.[kb], coB: !!y?.theoKB?.[kb] };
+      r.lech = r.a - r.b; r.coLech = Math.abs(r.lech) >= SAI_SO;
+      if (!r.coLech && !r.a && !r.b) continue;
+      r.ly_do = !r.coLech ? '' : !r.coB ? `Chỉ có trên ${a.loai}` : !r.coA ? `Chỉ có trên ${b.loai}` : r.lech > 0 ? `${a.loai} lớn hơn ${b.loai}` : `${b.loai} lớn hơn ${a.loai}`;
+      rows.push(r);
+    }
+  }
+  const phong = new Map();
+  for (const r of rows) { const p = phong.get(r.kb) || { kb: r.kb, a: 0, b: 0, lech: 0, soDA: 0, soLech: 0 }; p.a += r.a; p.b += r.b; p.lech += r.lech; p.soDA++; if (r.coLech) p.soLech++; phong.set(r.kb, p); }
+  const sum = k => rows.reduce((s, r) => s + r[k], 0);
+  return { rows, phong: [...phong.values()].sort((x, y) => x.kb.localeCompare(y.kb)), ct,
+    tong: { a: sum('a'), b: sum('b'), lech: sum('lech') }, dongTong: { a: a[ft], b: b[ft] }, soLech: rows.filter(r => r.coLech).length };
+}

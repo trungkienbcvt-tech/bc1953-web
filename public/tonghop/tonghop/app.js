@@ -18,7 +18,7 @@ const app = document.getElementById('app');
 const QUYEN_XEM = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'XEM', 'TH_PGD', 'TH_NV2'];
 const QUYEN_SUA = ['ADMIN', 'KBNN_NHAN', 'KBNN_DUYET', 'TH_NV2'];
 // Tab được xem theo vai trò (mặc định: tất cả)
-const TAB_THEO_VAI_TRO = { TH_PGD: ['dl', 'da', 'bc', 'dt', 'td', 'b5', 'cds'] };
+const TAB_THEO_VAI_TRO = { TH_PGD: ['dl', 'da', 'bc', 'dt', 'td', 'b5', 'b585', 'tt3785', 'cds'] };
 // Phòng giao dịch: xem báo cáo, so sánh; không in, không xuất Excel
 const coXuat = () => S.me?.vai_tro !== 'TH_PGD';
 const tabsCua = () => { const t = TAB_THEO_VAI_TRO[S.me?.vai_tro]; return t ? Object.fromEntries(Object.entries(TABS).filter(([k]) => t.includes(k))) : TABS; };
@@ -26,11 +26,12 @@ const tabsCua = () => { const t = TAB_THEO_VAI_TRO[S.me?.vai_tro]; return t ? Ob
 const NHOM_MENU = [
   ['📥', 'Dữ liệu', ['dl', 'da']],
   ['📊', 'Báo cáo', ['bc', 'dc', 'ky', 'dt', 'td', 'cds']],
-  ['⚖️', 'Đối chiếu', ['b5']],
+  ['⚖️', 'Đối chiếu TABMIS – THBC', ['b5', 'b585']],
+  ['🔁', 'Đối chiếu giữa các biểu THBC', ['tt3785']],
 ];
 const TAB_CON = new Set(['dc', 'ky']);      // mục con của "Báo cáo theo chủ đầu tư"
-const ICON_TAB = { dl: '📂', da: '🗂️', dc: '➕', ky: '🗄️', bc: '📑', dt: '🏅', td: '⭐', cds: '💻', b5: '🔍' };
-const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo theo chủ đầu tư', dt: 'Báo cáo đánh giá KPI', td: 'Dự án trọng điểm', b5: 'Đối chiếu THBC – B5-01', cds: 'Dự án chuyển đổi số', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
+const ICON_TAB = { dl: '📂', da: '🗂️', dc: '➕', ky: '🗄️', bc: '📑', dt: '🏅', td: '⭐', cds: '💻', b5: '🔍', b585: '🔎', tt3785: '🔁' };
+const TABS = { dl: 'Dữ liệu đầu vào', da: 'Danh mục dự án', bc: 'Báo cáo theo chủ đầu tư', dt: 'Báo cáo đánh giá KPI', td: 'Dự án trọng điểm', b5: 'B5-01 ↔ Thông tư 37', b585: 'B5-01 ↔ Thông tư 85', tt3785: 'Thông tư 37 ↔ Thông tư 85', cds: 'Dự án chuyển đổi số', dc: 'Cộng thêm', ky: 'Kỳ đã lưu' };
 const NGUON_TEN = { CDT: 'Sheet CDT (danh mục dự án – chủ đầu tư)', TT85: 'Sheet BC TT 85', TT15: 'Sheet BC TT 15', TT37: 'Báo cáo TT37 (mẫu 01b/TTKHN)' };
 const LOAI_NGUON = ['TT85', 'TT15', 'TT37'];
 // Tên sheet thường gặp → loại dữ liệu
@@ -235,7 +236,7 @@ function menuAn() { try { return localStorage.getItem('th_an_menu') === '1'; } c
 
 function show() {
   const v = view(); if (!v) return;
-  ({ dl: viewDuLieu, da: viewDanhMuc, bc: viewBaoCao, dt: viewDT, td: viewTD, b5: viewB501, cds: viewCDS, dc: viewCongThem, ky: viewKy })[S.tab](v);
+  ({ dl: viewDuLieu, da: viewDanhMuc, bc: viewBaoCao, dt: viewDT, td: viewTD, b5: viewB501, b585: viewB501, tt3785: viewTT3785, cds: viewCDS, dc: viewCongThem, ky: viewKy })[S.tab](v);
 }
 
 // ---------------------------------------------------------------- Dữ liệu
@@ -1101,50 +1102,178 @@ async function xuatSoSanh(ss) {
 }
 
 // ================================================================ ĐỐI CHIẾU THBC (TT15) ↔ B5-01
-const B5S = { file: {}, kq: null, loc: 'lech', tim: '', ct: 'KD' };
-const tinhB5 = () => { const f = B5S.file; B5S.kq = (f.TT15 && f.XA && f.TINH) ? B5.soSanhB501(f.TT15, f.XA, f.TINH, B5S.ct) : null; };
-const B5_TEN = { TT15: '2461_TT15 hoặc Báo cáo TT37 (THBC – mẫu 01b/TTKHN)', XA: 'B5-01 Ngân sách xã/phường', TINH: 'B5-01 Ngân sách tỉnh' };
+const B5S = { file: {}, kq: null, loc: 'lech', tim: '', ct: 'KD', trang: 'TT37', nguon37: 'luu' };
+// ---- Khung chung của các trang "Đối chiếu số liệu"
+//   TABMIS (B5-01 NS tỉnh + NS xã) ↔ THBC Thông tư 37 · TABMIS ↔ THBC Thông tư 85 · THBC TT37 ↔ THBC TT85
+const LOAI_DC = [
+  { tab: 'b5', nhom: 'TABMIS ↔ THBC', a: 'B5-01 (TABMIS)', b: 'Thông tư 37', mo: 'B5-01 NS tỉnh + NS xã so với biểu THBC theo Thông tư 37 (mẫu 01b/TTKHN)' },
+  { tab: 'b585', nhom: 'TABMIS ↔ THBC', a: 'B5-01 (TABMIS)', b: 'Thông tư 85', mo: 'B5-01 NS tỉnh + NS xã so với biểu THBC theo Thông tư 85' },
+  { tab: 'tt3785', nhom: 'THBC ↔ THBC', a: 'Thông tư 37', b: 'Thông tư 85', mo: 'Biểu THBC theo Thông tư 37 so với biểu theo Thông tư 85, theo từng dự án và phòng giao dịch' },
+];
+function chuyenTab(k) {
+  S.tab = k; S.xem = null;
+  document.querySelectorAll('.tab[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k));
+  show(); window.scrollTo(0, 0);
+}
+function dauDC(tab) {
+  return `<div class="card dc-dau no-print"><h2>Đối chiếu số liệu</h2>
+    <p class="muted small">Chọn cặp biểu cần đối chiếu. Đơn vị: triệu đồng.</p>
+    <div class="dc-chon">${['TABMIS ↔ THBC', 'THBC ↔ THBC'].map(n => `<div class="dc-nhom"><div class="dc-nhan">${n === 'TABMIS ↔ THBC' ? 'Đối chiếu TABMIS với THBC' : 'Đối chiếu giữa các biểu THBC'}</div><div class="dc-the">
+      ${LOAI_DC.filter(l => l.nhom === n && tabsCua()[l.tab]).map(l => `<button class="dc-o ${l.tab === tab ? 'on' : ''}" data-dc="${l.tab}">
+        <span class="dc-ab"><b>${esc(l.a)}</b><i>⇄</i><b>${esc(l.b)}</b></span><span class="dc-mo">${esc(l.mo)}</span></button>`).join('')}</div></div>`).join('')}</div></div>`;
+}
+const ganDauDC = v => v.querySelectorAll('[data-dc]').forEach(b => b.onclick = () => { if (b.dataset.dc !== S.tab) chuyenTab(b.dataset.dc); });
+const buocDC = (so, ten, noi) => `<div class="card dc-buoc"><h3><span class="dc-so">${so}</span>${ten}</h3>${noi}</div>`;
+// Số liệu THBC đã nạp ở "Dữ liệu đầu vào" (dùng lại theo lần nạp)
+const thbcCache = {};
+function thbcLuu(l) {
+  const f = S.file?.[l]; if (!f || !S.nguon?.[l]?.length) return null;
+  const c = thbcCache[l];
+  if (c && c.rows === S.nguon[l] && c.tai === f.tai_luc) return c.x;
+  const x = B5.tuNguonLuu(S.nguon[l], f, l);
+  thbcCache[l] = { rows: S.nguon[l], tai: f.tai_luc, x };
+  return x;
+}
+// THBC đang dùng ở trang B5-01 ↔ THBC
+const thbcB5 = () => B5S.trang === 'TT85' ? thbcLuu('TT85') : B5S.nguon37 === 'file' ? B5S.file.TT15 : thbcLuu('TT37');
+const tenTHBC = () => B5S.trang === 'TT85' ? 'THBC Thông tư 85' : 'THBC Thông tư 37';
+const tinhB5 = () => { const f = B5S.file, t = thbcB5(); B5S.kq = (t && f.XA && f.TINH) ? B5.soSanhB501(t, f.XA, f.TINH, B5S.ct) : null; };
+const B5_TEN = { TT15: 'File THBC riêng (2461_TT15 hoặc TT37 – mẫu 01b/TTKHN)', XA: 'B5-01 Ngân sách xã/phường', TINH: 'B5-01 Ngân sách tỉnh' };
+const oNguon = (ten, x, phu = '') => `<div class="src ${x ? 'ok' : 'no'}"><h3>${esc(ten)}</h3>
+  ${x ? `<div><b>${fmtDong(x.ds.size)}</b> dự án</div><div class="st">${x.luu ? 'Số liệu đã nạp ở mục Dữ liệu đầu vào<br>' : ''}File: ${esc(x.ten_file || '')}${x.ky ? `<br>Kỳ: ${esc(x.ky.tu)} – ${esc(x.ky.den)}` : ''}</div>` : `<div class="st">${phu || 'Chưa chọn file'}</div>`}</div>`;
+const oThieuLuu = l => `Chưa có số liệu ${l === 'TT85' ? 'BC TT 85' : 'Báo cáo TT37'} – Phòng Nghiệp vụ 2 nạp ở mục <b>Dữ liệu đầu vào</b>.`;
+// Các chỉ tiêu đối chiếu: thẻ chọn (A ↔ B)
+function theChiTieu(ds, chon, ten = 'ct') {
+  return `<div class="dc-ct">${ds.map((c, i) => `<label class="dc-ct-o ${c.k === chon ? 'on' : ''} ${c.chua ? 'chua' : ''}">
+    <input type="radio" name="${ten}" value="${c.k}" ${c.k === chon ? 'checked' : ''} ${c.chua ? 'disabled' : ''}>
+    <span class="dc-so">${i + 1}</span><span><b>${esc(c.ten)}</b><span class="dc-ab2"><span>${esc(c.a)}</span><i>⇄</i><span>${esc(c.b)}</span></span></span></label>`).join('')}</div>`;
+}
+const CT_B5 = l => Object.entries(B5.CHI_TIEU).map(([k, c]) => ({ k, ten: { KD: 'Kế hoạch vốn kéo dài', NAM: 'Kế hoạch vốn giao trong năm', GN: 'Lũy kế giải ngân (thanh toán)' }[k],
+  a: c.b5 + { KD: ' (cột J)', NAM: ' (cột M + N)', GN: ' (cột O − L)' }[k], b: `${l === 'TT85' ? 'TT85' : 'TT37'}: ${c.tt}` }));
+
+async function docFileB5(files, nhanTT = true) {
+  const XLSX = await loadXLSX();
+  for (const fl of files) {
+    const wb = XLSX.read(await fl.arrayBuffer(), { type: 'array' });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: null, raw: true, blankrows: true });
+    const loai = B5.nhanDang(rows);
+    if (!loai || loai === 'B501' || (loai === 'TT15' && !nhanTT)) { toast(`Không nhận ra file B5-01 NS tỉnh / NS xã${nhanTT ? ' hoặc THBC' : ''}: ${fl.name}`, 'err'); continue; }
+    const x = loai === 'TT15' ? B5.docTT15(rows) : B5.docB501(rows, loai);
+    x.ten_file = fl.name; B5S.file[loai] = x;
+    if (loai === 'TT15') B5S.nguon37 = 'file';
+    toast(`Đã đọc ${B5_TEN[loai]}: ${fmtDong(x.ds.size)} dự án.`, 'ok');
+  }
+}
 function viewB501(v) {
-  const f = B5S.file;
-  const o = loai => {
-    const x = f[loai];
-    return `<div class="src ${x ? 'ok' : 'no'}"><h3>${B5_TEN[loai]}</h3>
-      ${x ? `<div><b>${fmtDong(x.ds.size)}</b> dự án</div><div class="st">File: ${esc(x.ten_file)}${x.ky ? `<br>Kỳ: ${esc(x.ky.tu)} – ${esc(x.ky.den)}` : ''}</div>` : '<div class="st">Chưa chọn file</div>'}</div>`;
-  };
-  const ky = ['TT15', 'XA', 'TINH'].map(l => f[l]?.ky?.den).filter(Boolean);
+  B5S.trang = S.tab === 'b585' ? 'TT85' : 'TT37';
+  tinhB5();
+  const f = B5S.file, l = B5S.trang, t = thbcB5();
+  const ky = [t?.ky?.den, f.XA?.ky?.den, f.TINH?.ky?.den].filter(Boolean);
   const lechNgay = new Set(ky).size > 1;
-  v.innerHTML = `<div class="card">
-    <h2>Đối chiếu số liệu THBC và B5-01</h2>
-    <p class="muted small">So sánh chi tiết đến từng dự án giữa file THBC (2461_TT15 / TT37) và B5-01 NS xã + B5-01 NS tỉnh. Đơn vị: triệu đồng.</p>
-    <div class="bar"><label style="min-width:min(640px,100%)">Chỉ tiêu đối chiếu<select id="b5ct">
-      <option value="KD" ${B5S.ct === 'KD' ? 'selected' : ''}>① "Kế hoạch vốn kéo dài năm trước chuyển sang" ↔ "Dư dự toán năm trước chuyển sang"</option>
-      <option value="NAM" ${B5S.ct === 'NAM' ? 'selected' : ''}>② "Kế hoạch vốn giao trong năm" ↔ "Dự toán giao đầu năm" (cột M) + "Dự toán điều chỉnh (3)" (cột N)</option>
-      <option value="GN" ${B5S.ct === 'GN' ? 'selected' : ''}>③ "Lũy kế vốn thanh toán – Tổng số" (cột I) ↔ "Lũy kế chi từ đầu năm – Tổng số" (cột O) − "Dư tạm ứng năm trước chuyển sang" (cột L)</option>
-    </select></label></div>
-    <div class="src-grid">${o('TT15')}${o('XA')}${o('TINH')}</div>
-    <div class="actions"><label class="btn primary">📂 Chọn 3 file (có thể chọn cùng lúc)…<input type="file" id="b5f" accept=".xls,.xlsx" multiple hidden></label>
-      <span class="muted small">Phần mềm tự nhận ra file nào là THBC (2461_TT15 hoặc TT37), B5-01 NS xã, B5-01 NS tỉnh. Số liệu chỉ xử lý trên máy bạn, không lưu lên máy chủ.</span></div>
-    ${lechNgay ? `<div class="warnbox">⚠ Các file khác ngày số liệu (${[...new Set(ky)].map(esc).join(', ')}). Nên dùng cùng ngày để đối chiếu chính xác.</div>` : ''}
-  </div><div id="b5kq"></div>`;
+  const chonNguon = l === 'TT37' ? `<div class="dc-nguon-chon">
+      <label class="chk"><input type="radio" name="n37" value="luu" ${B5S.nguon37 === 'luu' ? 'checked' : ''}> Dùng Báo cáo TT37 đã nạp ở <b>Dữ liệu đầu vào</b></label>
+      <label class="chk"><input type="radio" name="n37" value="file" ${B5S.nguon37 === 'file' ? 'checked' : ''}> Chọn file THBC riêng (2461_TT15 hoặc TT37)</label></div>` : '';
+  const oTHBC = l === 'TT85' ? oNguon('THBC – Thông tư 85 (BC TT 85)', thbcLuu('TT85'), oThieuLuu('TT85'))
+    : B5S.nguon37 === 'file' ? oNguon(B5_TEN.TT15, f.TT15) : oNguon('THBC – Thông tư 37 (Báo cáo TT37)', thbcLuu('TT37'), oThieuLuu('TT37'));
+  v.innerHTML = dauDC(S.tab)
+    + buocDC('1', 'Nguồn số liệu', `<div class="dc-hai">
+      <div class="dc-ben"><div class="dc-ben-ten">TABMIS – B5-01</div><div class="src-grid">${oNguon(B5_TEN.TINH, f.TINH)}${oNguon(B5_TEN.XA, f.XA)}</div></div>
+      <div class="dc-ben"><div class="dc-ben-ten">THBC – Thông tư ${l === 'TT85' ? '85' : '37'}</div>${chonNguon}<div class="src-grid">${oTHBC}</div></div></div>
+    <div class="actions"><label class="btn primary">📂 Chọn file B5-01 NS tỉnh, NS xã${l === 'TT37' && B5S.nguon37 === 'file' ? ', THBC' : ''}…<input type="file" id="b5f" accept=".xls,.xlsx" multiple hidden></label>
+      <span class="muted small">Có thể chọn nhiều file cùng lúc, phần mềm tự nhận ra từng loại. File B5-01 dùng chung cho các trang đối chiếu; số liệu chỉ xử lý trên máy bạn.</span></div>
+    ${lechNgay ? `<div class="warnbox">⚠ Các nguồn khác ngày số liệu (${[...new Set(ky)].map(esc).join(', ')}). Nên dùng cùng ngày để đối chiếu chính xác.</div>` : ''}`)
+    + buocDC('2', 'Chỉ tiêu đối chiếu', theChiTieu(CT_B5(l), B5S.ct, 'b5ct')
+      + '<p class="muted small" style="margin:8px 0 0">Danh sách chỉ tiêu sẽ được cập nhật theo yêu cầu đối chiếu cụ thể giữa các biểu.</p>')
+    + '<div id="b5kq"></div>';
+  ganDauDC(v);
   v.querySelector('#b5f').addEventListener('change', async e => {
     const files = [...e.target.files]; e.target.value = '';
-    try {
-      const XLSX = await loadXLSX();
-      for (const fl of files) {
-        const wb = XLSX.read(await fl.arrayBuffer(), { type: 'array' });
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: null, raw: true, blankrows: true });
-        const loai = B5.nhanDang(rows);
-        if (!loai || loai === 'B501') { toast(`Không nhận ra loại file: ${fl.name}`, 'err'); continue; }
-        const x = loai === 'TT15' ? B5.docTT15(rows) : B5.docB501(rows, loai);
-        x.ten_file = fl.name; B5S.file[loai] = x;
-        toast(`Đã đọc ${B5_TEN[loai]}: ${fmtDong(x.ds.size)} dự án.`, 'ok');
-      }
-      tinhB5(); viewB501(v);
-    } catch (err) { fail(err); }
+    try { await docFileB5(files, l === 'TT37'); viewB501(v); } catch (err) { fail(err); }
   });
-  v.querySelector('#b5ct').onchange = e => { B5S.ct = e.target.value; tinhB5(); viewB501(v); };
+  v.querySelectorAll('[name=n37]').forEach(r => r.onchange = () => { B5S.nguon37 = r.value; viewB501(v); });
+  v.querySelectorAll('[name=b5ct]').forEach(r => r.onchange = () => { B5S.ct = r.value; viewB501(v); });
+  const thieu = [!f.TINH && B5_TEN.TINH, !f.XA && B5_TEN.XA, !t && (l === 'TT37' && B5S.nguon37 === 'file' ? B5_TEN.TT15 : `số liệu THBC Thông tư ${l === 'TT85' ? '85' : '37'}`)].filter(Boolean);
   if (B5S.kq) veKetQuaB501(v.querySelector('#b5kq'));
-  else if (Object.keys(f).length) v.querySelector('#b5kq').innerHTML = `<div class="card"><p class="muted">Còn thiếu: ${['TT15', 'XA', 'TINH'].filter(l => !f[l]).map(l => B5_TEN[l]).join(', ')}.</p></div>`;
+  else v.querySelector('#b5kq').innerHTML = buocDC('3', 'Kết quả đối chiếu', `<p class="muted">Còn thiếu: ${thieu.map(esc).join(', ')}.</p>`);
+}
+
+// ---- THBC Thông tư 37 ↔ THBC Thông tư 85 (số liệu đã nạp ở "Dữ liệu đầu vào")
+const TTS = { ct: 'GN', loc: 'lech', tim: '', phong: '*' };
+const CT_TT = () => Object.keys(B5.CHI_TIEU).map(k => ({ k, ten: { KD: 'Kế hoạch vốn kéo dài năm trước chuyển sang', NAM: 'Kế hoạch vốn giao trong năm', GN: 'Lũy kế vốn thanh toán – Tổng số' }[k],
+  a: 'TT37: cột ' + B5.COT_THBC.TT37[k].join(' + '), b: 'TT85: cột ' + B5.COT_THBC.TT85[k].join(' + ') }));
+function viewTT3785(v) {
+  const a = thbcLuu('TT37'), b = thbcLuu('TT85');
+  const ky = [a?.ky?.den, b?.ky?.den].filter(Boolean);
+  v.innerHTML = dauDC('tt3785')
+    + buocDC('1', 'Nguồn số liệu', `<div class="dc-hai">
+      <div class="dc-ben"><div class="dc-ben-ten">THBC – Thông tư 37</div><div class="src-grid">${oNguon('Báo cáo TT37 (mẫu 01b/TTKHN)', a, oThieuLuu('TT37'))}</div></div>
+      <div class="dc-ben"><div class="dc-ben-ten">THBC – Thông tư 85</div><div class="src-grid">${oNguon('BC TT 85', b, oThieuLuu('TT85'))}</div></div></div>
+      <p class="muted small" style="margin:8px 0 0">Lấy số liệu đã nạp ở mục <b>Dữ liệu đầu vào</b> (toàn khu vực, theo mã KBNN). Muốn đối chiếu số mới thì cập nhật file ở mục đó.</p>
+      ${new Set(ky).size > 1 ? `<div class="warnbox">⚠ Hai biểu khác ngày số liệu (TT37 đến ${esc(a.ky.den)}, TT85 đến ${esc(b.ky.den)}) – một phần chênh lệch có thể do khác ngày.</div>` : ''}`)
+    + buocDC('2', 'Chỉ tiêu đối chiếu', theChiTieu(CT_TT(), TTS.ct, 'ttct')
+      + '<p class="muted small" style="margin:8px 0 0">Danh sách chỉ tiêu sẽ được cập nhật theo yêu cầu đối chiếu cụ thể giữa các biểu. So sánh báo cáo tuần theo chủ đầu tư giữa hai biểu: mục Báo cáo theo chủ đầu tư → nút "So sánh TT15 / TT85 / TT37".</p>')
+    + '<div id="ttkq"></div>';
+  ganDauDC(v);
+  v.querySelectorAll('[name=ttct]').forEach(r => r.onchange = () => { TTS.ct = r.value; viewTT3785(v); });
+  const box = v.querySelector('#ttkq');
+  if (!a || !b) { box.innerHTML = buocDC('3', 'Kết quả đối chiếu', `<p class="muted">Còn thiếu số liệu: ${[!a && 'Báo cáo TT37', !b && 'BC TT 85'].filter(Boolean).join(', ')}.</p>`); return; }
+  veKetQuaTT(box, B5.soSanhTHBC(a, b, TTS.ct));
+}
+function veKetQuaTT(box, k) {
+  const CT = CT_TT().find(c => c.k === k.ct), cls = n => Math.abs(n) < B5.SAI_SO ? '' : n > 0 ? 'duong' : 'am';
+  const cdt = new Map((S.cdt || []).map(x => [x.ma_da, x]));
+  let ds = k.rows.filter(r => (TTS.loc === 'tat' || r.coLech) && (TTS.phong === '*' || r.kb === TTS.phong));
+  const q = norm(TTS.tim);
+  if (q) ds = ds.filter(r => norm(r.ma_da).includes(q) || norm(r.ten).includes(q) || norm(cdt.get(r.ma_da)?.cdt).includes(q));
+  ds.sort((x, y) => Math.abs(y.lech) - Math.abs(x.lech) || x.ma_da.localeCompare(y.ma_da));
+  box.innerHTML = buocDC('3', 'Kết quả đối chiếu', `
+    <div class="${k.soLech ? 'warnbox' : 'okbox'}"><b>${esc(CT.ten)}:</b> ${k.soLech ? `có <b>${k.soLech}</b> dòng dự án (theo mã KBNN) chênh lệch, tổng chênh <b>${f3(k.tong.lech)}</b> triệu đồng (TT37 − TT85).` : '✓ Hai biểu khớp đến từng dự án.'}</div>
+    <div class="kpi"><div><span>Thông tư 37</span><b>${f3(k.tong.a)}</b></div><div><span>Thông tư 85</span><b>${f3(k.tong.b)}</b></div><div><span>Chênh lệch</span><b class="${cls(k.tong.lech)}">${f3(k.tong.lech)}</b></div>
+      <div><span>Dòng tổng của file (TT37 / TT85)</span><b style="font-size:15px">${f3(k.dongTong.a)} / ${f3(k.dongTong.b)}</b></div></div>
+    <h3>Theo phòng giao dịch</h3>
+    <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Mã KBNN – phòng giao dịch</th><th>Số dự án</th><th>Dự án chênh lệch</th><th>Thông tư 37</th><th>Thông tư 85</th><th>Chênh lệch</th></tr></thead>
+    <tbody>${k.phong.map(p => `<tr class="click ${TTS.phong === p.kb ? 'chon' : ''}" data-kb="${esc(p.kb)}"><td>${esc(p.kb)} – ${esc(tenPhongKB(p.kb))}</td><td class="c">${p.soDA}</td><td class="c">${p.soLech ? `<b>${p.soLech}</b>` : '0'}</td>
+      <td class="num">${f3(p.a)}</td><td class="num">${f3(p.b)}</td><td class="num ${cls(p.lech)}"><b>${f3(p.lech)}</b></td></tr>`).join('')}
+      <tr class="l0"><td>Tổng cộng</td><td class="c">${k.rows.length}</td><td class="c">${k.soLech}</td><td class="num">${f3(k.tong.a)}</td><td class="num">${f3(k.tong.b)}</td><td class="num"><b>${f3(k.tong.lech)}</b></td></tr></tbody></table></div>
+    <h3 style="margin-top:18px">Chi tiết theo dự án</h3>
+    <div class="bar">
+      <label>Phòng giao dịch<select id="ttph"><option value="*">Tất cả</option>${k.phong.map(p => `<option value="${esc(p.kb)}" ${TTS.phong === p.kb ? 'selected' : ''}>${esc(p.kb)} – ${esc(tenPhongKB(p.kb))}</option>`).join('')}</select></label>
+      <label>Hiển thị<select id="ttloc"><option value="lech" ${TTS.loc === 'lech' ? 'selected' : ''}>Chỉ dự án chênh lệch</option><option value="tat" ${TTS.loc === 'tat' ? 'selected' : ''}>Tất cả dự án có số</option></select></label>
+      <label style="min-width:260px">Tìm mã / tên dự án / chủ đầu tư<input id="tttim" value="${esc(TTS.tim)}"></label>
+      ${coXuat() ? '<button class="btn primary" id="ttxuat" style="align-self:flex-end">⬇ Xuất Excel</button>' : ''}</div>
+    <div class="tbl-wrap tall"><table class="tbl ss"><thead><tr><th>STT</th><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư</th><th>Mã KBNN</th><th>Thông tư 37</th><th>Thông tư 85</th><th>Chênh lệch<br>TT37 − TT85</th><th>Nhận xét</th></tr></thead>
+    <tbody>${ds.slice(0, 2000).map((r, i) => `<tr><td class="c">${i + 1}</td><td>${esc(r.ma_da)}</td><td class="ten" title="${esc(r.ten)}">${esc(r.ten)}</td><td>${esc(cdt.get(r.ma_da)?.cdt || '')}</td><td class="c">${esc(r.kb)}</td>
+      <td class="num">${f3(r.a)}</td><td class="num">${f3(r.b)}</td><td class="num ${cls(r.lech)}"><b>${r.coLech ? f3(r.lech) : '-'}</b></td><td class="small">${esc(r.ly_do)}</td></tr>`).join('') || '<tr><td colspan="9" class="empty">Không có dự án phù hợp.</td></tr>'}</tbody></table></div>
+    <p class="small muted">Đơn vị: triệu đồng. Bỏ qua chênh dưới 0,001 triệu. Xanh: TT37 lớn hơn; đỏ: TT85 lớn hơn. Bấm một phòng ở bảng trên để lọc.${ds.length > 2000 ? ` Đang hiện 2.000/${ds.length} dòng – xuất Excel để xem đủ.` : ''}</p>`);
+  const ve = () => veKetQuaTT(box, k);
+  box.querySelectorAll('tr[data-kb]').forEach(tr => tr.onclick = () => { TTS.phong = TTS.phong === tr.dataset.kb ? '*' : tr.dataset.kb; ve(); });
+  box.querySelector('#ttph').onchange = e => { TTS.phong = e.target.value; ve(); };
+  box.querySelector('#ttloc').onchange = e => { TTS.loc = e.target.value; ve(); };
+  let hen; box.querySelector('#tttim').oninput = e => { TTS.tim = e.target.value; clearTimeout(hen); hen = setTimeout(() => { ve(); const i = box.querySelector('#tttim'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 300); };
+  box.querySelector('#ttxuat')?.addEventListener('click', () => xuatTT(k, ds, CT).catch(fail));
+}
+async function xuatTT(k, ds, CT) {
+  const ExcelJS = await loadExcelJS();
+  const a = thbcLuu('TT37'), b = thbcLuu('TT85'), cdt = new Map((S.cdt || []).map(x => [x.ma_da, x]));
+  const wb = new ExcelJS.Workbook(), NF = '#,##0.000;[Red]-#,##0.000;"-"';
+  const w1 = wb.addWorksheet('Theo phong giao dich');
+  w1.addRow([`ĐỐI CHIẾU THBC THÔNG TƯ 37 VỚI THÔNG TƯ 85 – ${CT.ten.toUpperCase()}`]).font = { bold: true, size: 13 };
+  w1.addRow([`TT37: ${a.ten_file} (đến ${a.ky?.den || ''}); TT85: ${b.ten_file} (đến ${b.ky?.den || ''}). ${CT.a}; ${CT.b}. Đơn vị: triệu đồng`]);
+  w1.addRow([]);
+  w1.addRow(['Mã KBNN', 'Phòng giao dịch', 'Số dự án', 'Dự án chênh lệch', 'Thông tư 37', 'Thông tư 85', 'Chênh lệch (TT37 − TT85)']).font = { bold: true };
+  for (const p of k.phong) w1.addRow([p.kb, tenPhongKB(p.kb), p.soDA, p.soLech, p.a, p.b, p.lech]);
+  w1.addRow(['', 'Tổng cộng', k.rows.length, k.soLech, k.tong.a, k.tong.b, k.tong.lech]).font = { bold: true };
+  [10, 28, 10, 12, 18, 18, 18].forEach((w, i) => w1.getColumn(i + 1).width = w); for (let c = 5; c <= 7; c++) w1.getColumn(c).numFmt = NF;
+  const w2 = wb.addWorksheet('Chi tiet du an', { views: [{ state: 'frozen', ySplit: 1 }] });
+  w2.addRow(['STT', 'Mã DA', 'Tên dự án', 'Chủ đầu tư', 'Mã KBNN', 'Thông tư 37', 'Thông tư 85', 'Chênh lệch (TT37 − TT85)', 'Nhận xét']).font = { bold: true };
+  ds.forEach((r, i) => { const row = w2.addRow([i + 1, r.ma_da, r.ten, cdt.get(r.ma_da)?.cdt || '', r.kb, r.a, r.b, Math.round(r.lech * 1e6) / 1e6, r.ly_do]);
+    if (r.coLech) row.getCell(8).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF4E5' } }; });
+  [6, 11, 60, 34, 9, 16, 16, 16, 30].forEach((w, i) => w2.getColumn(i + 1).width = w); for (let c = 6; c <= 8; c++) w2.getColumn(c).numFmt = NF;
+  w2.autoFilter = { from: 'A1', to: 'I1' };
+  const buf = await wb.xlsx.writeBuffer();
+  const el = document.createElement('a');
+  el.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  el.download = `Doi chieu TT37 - TT85 - ${CT.k} ${(a.ky?.den || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`; el.click();
 }
 const f3 = n => (n === null || n === undefined) ? '' : (Math.abs(n) < 0.0005 ? '-' : n.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 }));
 function veKetQuaB501(box) {
@@ -1157,13 +1286,13 @@ function veKetQuaB501(box) {
   ds.sort((a, b) => Math.abs(b.lech) - Math.abs(a.lech) || a.ma_da.localeCompare(b.ma_da));
   const nhom = { chiTT: k.rows.filter(r => r.coLech && r.tt15 && !r.b501).length, chiB5: k.rows.filter(r => r.coLech && !r.tt15 && r.b501).length,
     caHai: k.rows.filter(r => r.coLech && r.tt15 && r.b501).length };
-  box.innerHTML = `<div class="card">
+  box.innerHTML = `<div class="card dc-buoc"><h3><span class="dc-so">3</span>Kết quả đối chiếu</h3>
     <div class="actions" style="margin-top:0">${coXuat() ? `<button class="btn primary" id="b5xuat1">⬇ Xuất Excel – chỉ tiêu đang chọn</button>
       <button class="btn" id="b5xuat3">⬇ Xuất Excel cả 3 chỉ tiêu</button>` : '<span class="muted small">Tài khoản Phòng giao dịch xem được kết quả nhưng không xuất Excel.</span>'}</div>
     ${k.kbLoc ? `<div class="okbox">File THBC gồm nhiều KBNN: chỉ lấy số của khối KBNN <b>${esc(k.kbLoc)}</b> (đơn vị lập B5-01).</div>` : ''}
-    ${['TT15', 'XA', 'TINH'].some(l => !B5S.file[l].co?.[k.ct]) ? `<div class="warnbox">⚠ Không tìm thấy cột cần đối chiếu trong file: ${['TT15', 'XA', 'TINH'].filter(l => !B5S.file[l].co?.[k.ct]).map(l => esc(B5_TEN[l])).join(', ')} – số của file đó tính bằng 0.</div>` : ''}
+    ${[[tenTHBC(), thbcB5()], [B5_TEN.XA, B5S.file.XA], [B5_TEN.TINH, B5S.file.TINH]].some(([, x]) => !x.co?.[k.ct]) ? `<div class="warnbox">⚠ Không tìm thấy cột cần đối chiếu trong file: ${[[tenTHBC(), thbcB5()], [B5_TEN.XA, B5S.file.XA], [B5_TEN.TINH, B5S.file.TINH]].filter(([, x]) => !x.co?.[k.ct]).map(([t]) => esc(t)).join(', ')} – số của file đó tính bằng 0.</div>` : ''}
     <div class="${k.soLech ? 'warnbox' : 'okbox'}"><b>${esc(CT.ten)}:</b> ${k.soLech ? `Có <b>${k.soLech}</b> dự án chênh lệch, tổng chênh <b>${f3(t.lech)}</b> triệu đồng: ${nhom.caHai} dự án lệch số, ${nhom.chiTT} dự án chỉ có số trên THBC, ${nhom.chiB5} dự án chỉ có số trên B5-01.` : '✓ Số liệu THBC và B5-01 khớp đến từng dự án.'}</div>
-    <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Chỉ tiêu (triệu đồng)</th><th>THBC (TT15/TT37)<br>${esc(CT.tt)}</th><th>B5-01 NS xã<br>${esc(CT.b5)}</th><th>B5-01 NS tỉnh<br>${esc(CT.b5)}</th><th>Cộng B5-01</th><th>Chênh lệch<br>THBC − B5-01</th></tr></thead>
+    <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Chỉ tiêu (triệu đồng)</th><th>${esc(tenTHBC())}<br>${esc(CT.tt)}</th><th>B5-01 NS xã<br>${esc(CT.b5)}</th><th>B5-01 NS tỉnh<br>${esc(CT.b5)}</th><th>Cộng B5-01</th><th>Chênh lệch<br>THBC − B5-01</th></tr></thead>
     <tbody><tr><td>Cộng chi tiết các dự án</td><td class="num">${f3(t.tt15)}</td><td class="num">${f3(t.xa)}</td><td class="num">${f3(t.tinh)}</td><td class="num">${f3(t.b501)}</td><td class="num ${cls(t.lech)}"><b>${f3(t.lech)}</b></td></tr>
     <tr class="muted"><td>Dòng tổng của file</td><td class="num">${f3(d.tt15)}</td><td class="num">${f3(d.xa)}</td><td class="num">${f3(d.tinh)}</td><td class="num">${f3((d.xa || 0) + (d.tinh || 0))}</td><td class="num">${f3((d.tt15 || 0) - (d.xa || 0) - (d.tinh || 0))}</td></tr></tbody></table></div>
     <h3 style="margin-top:18px">Chi tiết theo dự án</h3>
@@ -1187,7 +1316,7 @@ function veKetQuaB501(box) {
 const TEN_SHEET_B5 = { KD: 'Doi chieu KH keo dai', NAM: 'Doi chieu KH trong nam', GN: 'Doi chieu luy ke thanh toan' };
 async function xuatB501(ds) {
   const ExcelJS = await loadExcelJS();
-  const f = B5S.file, cdt = new Map((S.cdt || []).map(x => [x.ma_da, x]));
+  const f = { ...B5S.file, TT15: thbcB5() }, cdt = new Map((S.cdt || []).map(x => [x.ma_da, x]));
   const wb = new ExcelJS.Workbook();
   const ds3 = ds ? [[B5S.kq, ds]] : Object.keys(B5.CHI_TIEU).map(ct => {
     const k = B5.soSanhB501(f.TT15, f.XA, f.TINH, ct);
@@ -1195,7 +1324,7 @@ async function xuatB501(ds) {
   });
   if (!ds) {   // sheet tổng hợp 3 chỉ tiêu
     const w0 = wb.addWorksheet('Tong hop');
-    w0.addRow(['ĐỐI CHIẾU SỐ LIỆU THBC VỚI B5-01 NS XÃ + B5-01 NS TỈNH']);
+    w0.addRow([`ĐỐI CHIẾU SỐ LIỆU ${tenTHBC().toUpperCase()} VỚI B5-01 NS XÃ + B5-01 NS TỈNH`]);
     w0.addRow([`Số liệu đến ngày: THBC ${f.TT15.ky?.den || ''}; B5-01 NS xã ${f.XA.ky?.den || ''}; B5-01 NS tỉnh ${f.TINH.ky?.den || ''}. Đơn vị: triệu đồng`]);
     w0.addRow([]);
     w0.addRow(['Chỉ tiêu', 'THBC', 'B5-01 NS xã', 'B5-01 NS tỉnh', 'Cộng B5-01', 'Chênh lệch (THBC − B5-01)', 'Số dự án chênh lệch']);
@@ -1225,7 +1354,7 @@ async function xuatB501(ds) {
   const buf = await wb.xlsx.writeBuffer();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-  a.download = `${ds ? TEN_SHEET_B5[B5S.kq.ct] : 'Doi chieu 3 chi tieu'} THBC - B5-01 ${(f.TT15.ky?.den || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`; a.click();
+  a.download = `${ds ? TEN_SHEET_B5[B5S.kq.ct] : 'Doi chieu 3 chi tieu'} ${B5S.trang} - B5-01 ${(f.TT15.ky?.den || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`; a.click();
 }
 
 // ================================================================ TAB 3: CỘNG THÊM
@@ -1614,7 +1743,7 @@ async function xuatDT(kq) {
 // ================================================================ BÁO CÁO DỰ ÁN TRỌNG ĐIỂM (Biểu 01)
 //   Đầu vào: sheet TW, ĐP (01b/TTKHN). Mỗi lần nạp lưu thành một kỳ theo ngày số liệu (đối chiếu thứ 6 hằng tuần).
 const TDS = { id: null, soSanh: undefined, dm: null, ky: [], cache: {}, dongVB: '' };
-// Đối chiếu cột 12 với B5-01 NS tỉnh, NS xã (file chỉ xử lý trên máy, dùng chung với mục "Đối chiếu THBC – B5-01")
+// Đối chiếu cột 12 với B5-01 NS tỉnh, NS xã (file chỉ xử lý trên máy, dùng chung với mục "Đối chiếu TABMIS – THBC")
 const TDB5 = { hien: false, saiSo: 0.001, loc: 'lech' };
 const THU = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
 const thuCua = iso => { const d = new Date(iso + 'T00:00:00'); return Number.isNaN(+d) ? '' : THU[d.getDay()]; };
@@ -1703,7 +1832,7 @@ function theB5TD() {
       <button class="btn primary" id="tdB5Go" ${du ? '' : 'disabled title="Cần nạp đủ 2 file B5-01 NS tỉnh và NS xã"'}>⚖ Đối chiếu với B5-01</button>
       <label style="min-width:0">Coi là khớp khi chênh lệch không quá<select id="tdB5SS">
         ${[[0.001, '0,001 triệu (1.000 đ)'], [0.5, '0,5 triệu'], [1, '1 triệu']].map(([a, t]) => `<option value="${a}" ${a === TDB5.saiSo ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
-      <span class="muted small">Có thể chọn cả 2 file cùng lúc, phần mềm tự nhận ra NS tỉnh / NS xã. File B5-01 đã chọn ở mục "Đối chiếu THBC – B5-01" hoặc "Dự án chuyển đổi số" được dùng lại. Số liệu B5-01 chỉ xử lý trên máy bạn.</span>
+      <span class="muted small">Có thể chọn cả 2 file cùng lúc, phần mềm tự nhận ra NS tỉnh / NS xã. File B5-01 đã chọn ở mục "Đối chiếu TABMIS – THBC" hoặc "Dự án chuyển đổi số" được dùng lại. Số liệu B5-01 chỉ xử lý trên máy bạn.</span>
     </div></div>`;
 }
 function ganB5TD(v, dm, kq, k) {

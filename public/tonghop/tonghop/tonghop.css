@@ -171,3 +171,32 @@ dialog.modal.wide{width:min(1500px,96vw)}
 .tbl.rpt tr.da-ct td{font-size:12px;color:#4a5563;background:#fff}
 .tbl.rpt tr.da-ct td.nm{padding-left:22px}
 .tbl.rpt tr.da-ct.le td{font-style:italic;color:#8a5a00;background:#fffaf0}
+
+/* ---------------- Đối chiếu số liệu: chọn cặp biểu + các bước */
+.dc-chon{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.dc-nhan{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px}
+.dc-the{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.dc-o{display:flex;flex-direction:column;gap:6px;text-align:left;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff;cursor:pointer;font:inherit;color:inherit;transition:.15s}
+.dc-o:hover{border-color:var(--navy);box-shadow:0 2px 8px rgba(16,48,92,.08)}
+.dc-o.on{border:2px solid var(--navy);background:#eef4fc;padding:11px 13px}
+.dc-ab{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--navy)}
+.dc-ab i,.dc-ab2 i{font-style:normal;color:var(--gold);font-weight:700}
+.dc-mo{font-size:12px;color:var(--muted);line-height:1.4}
+.dc-buoc h3{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:var(--navy)}
+.dc-so{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;font-weight:700;flex:none}
+.dc-hai{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dc-ben{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;background:#fafcff}
+.dc-ben-ten{font-weight:700;color:var(--navy);margin-bottom:8px}
+.dc-ben .src-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.dc-nguon-chon{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:8px;font-size:13px}
+.dc-ct{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.dc-ct-o{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;background:#fff;font-size:13px;line-height:1.4}
+.dc-ct-o input{display:none}
+.dc-ct-o .dc-so{background:#c9d4e3}
+.dc-ct-o.on{border:2px solid var(--navy);background:#eef4fc;padding:9px 11px}
+.dc-ct-o.on .dc-so{background:var(--navy)}
+.dc-ct-o.chua{opacity:.55;cursor:not-allowed}
+.dc-ab2{display:flex;flex-direction:column;gap:2px;margin-top:4px;color:#4a5563;font-size:12px}
+.dc-ab2 i{align-self:flex-start}
+tr.click{cursor:pointer} tr.click:hover td{background:#f2f6fb} tr.chon td{background:#eaf1fb}
+@media (max-width:1000px){ .dc-chon,.dc-hai{grid-template-columns:1fr} }
