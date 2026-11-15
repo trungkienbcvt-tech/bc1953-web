@@ -808,12 +808,14 @@ function drawTpBieu(id,b){
   var m=$('main'),jg=-1,js=-1;b.cols.forEach(function(c,j){if(c.t==='g')jg=j;if(c.t==='s')js=j});
   var it='';b.rows.forEach(function(r){var g=jg>=0?String(r.v[jg]==null?'':r.v[jg]).trim():'',ts=js>=0?String(r.v[js]==null?'':r.v[js]).trim():'';
     if(g)it+='<div class="kpni"><b>'+esc(r.b)+'</b>'+(ts?' <span class="kpnd" style="color:#7c3aed">'+esc(ts)+'</span>':'')+'<div class="kpnl">'+esc(g)+'</div></div>'});
-  var w=[],wc={chua:[],trong:[],thieu:[]};
+  var w=[],wc={chua:[],thieu:[],lech:[]};
   b.rows.forEach(function(r){var st=js>=0?String(r.v[js]==null?'':r.v[js]).trim():'',th=false;
-    b.cols.forEach(function(c,j){if(c.t==='s'||c.t==='g'||!/TRONG THÁNG/i.test((c.lv||[]).join(' ')))return;if(Number(String(r.v[j]==null?'':r.v[j]).replace(',','.')))th=true});
-    if(st==='Chưa gửi BC')wc.chua.push(r.b);else if(!st&&th)wc.thieu.push(r.b)});   // tháng này không phát sinh (dù lũy kế cũ có số) thì không cần cảnh báo
+    if(st==='Chưa gửi BC')wc.chua.push(r.b);else if(!st)wc.thieu.push(r.b)});
+  var bd=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null;
+  if(S.xem===S.pgd&&!bd&&!S.btBusy&&S.wf){S.btBusy=1;run('bieuTong',S.token,S.ky).then(function(r){S.bt=r}).catch(function(){S.bt={err:1,rows:[],ky:S.wf.ky}}).then(function(){S.btBusy=0;if(S.tab===id)drawTable(id)})}
+  if(bd&&bd.co&&S.xem===S.pgd)bd.rows.forEach(function(x){if(x.k==='row'&&x.n!=null&&x.ttl&&x.ttl!=='khop')wc.lech.push((x.ten||x.b)+' ('+(x.dlk>0?'+':'−')+fmt(Math.abs(r2(x.dlk)))+')')});
   var tt=S.data.tt||'';if(S.xem!=='*'&&['Chưa gửi','Bị trả lại','Chờ KTT duyệt','Chờ TP phê duyệt'].indexOf(tt)>=0)w.push('<div class="wi w1"><b>⛔ Báo cáo chưa hoàn thành</b> · '+esc(tt)+'</div>');
-  [['chua','w2','✗ Chưa gửi BC','Chủ đầu tư chưa gửi BC'],['thieu','w4','◐ Phát sinh trong tháng, chưa chọn tình trạng','Dòng có số giải ngân trong tháng nhưng chưa chọn tình trạng gửi BC (dòng không phát sinh trong tháng không bị cảnh báo)']].forEach(function(k){var a=wc[k[0]];if(a.length)w.push('<details class="wi '+k[1]+'" title="'+k[3]+'"><summary>'+k[2]+'<em><i>'+a.length+'</i></em></summary><ul>'+a.slice(0,40).map(function(n){return '<li>'+esc(n)+'</li>'}).join('')+(a.length>40?'<li>… và '+(a.length-40)+' dòng khác</li>':'')+'</ul></details>')});
+  [['chua','w2','✗ Chưa gửi BC','Chủ đầu tư chưa gửi BC'],['thieu','w3','○ Chưa chọn tình trạng gửi BC','Chủ đầu tư / dòng chưa chọn tình trạng gửi báo cáo (Đã gửi BC, Gửi BC chậm, Chưa gửi BC hoặc Không phát sinh)'],['lech','w4','⚖ Chênh lệch so với THBC','Chủ đầu tư có lũy kế trên hệ thống khác file THBC (hệ thống − THBC, triệu đồng)']].forEach(function(k){var a=wc[k[0]];if(a.length)w.push('<details class="wi '+k[1]+'" title="'+k[3]+'"><summary>'+k[2]+'<em><i>'+a.length+'</i></em></summary><ul>'+a.slice(0,40).map(function(n){return '<li>'+esc(n)+'</li>'}).join('')+(a.length>40?'<li>… và '+(a.length-40)+' dòng khác</li>':'')+'</ul></details>')});
   var warn=w.length?'<div class="cvw">'+w.join('')+'</div>':'<div class="cvw good">✓ Biểu đã nhập đầy đủ, không có dòng nào chưa hoàn thiện.</div>';
   var h='<div class="tb1"><div class="tb1l"><p class="hint" style="margin:0">'+(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã đóng, chỉ xem.</b> ':'')+(S.xem==='*'?'Số liệu <b>toàn tỉnh</b> (chỉ xem). ':'Trạng thái báo cáo: <b>'+esc(S.data.tt||'')+'</b>. ')+'Bản in bên dưới là biểu gửi đi; chỉ xem, không sửa số liệu.</p></div><div class="tb1r">'+expBar('bieu',id)+'</div></div>'+
     warn+'<div class="kpt"><div class="card kpf"><div id="kpFrWait" class="hint" style="padding:20px">⏳ Đang tạo biểu...</div><iframe id="kpFrame" title="Biểu"></iframe></div>'+
