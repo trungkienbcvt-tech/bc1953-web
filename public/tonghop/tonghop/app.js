@@ -1130,6 +1130,8 @@ function thbcLuu(l) {
   const c = thbcCache[l];
   if (c && c.rows === S.nguon[l] && c.tai === f.tai_luc) return c.x;
   const x = B5.tuNguonLuu(S.nguon[l], f, l);
+  const tenDM = new Map((S.cdt || []).map(d => [d.ma_da, d.ten_da]));   // máy chủ chỉ trả tên dự án chưa có trong danh mục
+  for (const d of x.ds.values()) if (!d.ten) d.ten = tenDM.get(d.ma_da) || '';
   thbcCache[l] = { rows: S.nguon[l], tai: f.tai_luc, x };
   return x;
 }
