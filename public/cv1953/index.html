@@ -323,7 +323,7 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kpv{flex-wrap:wrap}.kpv .kph{flex-basis:100%;margin:2px 0 0;color:var(--mut);font-size:12.5px}
 .kt tr.kxl td.kl small{font-weight:400}.kt tr.kedit td.kl{color:#92400e}.kt tr.tagd td.kl{color:#92400e}
 </style>
-</head>
+<script>try{if(localStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
 <div id="login"><div class="lbg"></div><div class="lov"></div><div class="lnet"></div><div class="lgrid"></div><div class="lorb o1"></div><div class="lorb o2"></div>
 <div class="lwrap">
@@ -437,14 +437,14 @@ function dangNhap(){
   .catch(function(e){$('lgErr').textContent=msg(e)}).then(function(){$('lgBtn').disabled=false;$('lgBtn').textContent='Đăng nhập'});
 }
 (function(){var r;try{r=JSON.parse(localStorage.getItem('cv1953s')||sessionStorage.getItem('cv1953s')||'null')}catch(e){}   // tải lại trang vẫn giữ phiên đăng nhập
-  if(r&&r.token)vaoApp(r).catch(function(e){if(/hết hạn|không còn hiệu lực|đăng nhập lại/i.test(msg(e))){try{localStorage.removeItem('cv1953s');sessionStorage.removeItem('cv1953s')}catch(x){}}})})();
+  if(r&&r.token)vaoApp(r).catch(function(e){document.documentElement.className='';if(/hết hạn|không còn hiệu lực|đăng nhập lại/i.test(msg(e))){try{localStorage.removeItem('cv1953s');sessionStorage.removeItem('cv1953s')}catch(x){}}});else document.documentElement.className=''})();
 $('maBtn').onclick=function(){
   $('mbox').innerHTML='<h3 style="margin:0 0 8px">🔑 Đổi mã đăng nhập</h3><p class="hint" style="margin:0 0 8px">Tài khoản: <b>'+esc(S.ten)+'</b>. Mã mới gồm 6 đến 12 ký tự chữ hoặc số, không dùng mã mặc định.</p><label>Mã hiện tại</label><input id="mCu" type="password" autocomplete="off"><label>Mã mới</label><input id="mMoi" type="password" autocomplete="off" maxlength="12"><label>Nhập lại mã mới</label><input id="mLai" type="password" autocomplete="off" maxlength="12"><div id="mErr" class="err"></div><div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end"><button id="mNo">Hủy</button><button class="pri" id="mOk">Đổi mã</button></div>';
   $('modal').style.display='flex';$('mCu').focus();
   $('mNo').onclick=function(){$('modal').style.display='none'};
   $('mOk').onclick=function(){if($('mMoi').value!==$('mLai').value){$('mErr').textContent='Hai lần nhập mã mới chưa giống nhau.';return}
     run('doiMa',S.token,$('mCu').value,$('mMoi').value).then(function(){$('modal').style.display='none';toast('Đã đổi mã đăng nhập. Lần sau dùng mã mới.',6000)}).catch(function(e){$('mErr').textContent=msg(e)})}};
-$('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{localStorage.removeItem('cv1953s');sessionStorage.removeItem('cv1953s')}catch(e){}location.reload()};
+$('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{localStorage.removeItem('cv1953s');localStorage.removeItem('cv1953t');sessionStorage.removeItem('cv1953s')}catch(e){}location.reload()};
 window.addEventListener('beforeunload',function(e){if(nDirty()){e.preventDefault();e.returnValue=''}});
 $('xemSel').onchange=function(){S.xem=$('xemSel').value;loadXem()};
 function loadXem(){run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;S.dirty={};show(S.tab)}).catch(function(e){toast(msg(e),6000)})}
@@ -453,7 +453,7 @@ function fillKy(){var l=(S.wf&&S.wf.dsKy)||S.dsKy||[];S.dsKy=l;var sel=$('kySel'
   sel.innerHTML=l.map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'"'+(k.chuaMo?' disabled':'')+'>Kỳ '+k.nhan+(k.chuaMo?' (Chưa mở)':(k.hienTai?' (Đang mở)':(k.soGoc?' · Dữ liệu gốc (Đã đóng)':' (Đã đóng)')))+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Chương trình báo cáo ĐTTQ'}
 function doiKy(v){S.dc=null;S.cb=null;S.bt=null;if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển kỳ?')){$('kySel').value=S.ky||'';return}
   S.ky=v;S.dirty={};S.data=null;Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();fillKy();show(S.tab==='in'?'in':'tq')}).catch(function(e){toast(msg(e),6000);S.ky='';fillKy()})}
-function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();show('tq')}
+function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();var t0='tq';try{var st=localStorage.getItem('cv1953t');if(st&&$('tabs').querySelector('[data-t="'+st+'"]'))t0=st}catch(e){}show(t0)}
 var BTAB=['b01','b02','b03a','b03b'];
 S.shut=S.shut||{};
 function drawTabs(){
@@ -466,7 +466,7 @@ function drawTabs(){
   [].forEach.call($('tabs').querySelectorAll('.tgh'),function(e){e.onclick=function(){var g=e.getAttribute('data-g');S.shut[g]=!S.shut[g];e.parentNode.classList.toggle('shut',!!S.shut[g])}});
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
-function show(t){S.tab=t;[].forEach.call($('tabs').querySelectorAll('button'),function(b){b.className=b.getAttribute('data-t')===t?'on':''});
+function show(t){S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e){}[].forEach.call($('tabs').querySelectorAll('button'),function(b){b.className=b.getAttribute('data-t')===t?'on':''});
   var isB=BTAB.indexOf(t)>=0,needData=isB;
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   $('pgdBar').style.display=(isV()&&isB)?'flex':'none';if(isV())$('xemSel').value=S.xem;
