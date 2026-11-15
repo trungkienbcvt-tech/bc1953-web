@@ -427,8 +427,8 @@ run('dsTaiKhoan').then(function(ds){var g={TH:'Cán bộ tổng hợp',NV2:'Cán
   $('lgPgd').innerHTML=h||'<option>(chưa có tài khoản)</option>'}).catch(function(e){$('lgErr').textContent=msg(e)});
 $('lgMa').addEventListener('keydown',function(e){if(e.key==='Enter')dangNhap()});
 $('lgBtn').onclick=dangNhap;
-function vaoApp(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=r;S.pgd=r.donvi||r.ten;S.xem=r.vt==='PGD'?S.pgd:r.scope[0];
-  $('xemSel').innerHTML=(r.vt!=='PGD'?'<option value="*">★ Toàn tỉnh (tất cả phòng)</option>':'')+r.scope.map(function(p){return'<option>'+esc(p)+'</option>'}).join('');
+function vaoApp(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=r;S.pgd=r.donvi||r.ten;S.xem=r.vt==='PGD'?S.pgd:r.scope[0];S.nv2tp=!!r.xemAll;
+  $('xemSel').innerHTML=(r.vt!=='PGD'||S.nv2tp?'<option value="*">★ Toàn tỉnh (tất cả phòng)</option>':'')+(S.nv2tp?r.xemAll:r.scope).map(function(p){return'<option>'+esc(p)+'</option>'}).join('');
   return Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.data=null;S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();$('login').style.display='none';$('app').style.display='block';
     $('who').textContent=(S.vt==='TH'?'★ ':'')+S.ten;start()})}
 function dangNhap(){
@@ -469,7 +469,8 @@ function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
 function show(t){S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e){}[].forEach.call($('tabs').querySelectorAll('button'),function(b){b.className=b.getAttribute('data-t')===t?'on':''});
   var isB=BTAB.indexOf(t)>=0,needData=isB;
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
-  $('pgdBar').style.display=(isV()&&isB)?'flex':'none';if(isV())$('xemSel').value=S.xem;
+  if(S.nv2tp&&!isB&&S.xem!==S.pgd){S.xem=S.pgd;S.data=null}
+  $('pgdBar').style.display=((isV()||S.nv2tp)&&isB)?'flex':'none';if(isV()||S.nv2tp)$('xemSel').value=S.xem;
   if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
   $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
@@ -486,7 +487,7 @@ function bindEx(){
       if(k==='bt')return run('xuatBieuTong',S.token,f,S.ky);
       if(k==='tt')return run('xuatTinhTrang',S.token,f,S.ky);
       var ng=dmyIso(($('eNgay')||{}).value||S.ngay||homNay());if(!ng)return Promise.reject(new Error('Ngày lập báo cáo không đúng, nhập dạng 30/10/2026.'));
-      if(S.vt==='TH'&&S.xem==='*')return run('xuatTong',S.token,id,f,S.ky);
+      if((S.vt==='TH'||S.nv2tp)&&S.xem==='*')return run('xuatTong',S.token,id,f,S.ky);
       return run('xuatBieu',S.token,NAMEB[id],ng,S.xem,f,S.ky)},b,f)}});
 }
 
@@ -805,7 +806,7 @@ function drawTpBieu(id,b){
     '<div class="card kpn"><h4>📝 Ghi chú</h4>'+(it?'<div class="kpnw">'+it+'</div>':'<p class="hint" style="margin:0">Không có ghi chú.</p>')+'</div></div>';
   m.innerHTML=h;bindEx();kpFit();
   var go=function(){var ng=dmyIso(($('eNgay')||{}).value||S.ngay||homNay()),f=$('kpFrame');if(!f||!ng)return;
-    run('xuatBieu',S.token,NAMEB[id],ng,S.xem,'pdf',S.ky).then(function(r){if(S.tab!==id)return;var t=new TextDecoder('utf-8').decode(Uint8Array.from(atob(r.b64),function(c){return c.charCodeAt(0)})).replace(/<script>setTimeout[\s\S]*?<\/script>/,'').replace('</head>','<style>.np{display:none}</style></head>');f.srcdoc=t;var w=$('kpFrWait');if(w)w.style.display='none'})
+    (S.nv2tp&&S.xem==='*'?run('xuatTong',S.token,id,'pdf',S.ky):run('xuatBieu',S.token,NAMEB[id],ng,S.xem,'pdf',S.ky)).then(function(r){if(S.tab!==id)return;var t=new TextDecoder('utf-8').decode(Uint8Array.from(atob(r.b64),function(c){return c.charCodeAt(0)})).replace(/<script>setTimeout[\s\S]*?<\/script>/,'').replace('</head>','<style>.np{display:none}</style></head>');f.srcdoc=t;var w=$('kpFrWait');if(w)w.style.display='none'})
     .catch(function(e){var w=$('kpFrWait');if(w){w.style.display='block';w.textContent='Không tạo được biểu: '+msg(e)}})};
   go();var tm=null;if($('eNgay'))$('eNgay').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(go,700)})}
 function deeper(c,i){for(var x=i+1;x<c.lv.length;x++)if(c.lv[x])return true;return false}
