@@ -801,7 +801,7 @@ function drawTpBieu(id,b){
   var m=$('main'),jg=-1,js=-1;b.cols.forEach(function(c,j){if(c.t==='g')jg=j;if(c.t==='s')js=j});
   var it='';b.rows.forEach(function(r){var g=jg>=0?String(r.v[jg]==null?'':r.v[jg]).trim():'',ts=js>=0?String(r.v[js]==null?'':r.v[js]).trim():'';
     if(g)it+='<div class="kpni"><b>'+esc(r.b)+'</b>'+(ts?' <span class="kpnd" style="color:#7c3aed">'+esc(ts)+'</span>':'')+'<div class="kpnl">'+esc(g)+'</div></div>'});
-  var h='<div class="tb1"><div class="tb1l"><p class="hint" style="margin:0">'+(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã đóng, chỉ xem.</b> ':'')+'Trạng thái báo cáo: <b>'+esc(S.data.tt||'')+'</b>. Bản in bên dưới là biểu gửi đi; Trưởng phòng / Kế toán trưởng chỉ xem.</p></div><div class="tb1r">'+expBar('bieu',id)+'</div></div>'+
+  var h='<div class="tb1"><div class="tb1l"><p class="hint" style="margin:0">'+(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã đóng, chỉ xem.</b> ':'')+(S.xem==='*'?'Số liệu <b>toàn tỉnh</b> (chỉ xem). ':'Trạng thái báo cáo: <b>'+esc(S.data.tt||'')+'</b>. ')+'Bản in bên dưới là biểu gửi đi; chỉ xem, không sửa số liệu.</p></div><div class="tb1r">'+expBar('bieu',id)+'</div></div>'+
     '<div class="kpt"><div class="card kpf"><div id="kpFrWait" class="hint" style="padding:20px">⏳ Đang tạo biểu...</div><iframe id="kpFrame" title="Biểu"></iframe></div>'+
     '<div class="card kpn"><h4>📝 Ghi chú</h4>'+(it?'<div class="kpnw">'+it+'</div>':'<p class="hint" style="margin:0">Không có ghi chú.</p>')+'</div></div>';
   m.innerHTML=h;bindEx();kpFit();
