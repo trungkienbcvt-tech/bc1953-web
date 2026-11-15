@@ -62,6 +62,7 @@ export function nhanDang(rows) {
     if (/tỉnh/.test(dau)) return 'TINH';
     return 'B501';
   }
+  if (/03kbqt|báo cáo quyết toán các nguồn vốn/.test(dau)) return 'TT85';   // BC TT 85 (biểu 03KBQT)
   if (/01b\/ttkhn|kế hoạch vốn kéo dài năm trước chuyển sang/.test(dau + ' ' + rows.slice(0, 15).map(r => (r || []).map(norm).join(' ')).join(' '))) return 'TT15';
   return null;
 }
