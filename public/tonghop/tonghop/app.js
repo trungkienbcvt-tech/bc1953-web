@@ -657,6 +657,8 @@ async function viewBaoCao(v) {
     <div class="card no-print">
       <div class="bar">
         <label>Báo cáo<select id="bc">${Object.entries(E.BAO_CAO).map(([k, b]) => `<option value="${k}" ${k === id ? 'selected' : ''}>${esc(b.ten)}</option>`).join('')}</select></label>
+        ${laThang(id) ? `<label>Mẫu biểu<select id="mauCT"><option value="">Tổng hợp theo chủ đầu tư</option>
+          <option value="1" ${S.chiTiet?.[id] ? 'selected' : ''}>Chi tiết đến từng dự án</option></select></label>` : ''}
         <label>Lọc theo mã KBNN<select id="locKB"><option value="">Tất cả (toàn khu vực)</option>
           ${kbs.map(x => `<option value="${esc(x.k)}" ${x.k === kbLoc(id) ? 'selected' : ''}>${esc(x.k)} – ${esc(x.ten)}</option>`).join('')}</select></label>
         ${tuan && !kbLoc(id) ? `<label>Lũy kế đến tuần trước lấy từ<select id="truoc"><option value="">— Để trống —</option>
@@ -678,6 +680,7 @@ async function viewBaoCao(v) {
     <div id="rp"><div class="loading">Đang tính…</div></div>`;
   v.querySelector('#bc').onchange = e => { S.bc = e.target.value; show(); };
   v.querySelector('#locKB').onchange = e => { S.locKB[id] = e.target.value; show(); };
+  v.querySelector('#mauCT')?.addEventListener('change', e => { (S.chiTiet ||= {})[id] = !!e.target.value; show(); });
   v.querySelector('#truoc')?.addEventListener('change', e => { S.truoc[id] = e.target.value; show(); });
   v.querySelector('#nhapTruoc')?.addEventListener('click', () => nhapTruocTuExcel(id));
   v.querySelector('#ss').onclick = () => viewSoSanh(v.querySelector('#rp'));
@@ -687,7 +690,8 @@ async function viewBaoCao(v) {
     const kq = await tinh(id, { loc: true });
     S.kq = { id, kq };
     const an = dongRong(id, kq);
-    v.querySelector('#rp').innerHTML = renderBang(id, kq, { dc: dcLoc(id), coGhiChu: !kbLoc(id), an });
+    const ct = laThang(id) && S.chiTiet?.[id] ? E.chiTietDuAn(id, S.mau[id], kbLoc(id) ? nguonBC(id) : nguonCua(id), kq) : null;
+    v.querySelector('#rp').innerHTML = renderBang(id, kq, { dc: dcLoc(id), coGhiChu: !kbLoc(id), an, ct });
     ganGhiChu(v.querySelector('#rp'), S.mau[id]);
     const ghi = [];
     if (kbLoc(id)) ghi.push(`<div class="okbox">🔎 Đang lọc theo <b>${esc(nhanKB(id))}</b>: chỉ tính dự án giao dịch tại KBNN này${an.size ? `, ẩn ${an.size} dòng không có số liệu` : ''}. Khi lọc: ${tuan ? 'không áp dụng khoản "cộng thêm" (BC tuần không tách được theo KBNN); cột "Lũy kế đến tuần trước" và "Giá trị tăng thêm trong tuần" để trống (kỳ đã lưu là số toàn khu vực)' : `chỉ áp dụng khoản "cộng thêm" ghi ở dòng của KBNN ${esc(kbLoc(id))} (${dcLoc(id).length}/${dcCua(id).length} khoản)`}; không lưu kỳ.</div>`);
@@ -703,7 +707,9 @@ async function viewBaoCao(v) {
     v.querySelector('#rp').insertAdjacentHTML('beforeend', `<div class="card no-print" id="doichieu"><h2>Đối chiếu tổng số: file hệ thống ↔ ${esc(E.BAO_CAO[id].ten)}</h2>
       <div id="dcbox"><div class="muted">Đang đối chiếu…</div></div></div>`);
     renderDoiChieu(v.querySelector('#dcbox'), id);
-    v.querySelector('#xuat')?.addEventListener('click', () => xuatExcel(id, kq, kbLoc(id) ? { dongKy: kyBC(id), an, tenFile: `${S.mau[id].sheet} - KBNN ${kbLoc(id)} - ${(S.dongKy[id] || '').replace(/[\\/:*?"<>|]/g, '-')}.xlsx` } : {}).catch(fail));
+    const tenCT = ct ? ' - chi tiet du an' : '';
+    v.querySelector('#xuat')?.addEventListener('click', () => xuatExcel(id, kq, { ct, ...(kbLoc(id) ? { dongKy: kyBC(id), an, tenFile: `${S.mau[id].sheet}${tenCT} - KBNN ${kbLoc(id)} - ${(S.dongKy[id] || '').replace(/[\\/:*?"<>|]/g, '-')}.xlsx` }
+      : ct ? { tenFile: `${S.mau[id].sheet}${tenCT} - ${(S.dongKy[id] || '').replace(/[\\/:*?"<>|]/g, '-')}.xlsx` } : {}) }).catch(fail));
     v.querySelector('#luu')?.addEventListener('click', () => luuKy(id, kq));
   } catch (e) { fail(e); v.querySelector('#rp').innerHTML = `<div class="card">${esc(viErr(e))}</div>`; }
 }
@@ -766,7 +772,12 @@ async function tinh(id, { boCT = false, loc = false } = {}) {
 }
 
 // Bảng HTML theo đúng tiêu đề cột của mẫu Excel
-function renderBang(id, kq, { dc = [], coGhiChu = false, an = new Set() } = {}) {
+// Tên dự án hiển thị ở mẫu chi tiết: "mã - tên"
+const tenDuAnCT = d => {
+  const ma = String(d.ma_da), t = String(d.ten || '').trim().replace(new RegExp('^(' + ma.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-–:.]\\s*)+'), '');
+  return `${ma} - ${t || S.cdt?.find(x => x.ma_da === ma)?.ten_da || ''}`;
+};
+function renderBang(id, kq, { dc = [], coGhiChu = false, an = new Set(), ct = null } = {}) {
   const mau = S.mau[id], bc = BO_CUC[id], cols = colLetters(bc.cuoi);
   const cells = new Map(mau.head.map(([a, v]) => [a, v]));
   const merges = mau.merges.map(m => { const [a, b] = m.split(':'); return { a: addr(a), b: addr(b) }; })
@@ -789,6 +800,12 @@ function renderBang(id, kq, { dc = [], coGhiChu = false, an = new Set() } = {}) 
   }
   const K = E.KIEU[id], pct = new Set(K.pct), dataCols = cols.slice(laThang(id) ? 3 : 2);
   const adj = new Map(); for (const d of dc) adj.set(d.dong + '|' + d.cot, (adj.get(d.dong + '|' + d.cot) || []).concat(d));
+  const oCT = o => dataCols.map(c => `<td class="num ${o[c] < -0.5 ? 'neg' : ''}">${pct.has(c) ? fmtPct(o[c]) : fmt(o[c])}</td>`).join('');
+  const dongCT = i => {
+    const x = ct?.get(i); if (!x) return '';
+    return x.ds.map(d => `<tr class="da-ct"><td class="c">-</td><td class="nm" title="${esc(tenDuAnCT(d))}">${esc(tenDuAnCT(d))}</td><td class="c">${esc(d.kb)}</td>${oCT(d.o)}${coGhiChu ? '<td class="gc-col"></td>' : ''}</tr>`).join('')
+      + (x.le ? `<tr class="da-ct le"><td class="c">-</td><td class="nm">Khoản cộng thêm / điều chỉnh</td><td></td>${oCT(x.le)}${coGhiChu ? '<td class="gc-col"></td>' : ''}</tr>` : '');
+  };
   const body = mau.rows.map((r, i) => {
     if (an.has(i)) return '';
     const o = kq[i] || {};
@@ -799,7 +816,7 @@ function renderBang(id, kq, { dc = [], coGhiChu = false, an = new Set() } = {}) 
         const val = o[c]; const a = adj.get(i + '|' + c);
         const t = pct.has(c) ? fmtPct(val) : ((c === 'F' || c === 'G') && !laThang(id) && !val ? '' : fmt(val));
         return `<td class="num ${a ? 'adj' : ''} ${val < -0.5 ? 'neg' : ''}" ${a ? `title="${esc(a.map(x => `Cộng thêm ${x.so_tien} – ${x.ghi_chu || ''}`).join('\n'))}"` : ''}>${t}</td>`;
-      }).join('')}${coGhiChu ? `<td class="gc-col">${i === 0 ? '' : oGhiChu(id, i)}</td>` : ''}</tr>`;
+      }).join('')}${coGhiChu ? `<td class="gc-col">${i === 0 ? '' : oGhiChu(id, i)}</td>` : ''}</tr>${dongCT(i)}`;
   }).join('');
   const tong = kq[0] || {};
   const kpi = laThang(id)
@@ -809,6 +826,7 @@ function renderBang(id, kq, { dc = [], coGhiChu = false, an = new Set() } = {}) 
   return `<div class="card">
     <div class="kpi">${kpi.map(([t, v, p]) => `<div><span>${t}</span><b>${p !== undefined ? fmtPct(p) : fmt(v)}</b></div>`).join('')}</div>
     <div class="rpt-title">${ttl.map(([a, v]) => a === bc.dongKy ? `<div class="ky">${esc(kyBC(id) || v)}</div>` : `<div class="${a === 'A1' || a === 'A2' ? 't1' : ''}">${esc(v)}</div>`).join('')}</div>
+    ${ct ? `<p class="small muted no-print" style="margin:0 0 6px">Mẫu chi tiết: dưới mỗi dòng chủ đầu tư là các dự án được cộng vào dòng đó (mã KBNN theo file hệ thống). Dòng "Khoản cộng thêm / điều chỉnh" là phần cộng thêm của dòng, để cộng các dự án luôn bằng dòng chủ đầu tư.</p>` : ''}
     <div class="tbl-wrap tall"><table class="tbl rpt"><thead>${head}</thead><tbody>${body}</tbody></table></div>
     ${mau.ghi_chu ? `<p class="small muted"><i>${esc(mau.ghi_chu)}</i></p>` : ''}</div>`;
 }
@@ -886,7 +904,7 @@ document.addEventListener('change', async e => {
 });
 
 // ---------------------------------------------------------------- Xuất Excel
-async function xuatExcel(id, kq, { dongKy, dongVB, tenFile, an = new Set() } = {}) {
+async function xuatExcel(id, kq, { dongKy, dongVB, tenFile, an = new Set(), ct = null } = {}) {
   const ExcelJS = await loadExcelJS();
   const mau = S.mau[id], bc = BO_CUC[id], cols = colLetters(bc.cuoi), K = E.KIEU[id], pct = new Set(K.pct);
   const wbk = new ExcelJS.Workbook();
@@ -915,10 +933,22 @@ async function xuatExcel(id, kq, { dongKy, dongVB, tenFile, an = new Set() } = {
   for (const m of mau.merges) { try { ws.mergeCells(m); } catch { } }
   ws.getRow(bc.dauBang).height = 30;
   const dataCols = cols.slice(laThang(id) ? 3 : 2);
+  let rn = mau.first;
+  const ghiCT = (stt, ten, kb, o, nghieng) => {
+    const r = ws.getRow(rn++);
+    r.getCell(1).value = stt; r.getCell(2).value = ten; if (kb) r.getCell(3).value = Number(kb) || kb;
+    dataCols.forEach(L => { const cell = r.getCell(E.colIdx(L) + 1), v = o[L];
+      if (v !== null && v !== undefined && Number.isFinite(v)) cell.value = pct.has(L) ? v : Math.round(v * 1e6) / 1e6;
+      cell.numFmt = pct.has(L) ? '0.0%' : '#,##0;[Red]-#,##0;"-"'; });
+    for (let c = 1; c <= cols.length; c++) { const cell = r.getCell(c);
+      cell.border = border; cell.font = font({ size: 10, italic: nghieng, color: { argb: 'FF404A57' } });
+      cell.alignment = { vertical: 'middle', horizontal: c === 2 ? 'left' : c <= 3 ? 'center' : 'right', wrapText: c === 2, indent: c === 2 ? 1 : 0 }; }
+  };
   mau.rows.forEach((row, i) => {
-    const rn = mau.first + i, o = kq[i] || {};
+    const o = kq[i] || {};
     const bold = row.loai === 'nhom';
-    const r = ws.getRow(rn);
+    if (ct && an.has(i)) return;      // mẫu chi tiết: bỏ hẳn dòng ẩn
+    const r = ws.getRow(rn++);
     if (an.has(i)) r.hidden = true;     // lọc KBNN: ẩn dòng không có số liệu
     const stt = row.stt !== '' && !Number.isNaN(Number(row.stt)) && !row.stt.includes('.') ? Number(row.stt) : row.stt;
     r.getCell(1).value = stt; r.getCell(2).value = row.ten;
@@ -936,9 +966,12 @@ async function xuatExcel(id, kq, { dongKy, dongVB, tenFile, an = new Set() } = {
       cell.alignment = { vertical: 'middle', horizontal: c === 2 ? 'left' : c <= 3 && c !== 2 ? 'center' : 'right', wrapText: c === 2 };
       if (i === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3CC' } };
       else if (bold && /^[IVX]+$/.test(row.stt)) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEAF1FB' } };
+      else if (ct && ct.has(i)) r.getCell(c).font = font({ bold: true, size: 10 });
     }
+    const x = ct?.get(i);
+    if (x) { x.ds.forEach(d => ghiCT('-', tenDuAnCT(d), d.kb, d.o, false)); if (x.le) ghiCT('-', 'Khoản cộng thêm / điều chỉnh', '', x.le, true); }
   });
-  if (mau.ghi_chu) { const c = ws.getCell(mau.first + mau.rows.length, 1); c.value = mau.ghi_chu; c.font = font({ italic: true, size: 10 }); }
+  if (mau.ghi_chu) { const c = ws.getCell(rn, 1); c.value = mau.ghi_chu; c.font = font({ italic: true, size: 10 }); }
   const buf = await wbk.xlsx.writeBuffer();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));

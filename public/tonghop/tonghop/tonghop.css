@@ -167,3 +167,7 @@ dialog.modal.wide{width:min(1500px,96vw)}
 .tabs.side .tab.con::before{content:'';position:absolute}
 .khung.an-menu .tabs.side .tab.con{padding-left:0}
 .khung.an-menu .tabs.side .tab.con i{font-size:14px}
+/* Báo cáo tháng – mẫu chi tiết đến từng dự án */
+.tbl.rpt tr.da-ct td{font-size:12px;color:#4a5563;background:#fff}
+.tbl.rpt tr.da-ct td.nm{padding-left:22px}
+.tbl.rpt tr.da-ct.le td{font-style:italic;color:#8a5a00;background:#fffaf0}

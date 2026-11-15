@@ -403,3 +403,38 @@ export function duAnCuaCDT(tenCDT, rows15, rows85, la = 'TT15', lb = 'TT85') {
     return d;
   });
 }
+
+// ---- Chi tiết đến từng dự án (BC tháng): dự án nguồn của từng dòng chủ đầu tư được cộng vào báo cáo
+//   Trả về Map(chỉ số dòng → { ds: [{ ma_da, kb, ten, o }], le: o | null })
+//   le: phần chênh giữa dòng báo cáo và cộng các dự án (khoản "cộng thêm") – để cộng chi tiết luôn bằng dòng
+export function chiTietDuAn(id, mau, nguonRows, kq) {
+  const K = KIEU[id], cfgKhoa = KHOA[BAO_CAO[id].nguon], vao = dongVaoTong(mau);
+  const theoKhoa = new Map();
+  const them = (k, r) => { let a = theoKhoa.get(k); if (!a) theoKhoa.set(k, a = []); a.push(r); };
+  for (const r of nguonRows) for (const [kc, field] of Object.entries(cfgKhoa)) {
+    const ten = r[field]; if (!ten) continue;
+    them(kc + '|' + key(ten), r); them(kc + '|' + key(ten) + '|' + key(r.dia_diem), r);
+  }
+  const out = new Map();
+  mau.rows.forEach((row, i) => {
+    if (row.loai === 'nhom' || !vao.has(i)) return;
+    const specs = Object.entries(row.o || {}).filter(([, s]) => s.src);
+    if (!specs.length) return;
+    const nhom = new Map();
+    for (const [c, s] of specs) {
+      for (const r of theoKhoa.get(s.key + '|' + key(row.ten) + (s.kb ? '|' + key(row.kbnn) : '')) || []) {
+        const k = r.ma_da + '|' + (r.kb || '');
+        let d = nhom.get(k);
+        if (!d) nhom.set(k, d = { ma_da: r.ma_da, kb: r.kb || '', ten: r.ten || '', o: Object.fromEntries(K.base.map(b => [b, 0])) });
+        d.o[c] += (r.so?.[s.src] || 0) / 1e6;
+      }
+    }
+    const ds = [...nhom.values()].filter(d => K.base.some(b => Math.abs(d.o[b]) > 1e-9)).sort((a, b) => String(a.ma_da).localeCompare(String(b.ma_da), 'vi', { numeric: true }) || a.kb.localeCompare(b.kb));
+    ds.forEach(d => K.derive(d.o));
+    const le = Object.fromEntries(K.base.map(b => [b, (kq?.[i]?.[b] || 0) - ds.reduce((s, d) => s + d.o[b], 0)]));
+    const coLe = K.base.some(b => Math.abs(le[b]) > 0.0005);
+    if (coLe) K.derive(le);
+    out.set(i, { ds, le: coLe ? le : null });
+  });
+  return out;
+}
