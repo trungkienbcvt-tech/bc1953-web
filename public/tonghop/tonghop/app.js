@@ -1164,11 +1164,12 @@ function moHinhB5(l, t, f) {
   });
   const m = new Map();
   for (const c of cts) for (const r of c.rows) {
-    const x = m.get(r.ma_da) || { key: r.ma_da, ma_da: r.ma_da, ten: r.ten, kb: r.kb, v: {} };
+    const kbB5 = () => Object.keys(f.XA?.ds.get(r.ma_da)?.theoKB || f.TINH?.ds.get(r.ma_da)?.theoKB || {})[0] || '';
+    const x = m.get(r.ma_da) || { key: r.ma_da, ma_da: r.ma_da, ten: r.ten, kb: r.kb || t.ds.get(r.ma_da)?.kb || kbB5(), v: {} };
     x.v[c.k] = { a: r.tt15, b: r.b501, xa: r.xa, tinh: r.tinh, lech: r.lech, coLech: r.coLech, ly_do: r.ly_do };
     m.set(r.ma_da, x);
   }
-  return { a: `THBC ${l}`, b: 'B5-01', cts, rows: hoanTatDong(m, cts), coPhong: false, kbLoc: cts[0]?.kq.kbLoc };
+  return { a: `THBC ${l}`, b: 'B5-01', cts, rows: hoanTatDong(m, cts), coPhong: true, kbLoc: cts[0]?.kq.kbLoc };
 }
 function moHinhTT(a, b) {
   const cts = ['KD', 'NAM', 'GN'].map(k => {
@@ -1182,7 +1183,7 @@ function moHinhTT(a, b) {
     x.v[c.k] = { a: r.a, b: r.b, lech: r.lech, coLech: r.coLech, ly_do: r.ly_do };
     m.set(key, x);
   }
-  return { a: 'TT37', b: 'TT85', cts, rows: hoanTatDong(m, cts), coPhong: true };
+  return { a: 'TT37', b: 'TT85', cts, rows: hoanTatDong(m, cts), coPhong: true, theoKB: true };
 }
 function hoanTatDong(m, cts) {
   const rows = [...m.values()];
@@ -1234,7 +1235,8 @@ function veDoiChieu(box, M, st, opt) {
   let phong = [];
   if (M.coPhong) {
     const pm = new Map();
-    for (const r of M.rows) { const p = pm.get(r.kb) || { kb: r.kb, soDA: 0, soLech: 0, lech: {} }; p.soDA++; if (r.soLech) p.soLech++; for (const c of M.cts) p.lech[c.k] = (p.lech[c.k] || 0) + (r.v[c.k]?.lech || 0); pm.set(r.kb, p); }
+    for (const r of M.rows) { const p = pm.get(r.kb) || { kb: r.kb, soDA: 0, soLech: 0, lech: {}, soCT: {} }; p.soDA++; if (r.soLech) p.soLech++;
+      for (const c of M.cts) { p.lech[c.k] = (p.lech[c.k] || 0) + (r.v[c.k]?.lech || 0); if (r.v[c.k]?.coLech) p.soCT[c.k] = (p.soCT[c.k] || 0) + 1; } pm.set(r.kb, p); }
     phong = [...pm.values()].sort((x, y) => x.kb.localeCompare(y.kb));
   }
   const nhanCT = c => `${esc(c.ten)} <small>(cột ${esc(c.cot)})</small>`;
@@ -1244,29 +1246,31 @@ function veDoiChieu(box, M, st, opt) {
     <div class="dc-kq-dau"><h3>Tổng hợp kết quả</h3>
       <div class="actions" style="margin:0">${coXuat() ? '<button class="btn primary" id="dcxuat">⬇ Xuất Excel kết quả đối chiếu</button>' : '<span class="muted small">Tài khoản Phòng giao dịch xem được kết quả nhưng không xuất Excel.</span>'}</div></div>
     ${M.kbLoc ? `<div class="okbox">File THBC gồm nhiều KBNN: chỉ lấy số của khối KBNN <b>${esc(M.kbLoc)}</b> (đơn vị lập B5-01).</div>` : ''}
-    <div class="${soLechAny ? 'warnbox' : 'okbox'}">${soLechAny ? `Có <b>${soLechAny}</b> dự án${M.coPhong ? ' (theo mã KBNN)' : ''} chênh lệch ở ít nhất một chỉ tiêu, trên tổng số ${M.rows.length} dự án có số liệu.` : `✓ ${M.a} và ${M.b} khớp ở tất cả chỉ tiêu, đến từng dự án.`}</div>
+    <div class="${soLechAny ? 'warnbox' : 'okbox'}">${soLechAny ? `Có <b>${soLechAny}</b> dự án${M.theoKB ? ' (theo mã KBNN)' : ''} chênh lệch ở ít nhất một chỉ tiêu, trên tổng số ${M.rows.length} dự án có số liệu.` : `✓ ${M.a} và ${M.b} khớp ở tất cả chỉ tiêu, đến từng dự án.`}</div>
     <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Chỉ tiêu (tên cột THBC)</th><th>Cột đối chiếu</th><th>${esc(M.a)}</th><th>${esc(M.b)}</th><th>Chênh lệch<br>${esc(M.a)} − ${esc(M.b)}</th><th>Số dự án<br>chênh lệch</th></tr></thead>
     <tbody>${M.cts.map(c => `<tr class="click ${st.ct === c.k ? 'chon' : ''}" data-ctk="${c.k}" title="Bấm để xem các dự án chênh lệch ở chỉ tiêu này"><td><b>${nhanCT(c)}</b></td><td class="small">${esc(c.moTa)}</td>
       <td class="num">${f3(c.kq.tong.a)}</td><td class="num">${f3(c.kq.tong.b)}</td><td class="num ${cls(c.kq.tong.lech)}"><b>${f3(c.kq.tong.lech)}</b></td>
       <td class="c">${c.kq.soLech ? `<span class="chip am">${c.kq.soLech}</span>` : '<span class="chip duong">✓ khớp</span>'}</td></tr>`).join('')}</tbody></table></div>
-    ${M.coPhong ? `<h3 style="margin-top:16px">Theo phòng giao dịch</h3>
-    <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Mã KBNN – phòng giao dịch</th><th>Số dự án</th><th>Dự án chênh lệch</th>${M.cts.map(c => `<th>Chênh lệch<br>${nhanCT(c)}</th>`).join('')}</tr></thead>
-    <tbody>${phong.map(p => `<tr class="click ${st.phong === p.kb ? 'chon' : ''}" data-kb="${esc(p.kb)}"><td>${esc(p.kb)} – ${esc(tenPhongKB(p.kb))}</td><td class="c">${p.soDA}</td><td class="c">${p.soLech ? `<b>${p.soLech}</b>` : '0'}</td>
-      ${M.cts.map(c => `<td class="num ${cls(p.lech[c.k])}">${f3(p.lech[c.k])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : ''}
+    ${M.coPhong ? `<h3 style="margin-top:16px">Thống kê theo phòng giao dịch</h3>
+    <div class="tbl-wrap"><table class="tbl ss dc-phong"><thead><tr><th rowspan="2">Mã KBNN – phòng giao dịch</th><th rowspan="2">Số dự án</th><th rowspan="2">Dự án<br>chênh lệch</th>${M.cts.map(c => `<th colspan="2" class="nhomct">${nhanCT(c)}</th>`).join('')}</tr>
+      <tr>${M.cts.map(() => '<th>Số DA lệch</th><th>Chênh lệch</th>').join('')}</tr></thead>
+    <tbody>${phong.map(p => `<tr class="click ${st.phong === p.kb ? 'chon' : ''}" data-kb="${esc(p.kb)}" title="Bấm để xem dự án của phòng này"><td>${esc(p.kb || '(không rõ)')} – ${esc(p.kb ? tenPhongKB(p.kb) : '')}</td><td class="c">${p.soDA}</td><td class="c">${p.soLech ? `<span class="chip am">${p.soLech}</span>` : '<span class="chip duong">0</span>'}</td>
+      ${M.cts.map(c => `<td class="c dauct">${p.soCT[c.k] ? `<b>${p.soCT[c.k]}</b>` : '-'}</td><td class="num ${cls(p.lech[c.k])}">${f3(p.lech[c.k])}</td>`).join('')}</tr>`).join('')}
+      <tr class="l0"><td>Tổng cộng</td><td class="c">${M.rows.length}</td><td class="c">${soLechAny}</td>${M.cts.map(c => `<td class="c dauct">${c.kq.soLech || '-'}</td><td class="num">${f3(c.kq.tong.lech)}</td>`).join('')}</tr></tbody></table></div>` : ''}
   </div>
   <div class="card" id="dcct">
     <div class="dc-kq-dau"><h3>Chi tiết dự án</h3></div>
     <div class="bar">
       <label>Chỉ tiêu chênh lệch<select id="dcctl"><option value="*">Tất cả chỉ tiêu (${soLechAny})</option>${M.cts.map(c => `<option value="${c.k}" ${st.ct === c.k ? 'selected' : ''}>${esc(c.ten)} – cột ${esc(c.cot)} (${c.kq.soLech})</option>`).join('')}</select></label>
-      ${M.coPhong ? `<label>Phòng giao dịch<select id="dcph"><option value="*">Tất cả</option>${phong.map(p => `<option value="${esc(p.kb)}" ${st.phong === p.kb ? 'selected' : ''}>${esc(p.kb)} – ${esc(tenPhongKB(p.kb))}</option>`).join('')}</select></label>` : ''}
+      ${M.coPhong ? `<label>Phòng giao dịch<select id="dcph"><option value="*">Tất cả phòng (${soLechAny} DA chênh lệch)</option>${phong.map(p => `<option value="${esc(p.kb)}" ${st.phong === p.kb ? 'selected' : ''}>${esc(p.kb)} – ${esc(p.kb ? tenPhongKB(p.kb) : '')} (${p.soLech} DA chênh lệch)</option>`).join('')}</select></label>` : ''}
       <label>Hiển thị<select id="dcloc"><option value="lech" ${st.loc === 'lech' ? 'selected' : ''}>Chỉ dự án chênh lệch</option><option value="tat" ${st.loc === 'tat' ? 'selected' : ''}>Tất cả dự án có số</option></select></label>
       <label style="min-width:240px">Tìm mã / tên dự án / chủ đầu tư<input id="dctim" value="${esc(st.tim)}"></label>
     </div>
     <div class="tbl-wrap tall"><table class="tbl ss dc-bang"><thead>
-      <tr><th rowspan="2">STT</th><th rowspan="2">Mã DA</th><th rowspan="2" class="ten">Tên dự án</th><th rowspan="2" class="cdtc">Chủ đầu tư</th>${M.coPhong ? '<th rowspan="2">Mã KBNN</th>' : ''}
+      <tr><th rowspan="2">STT</th><th rowspan="2">Mã DA</th><th rowspan="2" class="ten">Tên dự án</th><th rowspan="2" class="cdtc">Chủ đầu tư</th>${M.coPhong ? '<th rowspan="2" class="kbc">Mã KBNN –<br>phòng giao dịch</th>' : ''}
         ${cts.map(c => `<th colspan="3" class="nhomct">${nhanCT(c)}</th>`).join('')}<th rowspan="2" class="nxc">Nhận xét</th></tr>
       <tr>${cts.map(() => `<th>${esc(M.a)}</th><th>${esc(M.b)}</th><th>Chênh lệch</th>`).join('')}</tr></thead>
-    <tbody>${ds.slice(0, HIEN).map((r, i) => `<tr><td class="c">${i + 1}</td><td>${esc(r.ma_da)}</td><td class="ten" title="${esc(r.ten)}">${esc(r.ten)}</td><td class="cdtc">${esc(cdt.get(r.ma_da)?.cdt || '')}</td>${M.coPhong ? `<td class="c">${esc(r.kb)}</td>` : ''}
+    <tbody>${ds.slice(0, HIEN).map((r, i) => `<tr><td class="c">${i + 1}</td><td>${esc(r.ma_da)}</td><td class="ten" title="${esc(r.ten)}">${esc(r.ten)}</td><td class="cdtc">${esc(cdt.get(r.ma_da)?.cdt || '')}</td>${M.coPhong ? `<td class="kbc"><b>${esc(r.kb)}</b><br><span class="small muted">${esc(r.kb ? tenPhongKB(r.kb) : '')}</span></td>` : ''}
       ${cts.map(c => { const x = r.v[c.k] || { a: 0, b: 0, lech: 0 }; return `<td class="num dauct" ${x.xa !== undefined ? `title="B5-01 NS xã ${f3(x.xa) || 0} · NS tỉnh ${f3(x.tinh) || 0}"` : ''}>${f3(x.a)}</td><td class="num">${f3(x.b)}</td><td class="num ${x.coLech ? cls(x.lech) + ' lechct' : ''}"><b>${x.coLech ? f3(x.lech) : '-'}</b></td>`; }).join('')}
       <td class="small nxc">${esc(ghi(r))}</td></tr>`).join('') || `<tr><td colspan="${5 + (M.coPhong ? 1 : 0) + cts.length * 3}" class="empty">Không có dự án phù hợp.</td></tr>`}</tbody></table></div>
     <p class="small muted">Đơn vị: triệu đồng. Bỏ qua chênh dưới 0,001 triệu (làm tròn). Chênh lệch = ${esc(M.a)} − ${esc(M.b)}; xanh: ${esc(M.a)} lớn hơn, đỏ: ${esc(M.b)} lớn hơn. ${ds.length > HIEN ? `Đang hiện ${fmtDong(HIEN)}/${fmtDong(ds.length)} dự án – xuất Excel để xem đủ.` : `${fmtDong(ds.length)} dự án.`}</p></div>`;
@@ -1295,8 +1299,20 @@ async function xuatDoiChieu(M, opt) {
   for (const c of M.cts) w0.addRow([`${c.ten} (cột ${c.cot})`, c.moTa, c.kq.tong.a, c.kq.tong.b, c.kq.tong.lech, c.kq.soLech]);
   w0.addRow(['Số dự án chênh lệch ở ít nhất một chỉ tiêu', '', '', '', '', M.rows.filter(r => r.soLech).length]).font = { bold: true };
   [60, 50, 18, 18, 18, 14].forEach((w, i) => w0.getColumn(i + 1).width = w); for (let c = 3; c <= 5; c++) w0.getColumn(c).numFmt = NF;
+  if (M.coPhong) {
+    const pm = new Map();
+    for (const r of M.rows) { const p = pm.get(r.kb) || { kb: r.kb, soDA: 0, soLech: 0, ct: {} }; p.soDA++; if (r.soLech) p.soLech++;
+      for (const c of M.cts) { const o = p.ct[c.k] ||= { so: 0, lech: 0 }; o.lech += r.v[c.k]?.lech || 0; if (r.v[c.k]?.coLech) o.so++; } pm.set(r.kb, p); }
+    const wp = wb.addWorksheet('Theo phong giao dich');
+    wp.addRow(['Mã KBNN', 'Phòng giao dịch', 'Số dự án', 'Dự án chênh lệch', ...M.cts.flatMap(c => [`${c.ten} (cột ${c.cot}) – số DA lệch`, 'Chênh lệch'])]).font = { bold: true };
+    for (const p of [...pm.values()].sort((x, y) => x.kb.localeCompare(y.kb))) wp.addRow([p.kb, p.kb ? tenPhongKB(p.kb) : '', p.soDA, p.soLech, ...M.cts.flatMap(c => [p.ct[c.k].so, p.ct[c.k].lech])]);
+    wp.addRow(['', 'Tổng cộng', M.rows.length, M.rows.filter(r => r.soLech).length, ...M.cts.flatMap(c => [c.kq.soLech, c.kq.tong.lech])]).font = { bold: true };
+    [10, 24, 10, 12, ...M.cts.flatMap(() => [16, 18])].forEach((w, i) => wp.getColumn(i + 1).width = w);
+    M.cts.forEach((c, i) => wp.getColumn(6 + i * 2).numFmt = NF);
+    wp.getRow(1).alignment = { wrapText: true, vertical: 'middle', horizontal: 'center' }; wp.getRow(1).height = 45;
+  }
   const ws = wb.addWorksheet('Chi tiet du an', { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
-  const dau = ['STT', 'Mã DA', 'Tên dự án', 'Chủ đầu tư', ...(M.coPhong ? ['Mã KBNN'] : [])];
+  const dau = ['STT', 'Mã DA', 'Tên dự án', 'Chủ đầu tư', ...(M.coPhong ? ['Mã KBNN', 'Phòng giao dịch'] : [])];
   const h1 = ws.addRow([...dau, ...M.cts.flatMap(c => [`${c.ten} (cột ${c.cot})`, '', '']), 'Số chỉ tiêu chênh lệch', 'Nhận xét']);
   const h2 = ws.addRow([...dau.map(() => ''), ...M.cts.flatMap(() => [M.a, M.b, 'Chênh lệch']), '', '']);
   dau.forEach((_, i) => ws.mergeCells(1, i + 1, 2, i + 1));
@@ -1306,12 +1322,12 @@ async function xuatDoiChieu(M, opt) {
   [h1, h2].forEach(h => { h.font = { bold: true }; h.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; }); h1.height = 45;
   const ds = [...M.rows].sort((x, y) => (y.soLech > 0) - (x.soLech > 0) || y.maxLech - x.maxLech || x.ma_da.localeCompare(y.ma_da));
   ds.forEach((r, i) => {
-    const row = ws.addRow([i + 1, r.ma_da, r.ten, cdt.get(r.ma_da)?.cdt || '', ...(M.coPhong ? [r.kb] : []),
+    const row = ws.addRow([i + 1, r.ma_da, r.ten, cdt.get(r.ma_da)?.cdt || '', ...(M.coPhong ? [r.kb, r.kb ? tenPhongKB(r.kb) : ''] : []),
       ...M.cts.flatMap(c => { const x = r.v[c.k] || { a: 0, b: 0, lech: 0 }; return [x.a, x.b, Math.round(x.lech * 1e6) / 1e6]; }), r.soLech,
       [...new Set(M.cts.map(c => r.v[c.k]?.coLech ? r.v[c.k].ly_do : '').filter(Boolean))].join('; ')]);
     M.cts.forEach((c, j) => { if (r.v[c.k]?.coLech) row.getCell(dau.length + 3 + j * 3).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF4E5' } }; });
   });
-  [6, 11, 55, 32, ...(M.coPhong ? [9] : []), ...M.cts.flatMap(() => [16, 16, 16]), 10, 40].forEach((w, i) => ws.getColumn(i + 1).width = w);
+  [6, 11, 55, 32, ...(M.coPhong ? [9, 20] : []), ...M.cts.flatMap(() => [16, 16, 16]), 10, 40].forEach((w, i) => ws.getColumn(i + 1).width = w);
   for (let c = dau.length + 1; c <= cuoi; c++) ws.getColumn(c).numFmt = NF;
   ws.autoFilter = { from: { row: 2, column: 1 }, to: { row: 2, column: cuoi + 2 } };
   const buf = await wb.xlsx.writeBuffer();
