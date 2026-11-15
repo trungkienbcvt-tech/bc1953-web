@@ -16,10 +16,16 @@ export const CHI_TIEU = {
     tt: 'KH vốn kéo dài năm trước chuyển sang', b5: 'Dư dự toán năm trước chuyển sang', ttNgan: 'KH kéo dài' },
   NAM: { ten: 'KH vốn giao trong năm ↔ Dự toán giao đầu năm + Dự toán điều chỉnh',
     tt: 'Kế hoạch vốn giao trong năm', b5: 'Dự toán giao đầu năm + Dự toán điều chỉnh (3)', ttNgan: 'KH giao trong năm' },
+  TC: { ten: 'Vốn đã thanh toán KLHT quyết toán trong năm ↔ Thực chi',
+    tt: 'Tổng cộng vốn đã thanh toán KLHT quyết toán trong năm (cột V)', b5: 'Thực chi (cột P)', ttNgan: 'Thanh toán KLHT' },
+  TU: { ten: 'Tạm ứng chưa thu hồi ↔ Dư tạm ứng chưa thanh toán',
+    tt: 'Lũy kế số vốn tạm ứng theo chế độ chưa thu hồi đến hết năm quyết toán (cột W)', b5: 'Dư tạm ứng chưa thanh toán (cột Q)', ttNgan: 'Tạm ứng chưa thu hồi' },
   GN: { ten: 'Lũy kế thanh toán (Tổng số) ↔ Lũy kế chi (Tổng số) − Dư tạm ứng năm trước chuyển sang',
     tt: 'Lũy kế vốn thanh toán từ đầu năm – Tổng số', b5: 'Lũy kế chi từ đầu năm (Tổng số) − Dư tạm ứng năm trước chuyển sang', ttNgan: 'Lũy kế thanh toán' },
 };
-const TRUONG = { KD: ['gt', 'tong'], NAM: ['gtNam', 'tongNam'], GN: ['gtGN', 'tongGN'] };
+const TRUONG = { KD: ['gt', 'tong'], NAM: ['gtNam', 'tongNam'], GN: ['gtGN', 'tongGN'], TC: ['gtTC', 'tongTC'], TU: ['gtTU', 'tongTU'] };
+// Chỉ tiêu đối chiếu của từng cặp biểu B5-01 ↔ THBC
+export const CT_CAP = { TT37: ['KD', 'NAM'], TT85: ['TC', 'TU'] };
 // Đơn vị của file (dòng "Đơn vị tính : …"): file in theo đồng (VD báo cáo TT37) → đổi ra triệu đồng
 const heSo = rows => {
   for (const r of rows.slice(0, 12)) for (const v of r || []) {
@@ -107,33 +113,35 @@ export function docB501(rows, loai) {
   const cTU = timCot(rows, /dư tạm ứng năm trước chuyển sang/);
   const cM = timCot(rows, /dự toán giao đầu năm/), cN = timCot(rows, /dự toán điều chỉnh/);
   const cO = timCot(rows, /lũy kế chi từ đầu năm|luỹ kế chi từ đầu năm/);   // ô gộp: cột đầu = "Tổng số" (cột O)
+  const cP = timCot(rows, /^thực chi$/), cQ = timCot(rows, /dư tạm ứng chưa thanh toán/);   // cột P, Q (chia ra của Lũy kế chi)
   if (!cDT) throw new Error('File B5-01: không tìm thấy cột "Dư dự toán năm trước chuyển sang".');
   const hs = heSo(rows), so = v => soTien(v) * hs;
   const nam = r => (cM ? so(r[cM.cot]) : 0) + (cN ? so(r[cN.cot]) : 0);
   const gn = r => (cO ? so(r[cO.cot]) : 0) - (cTU ? so(r[cTU.cot]) : 0);
+  const tc = r => cP ? so(r[cP.cot]) : 0, tu2 = r => cQ ? so(r[cQ.cot]) : 0;
   const cKB = timCot(rows, /mã kho bạc/);
-  const out = new Map(); let muc = '', tongDong = null, tongNam = null, tongGN = null, cur = null;
+  const out = new Map(); let muc = '', tongDong = null, tongNam = null, tongGN = null, tongTC = null, tongTU = null, cur = null;
   for (let i = cDT.dong + 1; i < rows.length; i++) {
     const r = rows[i] || [];
     const a = txt(r[0]), b = txt(r[1]);
-    if (tongDong === null && /^tổng số$/i.test(b)) { tongDong = so(r[cDT.cot]); tongNam = nam(r); tongGN = gn(r); continue; }
+    if (tongDong === null && /^tổng số$/i.test(b)) { tongDong = so(r[cDT.cot]); tongNam = nam(r); tongGN = gn(r); tongTC = tc(r); tongTU = tu2(r); continue; }
     if (/^[IVX]+$/.test(a)) { muc = b; cur = null; continue; }
     const m = /^(\d{5,})\s*\.\s*(.*)$/.exec(b);
     if (!m) {
       // dòng nguồn vốn chi tiết: số đã cộng lên dòng dự án; chỉ ghi nhận theo mã kho bạc (file nhiều KBNN)
       const k = cKB ? txt(r[cKB.cot]) : '';
-      if (cur && /^\d{4}$/.test(k)) { const t = (cur.theoKB ||= {})[k] ||= { gt: 0, gtNam: 0, gtGN: 0 }; t.gt += so(r[cDT.cot]); t.gtNam += nam(r); t.gtGN += gn(r); }
+      if (cur && /^\d{4}$/.test(k)) { const t = (cur.theoKB ||= {})[k] ||= { gt: 0, gtNam: 0, gtGN: 0, gtTC: 0, gtTU: 0 }; t.gt += so(r[cDT.cot]); t.gtNam += nam(r); t.gtGN += gn(r); t.gtTC += tc(r); t.gtTU += tu2(r); }
       continue;
     }
-    const x = out.get(m[1]) || { ma_da: m[1], ten: m[2], gt: 0, gtNam: 0, gtGN: 0, tu: 0, muc: [] };
-    x.gt += so(r[cDT.cot]); x.gtNam += nam(r); x.gtGN += gn(r); if (cTU) x.tu += so(r[cTU.cot]);
+    const x = out.get(m[1]) || { ma_da: m[1], ten: m[2], gt: 0, gtNam: 0, gtGN: 0, gtTC: 0, gtTU: 0, tu: 0, muc: [] };
+    x.gt += so(r[cDT.cot]); x.gtNam += nam(r); x.gtGN += gn(r); x.gtTC += tc(r); x.gtTU += tu2(r); if (cTU) x.tu += so(r[cTU.cot]);
     if (muc && !x.muc.includes(muc)) x.muc.push(muc);
     out.set(m[1], x); cur = x;
   }
   // Đơn vị lập báo cáo → mã KBNN (để lọc file THBC gồm nhiều KBNN)
   let kb = '';
   for (const r of rows.slice(0, 8)) for (const v of r || []) { const t = txt(v); if (/đơn vị lập/i.test(t)) { const p = chuanPhong(t); kb = Object.keys(KB_PHONG).find(k => KB_PHONG[k] === p) || ''; } }
-  return { loai, ds: out, tong: tongDong, tongNam, tongGN, co: { KD: true, NAM: !!(cM || cN), GN: !!cO }, ky: kyIn(rows), kb };
+  return { loai, ds: out, tong: tongDong, tongNam, tongGN, tongTC, tongTU, co: { KD: true, NAM: !!(cM || cN), GN: !!cO, TC: !!cP, TU: !!cQ }, ky: kyIn(rows), kb };
 }
 
 // So sánh từng dự án
@@ -157,7 +165,7 @@ export function soSanhB501(tt, xa, tinh, ct = 'KD') {
     if (!r.coLech && !r.tt15 && !r.b501) continue;
     const ly = [];
     if (r.coLech) {
-      if (!r.b501 && r.tt15) ly.push(r.coXa || r.coTinh ? `B5-01 có dự án nhưng ${{ KD: 'dư dự toán', NAM: 'dự toán giao + điều chỉnh', GN: 'lũy kế chi − dư tạm ứng' }[ct]} = 0` : 'Chỉ có trên THBC, không có trên B5-01');
+      if (!r.b501 && r.tt15) ly.push(r.coXa || r.coTinh ? `B5-01 có dự án nhưng ${{ KD: 'dư dự toán', NAM: 'dự toán giao + điều chỉnh', GN: 'lũy kế chi − dư tạm ứng', TC: 'thực chi', TU: 'dư tạm ứng chưa thanh toán' }[ct]} = 0` : 'Chỉ có trên THBC, không có trên B5-01');
       else if (!r.tt15 && r.b501) ly.push(r.coTT ? `THBC có dự án nhưng ${ten} = 0` : 'Chỉ có trên B5-01, không có trên THBC');
       else ly.push(r.lech > 0 ? 'THBC lớn hơn B5-01' : 'B5-01 lớn hơn THBC');
       if (r.tu && Math.abs(Math.abs(r.lech) - r.tu) < SAI_SO) ly.push('chênh lệch đúng bằng dư tạm ứng năm trước');
@@ -180,25 +188,28 @@ export function soSanhB501(tt, xa, tinh, ct = 'KD') {
 //   KD: KH vốn kéo dài năm trước chuyển sang; NAM: KH vốn giao trong năm; GN: Lũy kế thanh toán – Tổng số
 export const COT_THBC = {
   TT37: { KD: ['F'], NAM: ['H'], GN: ['K', 'L', 'N', 'O'] },
-  TT85: { KD: ['J'], NAM: ['P'], GN: ['L', 'M', 'R', 'S'] },
+  TT85: { KD: ['J'], NAM: ['P'], GN: ['L', 'M', 'R', 'S'], TC: ['V'], TU: ['W'] },
 };
 export function tuNguonLuu(rows, file, loai) {
   const C = COT_THBC[loai], tr = (so, cs) => cs.reduce((s, c) => s + (so?.[c] || 0), 0) / 1e6;
   const out = new Map();
   for (const r of rows || []) {
     const ma = String(r.ma_da || '').trim(); if (!ma) continue;
-    const g = tr(r.so, C.KD), gNam = tr(r.so, C.NAM), gGN = tr(r.so, C.GN), kb = r.kb || '';
-    const x = out.get(ma) || { ma_da: ma, ten: String(r.ten || '').replace(new RegExp('^(' + ma + '\\s*-\\s*)+'), ''), kb, gt: 0, gtNam: 0, gtGN: 0, so_dong: 0, theoKB: {} };
-    x.gt += g; x.gtNam += gNam; x.gtGN += gGN; x.so_dong++;
-    const t = x.theoKB[kb] ||= { gt: 0, gtNam: 0, gtGN: 0 }; t.gt += g; t.gtNam += gNam; t.gtGN += gGN;
+    const g = tr(r.so, C.KD), gNam = tr(r.so, C.NAM), gGN = tr(r.so, C.GN), gTC = C.TC ? tr(r.so, C.TC) : 0, gTU = C.TU ? tr(r.so, C.TU) : 0, kb = r.kb || '';
+    const x = out.get(ma) || { ma_da: ma, ten: String(r.ten || '').replace(new RegExp('^(' + ma + '\\s*-\\s*)+'), ''), kb, gt: 0, gtNam: 0, gtGN: 0, gtTC: 0, gtTU: 0, so_dong: 0, theoKB: {} };
+    x.gt += g; x.gtNam += gNam; x.gtGN += gGN; x.gtTC += gTC; x.gtTU += gTU; x.so_dong++;
+    const t = x.theoKB[kb] ||= { gt: 0, gtNam: 0, gtGN: 0, gtTC: 0, gtTU: 0 }; t.gt += g; t.gtNam += gNam; t.gtGN += gGN; t.gtTC += gTC; t.gtTU += gTU;
     out.set(ma, x);
   }
   const kbTong = {};
-  for (const [k, v] of Object.entries(file?.tong?.kb || {})) kbTong[k] = { tong: tr(v.so, C.KD), tongNam: tr(v.so, C.NAM), tongGN: tr(v.so, C.GN) };
+  for (const [k, v] of Object.entries(file?.tong?.kb || {})) kbTong[k] = { tong: tr(v.so, C.KD), tongNam: tr(v.so, C.NAM), tongGN: tr(v.so, C.GN), tongTC: C.TC ? tr(v.so, C.TC) : 0, tongTU: C.TU ? tr(v.so, C.TU) : 0 };
   const t = file?.tong?.tong;
   const m = /từ ngày\s*([\d/]+)\s*đến ngày\s*([\d/]+)/i.exec(file?.ky_in || '');
+  // TT85 nạp trước khi có cột V, W thì chưa có số → báo cần nạp lại
+  const coVW = loai !== 'TT85' || (t && 'V' in t) || (rows || []).some(r => r.so && ('V' in r.so || 'W' in r.so));
   return { loai, ds: out, tong: t ? tr(t, C.KD) : null, tongNam: t ? tr(t, C.NAM) : null, tongGN: t ? tr(t, C.GN) : null,
-    co: { KD: true, NAM: true, GN: true }, ky: m ? { tu: m[1], den: m[2], text: file.ky_in } : null, kbTong, nhieuKB: true,
+    tongTC: t && C.TC ? tr(t, C.TC) : null, tongTU: t && C.TU ? tr(t, C.TU) : null,
+    co: { KD: true, NAM: true, GN: true, TC: !!C.TC && coVW, TU: !!C.TU && coVW }, ky: m ? { tu: m[1], den: m[2], text: file.ky_in } : null, kbTong, nhieuKB: true,
     ten_file: file?.ten_file || '', luu: true, tai_luc: file?.tai_luc };
 }
 

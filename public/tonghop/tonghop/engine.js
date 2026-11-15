@@ -7,7 +7,7 @@
 // ---- Cấu hình sheet nguồn ------------------------------------------------
 // Cột số liệu cần đọc ở mỗi sheet nguồn (theo vị trí cột trong file xuất từ hệ thống)
 export const NGUON = {
-  TT85: { ten: 'BC TT 85', cotMa: 'D', cotDiaDiem: 'C', cotSo: ['J', 'L', 'M', 'P', 'R', 'S'] },
+  TT85: { ten: 'BC TT 85', cotMa: 'D', cotDiaDiem: 'C', cotSo: ['J', 'L', 'M', 'P', 'R', 'S', 'V', 'W'] },   // V, W: đối chiếu với B5-01 (cột P, Q)
   TT15: { ten: 'BC TT 15', cotMa: 'D', cotDiaDiem: null, cotSo: ['F', 'H', 'K', 'L', 'N', 'O'] },
   // Báo cáo TT37 (mẫu 01b/TTKHN, toàn KBNN khu vực) – cùng bố cục cột với BC TT 15
   //   boLap: file liệt kê dự án vốn nước ngoài 2 lần trong mục "Theo cơ chế ghi thu, ghi chi"
