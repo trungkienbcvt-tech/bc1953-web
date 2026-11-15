@@ -209,3 +209,11 @@ dialog.modal.wide{width:min(1500px,96vw)}
 .tbl.ss td.nxc{min-width:180px}
 tr.click{cursor:pointer} tr.click:hover td{background:#f2f6fb} tr.chon td{background:#eaf1fb}
 @media (max-width:800px){ .dc-dong{grid-template-columns:1fr} }
+
+/* ---------------- Bảng chi tiết đối chiếu: mỗi chỉ tiêu một nhóm 3 cột */
+.dc-gon h2{margin:0 0 6px;font-size:18px}
+.tbl.dc-bang th.nhomct{background:#e3ecf8;border-left:2px solid #9fb4d1;line-height:1.3}
+.tbl.dc-bang th.nhomct small{font-weight:400;color:var(--muted)}
+.tbl.dc-bang td.dauct{border-left:2px solid #c7d6ec}
+.tbl.dc-bang td.lechct{background:#fff4e5}
+.tbl.dc-bang thead tr:nth-child(2) th:nth-child(3n+1){border-left:2px solid #9fb4d1}
