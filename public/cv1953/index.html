@@ -300,7 +300,7 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kt tr.kxl.khac td{background:#fff7e6!important;color:#7c2d12}.kt tr.kxl td.kl{text-align:left;font-weight:600;padding-left:20px;font-size:12.5px}
 .kt tr.klink td{text-align:left;padding-left:56px;padding-top:0;padding-bottom:0;line-height:1.5}.kt tr.klink.open,.kt tr.kedit,.kt tr.kedit2{display:none}.kt tr.kedit.open,.kt tr.kedit2.open{display:table-row}
 .kmo{cursor:pointer;color:#b9a6aa;font-size:12px}.kmo:hover{color:var(--acc);text-decoration:underline}
-.kt tr.kedit td.in{padding:3px 4px}.kt tr.kedit input.ki{width:100%;min-width:0;box-sizing:border-box;text-align:right;padding:5px 6px;font-size:13px}.kt tr.kedit td.v{font-weight:600}
+.kt tr.kmain td.in{padding:3px 4px}.kt tr.kmain td.in small.kth{font-size:10.5px;color:#9a8a8e;text-align:right;line-height:1.1;margin-top:1px}.kt tr.kmain.khac td.v{color:#92400e}.kt tr.kmain input.ki{width:100%;min-width:0;box-sizing:border-box;text-align:right;padding:5px 6px;font-size:13px}.kt tr.kedit td.in{padding:3px 4px}.kt tr.kedit input.ki{width:100%;min-width:0;box-sizing:border-box;text-align:right;padding:5px 6px;font-size:13px}.kt tr.kedit td.v{font-weight:600}
 .kt tr.kedit2 td.ly{text-align:left;padding:2px 8px 6px}.kt tr.kedit2 input.kly{width:calc(100% - 150px);min-width:0;box-sizing:border-box;text-align:left;margin-right:10px}
 .kpdet{padding:12px 16px;margin-bottom:12px}.kpdet>summary{cursor:pointer;font-weight:700;color:var(--acc2);font-size:15px}.kpdet>summary small{font-weight:400;color:var(--mut)}.kpdl td,.kpdl th{vertical-align:top}.kpdl td:nth-child(1){text-align:center}.kpph td.p,.kpph td:first-child{white-space:nowrap}.kpph th{white-space:nowrap}.kpph .dck{white-space:nowrap}
 .kpchg{display:grid;grid-template-columns:minmax(320px,1fr) minmax(320px,1.2fr);gap:12px;margin-bottom:12px}.kpchg .hb{grid-template-columns:minmax(100px,170px) 1fr 84px}.kpchg .kpwide .hb{grid-template-columns:minmax(120px,330px) 1fr 90px}@media(max-width:900px){.kpchg{grid-template-columns:1fr}}
@@ -315,7 +315,7 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kpq .dn{width:96px;height:96px}.kpq .dnl{font-size:12px;margin:0;padding:0}.kpq .dnl li{margin:2px 0}.kpq .dnw{gap:8px}
 .kdel{cursor:pointer;color:#b91c1c;font-size:12px;align-self:center}
 .bt.kt{border-collapse:separate;border-spacing:0}.bt.kt{table-layout:fixed;width:100%}.kt{font-size:12.5px}.kt thead th{min-width:0!important}.kt tbody td{padding:6px 5px}.kt tbody td:nth-child(2){min-width:0!important;max-width:none!important;overflow-wrap:anywhere}.kt tbody td:nth-child(1){min-width:0!important}.kt tbody td.v{font-variant-numeric:tabular-nums}
-.kt tr.kedit input.ki{padding:4px 4px;font-size:12.5px}
+.kt tr.kedit input.ki,.kt tr.kmain input.ki{padding:4px 4px;font-size:12.5px}
 .kpw{overflow-x:hidden!important}
 .kpsave{background:linear-gradient(135deg,#f59e0b,#e11d48);color:#fff;border:0;font-weight:700;font-size:14.5px;padding:10px 20px;border-radius:10px;cursor:pointer;box-shadow:0 4px 12px rgba(225,29,72,.3)}.kpsave:disabled{opacity:.45;box-shadow:none;cursor:default}
 .kt thead th{position:sticky;background:#f6e3e6;z-index:3;padding:4px 6px}.kt thead tr:first-child th{top:0;height:32px}.kt thead tr:nth-child(2) th{top:var(--k1,32px);height:44px}.kt thead tr:first-child th[rowspan]{z-index:6;vertical-align:middle}
@@ -1048,12 +1048,13 @@ function kpBody(d){
   h+='<div class="card" style="padding:0"><div class="kpw"><table class="bt kt"><colgroup><col style="width:46px"><col style="width:205px">'+'<col>'.repeat(9)+'</colgroup>'+kpHdr()+'<tbody>';
   rows.forEach(function(x){
     var leaf=x.k==='row',cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-n':(x.st==='sub'?'bt-s':'bt-i'))),adj=leaf&&(ev==='sau'?x.ok>0:x.ly!==undefined);
-    h+='<tr class="'+cl+(adj&&ev==='sau'?' khac':'')+'"'+(leaf?' data-m="'+esc(x.khoa)+'"':'')+'><td class="bt-a">'+esc(x.a==null?'':x.a)+'</td><td style="text-align:left">'+esc(x.b)+(leaf&&x.c&&th?' <small>'+esc(x.c)+'</small>':'')+(adj&&ev==='sau'?' <small style="color:#b45309;font-weight:600">● đã điều chỉnh</small>':'')+'</td>'+kpCells(x).map(function(n,i){return '<td class="v c'+i+'">'+kpFmtC(n)+'</td>'}).join('')+'</tr>';
-    if(leaf&&ed){var at='data-k="'+esc(x.khoa)+'" data-t="'+[x.t0,x.t1,x.t2,x.t3].join(',')+'"',c9=kp9(x,'p'),KI={4:0,5:1,7:2,8:3},ek=['p0','p1','p2','p3'];
-      h+='<tr class="kxl kedit khac open" '+at+'><td></td><td class="kl">Số đề nghị điều chỉnh</td>'+c9.map(function(n,i){return KI[i]!==undefined?'<td class="in"><input class="ki" data-i="'+KI[i]+'" inputmode="decimal" value="'+kpVal(x[ek[KI[i]]])+'"></td>':'<td class="v s'+i+'">'+fmt(n)+'</td>'}).join('')+'</tr>';
+    if(leaf&&ed){var at='data-k="'+esc(x.khoa)+'" data-t="'+[x.t0,x.t1,x.t2,x.t3].join(',')+'"',c9=kp9(x,'p'),KI={4:0,5:1,7:2,8:3},ek=['p0','p1','p2','p3'],tv=[x.t0,x.t1,x.t2,x.t3];
+      h+='<tr class="kmain'+(adj?' khac':'')+'" '+at+'><td class="bt-a">'+esc(x.a==null?'':x.a)+'</td><td style="text-align:left">'+esc(x.b)+'</td>'+c9.map(function(n,i){return KI[i]!==undefined?'<td class="in"><input class="ki" data-i="'+KI[i]+'" inputmode="decimal" value="'+kpVal(x[ek[KI[i]]])+'"><small class="kth" style="display:'+(Math.abs(x[ek[KI[i]]]-tv[KI[i]])>0.0005?'block':'none')+'">THBC: '+fmt(tv[KI[i]])+'</small></td>':'<td class="v kq'+i+'">'+fmt(n)+'</td>'}).join('')+'</tr>';
       h+='<tr class="kxl kedit2 khac'+(adj?' open':'')+'" '+at+'><td></td><td class="kl">Lý do (bắt buộc)</td><td colspan="9" class="ly"><input class="kly" maxlength="300" value="'+esc(x.ly||'')+'" placeholder="VD: Chủ đầu tư đã gửi hồ sơ đến KBNN, đơn vị đang xử lý hồ sơ"><a class="kdel">Hủy điều chỉnh</a></td></tr>'}
-    else if(adj&&ev==='de'){h+='<tr class="kxl ro khac"><td></td><td class="kl">Số đề nghị điều chỉnh <small>(chênh '+kpLech(kpPr(x)-kpTh(x))+')</small></td>'+kp9(x,'p').map(function(n){return '<td class="v">'+fmt(n)+'</td>'}).join('')+'</tr><tr class="kxl ro2 khac"><td></td><td class="kl">Lý do</td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}
-    else if(adj&&ev==='sau'){h+='<tr class="kxl ro2 khac"><td></td><td class="kl">Lý do <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+' so với THBC)</small></td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}});
+    else{
+      h+='<tr class="'+cl+(adj&&ev==='sau'?' khac':'')+'"'+(leaf?' data-m="'+esc(x.khoa)+'"':'')+'><td class="bt-a">'+esc(x.a==null?'':x.a)+'</td><td style="text-align:left">'+esc(x.b)+(leaf&&x.c&&th?' <small>'+esc(x.c)+'</small>':'')+(adj&&ev==='sau'?' <small style="color:#b45309;font-weight:600">● đã điều chỉnh</small>':'')+'</td>'+kpCells(x).map(function(n,i){return '<td class="v c'+i+'">'+kpFmtC(n)+'</td>'}).join('')+'</tr>';
+      if(adj&&ev==='de'){h+='<tr class="kxl ro khac"><td></td><td class="kl">Số đề nghị điều chỉnh <small>(chênh '+kpLech(kpPr(x)-kpTh(x))+')</small></td>'+kp9(x,'p').map(function(n){return '<td class="v">'+fmt(n)+'</td>'}).join('')+'</tr><tr class="kxl ro2 khac"><td></td><td class="kl">Lý do</td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}
+    else if(adj&&ev==='sau'){h+='<tr class="kxl ro2 khac"><td></td><td class="kl">Lý do <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+' so với THBC)</small></td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}}});
   h+='</tbody></table></div></div>'}
   if(S.vt==='PGD'){var tt=q.tt||(d.ds[0]||{}).tt,btn='',msg='';
     var TM={xn:'Phòng đã xác nhận số liệu.',xn_dc:'Phòng đã xác nhận số điều chỉnh.',gui:'Số điều chỉnh đã gửi, chờ Trưởng phòng phê duyệt.',duyet:'Số điều chỉnh đã được phê duyệt, chờ Trưởng phòng xác nhận.',nhap:'Người lập đang soạn số điều chỉnh, chưa gửi phê duyệt.'};
@@ -1095,12 +1096,12 @@ function kpRowVals(tr){return [].map.call(tr.querySelectorAll('.ki'),function(i)
 function kpLy(tr){return tr.nextElementSibling.querySelector('.kly')}
 function kpUpdRow(tr){
   var t=tr.getAttribute('data-t').split(',').map(Number),v=kpRowVals(tr),ok=v.every(function(x){return !isNaN(x)}),khac=ok&&v.some(function(x,i){return Math.abs(x-t[i])>0.0005}),ly=kpLy(tr);
-  tr.classList.toggle('sai',!ok);ly.classList.toggle('thieu',khac&&ly.value.trim().length<3);tr.nextElementSibling.classList.toggle('open',khac||ly.value.trim().length>0);
-  if(ok){var c=kp9({e0:v[0],e1:v[1],e2:v[2],e3:v[3]},'e');[0,1,2,3,6].forEach(function(i){var e=tr.querySelector('.s'+i);if(e)e.textContent=fmt(c[i])})}
+  tr.classList.toggle('sai',!ok);tr.classList.toggle('khac',khac);[].forEach.call(tr.querySelectorAll('.ki'),function(inp,i){var sm=inp.parentNode.querySelector('.kth'),vv=kpParse(inp.value);if(sm)sm.style.display=(!isNaN(vv)&&Math.abs(vv-t[i])>0.0005)?'block':'none'});ly.classList.toggle('thieu',khac&&ly.value.trim().length<3);tr.nextElementSibling.classList.toggle('open',khac||ly.value.trim().length>0);
+  if(ok){var c=kp9({e0:v[0],e1:v[1],e2:v[2],e3:v[3]},'e');[0,1,2,3,6].forEach(function(i){var e=tr.querySelector('.kq'+i);if(e)e.textContent=fmt(c[i])})}
   kpTally()}
 function kpTally(){
   var dirty=0,thieu=0,sai=0,khacN=0;
-  [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},vv=kpRowVals(r),l=kpLy(r).value.trim();
+  [].forEach.call($('main').querySelectorAll('tr.kmain[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},vv=kpRowVals(r),l=kpLy(r).value.trim();
     if(vv.some(isNaN)){sai++;return}
     var tt=r.getAttribute('data-t').split(',').map(Number),kh=vv.some(function(x,i){return Math.abs(x-tt[i])>0.0005}),ch=vv.some(function(x,i){return Math.abs(x-[s.p0,s.p1,s.p2,s.p3][i])>0.0005})||(kh&&l!==(s.ly||''));
     if(ch)dirty++;if(kh){khacN++;if(l.length<3)thieu++}});
@@ -1109,14 +1110,14 @@ function kpTally(){
   if(b)b.disabled=!dirty||!!sai;if(g)g.disabled=!!sai||!!thieu||!khacN;S.kpDirty=dirty;S.kpKhac=khacN}
 function kpGather(){
   var items=[],bad=[];
-  [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},v=kpRowVals(r),l=kpLy(r).value.trim();
+  [].forEach.call($('main').querySelectorAll('tr.kmain[data-k]'),function(r){var s=S.kp.rows.filter(function(x){return x.khoa===r.getAttribute('data-k')})[0]||{},v=kpRowVals(r),l=kpLy(r).value.trim();
     if(v.some(isNaN)){bad.push(s.b);return}
     var ch=v.some(function(x,i){return Math.abs(x-[s.p0,s.p1,s.p2,s.p3][i])>0.0005})||(l!==(s.ly||''));if(ch)items.push({khoa:r.getAttribute('data-k'),v:v,ly:l})});
   return {items:items,bad:bad}}
 function kpFit(){var fr=$('kpFrame');if(fr){var ft=document.querySelector('.kpfoot'),hh=Math.max(420,window.innerHeight-fr.getBoundingClientRect().top-(ft?ft.offsetHeight+30:24));fr.style.height=hh+'px';var nt=document.querySelector('.kpn');if(nt)nt.style.maxHeight=hh+'px'}var w=document.querySelector('.kpw');if(!w)return;var f=document.querySelector('.kpfoot'),t=w.getBoundingClientRect().top;w.style.maxHeight=Math.max(380,window.innerHeight-t-(f?f.offsetHeight+26:20))+'px'}
 window.addEventListener('resize',function(){try{kpFit()}catch(e){}});
 function bindKp(){
-  var d=S.kp;kpFit();if($('kpFrame'))kpPdfLoad();if($('main').querySelector('tr.kedit[data-k]'))kpTally();
+  var d=S.kp;kpFit();if($('kpFrame'))kpPdfLoad();if($('main').querySelector('tr.kmain[data-k]'))kpTally();
   var kt=$('main').querySelector('table.kt');if(kt){var hr=kt.querySelectorAll('thead tr'),h1=hr[0].getBoundingClientRect().height,h2=hr[1].getBoundingClientRect().height;kt.style.setProperty('--k1',h1+'px');kt.style.setProperty('--k2',(h1+h2)+'px')}
   if($('kpMoc'))$('kpMoc').onchange=function(){S.kpId=this.value;S.kp=null;drawKpi(S.tab)};
   if($('kpNewB'))$('kpNewB').onclick=function(){var n=$('kpNew');n.style.display=n.style.display==='none'?'block':'none'};
@@ -1140,7 +1141,7 @@ function bindKp(){
   [].forEach.call($('main').querySelectorAll('input[name=kv]'),function(r){r.onchange=function(){if(S.kpDirty){toast('Có thay đổi chưa lưu, hãy bấm Lưu số điều chỉnh trước khi đổi cách xem.',6000);[].forEach.call($('main').querySelectorAll('input[name=kv]'),function(x){x.checked=x.value===(S.kpView||'sau')});return}S.kpView=r.value;drawKpi(S.tab)}});
   [].forEach.call($('main').querySelectorAll('tr.kedit2 .kdel'),function(a){a.onclick=function(){var tr=a.closest('tr').previousElementSibling,t=tr.getAttribute('data-t').split(',');[].forEach.call(tr.querySelectorAll('.ki'),function(i,k){i.value=kpVal(Number(t[k]))});kpLy(tr).value='';kpUpdRow(tr)}});
   if($('kpP'))$('kpP').onchange=function(){S.kpP=this.value;drawKpi(S.tab)};
-  [].forEach.call($('main').querySelectorAll('tr.kedit[data-k]'),function(tr){[].forEach.call(tr.querySelectorAll('input'),function(i){i.oninput=function(){kpUpdRow(tr)}});kpLy(tr).oninput=function(){kpUpdRow(tr)}});
+  [].forEach.call($('main').querySelectorAll('tr.kmain[data-k]'),function(tr){[].forEach.call(tr.querySelectorAll('input'),function(i){i.oninput=function(){kpUpdRow(tr)}});kpLy(tr).oninput=function(){kpUpdRow(tr)}});
   var kpLuuRun=function(){var g=kpGather();if(g.bad.length){toast('Có ô nhập chưa đúng số: '+g.bad[0],7000);return null}return g.items.length?run('kpiLuu',S.token,d.moc.id,g.items):Promise.resolve(null)};
   if($('kpSave'))$('kpSave').onclick=function(){var p=kpLuuRun();if(!p)return;p.then(function(r){if(r){S.kp=r;S.kpD={}}toast('Đã lưu tạm số đề nghị điều chỉnh.',4000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),12000)})};
   if($('kpGui'))$('kpGui').onclick=function(){var g0=kpGather();if(g0.bad.length){toast('Có ô nhập chưa đúng số: '+g0.bad[0],7000);return}
