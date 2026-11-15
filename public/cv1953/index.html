@@ -433,18 +433,18 @@ function vaoApp(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=
     $('who').textContent=(S.vt==='TH'?'★ ':'')+S.ten;start()})}
 function dangNhap(){
   $('lgErr').textContent='';$('lgBtn').disabled=true;$('lgBtn').textContent='Đang kiểm tra...';
-  run('dangNhap',$('lgPgd').value,$('lgMa').value).then(function(r){try{sessionStorage.setItem('cv1953s',JSON.stringify(r))}catch(e){}return vaoApp(r)})
+  run('dangNhap',$('lgPgd').value,$('lgMa').value).then(function(r){try{localStorage.setItem('cv1953s',JSON.stringify(r))}catch(e){}return vaoApp(r)})
   .catch(function(e){$('lgErr').textContent=msg(e)}).then(function(){$('lgBtn').disabled=false;$('lgBtn').textContent='Đăng nhập'});
 }
-(function(){var r;try{r=JSON.parse(sessionStorage.getItem('cv1953s')||'null')}catch(e){}   // tải lại trang vẫn giữ phiên đăng nhập
-  if(r&&r.token)vaoApp(r).catch(function(){try{sessionStorage.removeItem('cv1953s')}catch(e){}})})();
+(function(){var r;try{r=JSON.parse(localStorage.getItem('cv1953s')||sessionStorage.getItem('cv1953s')||'null')}catch(e){}   // tải lại trang vẫn giữ phiên đăng nhập
+  if(r&&r.token)vaoApp(r).catch(function(e){if(/hết hạn|không còn hiệu lực|đăng nhập lại/i.test(msg(e))){try{localStorage.removeItem('cv1953s');sessionStorage.removeItem('cv1953s')}catch(x){}}})})();
 $('maBtn').onclick=function(){
   $('mbox').innerHTML='<h3 style="margin:0 0 8px">🔑 Đổi mã đăng nhập</h3><p class="hint" style="margin:0 0 8px">Tài khoản: <b>'+esc(S.ten)+'</b>. Mã mới gồm 6 đến 12 ký tự chữ hoặc số, không dùng mã mặc định.</p><label>Mã hiện tại</label><input id="mCu" type="password" autocomplete="off"><label>Mã mới</label><input id="mMoi" type="password" autocomplete="off" maxlength="12"><label>Nhập lại mã mới</label><input id="mLai" type="password" autocomplete="off" maxlength="12"><div id="mErr" class="err"></div><div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end"><button id="mNo">Hủy</button><button class="pri" id="mOk">Đổi mã</button></div>';
   $('modal').style.display='flex';$('mCu').focus();
   $('mNo').onclick=function(){$('modal').style.display='none'};
   $('mOk').onclick=function(){if($('mMoi').value!==$('mLai').value){$('mErr').textContent='Hai lần nhập mã mới chưa giống nhau.';return}
     run('doiMa',S.token,$('mCu').value,$('mMoi').value).then(function(){$('modal').style.display='none';toast('Đã đổi mã đăng nhập. Lần sau dùng mã mới.',6000)}).catch(function(e){$('mErr').textContent=msg(e)})}};
-$('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{sessionStorage.removeItem('cv1953s')}catch(e){}location.reload()};
+$('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{localStorage.removeItem('cv1953s');sessionStorage.removeItem('cv1953s')}catch(e){}location.reload()};
 window.addEventListener('beforeunload',function(e){if(nDirty()){e.preventDefault();e.returnValue=''}});
 $('xemSel').onchange=function(){S.xem=$('xemSel').value;loadXem()};
 function loadXem(){run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;S.dirty={};show(S.tab)}).catch(function(e){toast(msg(e),6000)})}
