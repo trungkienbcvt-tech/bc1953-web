@@ -304,7 +304,7 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kt tr.kedit2 td.ly{text-align:left;padding:2px 8px 6px}.kt tr.kedit2 input.kly{width:calc(100% - 150px);min-width:0;box-sizing:border-box;text-align:left;margin-right:10px}
 .kpdet{padding:12px 16px;margin-bottom:12px}.kpdet>summary{cursor:pointer;font-weight:700;color:var(--acc2);font-size:15px}.kpdet>summary small{font-weight:400;color:var(--mut)}.kpdl td,.kpdl th{vertical-align:top}.kpdl td:nth-child(1){text-align:center}.kpph td.p,.kpph td:first-child{white-space:nowrap}.kpph th{white-space:nowrap}.kpph .dck{white-space:nowrap}
 .kpchg{display:grid;grid-template-columns:minmax(320px,1fr) minmax(320px,1.2fr);gap:12px;margin-bottom:12px}.kpchg .hb{grid-template-columns:minmax(100px,170px) 1fr 84px}.kpchg .kpwide .hb{grid-template-columns:minmax(120px,330px) 1fr 90px}@media(max-width:900px){.kpchg{grid-template-columns:1fr}}
-.kpt{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:12px;align-items:start}.kpf{padding:0!important;overflow:hidden;position:relative}.kpf iframe{width:100%;height:520px;border:0;display:block;background:#fff}
+.kpt{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start}.kpnw{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px 18px}.kpf{padding:0!important;overflow:hidden;position:relative}.kpf iframe{width:100%;height:520px;border:0;display:block;background:#fff}
 .kpn{padding:12px 14px;overflow:auto}.kpn h4{margin:0 0 6px;font-size:14.5px;color:var(--acc2)}.kpni{border-top:1px solid #f0e4e6;padding:8px 0;font-size:13px}.kpni s{color:#9a8a8e}.kpnd{color:#b91c1c;font-weight:700;float:right}.kpnl{font-style:italic;color:#5c4a4e;margin-top:3px}
 @media(max-width:900px){.kpt{grid-template-columns:1fr}}
 .kpq1{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:5px 12px;margin-bottom:8px;flex-wrap:wrap}.kpq1 h2{margin:0;font-size:17px;color:var(--acc2)}.kpq1 .hi{font-size:12.5px;color:var(--mut)}.kpq1 .hs{font-size:12.5px;color:var(--mut)}.kpq1 .hs b{color:var(--ink)}
@@ -755,6 +755,7 @@ var HDAN='<b>Cách điền:</b> nhập <b>số lũy kế giải ngân đến cu�
 function drawTable(id){
   var b=S.data.sheets.filter(function(x){return x.id===id})[0],m=$('main'),ro=!canEdit(),NC=b.cols.length+2;
   if(!b.rows.length&&!(b.secs&&b.secs.length)){m.innerHTML='<p class="hint">'+esc(S.data.pgd)+' không có chủ đầu tư nào trong biểu này.</p>';return}
+  if(S.vt==='PGD'&&S.info&&(S.info.cv==='TP'||S.info.cv==='KTT')){drawTpBieu(id,b);return}
   var depth=b.cols[0].lv.length,note=(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã đóng, chỉ xem.</b> ':'')+(ro&&S.vt==='PGD'&&!S.data.kyCu?'<b style="color:#b45309">Báo cáo đang ở trạng thái "'+esc(S.data.tt)+'" nên không sửa được.</b>':'');
   var h='<div class="tb1"><div class="tb1l">'+(note?'<p class="hint" style="margin:0 0 6px">'+note+'</p>':'')+(canEdit()?'<div class="hd1">'+HDAN+'</div>':'')+'</div><div class="tb1r">'+expBar('bieu',id)+(canEdit()?'<button id="kpsBtn" class="mini" title="Các dòng chưa có số liệu và chưa chọn tình trạng sẽ được đặt là Không phát sinh">Đặt "Không phát sinh" cho dòng chưa có số liệu</button>':'')+'</div></div>'+
     '<div class="ttl">'+(b.tieuDe||[]).map(function(t,i){return i?'<span>'+esc(t)+'</span>':'<b>'+esc(t)+'</b>'}).join('')+'</div><div class="dvr">Đơn vị: Triệu đồng</div><div id="dcBox"></div><div class="wrap"><table><thead>';
@@ -794,6 +795,19 @@ function drawTable(id){
   h+='</tbody></table></div>';m.innerHTML=h;
   [].forEach.call(m.querySelectorAll('[data-k]'),bind);dcLoad();dcRender();fixTop(m);
 }
+/* Trưởng phòng / Kế toán trưởng xem biểu 1953 dưới dạng bản in; ghi chú ở dưới cùng */
+function drawTpBieu(id,b){
+  var m=$('main'),jg=-1,js=-1;b.cols.forEach(function(c,j){if(c.t==='g')jg=j;if(c.t==='s')js=j});
+  var it='';b.rows.forEach(function(r){var g=jg>=0?String(r.v[jg]==null?'':r.v[jg]).trim():'',ts=js>=0?String(r.v[js]==null?'':r.v[js]).trim():'';
+    if(g)it+='<div class="kpni"><b>'+esc(r.b)+'</b>'+(ts?' <span class="kpnd" style="color:#7c3aed">'+esc(ts)+'</span>':'')+'<div class="kpnl">'+esc(g)+'</div></div>'});
+  var h='<div class="tb1"><div class="tb1l"><p class="hint" style="margin:0">'+(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã đóng, chỉ xem.</b> ':'')+'Trạng thái báo cáo: <b>'+esc(S.data.tt||'')+'</b>. Bản in bên dưới là biểu gửi đi; Trưởng phòng / Kế toán trưởng chỉ xem.</p></div><div class="tb1r">'+expBar('bieu',id)+'</div></div>'+
+    '<div class="kpt"><div class="card kpf"><div id="kpFrWait" class="hint" style="padding:20px">⏳ Đang tạo biểu...</div><iframe id="kpFrame" title="Biểu"></iframe></div>'+
+    '<div class="card kpn"><h4>📝 Ghi chú</h4>'+(it?'<div class="kpnw">'+it+'</div>':'<p class="hint" style="margin:0">Không có ghi chú.</p>')+'</div></div>';
+  m.innerHTML=h;bindEx();kpFit();
+  var go=function(){var ng=dmyIso(($('eNgay')||{}).value||S.ngay||homNay()),f=$('kpFrame');if(!f||!ng)return;
+    run('xuatBieu',S.token,NAMEB[id],ng,S.xem,'pdf',S.ky).then(function(r){if(S.tab!==id)return;var t=new TextDecoder('utf-8').decode(Uint8Array.from(atob(r.b64),function(c){return c.charCodeAt(0)})).replace(/<script>setTimeout[\s\S]*?<\/script>/,'').replace('</head>','<style>.np{display:none}</style></head>');f.srcdoc=t;var w=$('kpFrWait');if(w)w.style.display='none'})
+    .catch(function(e){var w=$('kpFrWait');if(w){w.style.display='block';w.textContent='Không tạo được biểu: '+msg(e)}})};
+  go();var tm=null;if($('eNgay'))$('eNgay').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(go,700)})}
 function deeper(c,i){for(var x=i+1;x<c.lv.length;x++)if(c.lv[x])return true;return false}
 function sameUp(a,b,i){for(var x=0;x<i;x++)if(a.lv[x]!==b.lv[x])return false;return true}
 function fixTop(m){var y=0;[].forEach.call(m.querySelectorAll('thead tr'),function(tr){[].forEach.call(tr.children,function(th){th.style.top=y+'px'});y+=tr.offsetHeight});var t=m.querySelector('.wrap table');if(t)t.style.setProperty('--hh',y+'px')}
@@ -1069,13 +1083,13 @@ function kpBody(d){
 function kpNote(d,hasProp){
   var m=d.ds[0]||{},LB=['Kéo dài · KLHT','Kéo dài · tạm ứng','Vốn năm · KLHT','Vốn năm · tạm ứng'],h='<div class="card kpn"><h4>📝 Ghi chú</h4>';
   if(!hasProp)h+='<p class="hint" style="margin:0">'+(m.tt==='nhap'?'Người lập đang soạn số điều chỉnh, chưa gửi.':'Không có đề nghị điều chỉnh: phòng ghi nhận đúng số THBC.')+'</p>';
-  else{h+='<p class="hint" style="margin:0 0 8px">'+(m.guiNguoi?esc(m.guiNguoi)+(m.guiLuc?' · '+esc(m.guiLuc):''):'Đề nghị điều chỉnh khác THBC')+'</p>';
+  else{h+='<p class="hint" style="margin:0 0 6px">'+(m.guiNguoi?esc(m.guiNguoi)+(m.guiLuc?' · '+esc(m.guiLuc):''):'Đề nghị điều chỉnh khác THBC')+'</p><div class="kpnw">';
     d.rows.forEach(function(x){if(x.k!=='row'||x.ly===undefined)return;var t=[x.t0,x.t1,x.t2,x.t3],p=[x.p0,x.p1,x.p2,x.p3],ch=[];
       t.forEach(function(v,i){if(Math.abs(p[i]-v)>0.0005)ch.push('<div>'+LB[i]+': <s>'+fmt(v)+'</s> → <b>'+fmt(p[i])+'</b></div>')});
-      h+='<div class="kpni"><b>'+esc(x.b)+'</b> <span class="kpnd">'+kpLech(kpPr(x)-kpTh(x))+'</span>'+ch.join('')+'<div class="kpnl">Lý do: '+esc(x.ly)+'</div></div>'})}
+      h+='<div class="kpni"><b>'+esc(x.b)+'</b> <span class="kpnd">'+kpLech(kpPr(x)-kpTh(x))+'</span>'+ch.join('')+'<div class="kpnl">Lý do: '+esc(x.ly)+'</div></div>'});h+='</div>'}
   return '<div class="kpt"><div class="card kpf"><div id="kpFrWait" class="hint" style="padding:20px">⏳ Đang tạo biểu...</div><iframe id="kpFrame" title="Biểu KPI"></iframe></div>'+h+'</div></div>'}
 function kpPdfLoad(){var f=$('kpFrame');if(!f)return;
-  run('xuatKpi',S.token,S.kp.moc.id,'pdf',S.kpEv||'goc').then(function(r){var t=new TextDecoder('utf-8').decode(Uint8Array.from(atob(r.b64),function(c){return c.charCodeAt(0)})).replace(/<script>setTimeout[\s\S]*?<\/script>/,'');f.srcdoc=t;var w=$('kpFrWait');if(w)w.style.display='none'})
+  run('xuatKpi',S.token,S.kp.moc.id,'pdf',S.kpEv||'goc').then(function(r){var t=new TextDecoder('utf-8').decode(Uint8Array.from(atob(r.b64),function(c){return c.charCodeAt(0)})).replace(/<script>setTimeout[\s\S]*?<\/script>/,'').replace('</head>','<style>.np{display:none}</style></head>');f.srcdoc=t;var w=$('kpFrWait');if(w)w.style.display='none'})
   .catch(function(e){var w=$('kpFrWait');if(w)w.textContent='Không tạo được biểu: '+msg(e)})}
 function kpDuyet(d,hasProp){
   var m=d.ds[0]||{},tot=d.rows.filter(function(x){return x.k==='tot'})[0]||{t0:0,t1:0,t2:0,t3:0,p0:0,p1:0,p2:0,p3:0,e0:0,e1:0,e2:0,e3:0,nd:0},q=d.quyen||{},tt=q.tt||m.tt,cho=tt==='gui',
@@ -1114,7 +1128,7 @@ function kpGather(){
     if(v.some(isNaN)){bad.push(s.b);return}
     var ch=v.some(function(x,i){return Math.abs(x-[s.p0,s.p1,s.p2,s.p3][i])>0.0005})||(l!==(s.ly||''));if(ch)items.push({khoa:r.getAttribute('data-k'),v:v,ly:l})});
   return {items:items,bad:bad}}
-function kpFit(){var fr=$('kpFrame');if(fr){var ft=document.querySelector('.kpfoot'),hh=Math.max(420,window.innerHeight-fr.getBoundingClientRect().top-(ft?ft.offsetHeight+30:24));fr.style.height=hh+'px';var nt=document.querySelector('.kpn');if(nt)nt.style.maxHeight=hh+'px'}var w=document.querySelector('.kpw');if(!w)return;var f=document.querySelector('.kpfoot'),t=w.getBoundingClientRect().top;w.style.maxHeight=Math.max(380,window.innerHeight-t-(f?f.offsetHeight+26:20))+'px'}
+function kpFit(){var fr=$('kpFrame');if(fr){var ft=document.querySelector('.kpfoot'),nt=document.querySelector('.kpn'),nh=nt?Math.min(nt.offsetHeight,150):0;if(nt)nt.style.maxHeight='150px';var hh=Math.max(380,window.innerHeight-fr.getBoundingClientRect().top-(ft?ft.offsetHeight+30:24)-nh-12);fr.style.height=hh+'px';}var w=document.querySelector('.kpw');if(!w)return;var f=document.querySelector('.kpfoot'),t=w.getBoundingClientRect().top;w.style.maxHeight=Math.max(380,window.innerHeight-t-(f?f.offsetHeight+26:20))+'px'}
 window.addEventListener('resize',function(){try{kpFit()}catch(e){}});
 function bindKp(){
   var d=S.kp;kpFit();if($('kpFrame'))kpPdfLoad();if($('main').querySelector('tr.kmain[data-k]'))kpTally();
