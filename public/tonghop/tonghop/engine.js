@@ -100,7 +100,26 @@ export function chuanHoaCDT(rows, mau) {
 
 // ---- Đọc sheet nguồn TT85 / TT15 ----------------------------------------
 // Bỏ phần tiêu đề: bắt đầu sau dòng đánh số cột (A=1, B=2). Chỉ giữ dòng có mã dự án.
-export function docNguon(rows, loai) {
+// Đơn vị số tiền của file hệ thống: dữ liệu lưu theo đồng. File xuất theo triệu đồng / nghìn đồng → quy đổi.
+// Ưu tiên dòng "Đơn vị tính: …" ở phần tiêu đề; không có thì xét số lẻ (số theo đồng luôn là số nguyên).
+export function heSoNguon(rows, loai) {
+  for (const r of rows.slice(0, 15)) for (const v of r || []) {
+    const t = txt(v).normalize('NFC').toLowerCase();
+    if (!/đơn\s*vị/.test(t)) continue;
+    if (/triệu\s*đồng|trđ/.test(t)) return 1e6;
+    if (/(nghìn|ngàn)\s*đồng/.test(t)) return 1e3;
+    if (/:\s*đồng/.test(t)) return 1;
+  }
+  const cfg = NGUON[loai]; let tong = 0, le = 0;
+  for (let i = dauBang(rows); i < rows.length && tong < 3000; i++) for (const c of cfg.cotSo) {
+    const v = soTien(rows[i]?.[colIdx(c)]); if (!v) continue;
+    tong++; if (Math.abs(v - Math.round(v)) > 1e-6) le++;
+  }
+  return tong && le / tong > 0.05 ? 1e6 : 1;
+}
+const quyDoi = (v, k) => k === 1 ? v : Math.round(v * k * 1000) / 1000;
+
+export function docNguon(rows, loai, heSo = heSoNguon(rows, loai)) {
   const cfg = NGUON[loai];
   const start = dauBang(rows);
   const iMa = colIdx(cfg.cotMa), iDD = cfg.cotDiaDiem ? colIdx(cfg.cotDiaDiem) : -1;
@@ -116,7 +135,7 @@ export function docNguon(rows, loai) {
       continue;
     }
     const so = {};
-    for (const c of cfg.cotSo) { const v = soTien(r[colIdx(c)]); if (v) so[c] = v; }
+    for (const c of cfg.cotSo) { const v = soTien(r[colIdx(c)]); if (v) so[c] = quyDoi(v, heSo); }
     if (cfg.boLap && ghiThu) { const k = ma + '|' + JSON.stringify(so); if (daCo.has(k)) continue; daCo.add(k); }
     out.push({ dong: i + 1, ma_da: ma, dia_diem: iDD >= 0 ? txt(r[iDD]) : '', kb, ten: txt(r[1]), so });
   }
@@ -134,10 +153,10 @@ function dauBang(rows) {
 const laDongKB = r => /^\d{4}$/.test(txt(r?.[0])) && /kbnn|kho bạc/i.test(txt(r?.[1]));
 
 // Số tổng do chính file hệ thống in ra: dòng TỔNG đầu bảng + dòng tổng từng KBNN
-export function docTong(rows, loai) {
+export function docTong(rows, loai, heSo = heSoNguon(rows, loai)) {
   const cfg = NGUON[loai];
   const start = dauBang(rows);
-  const lay = r => Object.fromEntries(cfg.cotSo.map(c => [c, soTien(r?.[colIdx(c)])]));
+  const lay = r => Object.fromEntries(cfg.cotSo.map(c => [c, quyDoi(soTien(r?.[colIdx(c)]), heSo)]));
   const tong = lay(rows[start]);
   const kb = {};
   for (let i = start; i < rows.length; i++) {

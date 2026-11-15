@@ -424,8 +424,9 @@ async function docFile(file, box) {
       }
       else {
         const ky = E.docKyIn(rows);
-        parsed[l] = { rows: E.docNguon(rows, l), ky: ky?.text || '', tong: E.docTong(rows, l) };
-        info.textContent = `${fmtDong(parsed[l].rows.length)} dòng có mã DA${ky ? ' · ' + ky.tu + '–' + ky.den : ''}`;
+        const hs = E.heSoNguon(rows, l);
+        parsed[l] = { rows: E.docNguon(rows, l, hs), ky: ky?.text || '', tong: E.docTong(rows, l, hs) };
+        info.textContent = `${fmtDong(parsed[l].rows.length)} dòng có mã DA${ky ? ' · ' + ky.tu + '–' + ky.den : ''}${hs !== 1 ? ` · file đơn vị ${hs === 1e6 ? 'triệu' : 'nghìn'} đồng – đã quy đổi về đồng` : ''}`;
       }
     };
     ['CDT', ...LOAI_NGUON].forEach(l => { doc(l); box.querySelector(`[data-l="${l}"]`).addEventListener('change', () => doc(l)); });
