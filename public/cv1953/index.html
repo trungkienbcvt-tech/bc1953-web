@@ -935,6 +935,7 @@ function saveKy(){var i=S.info;if(!$('kLap'))return Promise.resolve();i.lap=$('k
 var DM={loc:{tim:'',cdt:'',kbnn:'',dac_thu:'',ctmt:'',ctmt_2630:''},trang:0,opt:null,d:null,moHT:false,ht:null,seq:0};
 var DMC=[['dac_thu','Tính chất dự án'],['ctmt','Chương trình mục tiêu']];
 function dmSel(o,f,id,v,cls){var a=(o[f]||[]).slice();if(v&&a.indexOf(v)<0)a.push(v);return '<select '+(id?'id="'+id+'"':'data-f="'+f+'"')+(cls?' class="'+cls+'"':'')+'><option value=""></option>'+a.map(function(x){return '<option value="'+esc(x)+'"'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select>'}
+function dmDxTag(ma){var x=DM.dxMap&&DM.dxMap[ma];if(!x)return '';return x.tt_==='cho'?'<br><small style="color:#b45309">⏳ Đề xuất: '+(x.tt?esc(x.tt):'bỏ CĐT trực thuộc')+' (chờ duyệt)</small>':'<br><small style="color:#b91c1c">✗ Đề xuất bị từ chối'+(x.ly_do?': '+esc(x.ly_do):'')+'</small>'}
 function dmCt(o,v,id){var s=('+'+(v||'')+'+'),a=o.ctmt||[],n=(v||'').split('+').filter(Boolean).length;
   return '<details class="ctm"'+(id?' id="'+id+'"':' data-ct="1"')+'><summary>'+(v?esc(v.replace(/\+/g,', ')):'—')+'</summary><div class="ctl">'+a.map(function(x){return '<label><input type="checkbox" value="'+x+'"'+(s.indexOf('+'+x+'+')>=0?' checked':'')+'> '+x+'</label>'}).join('')+'</div></details>'}
 function dmCtVal(el){return [].map.call(el.querySelectorAll('input:checked'),function(i){return i.value}).join('+')}
@@ -946,11 +947,11 @@ function drawDm(){
     run('dmTuyChon',S.token).then(function(o){DM.opt=o;if(S.tab==='dm')drawDm()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
   var o=DM.opt;
   m.innerHTML='<h3 style="margin:0 0 4px">📁 Danh mục dự án</h3><p class="hint">'+(o.toanBo?'Cán bộ tổng hợp: xem, hoàn thiện và điều chỉnh <b>tất cả</b> mã dự án.':'Danh sách dự án của <b>'+esc(o.phamVi)+'</b>. Hoàn thiện chủ đầu tư và phân loại để số liệu vào đúng báo cáo.')+'</p>'+
-   '<div class="dmk" id="dmK"></div><div id="dmH"></div><div id="dmW"></div>'+
+   '<div class="dmk" id="dmK"></div><div id="dmH"></div><div id="dmW"></div><div id="dmD"></div>'+
    '<div class="dmf"><input type="text" class="q" id="dmQ" placeholder="🔍 Tìm mã hoặc tên dự án..." value="'+esc(DM.loc.tim)+'">'+
    '<select id="dmC">'+dmOpts(o.cdt,'Tất cả chủ đầu tư')+'</select>'+(o.toanBo?'<select id="dmB">'+dmOpts(o.kbnn,'Tất cả phòng giao dịch')+'</select>':'')+
    DMC.map(function(c){return dmSelCol(c[0],c[1],o)}).join('')+'</div>'+
-   '<div class="expb"><button class="pri" id="dmAdd">＋ Thêm dự án</button><button id="dmCb">🚩 Dự án sai/thiếu cần hoàn thiện</button><button id="dmHt">⚠ Hoàn thiện dự án đã phát sinh giải ngân</button><button id="dmBulk">Gán phân loại hàng loạt</button><button id="dmXls">⬇ Xuất Excel</button></div>'+
+   '<div class="expb"><button class="pri" id="dmAdd">＋ Thêm dự án</button><button id="dmDx">📝 Đề xuất CĐT trực thuộc</button><button id="dmCb">🚩 Dự án sai/thiếu cần hoàn thiện</button><button id="dmHt">⚠ Hoàn thiện dự án đã phát sinh giải ngân</button><button id="dmBulk">Gán phân loại hàng loạt</button><button id="dmXls">⬇ Xuất Excel</button></div>'+
    '<div class="dmw"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư lớn</th><th>Chủ đầu tư trực thuộc</th>'+(o.toanBo?'<th>Phòng giao dịch</th>':'')+'<th>Tính chất dự án</th><th>Chương trình mục tiêu</th><th></th></tr></thead><tbody id="dmB1"></tbody></table></div><div class="dmp" id="dmP"></div>'+
    DMC.map(function(c){return '<datalist id="dl_'+c[0]+'">'+(o[c[0]]||[]).map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist>'}).join('');
   $('dmC').value=DM.loc.cdt;if($('dmB'))$('dmB').value=DM.loc.kbnn;DMC.forEach(function(c){m.querySelector('select[data-f="'+c[0]+'"]').value=DM.loc[c[0]]});
@@ -960,6 +961,7 @@ function drawDm(){
   $('dmAdd').onclick=function(){dmForm(null)};
   $('dmHt').onclick=function(){DM.moHT=!DM.moHT;if(DM.moHT&&!DM.ht){run('dmCanHT',S.token).then(function(r){DM.ht=r;dmDrawHt()}).catch(function(e){toast(msg(e),6000)})}else dmDrawHt()};
   $('dmBulk').onclick=dmBulk;
+  $('dmDx').onclick=function(){DM.moDx=!DM.moDx;dmDxDraw()};dmDxLoad();
   $('dmCb').onclick=function(){DM.moCb=!DM.moCb;if(DM.moCb&&!DM.cb){run('dmCanhBao',S.token).then(function(r){DM.cb=r;dmDrawCb()}).catch(function(e){toast(msg(e),6000)})}else dmDrawCb()};
   $('dmXls').onclick=function(){var b=this;xuat(function(){return run('dmXuat',S.token,DM.loc)},b,'xlsx')};
   $('dmB1').onchange=function(e){var i=e.target,dt=i.closest&&i.closest('details[data-ct]');
@@ -973,11 +975,22 @@ function drawDm(){
 function dmLoad(){var sq=++DM.seq;run('dmDs',S.token,DM.loc,DM.trang).then(function(d){if(sq!==DM.seq||S.tab!=='dm')return;DM.d=d;dmDrawRows()}).catch(function(e){toast(msg(e),6000)})}
 function dmDrawRows(){var d=DM.d,o=DM.opt,k=d.kpi||{};
   $('dmK').innerHTML=[['Tổng số dự án',k.tong],['Có tính chất dự án',k.dt],['Thuộc chương trình mục tiêu',k.c1],['Đã sửa / thêm trên web',k.them]].map(function(x){return '<div><b>'+(x[1]==null?'—':Number(x[1]).toLocaleString('vi-VN'))+'</b><span>'+x[0]+'</span></div>'}).join('');
-  $('dmB1').innerHTML=d.rows.map(function(r){return '<tr data-ma="'+esc(r.ma_da)+'"><td><b>'+esc(r.ma_da)+'</b></td><td class="ten">'+esc(r.ten_da)+(r.them_tay?' <small>(thêm tay)</small>':'')+'</td><td>'+esc(r.cdt2||r.cdt)+'</td><td>'+(r.cdt2&&r.cdt!==r.cdt2?esc(r.cdt):'<span style="color:var(--mut)">—</span>')+'</td>'+(o.toanBo?'<td>'+esc(r.kbnn)+'</td>':'')+
+  $('dmB1').innerHTML=d.rows.map(function(r){return '<tr data-ma="'+esc(r.ma_da)+'"><td><b>'+esc(r.ma_da)+'</b></td><td class="ten">'+esc(r.ten_da)+(r.them_tay?' <small>(thêm tay)</small>':'')+'</td><td>'+esc(r.cdt2||r.cdt)+'</td><td>'+(r.cdt2&&r.cdt!==r.cdt2?esc(r.cdt):'<span style="color:var(--mut)">—</span>')+dmDxTag(r.ma_da)+'</td>'+(o.toanBo?'<td>'+esc(r.kbnn)+'</td>':'')+
     DMC.map(function(c){return '<td>'+(c[0]==='ctmt'?dmCt(DM.opt,r.ctmt):dmSel(DM.opt,c[0],'',r[c[0]],r.sua_tay&&r[c[0]]?'sua':''))+'</td>'}).join('')+'<td><button data-sua="'+esc(r.ma_da)+'">Sửa</button></td></tr>'}).join('')||'<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--mut)">Không có dự án nào phù hợp.</td></tr>';
   var n=Math.max(1,Math.ceil(d.tong/d.per)),t=d.trang;
   $('dmP').innerHTML='<button data-pg="'+(t-1)+'"'+(t<=0?' disabled':'')+'>‹ Trước</button><span>Trang '+(t+1)+' / '+n+' · '+Number(d.tong).toLocaleString('vi-VN')+' dự án</span><button data-pg="'+(t+1)+'"'+(t+1>=n?' disabled':'')+'>Sau ›</button>'}
 function dmTr(n){return (n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})}
+function dmDxLoad(){run('dmDxDs',S.token).then(function(r){DM.dx=r;DM.dxMap={};r.rows.forEach(function(x){DM.dxMap[x.ma_da]=x});
+  var b=$('dmDx');if(b){var n=r.rows.filter(function(x){return x.tt_==='cho'}).length;b.textContent='📝 Đề xuất CĐT trực thuộc'+(n?' ('+n+' chờ duyệt)':'');b.className=n&&r.duyet?'pri':''}
+  if(DM.d&&S.tab==='dm')dmDrawRows();dmDxDraw()}).catch(function(){})}
+function dmDxDraw(){var box=$('dmD');if(!box)return;if(!DM.moDx||!DM.dx){box.innerHTML='';return}
+  var r=DM.dx.rows,ad=DM.dx.duyet;
+  box.innerHTML='<div class="dmwarn"><b>Đề xuất chủ đầu tư trực thuộc: '+r.length+'</b><p class="hint">'+(ad?'Chuyên viên THBC xem xét: bấm <b>Duyệt</b> để cập nhật vào danh mục, hoặc <b>Từ chối</b> kèm lý do.':'Đề xuất của phòng bạn, chờ chuyên viên THBC duyệt.')+'</p>'+
+   (r.length?'<div class="dmw" style="max-height:320px"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>CĐT lớn</th><th>Hiện tại</th><th>Đề xuất</th><th>Phòng / người đề xuất</th><th>Trạng thái</th>'+(ad?'<th></th>':'')+'</tr></thead><tbody>'+r.map(function(x){var cho=x.tt_==='cho';
+    return '<tr><td>'+esc(x.ma_da)+'</td><td class="ten">'+esc(x.ten_da)+'</td><td>'+esc(x.cdt2)+'</td><td>'+(x.cdt&&x.cdt!==x.cdt2?esc(x.cdt):'—')+'</td><td><b>'+(x.tt?esc(x.tt):'(bỏ CĐT trực thuộc)')+'</b></td><td>'+esc(x.kbnn)+'<br><small>'+esc(x.nguoi)+'</small></td><td>'+(cho?'Chờ duyệt':'<span style="color:#b91c1c">Bị từ chối</span>'+(x.ly_do?'<br><small>'+esc(x.ly_do)+'</small>':''))+'</td>'+(ad?'<td>'+(cho?'<button class="pri" data-dx="1" data-ma="'+esc(x.ma_da)+'">Duyệt</button> <button data-dx="0" data-ma="'+esc(x.ma_da)+'">Từ chối</button>':'')+'</td>':'')+'</tr>'}).join('')+'</tbody></table></div>':'<p class="hint">Chưa có đề xuất nào.</p>')+'</div>';
+  box.onclick=function(e){var b=e.target.closest('[data-dx]');if(!b)return;var ma=b.getAttribute('data-ma'),ok=b.getAttribute('data-dx')==='1',ly='';
+    if(!ok){ly=prompt('Lý do từ chối (không bắt buộc):','');if(ly===null)return}
+    b.disabled=true;run('dmDxDuyet',S.token,ma,ok,ly).then(function(){toast(ok?'Đã duyệt – '+ma:'Đã từ chối – '+ma);dmDxLoad();dmLoad()}).catch(function(er){b.disabled=false;toast(msg(er),6000)})}}
 function dmDrawCb(){var box=$('dmW');if(!box)return;if(!DM.moCb||!DM.cb){box.innerHTML='';return}
   var c=DM.cb,ds=c.rows.filter(function(x){return(!DM.loc.kbnn||x.kbnn===DM.loc.kbnn)&&(!DM.cbL||x.loai.indexOf(DM.cbL)>=0)});
   var ch=Object.keys(c.nhom).map(function(k){return '<button class="'+(DM.cbL===k?'pri':'')+'" data-cl="'+esc(k)+'">'+esc(k)+' ('+c.nhom[k]+')</button>'}).join(' ');
@@ -1000,7 +1013,7 @@ function dmForm(r,mac){var o=DM.opt,moi=!r,d=r||mac||{};
    '<label>Mã dự án<input type="text" id="fMa" value="'+esc(d.ma_da||'')+'"'+(moi&&!(mac&&mac.ma_da)?'':' readonly')+'></label>'+
    '<label>Phòng giao dịch (KBNN giao dịch)'+(o.toanBo?'<input type="text" id="fKb" list="dlKb" value="'+esc(d.kbnn||'')+'">'+dl('dlKb',o.kbnn):'<input type="text" id="fKb" value="'+esc(o.phamVi)+'" readonly>')+'</label></div>'+
    '<label class="dmg" style="display:block;margin-top:10px;font-size:12.5px;color:var(--mut)">Tên dự án<input type="text" id="fTen" value="'+esc(d.ten_da||'')+'"></label>'+
-   '<div class="dmg" style="margin-top:10px"><label>Chủ đầu tư lớn<select id="fCdt2">'+dmOpts(o.mau,'— chọn —')+'</select></label><label>Chủ đầu tư trực thuộc (nếu có)<select id="fTt">'+dmOpts(o.mau,'— không có —')+'</select></label></div>'+
+   '<div class="dmg" style="margin-top:10px"><label>Chủ đầu tư lớn<select id="fCdt2">'+dmOpts(o.mau,'— chọn —')+'</select></label><label>Chủ đầu tư trực thuộc (nếu có)'+(o.toanBo?'':' <small style="color:#b45309">– đề xuất, THBC duyệt</small>')+'<select id="fTt">'+dmOpts(o.mau,'— không có —')+'</select></label></div>'+
    '<div class="dmg" style="margin-top:10px">'+DMC.map(function(c){return '<label>'+c[1]+(c[0]==='ctmt'?dmCt(o,d.ctmt||'','f_ctmt'):dmSel(o,c[0],'f_'+c[0],d[c[0]]||''))+'</label>'}).join('')+'</div>'+
    '<p class="hint" style="margin-top:10px">Tên chủ đầu tư phải trùng tên dòng trên mẫu báo cáo (chọn trong danh sách gợi ý) thì số liệu mới vào đúng báo cáo.</p>'+
    '<div id="fErr" style="color:#b91c1c;font-size:13px;min-height:18px"></div><div style="margin-top:8px;display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">Lưu</button></div>';
@@ -1008,10 +1021,13 @@ function dmForm(r,mac){var o=DM.opt,moi=!r,d=r||mac||{};
   var lon=d.cdt2||d.cdt||'',tt=(d.cdt&&d.cdt2&&d.cdt!==d.cdt2)?d.cdt:'';$('fCdt2').value=lon;$('fTt').value=tt;
   function dong(){$('modal').style.display='none';$('mbox').className='box'}
   $('fNo').onclick=dong;
-  $('fOk').onclick=function(){var lo=$('fCdt2').value,tr=$('fTt').value,rec={ten_da:$('fTen').value,cdt:tr||lo,cdt2:lo};if(o.toanBo)rec.kbnn=$('fKb').value;DMC.forEach(function(c){rec[c[0]]=c[0]==='ctmt'?dmCtVal($('f_ctmt')):$('f_'+c[0]).value});
-    var ma=$('fMa').value.trim(),btn=this;btn.disabled=true;
-    if(!moi){['ten_da','cdt','cdt2','kbnn','dac_thu','ctmt','ctmt_2630'].forEach(function(k){if(k in rec&&String(rec[k]).trim()===String(d[k]||''))delete rec[k]})}
-    run(moi?'dmThem':'dmSua',S.token,ma,rec).then(function(){dong();toast('Đã lưu dự án '+ma);DM.ht=null;DM.cb=null;if(DM.moCb)run('dmCanhBao',S.token).then(function(x){DM.cb=x;dmDrawCb()});if(DM.moHT){run('dmCanHT',S.token).then(function(x){DM.ht=x;dmDrawHt()})}dmLoad()}).catch(function(e){btn.disabled=false;$('fErr').textContent=msg(e)})}}
+  $('fOk').onclick=function(){var lo=$('fCdt2').value,tr=$('fTt').value,pgd=!o.toanBo,curTt=(d.cdt&&d.cdt2&&d.cdt!==d.cdt2)?d.cdt:'';
+    var rec={ten_da:$('fTen').value,cdt:tr||lo,cdt2:lo};if(o.toanBo)rec.kbnn=$('fKb').value;DMC.forEach(function(c){rec[c[0]]=c[0]==='ctmt'?dmCtVal($('f_ctmt')):$('f_'+c[0]).value});
+    var ma=$('fMa').value.trim(),btn=this,deXuat=!moi&&pgd&&tr!==curTt;btn.disabled=true;
+    if(!moi&&pgd){if(curTt)delete rec.cdt;else rec.cdt=lo}
+    if(!moi){['ten_da','cdt','cdt2','kbnn','dac_thu','ctmt'].forEach(function(k){if(k in rec&&String(rec[k]).trim()===String(d[k]||''))delete rec[k]})}
+    var p=(!moi&&!Object.keys(rec).length)?Promise.resolve():run(moi?'dmThem':'dmSua',S.token,ma,rec);
+    p.then(function(){return deXuat?run('dmDeXuat',S.token,ma,tr):0}).then(function(){dong();toast(deXuat||(moi&&pgd&&tr&&tr!==lo)?'Đã lưu – chủ đầu tư trực thuộc đã gửi đề xuất, chờ THBC duyệt':'Đã lưu dự án '+ma,5000);DM.ht=null;DM.cb=null;dmDxLoad();if(DM.moCb)run('dmCanhBao',S.token).then(function(x){DM.cb=x;dmDrawCb()});if(DM.moHT){run('dmCanHT',S.token).then(function(x){DM.ht=x;dmDrawHt()})}dmLoad()}).catch(function(e){btn.disabled=false;$('fErr').textContent=msg(e)})}}
 function dmBulk(){var o=DM.opt,b=$('mbox');b.className='box wide';
   b.innerHTML='<h3 style="margin:0 0 10px">Gán phân loại hàng loạt</h3><label style="font-size:12.5px;color:var(--mut)">Dán danh sách mã dự án (mỗi dòng một mã, hoặc cách nhau bởi dấu phẩy / khoảng trắng – có thể copy cả cột từ Excel)<textarea id="bMa" rows="7"></textarea></label>'+
    '<div class="dmg" style="margin-top:10px"><label>Gán vào cột<select id="bF">'+DMC.map(function(c){return '<option value="'+c[0]+'">'+c[1]+'</option>'}).join('')+'</select></label><label>Giá trị (để trống = xóa phân loại)<span id="bVw">'+dmSel(o,'dac_thu','bV','')+'</span></label></div>'+

@@ -163,7 +163,15 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await M.dmDs(th, { kbnn: 'Phòng giao dịch số 17' }, 0); assert.strictEqual(last()[1].p_kbnn, 'Phòng giao dịch số 17', 'Tổng hợp lọc theo phòng tùy ý');
     await M.dmDs(th, {}, 0); assert.strictEqual(last()[1].p_kbnn, null, 'Tổng hợp xem tất cả');
     await assert.rejects(() => M.dmSua(p20, '111', { cdt: 'Không có tên này' }), /chưa có trên mẫu/);
-    await M.dmSua(p20, '111', { cdt: mauT.toUpperCase(), kbnn: 'Phòng giao dịch số 17', dac_thu: 'Trọng điểm' }); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20'); assert.strictEqual(last()[1].p_rec.cdt, mauT); assert(!('kbnn' in last()[1].p_rec), 'PGD không đổi được phòng');
+    await M.dmSua(p20, '111', { cdt: mauT.toUpperCase(), cdt2: mauT, kbnn: 'Phòng giao dịch số 17', dac_thu: 'Trọng điểm' }); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20'); assert.strictEqual(last()[1].p_rec.cdt2, mauT); assert(!('kbnn' in last()[1].p_rec), 'PGD không đổi được phòng');
+    await M.dmSua(p20, '111', { cdt: mauT, cdt2: mauT }); assert.strictEqual(last()[1].p_rec.cdt, mauT, 'PGD đặt CĐT = CĐT lớn khi không có trực thuộc');
+    await M.dmSua(p20, '111', { cdt: mauT, dac_thu: 'Chuyển đổi số' }); assert(!('cdt' in last()[1].p_rec), 'PGD không tự sửa CĐT trực thuộc');
+    await assert.rejects(() => M.dmSua(p20, '111', { cdt: mauT }), /đề xuất/);
+    await M.dmDeXuat(p20, '111', mauT); assert.strictEqual(last()[0], 'cv_dm_dx_gui'); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20');
+    await assert.rejects(() => M.dmDeXuat(th, '111', mauT), /trực tiếp/);
+    await assert.rejects(() => M.dmDxDuyet(p20, '111', true), /Chỉ chuyên viên THBC/);
+    await M.dmDxDuyet(th, '111', true); assert.strictEqual(last()[0], 'cv_dm_dx_duyet');
+    await M.dmSua(th, '111', { cdt: mauT, cdt2: mauT }); assert.strictEqual(last()[1].p_rec.cdt, mauT, 'THBC sửa trực tiếp');
     await M.dmSua(th, '111', { kbnn: 'Phòng giao dịch số 17' }); assert.strictEqual(last()[1].p_gh, null); assert.strictEqual(last()[1].p_rec.kbnn, 'Phòng giao dịch số 17');
     await assert.rejects(() => M.dmThem(p20, '9990001', { cdt: mauT }), /chủ đầu tư/);
     await M.dmThem(p20, '9990001', { cdt: mauT, cdt2: mauT, kbnn: 'Phòng giao dịch số 17' }); assert.strictEqual(last()[1].p_rec.kbnn, 'Phòng giao dịch số 20');
