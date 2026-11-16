@@ -179,6 +179,15 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     r = await M.dmHangLoat(p20, '1 2,3\n1', 'ctmt', 'NTM'); assert.strictEqual(last()[1].p_mas.length, 3); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20');
     await assert.rejects(() => M.dmHangLoat(p20, '1', 'cdt', 'A'), /Cột/);
     assert((await M.dmXuat(th, {})).b64.length > 300);
+    // TT37: gán chủ đầu tư theo danh mục dự án, cộng theo (chủ đầu tư, phòng)
+    {
+      const T37 = require('../lib/tt37'), kqg = { khoi: [{ pgd: 'Phòng giao dịch 20', tong: [30, 0, 0, 0, 0], da: { 111: { ma: '111', ten: 'A', v: [10, 1, 2, 3, 4] }, 222: { ma: '222', ten: 'B', v: [20, 0, 0, 0, 0] }, 333: { ma: '333', ten: 'C', v: [5, 0, 0, 0, 0] }, 444: { ma: '444', ten: 'D', v: [0, 0, 0, 0, 0] } } }], lech: [], loi: [], ngay: '2026-11-16' };
+      M.api.goi = async (fn) => { if (fn === 'cv_dm_ban_do') return [['111', 'A', mauT, mauT, 'Phòng giao dịch số 20'], ['222', 'B', mauT, mauT, 'Phòng giao dịch số 21']]; if (fn === 'cv_dm_cdt_ten') return { ten: [mauT], lon: [mauT], tt: {} }; return { ok: true }; };
+      process.env.TONGHOP_KHOA = 'k'; M._reset && M._reset();
+      const g = await T37._ganCdt(kqg), s = T37._tomTat(kqg, g);
+      assert.strictEqual(g.dong.length, 1); assert.strictEqual(g.dong[0].v[0], 30, 'cộng theo chủ đầu tư và phòng'); assert.strictEqual(g.dong[0].so, 2);
+      assert.strictEqual(g.chuaKhop.length, 1); assert.strictEqual(g.chuaKhop[0].ma, '333'); assert.strictEqual(s.soDuAn, 3, 'dự án không phát sinh không tính'); assert.strictEqual(g.lechKb, 1, 'phòng trong file khác phòng trong danh mục');
+    }
     M.api.goi = null; delete process.env.TONGHOP_KHOA; await assert.rejects(() => M.dmDs(th, {}, 0), /TONGHOP_KHOA/);
   }
   // ---- BC KPI: đối chiếu THBC theo mốc ngày, PGD xác nhận / ghi nhận số khác kèm lý do ----

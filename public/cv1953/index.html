@@ -465,7 +465,7 @@ S.shut=S.shut||{};
 function drawTabs(){
   var G=[{id:'g1953',t:'📑 BC 1953',it:[['tq',S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan']].concat(BTAB.map(function(id){return [id,BN[id]]})).concat([['tt','Biểu 04-KBNN'],['bt','⚖ Đối chiếu THBC']]).concat(S.vt==='TH'?[['qt','🔄 Quy trình & hạn nộp']]:(S.vt==='NV2'?[['qt','📥 Hộp tiếp nhận']]:[]))},
     {id:'gkpi',t:'🎯 BC đánh giá KPI',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Số liệu & xác nhận'],['kpibt','⚖ Phòng ghi nhận khác THBC']].concat(S.vt!=='PGD'?[['kpvb','📄 Công văn & theo dõi']]:[])},
-    {id:'gchung',t:'🗂 Dùng chung',it:[['dm','📁 Danh mục dự án'],['cdt','🏢 Danh mục chủ đầu tư']]}],h='';
+    {id:'gchung',t:'🗂 Dùng chung',it:[['dm','📁 Danh mục dự án'],['cdt','🏢 Danh mục chủ đầu tư']].concat(S.vt!=='PGD'?[['tt37','📥 Tải số liệu THBC (TT37)']]:[])}],h='';
   h+='<button data-t="home" style="font-weight:600;margin-bottom:6px">🏠 Trang chủ</button>';
   G.forEach(function(g){h+='<div class="tg'+(S.shut[g.id]?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+g.it.map(function(x){return '<button data-t="'+x[0]+'">'+esc(x[1])+'</button>'}).join('')+'</div></div>'});
   $('tabs').innerHTML=h;
@@ -482,7 +482,7 @@ function show(t){nbDuyet();S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   if(S.nv2tp&&!isB&&S.xem!==S.pgd){S.xem=S.pgd;S.data=null}
   $('pgdBar').style.display=((isV()||S.nv2tp)&&isB)?'flex':'none';if(isV()||S.nv2tp)$('xemSel').value=S.xem;
-  if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
+  if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='tt37')drawTt37();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
   $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
 var NAMEB={b01:'B01',b02:'B02',b03a:'B03(21-25)',b03b:'B03(26-30)'};
@@ -984,6 +984,34 @@ function dmDrawRows(){var d=DM.d,o=DM.opt,k=d.kpi||{};
   $('dmP').innerHTML='<button data-pg="'+(t-1)+'"'+(t<=0?' disabled':'')+'>‹ Trước</button><span>Trang '+(t+1)+' / '+n+' · '+Number(d.tong).toLocaleString('vi-VN')+' dự án</span><button data-pg="'+(t+1)+'"'+(t+1>=n?' disabled':'')+'>Sau ›</button>'}
 function dmTr(n){return (n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})}
 var CD={q:'',k:'',m:0};
+var T37={};
+function drawTt37(){var m=$('main'),x=T37.x,f=function(n){return Number(n).toLocaleString('vi-VN',{maximumFractionDigits:1})};
+  var kyo=(S.dsKy||[]).filter(function(k){return !k.chuaMo}).map(function(k){return '<option value="'+(k.hienTai?'':k.ky)+'">Kỳ '+k.nhan+(k.hienTai?' (đang mở)':'')+'</option>'}).join('');
+  m.innerHTML='<div class="dmwarn" style="background:#f0f9ff;border-color:#bae6fd"><b>📥 Tải số liệu THBC theo mẫu Thông tư 37 (Biểu 01b/TTKHN)</b><p class="hint" style="margin:6px 0 0">Chọn file báo cáo kết quả thanh toán vốn đầu tư công (có đủ 12 khối KBNN). Hệ thống cộng số liệu theo <b>mã dự án</b>, tra <b>Danh mục dự án</b> để xếp đúng <b>chủ đầu tư</b>, rồi tạo số THBC cho cả <b>BC 1953</b> (lũy kế) và <b>BC đánh giá KPI</b> (kéo dài / năm × thanh toán KLHT / tạm ứng). Chỉ các dự án có số liệu phát sinh được tính.</p></div>'+
+   '<div class="expb"><input type="file" id="t37F" accept=".xlsx" style="display:none"><button class="pri" id="t37B">📂 Chọn file TT37 (.xlsx)</button><span id="t37N" class="hint">'+(T37.ten?esc(T37.ten):'Chưa chọn file')+'</span></div><div id="t37R"></div>';
+  $('t37B').onclick=function(){$('t37F').click()};
+  $('t37F').onchange=function(){var fl=this.files[0],inp=this;if(!fl)return;if(fl.size>3.2e6){toast('File quá lớn (tối đa khoảng 3 MB).',6000);inp.value='';return}
+    var fr=new FileReader();fr.onload=function(){var u=new Uint8Array(fr.result),s='';for(var i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));T37.b64=btoa(s);T37.ten=fl.name;$('t37N').textContent=fl.name+' – đang phân tích...';
+      run('tt37Xem',S.token,fl.name,T37.b64).then(function(r){T37.x=r;T37.done=null;inp.value='';if(S.tab==='tt37')drawTt37()}).catch(function(e){T37.x=null;$('t37N').textContent=fl.name;inp.value='';toast(msg(e),8000)})};fr.readAsArrayBuffer(fl)};
+  if(!x){return}
+  var nh=function(a,b){return '<div><b>'+a+'</b><span>'+b+'</span></div>'};
+  var h='<div class="dmk">'+nh(x.ngay?x.ngay.split('-').reverse().join('/'):'—','Số liệu đến ngày')+nh(f(x.soDuAn),'Dự án có phát sinh')+nh(f(x.soDong),'Dòng (CĐT × phòng)')+nh(f(x.tongFile),'Tổng lũy kế trong file (triệu)')+nh(f(x.tongDaGan),'Đã xếp vào chủ đầu tư (triệu)')+nh(f(x.soChuaKhop),'Dự án chưa xếp được')+'</div>';
+  if(x.lechKhoi&&x.lechKhoi.length)h+='<div class="dmwarn"><b>⚠ Cộng số theo dự án chưa khớp tổng khối:</b> '+x.lechKhoi.map(function(z){return esc(z.pgd)+' (lệch '+f(z.lech)+')'}).join('; ')+'</div>';
+  if(x.loi&&x.loi.length)h+='<div class="dmwarn"><b>Dòng không đọc được:</b><ul style="margin:4px 0 0 18px">'+x.loi.map(function(z){return '<li>'+esc(z)+'</li>'}).join('')+'</ul></div>';
+  if(x.lechKbnn)h+='<div class="dmwarn" style="background:#fffbeb"><b>'+f(x.lechKbnn)+' dự án</b> trong file nằm ở khối KBNN khác với “KBNN giao dịch” ghi trong Danh mục dự án. Hệ thống xếp theo <b>khối KBNN trong file</b> (nơi phát sinh thanh toán).</div>';
+  if(x.cdtLa&&x.cdtLa.length)h+='<div class="dmwarn"><b>Chủ đầu tư trong danh mục dự án chưa nằm trong Danh mục chủ đầu tư:</b> '+x.cdtLa.map(function(z){return esc(z.ten)+' ('+z.so+' dự án)'}).join('; ')+'</div>';
+  if(x.soChuaKhop)h+='<div class="dmwarn"><b>'+f(x.soChuaKhop)+' dự án có số liệu nhưng chưa xếp được vào chủ đầu tư</b> (tổng lũy kế '+f(x.tongChuaKhop)+' triệu) – các dự án này sẽ <b>không</b> có trong số THBC. Bổ sung vào <b>Danh mục dự án</b> rồi tải lại file.<div class="dmw" style="max-height:280px;margin-top:6px"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Phòng (trong file)</th><th>Lũy kế (triệu)</th><th>Lý do</th></tr></thead><tbody>'+x.chuaKhop.map(function(z){return '<tr><td>'+esc(z.ma)+'</td><td class="ten">'+esc(z.ten)+'</td><td>'+esc(z.pgd)+'</td><td style="text-align:right">'+f(z.lk)+'</td><td>'+esc(z.lyDo)+'</td></tr>'}).join('')+'</tbody></table></div>'+(x.soChuaKhop>x.chuaKhop.length?'<p class="hint">Hiện '+x.chuaKhop.length+' dự án lớn nhất.</p>':'')+'</div>';
+  else h+='<div class="dmwarn" style="background:#f0fdf4;border-color:#bbf7d0">✓ Tất cả dự án có số liệu đều đã xếp được vào chủ đầu tư.</div>';
+  h+='<div class="dmwarn" style="background:#fff"><b>Ghi số liệu vào:</b><div class="row2" style="max-width:900px;margin-top:8px"><div><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="t37A" checked> THBC của <b>BC 1953</b> (số lũy kế)</label><select id="t37K" style="margin-top:6px">'+kyo+'</select><p class="hint">Ghi đè số THBC của kỳ đã chọn.</p></div><div><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="t37C" checked> THBC của <b>BC đánh giá KPI</b></label><div style="display:flex;gap:8px;margin-top:6px"><input type="date" id="t37D" value="'+esc(x.ngay||'')+'"><input type="datetime-local" id="t37H" title="Hạn phòng xác nhận (tùy chọn)"></div><p class="hint">Mốc theo ngày số liệu; ghi đè mốc cùng ngày (nếu chưa chốt).</p></div></div><div style="margin-top:8px"><button class="pri" id="t37G">✔ Ghi số liệu</button></div></div>';
+  if(T37.done)h+='<div class="dmwarn" style="background:#f0fdf4;border-color:#bbf7d0"><b>✓ Đã ghi:</b> '+T37.done.map(esc).join('; ')+'<div style="margin-top:6px"><button data-go="bt">⚖ Xem Đối chiếu THBC (BC 1953)</button> <button data-go="kpibt">⚖ Xem đối chiếu KPI</button></div></div>';
+  $('t37R').innerHTML=h;
+  if($('t37K')&&S.ky)$('t37K').value=S.ky;
+  $('t37R').onclick=function(e){var b=e.target.closest('[data-go]');if(b)show(b.getAttribute('data-go'))};
+  $('t37G').onclick=function(){var a=$('t37A').checked,c=$('t37C').checked;if(!a&&!c){toast('Chọn ít nhất một nơi để ghi số liệu.',5000);return}
+    if(c&&!$('t37D').value){toast('Chọn ngày số liệu cho mốc KPI.',5000);return}
+    var kyt=$('t37K').options[$('t37K').selectedIndex].text;if(!confirm('Ghi số liệu vào: '+(a?'THBC BC 1953 ('+kyt+')':'')+(a&&c?' và ':'')+(c?'THBC KPI (đến ngày '+$('t37D').value.split('-').reverse().join('/')+')':'')+'?\nSố THBC cũ của nơi được chọn sẽ bị thay thế.'))return;
+    var btn=this;btn.disabled=true;var hn=$('t37H').value;
+    run('tt37Ghi',S.token,{thbc:a,kpi:c,ky:$('t37K').value,ngay:$('t37D').value,han:hn},T37.ten,T37.b64).then(function(r){T37.done=r.ghi;S.bt=null;S.kp=null;toast('Đã ghi số liệu THBC.',5000);drawTt37()}).catch(function(er){btn.disabled=false;toast(msg(er),8000)})}}
 function drawCdt(){var m=$('main');
   if(!CD.d){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh mục chủ đầu tư...</p>';run('cdtDs',S.token).then(function(r){CD.d=r;if(S.tab==='cdt')drawCdt()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
   var d=CD.d;
