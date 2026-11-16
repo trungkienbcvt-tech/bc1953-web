@@ -34,7 +34,7 @@ head = re.sub(r"const TABS = \{.*?\};", "const TABS = { b5: 'B5-01 ↔ Thông t�
 head = re.sub(r"const ICON_TAB = \{.*?\};", "const ICON_TAB = { b5: '🔍', b585: '🔎', tt3785: '🔁', dtkb: '🧾', dbhc: '📍' };", head)
 head = re.sub(r"  try \{ \(\{.*?\}\)\[S\.tab\]\(v\); \} catch", "  try { ({ b5: viewB501, b585: viewB501, tt3785: viewTT3785, dtkb: viewDTKB, dbhc: viewDBHC })[S.tab](v); } catch", head)
 DC.write_text(head + blk + "\nkhung();\nshow();\n")
-for f in ['engine.js', 'b501.js', 'dt.js', 'dmhc.json']:
+for f in ['engine.js', 'ten_cdt_cu.js', 'b501.js', 'dt.js', 'dmhc.json']:
     shutil.copy(GOC / 'public/tonghop/tonghop' / f, GOC / 'public/doichieu/js' / f)
 shutil.copy(GOC / 'public/tonghop/tonghop/tonghop.css', GOC / 'public/doichieu/css/tonghop.css')
 print('đã tạo', DC)

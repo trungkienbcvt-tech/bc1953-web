@@ -1,3 +1,4 @@
+import { TEN_CDT_CU } from './ten_cdt_cu.js';
 // =====================================================================
 //  BỘ TÍNH BÁO CÁO TỔNG HỢP THEO CHỦ ĐẦU TƯ
 //  Thay cho các công thức VLOOKUP / SUMIFS trong file Excel
@@ -51,7 +52,9 @@ export function chuyenTong(id, tong) {
 // ---- Tiện ích ------------------------------------------------------------
 export const colIdx = c => [...c].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0) - 1;
 const txt = v => (v === null || v === undefined) ? '' : String(v).trim();
-const key = v => txt(v).toLowerCase();   // SUMIFS/VLOOKUP không phân biệt hoa thường
+// SUMIFS/VLOOKUP không phân biệt hoa thường; tên chủ đầu tư cũ quy về tên mới trên mẫu
+const TEN_CU = new Map(Object.entries(TEN_CDT_CU).map(([c, m]) => [c.trim().toLowerCase(), m.trim().toLowerCase()]));
+const key = v => { const t = txt(v).toLowerCase(); return TEN_CU.get(t) || t; };
 export function soTien(v) {
   if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
   const t = txt(v);
