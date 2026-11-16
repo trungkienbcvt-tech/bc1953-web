@@ -188,6 +188,12 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
       assert.strictEqual(g.dong.length, 1); assert.strictEqual(g.dong[0].v[0], 30, 'cộng theo chủ đầu tư và phòng'); assert.strictEqual(g.dong[0].so, 2);
       assert.strictEqual(g.chuaKhop.length, 1); assert.strictEqual(g.chuaKhop[0].ma, '333'); assert.strictEqual(s.soDuAn, 3, 'dự án không phát sinh không tính'); assert.strictEqual(g.lechKb, 1, 'phòng trong file khác phòng trong danh mục');
     }
+    {
+      const T37 = require('../lib/tt37'), fake = Buffer.from('xlsx-gia').toString('base64');
+      const kqf = { ngay: '2026-11-16' }; const id = await T37._luuFile({ ten: 'tester' }, 'a.xlsx', fake, kqf);
+      assert.strictEqual((await T37.ds(th)).ds.length, 1); assert.strictEqual((await T37.taiXuong(th, id)).b64, fake);
+      await assert.rejects(() => T37.ds(p20), /quyền/); assert.strictEqual((await T37.xoa(th, id)).ds.length, 0);
+    }
     M.api.goi = null; delete process.env.TONGHOP_KHOA; await assert.rejects(() => M.dmDs(th, {}, 0), /TONGHOP_KHOA/);
   }
   // ---- BC KPI: đối chiếu THBC theo mốc ngày, PGD xác nhận / ghi nhận số khác kèm lý do ----
