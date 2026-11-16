@@ -55,6 +55,8 @@ const txt = v => (v === null || v === undefined) ? '' : String(v).trim();
 // SUMIFS/VLOOKUP không phân biệt hoa thường; tên chủ đầu tư cũ quy về tên mới trên mẫu
 const TEN_CU = new Map(Object.entries(TEN_CDT_CU).map(([c, m]) => [c.trim().toLowerCase(), m.trim().toLowerCase()]));
 const key = v => { const t = txt(v).toLowerCase(); return TEN_CU.get(t) || t; };
+// Tên chủ đầu tư dùng để so khớp dòng (file Excel cũ ghi tên cũ → tên mới trên mẫu)
+export const tenChuan = v => { const t = txt(v).toLowerCase().replace(/\s+/g, ' '); return TEN_CU.get(t) || t; };
 export function soTien(v) {
   if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
   const t = txt(v);

@@ -870,11 +870,11 @@ async function nhapTruocTuExcel(id) {
     const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null, raw: true, blankrows: true });
     const src = fd.get('cot') === 'Q' ? 'QRSTUVWXY' : 'HIJKLMNOP';
     const mau = S.mau[id], first = mau.first;
-    const tim = (ten, tu) => { for (let r = tu; r < rows.length; r++) if (norm(rows[r]?.[1]) === norm(ten)) return r; return -1; };
+    const tim = (ten, tu) => { for (let r = tu; r < rows.length; r++) if (E.tenChuan(rows[r]?.[1]) === E.tenChuan(ten)) return r; return -1; };
     let lech = 0, thieu = [], tu = first - 1;
     const anh = mau.rows.map((row, i) => {
       let r = first - 1 + i;
-      if (norm(rows[r]?.[1]) !== norm(row.ten)) { lech++; r = tim(row.ten, tu); }
+      if (E.tenChuan(rows[r]?.[1]) !== E.tenChuan(row.ten)) { lech++; r = tim(row.ten, tu); }
       if (r < 0) { thieu.push(row.ten); return null; }
       tu = r;
       return Object.fromEntries([...'QRSTUVWXY'].map((k, j) => [k, E.soTien(rows[r][E.colIdx(src[j])])]));
