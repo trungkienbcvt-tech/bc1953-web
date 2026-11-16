@@ -655,13 +655,13 @@ function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=!!
   return h}
 function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=S.btF||'all';
   var h='<div class="card btc"><div class="tb1"><div class="tb1l"><div class="hd1"><b>Đối chiếu THBC:</b> so lũy kế trên hệ thống với file THBC. Cột Chênh lệch ghi <b>Khớp</b> hoặc số chênh (hệ thống − THBC).'+(!full?' Chỉ hiện phần của đơn vị bạn.':'')+'</div></div><div class="tb1r">'+expBar('bt')+
-    '<div class="btb">'+(full?'<input type="file" id="btFile" accept=".xlsx" style="display:none"><button class="mini pri" id="btUp">📂 '+(d&&d.co?'Tải THBC mới':'Tải file THBC')+'</button>'+(d&&d.co?'<button class="mini" id="btXoa">Xóa THBC</button>':''):'')+'</div></div></div>'+
+    '<div class="btb">'+(full?'<button class="mini" id="btT37" data-go="tt37">📥 Tải số liệu THBC (TT37)</button>'+(d&&d.co?'<button class="mini" id="btXoa">Xóa THBC</button>':''):'')+'</div></div></div>'+
     '<div class="ttl"><b>Tổng hợp kết quả giải ngân vốn đầu tư theo chủ đầu tư</b><span>Đối chiếu THBC · Kỳ báo cáo: tháng '+esc(d?d.ky:'')+'</span></div><div class="dvr">Đơn vị: Triệu đồng</div>';
   if(!d)return h+'<p class="hint" style="padding:18px 0;text-align:center">Đang tính biểu tổng...</p></div>';
   if(d.err)return h+'<p class="hint">Không tải được biểu tổng. Thử tải lại trang.</p></div>';
   var st=btLech(d);
   if(d.co){h+=st.n?'<div class="btw"><b>⚠ '+st.n+' chủ đầu tư lệch so với THBC</b><span>'+(st.thap?'<span class="dck thap">'+st.thap+' lũy kế thấp hơn</span> ':'')+(st.cao?'<span class="dck cao">'+st.cao+' lũy kế cao hơn</span> ':'')+'<span class="dck khop">'+st.khop+' khớp</span></span>'+(d.meta&&full?'<small>File THBC: '+esc(d.meta.file)+' · '+esc(d.meta.nguoi||'')+'</small>':'')+'</div>':'<div class="btw ok"><b>✓ Khớp THBC toàn bộ</b><span><span class="dck khop">'+st.khop+' chủ đầu tư khớp</span></span>'+(d.meta&&full?'<small>File THBC: '+esc(d.meta.file)+'</small>':'')+'</div>'}
-  else if(full)h+='<div class="btw nf"><b>Chưa có file THBC kỳ '+esc(d.ky)+'</b><span>Tải file bảng đối chiếu THBC (sheet "Đối chiếu 1953", chỉ cần cột lũy kế) để hệ thống tự cảnh báo chủ đầu tư thấp hơn / cao hơn.</span></div>';
+  else if(full)h+='<div class="btw nf"><b>Chưa có file THBC kỳ '+esc(d.ky)+'</b><span>Vào mục <b>📥 Tải số liệu THBC (TT37)</b> (nhóm Dùng chung) để tải file THBC; hệ thống sẽ tự đối chiếu và cảnh báo chủ đầu tư thấp hơn / cao hơn.</span></div>';
   if(d.soThua)h+='<div class="rsn" style="background:#fff7e0;border-color:#f1deaa;color:#7a5200;margin:8px 0">Có <b>'+d.soThua+'</b> dòng chưa có trong danh mục (xếp cuối biểu); tổng vẫn bằng tổng 4 biểu con.</div>';
   h+='<div class="btt"><input type="text" id="btQ" placeholder="🔍 Tìm chủ đầu tư, xã, phường..." value="'+esc(S.btQ||'')+'">'+(d.co?[['lech','Chỉ dòng lệch'],['thap','Lũy kế thấp hơn'],['cao','Lũy kế cao hơn']].map(function(x){return'<button class="pill'+(f===x[0]?' on':'')+'" data-bf="'+x[0]+'">'+x[1]+'</button>'}).join(''):'')+'<button class="pill'+(f==='all'?' on':'')+'" data-bf="all">Tất cả (theo danh mục)</button></div>';
   var full2=!!d.co;
@@ -758,7 +758,7 @@ function bindTq(){
   if($('btQ'))$('btQ').oninput=function(){S.btQ=this.value;if($('btTb'))$('btTb').innerHTML=btBody(S.bt)};
   [].forEach.call(m.querySelectorAll('[data-bf]'),function(b){b.onclick=function(){S.btF=b.getAttribute('data-bf');var q=$('btQ');rdBt();if($('btQ')&&q)$('btQ').focus()}});
   [].forEach.call(m.querySelectorAll('[data-go]'),function(b){b.onclick=function(){show(b.getAttribute('data-go'))}});
-  if($('btUp'))$('btUp').onclick=function(){$('btFile').click()};
+  if($('btT37'))$('btT37').onclick=function(){show('tt37')};
   if($('btFile'))$('btFile').onchange=function(){var f=this.files[0],inp=this;if(!f)return;if(f.size>3e6){toast('File quá lớn (tối đa 3 MB).',6000);return}
     var fr=new FileReader();fr.onload=function(){var u=new Uint8Array(fr.result),s='';for(var i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));
       toast('Đang đọc file THBC...',4000);
@@ -1003,7 +1003,7 @@ function drawTt37(){var m=$('main'),x=T37.x,f=function(n){return Number(n).toLoc
   if(x.soChuaKhop)h+='<div class="dmwarn"><b>'+f(x.soChuaKhop)+' dự án có số liệu nhưng chưa xếp được vào chủ đầu tư</b> (tổng lũy kế '+f(x.tongChuaKhop)+' triệu) – các dự án này sẽ <b>không</b> có trong số THBC. Bổ sung vào <b>Danh mục dự án</b> rồi tải lại file.<div class="dmw" style="max-height:280px;margin-top:6px"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Phòng (trong file)</th><th>Lũy kế (triệu)</th><th>Lý do</th></tr></thead><tbody>'+x.chuaKhop.map(function(z){return '<tr><td>'+esc(z.ma)+'</td><td class="ten">'+esc(z.ten)+'</td><td>'+esc(z.pgd)+'</td><td style="text-align:right">'+f(z.lk)+'</td><td>'+esc(z.lyDo)+'</td></tr>'}).join('')+'</tbody></table></div>'+(x.soChuaKhop>x.chuaKhop.length?'<p class="hint">Hiện '+x.chuaKhop.length+' dự án lớn nhất.</p>':'')+'</div>';
   else h+='<div class="dmwarn" style="background:#f0fdf4;border-color:#bbf7d0">✓ Tất cả dự án có số liệu đều đã xếp được vào chủ đầu tư.</div>';
   h+='<div class="dmwarn" style="background:#fff"><b>Ghi số liệu vào:</b><div class="row2" style="max-width:900px;margin-top:8px"><div><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="t37A" checked> THBC của <b>BC 1953</b> (số lũy kế)</label><select id="t37K" style="margin-top:6px">'+kyo+'</select><p class="hint">Ghi đè số THBC của kỳ đã chọn.</p></div><div><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="t37C" checked> THBC của <b>BC đánh giá KPI</b></label><div style="display:flex;gap:8px;margin-top:6px"><input type="date" id="t37D" value="'+esc(x.ngay||'')+'"><input type="datetime-local" id="t37H" title="Hạn phòng xác nhận (tùy chọn)"></div><p class="hint">Mốc theo ngày số liệu; ghi đè mốc cùng ngày (nếu chưa chốt).</p></div></div><div style="margin-top:8px"><button class="pri" id="t37G">✔ Ghi số liệu</button></div></div>';
-  if(T37.done)h+='<div class="dmwarn" style="background:#f0fdf4;border-color:#bbf7d0"><b>✓ Đã ghi:</b> '+T37.done.map(esc).join('; ')+'<div style="margin-top:6px"><button data-go="bt">⚖ Xem Đối chiếu THBC (BC 1953)</button> <button data-go="kpibt">⚖ Xem đối chiếu KPI</button></div></div>';
+  if(T37.done)h+='<div class="dmwarn" style="background:#f0fdf4;border-color:#bbf7d0"><b>✓ Đã ghi:</b> '+T37.done.map(esc).join('; ')+'<div style="margin-top:6px"><button data-go="bt">⚖ Xem Đối chiếu THBC (BC 1953)</button> <button data-go="kpib">🎯 Xem số liệu & đối chiếu KPI</button></div></div>';
   $('t37R').innerHTML=h;
   if($('t37K')&&S.ky)$('t37K').value=S.ky;
   $('t37R').onclick=function(e){var b=e.target.closest('[data-go]');if(b)show(b.getAttribute('data-go'))};
@@ -1011,7 +1011,7 @@ function drawTt37(){var m=$('main'),x=T37.x,f=function(n){return Number(n).toLoc
     if(c&&!$('t37D').value){toast('Chọn ngày số liệu cho mốc KPI.',5000);return}
     var kyt=$('t37K').options[$('t37K').selectedIndex].text;if(!confirm('Ghi số liệu vào: '+(a?'THBC BC 1953 ('+kyt+')':'')+(a&&c?' và ':'')+(c?'THBC KPI (đến ngày '+$('t37D').value.split('-').reverse().join('/')+')':'')+'?\nSố THBC cũ của nơi được chọn sẽ bị thay thế.'))return;
     var btn=this;btn.disabled=true;var hn=$('t37H').value;
-    run('tt37Ghi',S.token,{thbc:a,kpi:c,ky:$('t37K').value,ngay:$('t37D').value,han:hn},T37.ten,T37.b64).then(function(r){T37.done=r.ghi;S.bt=null;S.kp=null;toast('Đã ghi số liệu THBC.',5000);drawTt37()}).catch(function(er){btn.disabled=false;toast(msg(er),8000)})}}
+    run('tt37Ghi',S.token,{thbc:a,kpi:c,ky:$('t37K').value,ngay:$('t37D').value,han:hn},T37.ten,T37.b64).then(function(r){T37.done=r.ghi;S.bt=null;S.kp=null;if(a&&($('t37K').value||'')===(S.ky||'')){toast('Đã ghi số liệu THBC. Đang mở bảng đối chiếu...',4000);show('bt')}else{toast('Đã ghi số liệu THBC.',5000);drawTt37()}}).catch(function(er){btn.disabled=false;toast(msg(er),8000)})}}
 function drawCdt(){var m=$('main');
   if(!CD.d){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh mục chủ đầu tư...</p>';run('cdtDs',S.token).then(function(r){CD.d=r;if(S.tab==='cdt')drawCdt()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
   var d=CD.d;
