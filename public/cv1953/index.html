@@ -465,7 +465,7 @@ S.shut=S.shut||{};
 function drawTabs(){
   var G=[{id:'g1953',t:'📑 BC 1953',it:[['tq',S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan']].concat(BTAB.map(function(id){return [id,BN[id]]})).concat([['tt','Biểu 04-KBNN'],['bt','⚖ Đối chiếu THBC']]).concat(S.vt==='TH'?[['qt','🔄 Quy trình & hạn nộp']]:(S.vt==='NV2'?[['qt','📥 Hộp tiếp nhận']]:[]))},
     {id:'gkpi',t:'🎯 BC đánh giá KPI',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Số liệu & xác nhận'],['kpibt','⚖ Phòng ghi nhận khác THBC']].concat(S.vt!=='PGD'?[['kpvb','📄 Công văn & theo dõi']]:[])},
-    {id:'gchung',t:'🗂 Dùng chung',it:[['dm','📁 Danh mục dự án']]}],h='';
+    {id:'gchung',t:'🗂 Dùng chung',it:[['dm','📁 Danh mục dự án'],['cdt','🏢 Danh mục chủ đầu tư']]}],h='';
   h+='<button data-t="home" style="font-weight:600;margin-bottom:6px">🏠 Trang chủ</button>';
   G.forEach(function(g){h+='<div class="tg'+(S.shut[g.id]?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+g.it.map(function(x){return '<button data-t="'+x[0]+'">'+esc(x[1])+'</button>'}).join('')+'</div></div>'});
   $('tabs').innerHTML=h;
@@ -482,7 +482,7 @@ function show(t){nbDuyet();S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   if(S.nv2tp&&!isB&&S.xem!==S.pgd){S.xem=S.pgd;S.data=null}
   $('pgdBar').style.display=((isV()||S.nv2tp)&&isB)?'flex':'none';if(isV()||S.nv2tp)$('xemSel').value=S.xem;
-  if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
+  if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
   $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
 var NAMEB={b01:'B01',b02:'B02',b03a:'B03(21-25)',b03b:'B03(26-30)'};
@@ -587,6 +587,7 @@ function drawHome(){
       tl('🎯','Báo cáo đánh giá KPI','Số liệu, xác nhận, đối chiếu THBC',{tab:'kpi'})+
       tl('📊','Tổng hợp theo chủ đầu tư','Báo cáo tuần, giải ngân tháng, đối chiếu B5-01',{href:'/tonghop/'})+
       tl('📁','Danh mục dự án','Tra cứu, lọc theo chủ đầu tư / chương trình',{tab:'dm'})+
+      tl('🏢','Danh mục chủ đầu tư','Danh sách chủ đầu tư lớn / trực thuộc, số dự án theo phòng',{tab:'cdt'})+
       tl('🏛️','TCKB+','Ứng dụng tra cứu Kho bạc',{href:'https://tckb-kbviii.vercel.app/',ext:1})+
       '</div></div>';
     main.innerHTML=h;
@@ -939,6 +940,8 @@ function dmDxTag(ma){var x=DM.dxMap&&DM.dxMap[ma];if(!x)return '';return x.tt_==
 function dmCt(o,v,id){var s=('+'+(v||'')+'+'),a=o.ctmt||[],n=(v||'').split('+').filter(Boolean).length;
   return '<details class="ctm"'+(id?' id="'+id+'"':' data-ct="1"')+'><summary>'+(v?esc(v.replace(/\+/g,', ')):'—')+'</summary><div class="ctl">'+a.map(function(x){return '<label><input type="checkbox" value="'+x+'"'+(s.indexOf('+'+x+'+')>=0?' checked':'')+'> '+x+'</label>'}).join('')+'</div></details>'}
 function dmCtVal(el){return [].map.call(el.querySelectorAll('input:checked'),function(i){return i.value}).join('+')}
+function dmLonOpts(o,cur){var a=(o.lon&&o.lon.length?o.lon:o.mau).slice();if(cur&&a.indexOf(cur)<0)a.push(cur);return a}
+function dmTtOpts(o,lon,cur){var a=((o.ttMap||{})[lon]||[]).slice();if(!o.lon||!o.lon.length)a=o.mau.slice();if(cur&&a.indexOf(cur)<0)a.push(cur);return a}
 function dmOpts(a,all){return '<option value="">'+all+'</option>'+a.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('')}
 function dmSelCol(f,t,o){return '<select data-f="'+f+'" title="'+t+'"><option value="">'+t+': tất cả</option><option value="__co">'+t+': đã có</option><option value="__trong">'+t+': chưa có</option>'+(o[f]||[]).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('')+'</select>'}
 function drawDm(){
@@ -980,6 +983,42 @@ function dmDrawRows(){var d=DM.d,o=DM.opt,k=d.kpi||{};
   var n=Math.max(1,Math.ceil(d.tong/d.per)),t=d.trang;
   $('dmP').innerHTML='<button data-pg="'+(t-1)+'"'+(t<=0?' disabled':'')+'>‹ Trước</button><span>Trang '+(t+1)+' / '+n+' · '+Number(d.tong).toLocaleString('vi-VN')+' dự án</span><button data-pg="'+(t+1)+'"'+(t+1>=n?' disabled':'')+'>Sau ›</button>'}
 function dmTr(n){return (n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})}
+var CD={q:'',k:'',m:0};
+function drawCdt(){var m=$('main');
+  if(!CD.d){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh mục chủ đầu tư...</p>';run('cdtDs',S.token).then(function(r){CD.d=r;if(S.tab==='cdt')drawCdt()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
+  var d=CD.d;
+  m.innerHTML='<div class="dmk" id="cdK"></div><div class="dmf"><input type="text" class="q" id="cdQ" placeholder="🔍 Tìm chủ đầu tư..." value="'+esc(CD.q)+'"><select id="cdKh"><option value="">Tất cả khối</option><option>Khối tỉnh</option><option>Khối xã, phường</option></select><label style="display:flex;gap:4px;align-items:center;font-size:13px"><input type="checkbox" id="cdM"'+(CD.m?' checked':'')+'> Chưa có dòng trong biểu</label></div>'+
+   (d.sua?'<div class="expb"><button class="pri" id="cdAdd">＋ Thêm chủ đầu tư</button><button id="cdXls">⬇ Xuất Excel</button></div>':'<div class="expb"><button id="cdXls">⬇ Xuất Excel</button></div>')+
+   (d.ngoai&&d.ngoai.length?'<div class="dmwarn"><b>Có '+d.ngoai.reduce(function(s,x){return s+x.so},0)+' dự án thuộc chủ đầu tư chưa nằm trong danh mục:</b><ul style="margin:6px 0 0 18px">'+d.ngoai.map(function(x){return '<li>'+esc(x.lon||'(trống)')+(x.tt?' › '+esc(x.tt):'')+' — '+x.so+' dự án</li>'}).join('')+'</ul><p class="hint">Vào Danh mục dự án → nút “🚩 Dự án sai/thiếu” để chọn lại chủ đầu tư đúng, hoặc thêm chủ đầu tư mới vào danh mục này.</p></div>':'')+
+   '<div class="dmw"><table class="dmt"><thead><tr><th>STT</th><th>Khối</th><th>Chủ đầu tư lớn</th><th>Chủ đầu tư trực thuộc</th><th>Số dự án</th><th>Phòng giao dịch (số dự án)</th><th>Ghi chú</th>'+(d.sua?'<th></th>':'')+'</tr></thead><tbody id="cdB"></tbody></table></div>';
+  $('cdKh').value=CD.k;
+  var f=function(){CD.q=$('cdQ').value;CD.k=$('cdKh').value;CD.m=$('cdM').checked?1:0;cdRows()};$('cdQ').oninput=f;$('cdKh').onchange=f;$('cdM').onchange=f;
+  $('cdXls').onclick=function(){xuat(function(){return run('cdtXuat',S.token)},this,'xlsx')};
+  if(d.sua){$('cdAdd').onclick=function(){cdForm(null)};
+    $('cdB').onclick=function(e){var b=e.target.closest('[data-ce],[data-cx]');if(!b)return;var id=+(b.getAttribute('data-ce')||b.getAttribute('data-cx'));
+      if(b.hasAttribute('data-ce'))cdForm(d.rows.filter(function(x){return x.id===id})[0]);
+      else if(confirm('Xóa dòng chủ đầu tư này khỏi danh mục?'))run('cdtXoa',S.token,id).then(function(){toast('Đã xóa');cdReload()}).catch(function(er){toast(msg(er),6000)})}}
+  cdRows()}
+function cdReload(){CD.d=null;DM.opt=null;drawCdt()}
+function cdRows(){var d=CD.d,q=CD.q.toLowerCase(),n=0,tong=0,cm=0,i=0;
+  var rs=d.rows.filter(function(x){return(!CD.k||x.khoi===CD.k)&&(!CD.m||x.chua_co_dong)&&(!q||(x.lon+' '+x.tt).toLowerCase().indexOf(q)>=0)});
+  rs.forEach(function(x){tong+=x.so});d.rows.forEach(function(x){if(x.chua_co_dong)cm++});
+  $('cdK').innerHTML=[['Dòng chủ đầu tư',d.rows.length],['Đang hiển thị',rs.length],['Số dự án (đang hiển thị)',tong],['Chưa có dòng trong biểu',cm]].map(function(x){return '<div><b>'+Number(x[1]).toLocaleString('vi-VN')+'</b><span>'+x[0]+'</span></div>'}).join('');
+  $('cdB').innerHTML=rs.map(function(x){i++;var pg=Object.keys(x.pgd).sort().map(function(k){return esc(k.replace('Phòng giao dịch số ','PGD ').replace('Phòng Nghiệp vụ 2','NV2'))+': '+x.pgd[k]}).join('; ');
+    return '<tr><td>'+i+'</td><td>'+esc(x.khoi)+'</td><td class="ten">'+esc(x.lon)+'</td><td class="ten">'+(x.tt?esc(x.tt):'<span style="color:var(--mut)">—</span>')+'</td><td style="text-align:right"><b>'+x.so+'</b></td><td>'+(pg||'<span style="color:var(--mut)">chưa có dự án</span>')+'</td><td>'+(x.chua_co_dong?'<span style="color:#b45309">Chưa có dòng trong biểu</span> ':'')+esc(x.ghi_chu)+'</td>'+(d.sua?'<td style="white-space:nowrap"><button data-ce="'+x.id+'">Sửa</button> <button data-cx="'+x.id+'">Xóa</button></td>':'')+'</tr>'}).join('')||'<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--mut)">Không có chủ đầu tư phù hợp.</td></tr>'}
+function cdForm(r){var moi=!r,d=r||{khoi:'Khối tỉnh',lon:'',tt:'',ghi_chu:'',chua_co_dong:true},b=$('mbox'),lons=[];CD.d.rows.forEach(function(x){if(lons.indexOf(x.lon)<0)lons.push(x.lon)});
+  b.className='box wide';
+  b.innerHTML='<h3 style="margin:0 0 10px">'+(moi?'Thêm chủ đầu tư vào danh mục':'Sửa chủ đầu tư')+'</h3><div class="dmg"><label>Khối<select id="cKh"><option>Khối tỉnh</option><option>Khối xã, phường</option></select></label></div>'+
+   '<label class="dmg" style="display:block;margin-top:10px;font-size:12.5px;color:var(--mut)">Chủ đầu tư lớn<input type="text" id="cLon" list="cdLons" value="'+esc(d.lon)+'"></label><datalist id="cdLons">'+lons.map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist>'+
+   '<label class="dmg" style="display:block;margin-top:10px;font-size:12.5px;color:var(--mut)">Chủ đầu tư trực thuộc (để trống nếu dự án do CĐT lớn trực tiếp quản lý)<input type="text" id="cTt" value="'+esc(d.tt)+'"></label>'+
+   '<label class="dmg" style="display:block;margin-top:10px;font-size:12.5px;color:var(--mut)">Ghi chú<input type="text" id="cGc" value="'+esc(d.ghi_chu)+'"></label>'+
+   '<label style="display:flex;gap:6px;align-items:center;margin-top:10px;font-size:13px"><input type="checkbox" id="cMo"'+(d.chua_co_dong?' checked':'')+'> Chưa có dòng trong biểu báo cáo</label>'+
+   (moi?'':'<p class="hint" style="margin-top:8px">⚠ Đổi tên sẽ tự cập nhật tên chủ đầu tư của '+d.so+' dự án. Dòng tương ứng trong biểu báo cáo (tên dòng) cần được đổi theo để số liệu còn khớp.</p>')+
+   '<div id="fErr" style="color:#b91c1c;font-size:13px;min-height:18px"></div><div style="margin-top:8px;display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">Lưu</button></div>';
+  $('cKh').value=d.khoi;$('modal').style.display='flex';
+  function dong(){$('modal').style.display='none';$('mbox').className='box'}
+  $('fNo').onclick=dong;
+  $('fOk').onclick=function(){var btn=this;btn.disabled=true;run('cdtLuu',S.token,moi?null:d.id,{khoi:$('cKh').value,cdt_lon:$('cLon').value,cdt_tt:$('cTt').value,ghi_chu:$('cGc').value,chua_co_dong:$('cMo').checked}).then(function(){dong();toast('Đã lưu danh mục chủ đầu tư');cdReload()}).catch(function(e){btn.disabled=false;$('fErr').textContent=msg(e)})}}
 function dmDxLoad(){run('dmDxDs',S.token).then(function(r){DM.dx=r;DM.dxMap={};r.rows.forEach(function(x){DM.dxMap[x.ma_da]=x});
   var b=$('dmDx');if(b){var n=r.rows.filter(function(x){return x.tt_==='cho'}).length;b.textContent='📝 Đề xuất CĐT trực thuộc'+(n?' ('+n+' chờ duyệt)':'');b.className=n&&r.duyet?'pri':''}
   if(DM.d&&S.tab==='dm')dmDrawRows();dmDxDraw()}).catch(function(){})}
@@ -1013,12 +1052,13 @@ function dmForm(r,mac){var o=DM.opt,moi=!r,d=r||mac||{};
    '<label>Mã dự án<input type="text" id="fMa" value="'+esc(d.ma_da||'')+'"'+(moi&&!(mac&&mac.ma_da)?'':' readonly')+'></label>'+
    '<label>Phòng giao dịch (KBNN giao dịch)'+(o.toanBo?'<input type="text" id="fKb" list="dlKb" value="'+esc(d.kbnn||'')+'">'+dl('dlKb',o.kbnn):'<input type="text" id="fKb" value="'+esc(o.phamVi)+'" readonly>')+'</label></div>'+
    '<label class="dmg" style="display:block;margin-top:10px;font-size:12.5px;color:var(--mut)">Tên dự án<input type="text" id="fTen" value="'+esc(d.ten_da||'')+'"></label>'+
-   '<div class="dmg" style="margin-top:10px"><label>Chủ đầu tư lớn<select id="fCdt2">'+dmOpts(o.mau,'— chọn —')+'</select></label><label>Chủ đầu tư trực thuộc (nếu có)'+(o.toanBo?'':' <small style="color:#b45309">– đề xuất, THBC duyệt</small>')+'<select id="fTt">'+dmOpts(o.mau,'— không có —')+'</select></label></div>'+
+   '<div class="dmg" style="margin-top:10px"><label>Chủ đầu tư lớn<select id="fCdt2">'+dmOpts(dmLonOpts(o,d.cdt2||d.cdt||''),'— chọn —')+'</select></label><label>Chủ đầu tư trực thuộc (nếu có)'+(o.toanBo?'':' <small style="color:#b45309">– đề xuất, THBC duyệt</small>')+'<select id="fTt">'+dmOpts(dmTtOpts(o,d.cdt2||d.cdt||'',(d.cdt&&d.cdt2&&d.cdt!==d.cdt2)?d.cdt:''),'— không có —')+'</select></label></div>'+
    '<div class="dmg" style="margin-top:10px">'+DMC.map(function(c){return '<label>'+c[1]+(c[0]==='ctmt'?dmCt(o,d.ctmt||'','f_ctmt'):dmSel(o,c[0],'f_'+c[0],d[c[0]]||''))+'</label>'}).join('')+'</div>'+
    '<p class="hint" style="margin-top:10px">Tên chủ đầu tư phải trùng tên dòng trên mẫu báo cáo (chọn trong danh sách gợi ý) thì số liệu mới vào đúng báo cáo.</p>'+
    '<div id="fErr" style="color:#b91c1c;font-size:13px;min-height:18px"></div><div style="margin-top:8px;display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">Lưu</button></div>';
   $('modal').style.display='flex';
   var lon=d.cdt2||d.cdt||'',tt=(d.cdt&&d.cdt2&&d.cdt!==d.cdt2)?d.cdt:'';$('fCdt2').value=lon;$('fTt').value=tt;
+  $('fCdt2').onchange=function(){var cur=$('fTt').value,a=dmTtOpts(o,this.value,'');$('fTt').innerHTML=dmOpts(a,'— không có —');$('fTt').value=a.indexOf(cur)>=0?cur:''};
   function dong(){$('modal').style.display='none';$('mbox').className='box'}
   $('fNo').onclick=dong;
   $('fOk').onclick=function(){var lo=$('fCdt2').value,tr=$('fTt').value,pgd=!o.toanBo,curTt=(d.cdt&&d.cdt2&&d.cdt!==d.cdt2)?d.cdt:'';
