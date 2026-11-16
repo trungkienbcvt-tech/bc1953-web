@@ -62,6 +62,7 @@ export function nhanDang(rows) {
     if (/tỉnh/.test(dau)) return 'TINH';
     return 'B501';
   }
+  if (/sổ tổng hợp tình hình tạm ứng, thanh toán/.test(dau)) return 'DTKB';   // ĐTKB-GD: Sổ tổng hợp tình hình tạm ứng, thanh toán của đơn vị
   if (/03kbqt|báo cáo quyết toán các nguồn vốn/.test(dau)) return 'TT85';   // BC TT 85 (biểu 03KBQT)
   if (/01b\/ttkhn|kế hoạch vốn kéo dài năm trước chuyển sang/.test(dau + ' ' + rows.slice(0, 15).map(r => (r || []).map(norm).join(' ')).join(' '))) return 'TT15';
   return null;
@@ -191,6 +192,8 @@ export const COT_THBC = {
   TT37: { KD: ['F'], NAM: ['H'], GN: ['K', 'L', 'N', 'O'] },
   TT85: { KD: ['J'], NAM: ['P'], GN: ['L', 'M', 'R', 'S'], TC: ['V'], TU: ['W'] },
 };
+// Từng cột TT85 riêng lẻ (đối chiếu với ĐTKB-GD): giữ theo dự án và mã KBNN trong x.c / theoKB[kb].c
+export const COT_LE = { TT85: ['L', 'M', 'R', 'S'] };
 export function tuNguonLuu(rows, file, loai) {
   const C = COT_THBC[loai], tr = (so, cs) => cs.reduce((s, c) => s + (so?.[c] || 0), 0) / 1e6;
   const out = new Map();
@@ -200,6 +203,7 @@ export function tuNguonLuu(rows, file, loai) {
     const x = out.get(ma) || { ma_da: ma, ten: String(r.ten || '').replace(new RegExp('^(' + ma + '\\s*-\\s*)+'), ''), kb, gt: 0, gtNam: 0, gtGN: 0, gtTC: 0, gtTU: 0, so_dong: 0, theoKB: {} };
     x.gt += g; x.gtNam += gNam; x.gtGN += gGN; x.gtTC += gTC; x.gtTU += gTU; x.so_dong++;
     const t = x.theoKB[kb] ||= { gt: 0, gtNam: 0, gtGN: 0, gtTC: 0, gtTU: 0 }; t.gt += g; t.gtNam += gNam; t.gtGN += gGN; t.gtTC += gTC; t.gtTU += gTU;
+    for (const c of COT_LE[loai] || []) { const v = (r.so?.[c] || 0) / 1e6; (x.c ||= {})[c] = (x.c[c] || 0) + v; (t.c ||= {})[c] = (t.c[c] || 0) + v; }
     out.set(ma, x);
   }
   const kbTong = {};
@@ -233,4 +237,49 @@ export function soSanhTHBC(a, b, ct = 'GN') {
   const sum = k => rows.reduce((s, r) => s + r[k], 0);
   return { rows, phong: [...phong.values()].sort((x, y) => x.kb.localeCompare(y.kb)), ct,
     tong: { a: sum('a'), b: sum('b'), lech: sum('lech') }, dongTong: { a: a[ft], b: b[ft] }, soLech: rows.filter(r => r.coLech).length };
+}
+
+
+// ---- ĐTKB-GD: "Sổ tổng hợp tình hình tạm ứng, thanh toán của đơn vị" (một KBNN lập sổ)
+//   Cột đối chiếu (theo số thứ tự cột in trên sổ): 15 = TTKLHT vốn KH kéo dài (cột W), 16 = tạm ứng chưa thu hồi KH kéo dài (Y),
+//   18 = TTKLHT vốn KH năm (AC), 19 = tạm ứng chưa thu hồi KH năm (AD). Dòng có STT là dòng tổng của dự án.
+export const COT_DTKB = { W: '15', Y: '16', AC: '18', AD: '19' };
+const COT_DTKB_MD = { W: 22, Y: 24, AC: 28, AD: 29 };
+// Mã KBNN từ tên đơn vị: "… Phòng Nghiệp vụ 2" → 2461, "… Phòng giao dịch số 19 / PGD số 19" → 2462 …
+export function kbTuTen(t) {
+  const s = norm(t);
+  if (/nghiệp vụ\s*2|pnv\s*2/.test(s)) return Object.keys(KB_PHONG).find(k => KB_PHONG[k] === 'NV2') || '';
+  const m = /(?:giao dịch|pgd)\s*(?:số)?\s*(\d+)/.exec(s);
+  return m ? Object.keys(KB_PHONG).find(k => KB_PHONG[k] === m[1]) || '' : '';
+}
+export function docDTKB(rows) {
+  const cMa = timCot(rows, /^mã dự án/), cStt = timCot(rows, /^stt$/), cTen = timCot(rows, /^tên dự án/);
+  if (!cMa) throw new Error('Không tìm thấy cột "Mã dự án" trong sổ ĐTKB-GD.');
+  // cột theo dòng đánh số (1, 2, 3 … 15, 16, 18, 19), không có thì theo vị trí mặc định
+  let cot = { ...COT_DTKB_MD }, dauDL = cMa.dong + 1;
+  for (let i = cMa.dong; i < Math.min(rows.length, cMa.dong + 8); i++) {
+    const r = rows[i] || [], so = r.map(v => txt(v));
+    if (so.filter(v => /^\d+$/.test(v)).length >= 8) {
+      for (const [c, n] of Object.entries(COT_DTKB)) { const j = so.indexOf(n); if (j >= 0) cot[c] = j; }
+      dauDL = i + 1; break;
+    }
+  }
+  let heSo = 1e6;
+  for (const r of rows.slice(0, 10)) for (const v of r || []) { const t = norm(v); if (/đơn vị tính/.test(t)) heSo = /triệu/.test(t) ? 1 : /nghìn|ngàn/.test(t) ? 1e3 : 1e6; }
+  let donVi = '';
+  for (const r of rows.slice(0, 4)) for (const v of r || []) if (!donVi && /kbnn|kho bạc/i.test(txt(v))) donVi = txt(v);
+  const kb = kbTuTen(donVi);
+  const dau = new Map(), ct = new Map();   // dòng tổng dự án (có STT) / cộng dòng chi tiết
+  for (let i = dauDL; i < rows.length; i++) {
+    const r = rows[i] || [], ma = txt(r[cMa.cot]); if (!/^\d{5,}$/.test(ma)) continue;
+    const v = Object.fromEntries(Object.entries(cot).map(([c, j]) => [c, soTien(r[j]) / heSo]));
+    const laDau = cStt && txt(r[cStt.cot]) !== '';
+    const m = laDau ? dau : ct, x = m.get(ma) || { ma_da: ma, ten: cTen ? txt(r[cTen.cot]) : '', v: { W: 0, Y: 0, AC: 0, AD: 0 } };
+    if (!x.ten && cTen) x.ten = txt(r[cTen.cot]);
+    for (const c in v) x.v[c] += v[c];
+    m.set(ma, x);
+  }
+  for (const [ma, x] of ct) if (!dau.has(ma)) dau.set(ma, x);
+  for (const x of dau.values()) { x.kb = kb; if (!x.ten) x.ten = ct.get(x.ma_da)?.ten || ''; }
+  return { loai: 'DTKB', ds: dau, kb, donVi, ky: kyIn(rows) };
 }
