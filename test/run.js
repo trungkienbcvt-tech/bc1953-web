@@ -163,12 +163,12 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await M.dmDs(th, { kbnn: 'Phòng giao dịch số 17' }, 0); assert.strictEqual(last()[1].p_kbnn, 'Phòng giao dịch số 17', 'Tổng hợp lọc theo phòng tùy ý');
     await M.dmDs(th, {}, 0); assert.strictEqual(last()[1].p_kbnn, null, 'Tổng hợp xem tất cả');
     await assert.rejects(() => M.dmSua(p20, '111', { cdt: 'Không có tên này' }), /chưa có trên mẫu/);
-    await M.dmSua(p20, '111', { cdt: mauT.toUpperCase(), kbnn: 'Phòng giao dịch số 17', dac_thu: 'X' }); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20'); assert.strictEqual(last()[1].p_rec.cdt, mauT); assert(!('kbnn' in last()[1].p_rec), 'PGD không đổi được phòng');
+    await M.dmSua(p20, '111', { cdt: mauT.toUpperCase(), kbnn: 'Phòng giao dịch số 17', dac_thu: 'Trọng điểm' }); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20'); assert.strictEqual(last()[1].p_rec.cdt, mauT); assert(!('kbnn' in last()[1].p_rec), 'PGD không đổi được phòng');
     await M.dmSua(th, '111', { kbnn: 'Phòng giao dịch số 17' }); assert.strictEqual(last()[1].p_gh, null); assert.strictEqual(last()[1].p_rec.kbnn, 'Phòng giao dịch số 17');
     await assert.rejects(() => M.dmThem(p20, '9990001', { cdt: mauT }), /chủ đầu tư/);
     await M.dmThem(p20, '9990001', { cdt: mauT, cdt2: mauT, kbnn: 'Phòng giao dịch số 17' }); assert.strictEqual(last()[1].p_rec.kbnn, 'Phòng giao dịch số 20');
     await assert.rejects(() => M.dmThem(th, '9990002', { cdt: mauT, cdt2: mauT }), /Chưa chọn phòng/);
-    r = await M.dmHangLoat(p20, '1 2,3\n1', 'ctmt', 'A'); assert.strictEqual(last()[1].p_mas.length, 3); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20');
+    r = await M.dmHangLoat(p20, '1 2,3\n1', 'ctmt', 'NTM'); assert.strictEqual(last()[1].p_mas.length, 3); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20');
     await assert.rejects(() => M.dmHangLoat(p20, '1', 'cdt', 'A'), /Cột/);
     assert((await M.dmXuat(th, {})).b64.length > 300);
     M.api.goi = null; delete process.env.TONGHOP_KHOA; await assert.rejects(() => M.dmDs(th, {}, 0), /TONGHOP_KHOA/);
