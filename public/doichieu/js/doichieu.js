@@ -24,7 +24,7 @@ function toast(msg, type = '') {
 }
 const fail = e => { console.error(e); toast(e?.message || String(e), 'err'); };
 async function loadXLSX() {
-  for (const u of ['https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs', 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm']) {
+  for (const u of ['https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm', 'https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs']) {
     try { return await import(u); } catch (e) { console.warn('Không tải được', u, e); }
   }
   throw new Error('Không tải được thư viện đọc Excel. Kiểm tra kết nối mạng.');
@@ -37,6 +37,19 @@ function loadExcelJS() {
     s.onload = () => res(window.ExcelJS); s.onerror = () => rej(new Error('Không tải được thư viện xuất Excel.'));
     document.head.append(s);
   });
+}
+// Lưu file tải về: chạy trong trang claude.ai (artifact) thì dùng quyền "downloads" của Claude, còn lại tải bình thường
+async function luuFile(buf, ten) {
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const dl = window.claude?.use ? await window.claude.use('downloads').catch(() => null) : null;
+  if (dl) {
+    try { await dl.save({ filename: ten, data: blob }); toast('Đã lưu file ' + ten, 'ok'); }
+    catch (e) { if (e?.code !== 'declined') toast('Không lưu được file: ' + (e?.message || e?.code || e), 'err'); }
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = ten; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
 }
 function tenPhongKB(k, tenFile) {
   const p = DTE.KB_PHONG[k];
@@ -301,9 +314,7 @@ async function xuatDoiChieu(M, opt) {
   for (let c = dau.length + 1; c <= cuoi; c++) ws.getColumn(c).numFmt = NF;
   ws.autoFilter = { from: { row: 2, column: 1 }, to: { row: 2, column: cuoi + 2 } };
   const buf = await wb.xlsx.writeBuffer();
-  const el = document.createElement('a');
-  el.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-  el.download = `${opt.tenFile} ${(opt.ngay || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`; el.click();
+  await luuFile(buf, `${opt.tenFile} ${(opt.ngay || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`);
 }
 
 
