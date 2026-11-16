@@ -67,7 +67,7 @@
 },
 {
 "stt": "1",
-"ten": "BQLDA ĐTXD công trình số 01 tỉnh Tuyên Quang",
+"ten": "Ban QLDA ĐTXD công trình số 01 tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -110,7 +110,7 @@
 },
 {
 "stt": "2",
-"ten": "BQLDA ĐTXD công trình tỉnh Tuyên Quang",
+"ten": "Ban QLDA ĐTXD công trình tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -154,7 +154,7 @@
 },
 {
 "stt": "3",
-"ten": "Ban điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
+"ten": "Ban Điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -197,7 +197,7 @@
 },
 {
 "stt": "4",
-"ten": "BQL các khu Công nghiệp và khu Kinh tế tỉnh Tuyên Quang",
+"ten": "Ban QL các khu công nghiệp và khu kinh tế tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -239,7 +239,7 @@
 },
 {
 "stt": "5",
-"ten": "BCH Biên phòng tỉnh Tuyên Quang",
+"ten": "Bộ Chỉ huy Bộ đội Biên phòng tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -281,7 +281,7 @@
 },
 {
 "stt": "6",
-"ten": "BCH Quân sự tỉnh Tuyên Quang",
+"ten": "Bộ Chỉ huy Quân sự tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -536,7 +536,7 @@
 },
 {
 "stt": "12",
-"ten": "Sở Văn hóa, Thể thao và Du lịch Tuyên Quang",
+"ten": "Sở Văn hóa, Thể thao và Du lịch tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -641,7 +641,7 @@
 },
 {
 "stt": "13.2",
-"ten": "BQL khai thác Công trình thủy lợi Tuyên Quang",
+"ten": "Ban QL khai thác công trình thủy lợi tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -683,7 +683,7 @@
 },
 {
 "stt": "13.3",
-"ten": "TT Nước sạch nông thôn",
+"ten": "Trung tâm Nước sạch nông thôn tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -789,7 +789,7 @@
 },
 {
 "stt": "14.2",
-"ten": "Bệnh viện Đa khoa Hà Giang",
+"ten": "Bệnh viện Đa khoa Hà Giang tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -957,7 +957,7 @@
 },
 {
 "stt": "16",
-"ten": "Sở Công thương tỉnh Tuyên Quang",
+"ten": "Sở Công Thương tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -999,7 +999,7 @@
 },
 {
 "stt": "17",
-"ten": "Báo và phát thanh truyền hình tỉnh Tuyên Quang",
+"ten": "Báo và Phát thanh, Truyền hình tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1041,7 +1041,7 @@
 },
 {
 "stt": "18",
-"ten": "Văn phòng tỉnh ủy Tuyên Quang",
+"ten": "Văn phòng Tỉnh ủy tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1125,7 +1125,7 @@
 },
 {
 "stt": "20",
-"ten": "Liên minh hợp tác xã tỉnh Tuyên Quang",
+"ten": "Liên minh Hợp tác xã tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1167,7 +1167,7 @@
 },
 {
 "stt": "21",
-"ten": "Sở Dân tộc & Tôn giáo tỉnh Tuyên Quang",
+"ten": "Sở Dân tộc và Tôn giáo tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1209,7 +1209,7 @@
 },
 {
 "stt": "22",
-"ten": "Sở Khoa học & Công nghệ tỉnh Tuyên Quang",
+"ten": "Sở Khoa học và Công nghệ tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1251,7 +1251,7 @@
 },
 {
 "stt": "23",
-"ten": "Thanh Tra tỉnh Tuyên Quang",
+"ten": "Thanh tra tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1293,7 +1293,7 @@
 },
 {
 "stt": "24",
-"ten": "Trung tâm phát triển quỹ đất tỉnh",
+"ten": "Trung tâm Phát triển quỹ đất tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1477,7 +1477,7 @@
 },
 {
 "stt": "1",
-"ten": "UBND xã Thượng Lâm",
+"ten": "Xã Thượng Lâm",
 "loai": "ct",
 "o": {
 "D": {
@@ -1519,7 +1519,7 @@
 },
 {
 "stt": "2",
-"ten": "UBND xã Lâm Bình",
+"ten": "Xã Lâm Bình",
 "loai": "ct",
 "o": {
 "D": {
@@ -1561,7 +1561,7 @@
 },
 {
 "stt": "3",
-"ten": "UBND xã Minh Quang",
+"ten": "Xã Minh Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1603,7 +1603,7 @@
 },
 {
 "stt": "4",
-"ten": "UBND xã Bình An",
+"ten": "Xã Bình An",
 "loai": "ct",
 "o": {
 "D": {
@@ -1645,7 +1645,7 @@
 },
 {
 "stt": "5",
-"ten": "UBND xã Côn Lôn",
+"ten": "Xã Côn Lôn",
 "loai": "ct",
 "o": {
 "D": {
@@ -1687,7 +1687,7 @@
 },
 {
 "stt": "6",
-"ten": "UBND xã Yên Hoa",
+"ten": "Xã Yên Hoa",
 "loai": "ct",
 "o": {
 "D": {
@@ -1729,7 +1729,7 @@
 },
 {
 "stt": "7",
-"ten": "UBND xã Thượng Nông",
+"ten": "Xã Thượng Nông",
 "loai": "ct",
 "o": {
 "D": {
@@ -1771,7 +1771,7 @@
 },
 {
 "stt": "8",
-"ten": "UBND xã Hồng Thái",
+"ten": "Xã Hồng Thái",
 "loai": "ct",
 "o": {
 "D": {
@@ -1813,7 +1813,7 @@
 },
 {
 "stt": "9",
-"ten": "UBND xã Nà Hang",
+"ten": "Xã Nà Hang",
 "loai": "ct",
 "o": {
 "D": {
@@ -1855,7 +1855,7 @@
 },
 {
 "stt": "10",
-"ten": "UBND xã Tân Mỹ",
+"ten": "Xã Tân Mỹ",
 "loai": "ct",
 "o": {
 "D": {
@@ -1897,7 +1897,7 @@
 },
 {
 "stt": "11",
-"ten": "UBND xã Yên Lập",
+"ten": "Xã Yên Lập",
 "loai": "ct",
 "o": {
 "D": {
@@ -1939,7 +1939,7 @@
 },
 {
 "stt": "12",
-"ten": "UBND xã Tân An",
+"ten": "Xã Tân An",
 "loai": "ct",
 "o": {
 "D": {
@@ -1981,7 +1981,7 @@
 },
 {
 "stt": "13",
-"ten": "UBND xã Chiêm Hóa",
+"ten": "Xã Chiêm Hóa",
 "loai": "ct",
 "o": {
 "D": {
@@ -2023,7 +2023,7 @@
 },
 {
 "stt": "14",
-"ten": "UBND xã Hòa An",
+"ten": "Xã Hòa An",
 "loai": "ct",
 "o": {
 "D": {
@@ -2065,7 +2065,7 @@
 },
 {
 "stt": "15",
-"ten": "UBND xã Kiên Đài",
+"ten": "Xã Kiên Đài",
 "loai": "ct",
 "o": {
 "D": {
@@ -2107,7 +2107,7 @@
 },
 {
 "stt": "16",
-"ten": "UBND xã Tri Phú",
+"ten": "Xã Tri Phú",
 "loai": "ct",
 "o": {
 "D": {
@@ -2149,7 +2149,7 @@
 },
 {
 "stt": "17",
-"ten": "UBND xã Kim Bình",
+"ten": "Xã Kim Bình",
 "loai": "ct",
 "o": {
 "D": {
@@ -2191,7 +2191,7 @@
 },
 {
 "stt": "18",
-"ten": "UBND xã Yên Nguyên",
+"ten": "Xã Yên Nguyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -2233,7 +2233,7 @@
 },
 {
 "stt": "19",
-"ten": "UBND xã Trung Hà",
+"ten": "Xã Trung Hà",
 "loai": "ct",
 "o": {
 "D": {
@@ -2275,7 +2275,7 @@
 },
 {
 "stt": "20",
-"ten": "UBND xã Yên Phú",
+"ten": "Xã Yên Phú",
 "loai": "ct",
 "o": {
 "D": {
@@ -2317,7 +2317,7 @@
 },
 {
 "stt": "21",
-"ten": "UBND xã Bạch Xa",
+"ten": "Xã Bạch Xa",
 "loai": "ct",
 "o": {
 "D": {
@@ -2359,7 +2359,7 @@
 },
 {
 "stt": "22",
-"ten": "UBND xã Phù Lưu",
+"ten": "Xã Phù Lưu",
 "loai": "ct",
 "o": {
 "D": {
@@ -2401,7 +2401,7 @@
 },
 {
 "stt": "23",
-"ten": "UBND xã Hàm Yên",
+"ten": "Xã Hàm Yên",
 "loai": "ct",
 "o": {
 "D": {
@@ -2443,7 +2443,7 @@
 },
 {
 "stt": "24",
-"ten": "UBND xã Bình Xa",
+"ten": "Xã Bình Xa",
 "loai": "ct",
 "o": {
 "D": {
@@ -2485,7 +2485,7 @@
 },
 {
 "stt": "25",
-"ten": "UBND xã Thái Sơn",
+"ten": "Xã Thái Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -2527,7 +2527,7 @@
 },
 {
 "stt": "26",
-"ten": "UBND xã Thái Hòa",
+"ten": "Xã Thái Hòa",
 "loai": "ct",
 "o": {
 "D": {
@@ -2569,7 +2569,7 @@
 },
 {
 "stt": "27",
-"ten": "UBND xã Hùng Lợi",
+"ten": "Xã Hùng Lợi",
 "loai": "ct",
 "o": {
 "D": {
@@ -2611,7 +2611,7 @@
 },
 {
 "stt": "28",
-"ten": "UBND xã Trung Sơn",
+"ten": "Xã Trung Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -2653,7 +2653,7 @@
 },
 {
 "stt": "29",
-"ten": "UBND xã Thái Bình",
+"ten": "Xã Thái Bình",
 "loai": "ct",
 "o": {
 "D": {
@@ -2695,7 +2695,7 @@
 },
 {
 "stt": "30",
-"ten": "UBND xã Tân Long",
+"ten": "Xã Tân Long",
 "loai": "ct",
 "o": {
 "D": {
@@ -2737,7 +2737,7 @@
 },
 {
 "stt": "31",
-"ten": "UBND xã Xuân Vân",
+"ten": "Xã Xuân Vân",
 "loai": "ct",
 "o": {
 "D": {
@@ -2779,7 +2779,7 @@
 },
 {
 "stt": "32",
-"ten": "UBND xã Lực Hành",
+"ten": "Xã Lực Hành",
 "loai": "ct",
 "o": {
 "D": {
@@ -2821,7 +2821,7 @@
 },
 {
 "stt": "33",
-"ten": "UBND xã Yên Sơn",
+"ten": "Xã Yên Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -2863,7 +2863,7 @@
 },
 {
 "stt": "34",
-"ten": "UBND xã Nhữ Khê",
+"ten": "Xã Nhữ Khê",
 "loai": "ct",
 "o": {
 "D": {
@@ -2905,7 +2905,7 @@
 },
 {
 "stt": "35",
-"ten": "UBND xã Kiến Thiết",
+"ten": "Xã Kiến Thiết",
 "loai": "ct",
 "o": {
 "D": {
@@ -2947,7 +2947,7 @@
 },
 {
 "stt": "36",
-"ten": "UBND xã Hùng Đức",
+"ten": "Xã Hùng Đức",
 "loai": "ct",
 "o": {
 "D": {
@@ -2989,7 +2989,7 @@
 },
 {
 "stt": "37",
-"ten": "UBND xã Tân Trào",
+"ten": "Xã Tân Trào",
 "loai": "ct",
 "o": {
 "D": {
@@ -3031,7 +3031,7 @@
 },
 {
 "stt": "38",
-"ten": "UBND xã Minh Thanh",
+"ten": "Xã Minh Thanh",
 "loai": "ct",
 "o": {
 "D": {
@@ -3073,7 +3073,7 @@
 },
 {
 "stt": "39",
-"ten": "UBND xã Sơn Dương",
+"ten": "Xã Sơn Dương",
 "loai": "ct",
 "o": {
 "D": {
@@ -3115,7 +3115,7 @@
 },
 {
 "stt": "40",
-"ten": "UBND xã Bình Ca",
+"ten": "Xã Bình Ca",
 "loai": "ct",
 "o": {
 "D": {
@@ -3157,7 +3157,7 @@
 },
 {
 "stt": "41",
-"ten": "UBND xã Tân Thanh",
+"ten": "Xã Tân Thanh",
 "loai": "ct",
 "o": {
 "D": {
@@ -3199,7 +3199,7 @@
 },
 {
 "stt": "42",
-"ten": "UBND xã Sơn Thủy",
+"ten": "Xã Sơn Thủy",
 "loai": "ct",
 "o": {
 "D": {
@@ -3241,7 +3241,7 @@
 },
 {
 "stt": "43",
-"ten": "UBND xã Phú Lương",
+"ten": "Xã Phú Lương",
 "loai": "ct",
 "o": {
 "D": {
@@ -3283,7 +3283,7 @@
 },
 {
 "stt": "44",
-"ten": "UBND xã Trường Sinh",
+"ten": "Xã Trường Sinh",
 "loai": "ct",
 "o": {
 "D": {
@@ -3325,7 +3325,7 @@
 },
 {
 "stt": "45",
-"ten": "UBND xã Hồng Sơn",
+"ten": "Xã Hồng Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -3367,7 +3367,7 @@
 },
 {
 "stt": "46",
-"ten": "UBND xã Đông Thọ",
+"ten": "Xã Đông Thọ",
 "loai": "ct",
 "o": {
 "D": {
@@ -3409,7 +3409,7 @@
 },
 {
 "stt": "47",
-"ten": "UBND phường Mỹ Lâm",
+"ten": "Phường Mỹ Lâm",
 "loai": "ct",
 "o": {
 "D": {
@@ -3451,7 +3451,7 @@
 },
 {
 "stt": "48",
-"ten": "UBND phường Minh Xuân",
+"ten": "Phường Minh Xuân",
 "loai": "ct",
 "o": {
 "D": {
@@ -3493,7 +3493,7 @@
 },
 {
 "stt": "49",
-"ten": "UBND phường Nông Tiến",
+"ten": "Phường Nông Tiến",
 "loai": "ct",
 "o": {
 "D": {
@@ -3535,7 +3535,7 @@
 },
 {
 "stt": "50",
-"ten": "UBND phường An Tường",
+"ten": "Phường An Tường",
 "loai": "ct",
 "o": {
 "D": {
@@ -3577,7 +3577,7 @@
 },
 {
 "stt": "51",
-"ten": "UBND phường Bình Thuận",
+"ten": "Phường Bình Thuận",
 "loai": "ct",
 "o": {
 "D": {
@@ -3619,7 +3619,7 @@
 },
 {
 "stt": "52",
-"ten": "UBND xã Sủng Máng",
+"ten": "Xã Sủng Máng",
 "loai": "ct",
 "o": {
 "D": {
@@ -3661,7 +3661,7 @@
 },
 {
 "stt": "53",
-"ten": "UBND xã Sơn Vĩ",
+"ten": "Xã Sơn Vĩ",
 "loai": "ct",
 "o": {
 "D": {
@@ -3703,7 +3703,7 @@
 },
 {
 "stt": "54",
-"ten": "UBND xã Mèo Vạc",
+"ten": "Xã Mèo Vạc",
 "loai": "ct",
 "o": {
 "D": {
@@ -3745,7 +3745,7 @@
 },
 {
 "stt": "55",
-"ten": "UBND xã Khâu Vai",
+"ten": "Xã Khâu Vai",
 "loai": "ct",
 "o": {
 "D": {
@@ -3787,7 +3787,7 @@
 },
 {
 "stt": "56",
-"ten": "UBND xã Niêm Sơn",
+"ten": "Xã Niêm Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -3829,7 +3829,7 @@
 },
 {
 "stt": "57",
-"ten": "UBND xã Tát Ngà",
+"ten": "Xã Tát Ngà",
 "loai": "ct",
 "o": {
 "D": {
@@ -3871,7 +3871,7 @@
 },
 {
 "stt": "58",
-"ten": "UBND xã Lũng Cú",
+"ten": "Xã Lũng Cú",
 "loai": "ct",
 "o": {
 "D": {
@@ -3913,7 +3913,7 @@
 },
 {
 "stt": "59",
-"ten": "UBND xã Đồng Văn",
+"ten": "Xã Đồng Văn",
 "loai": "ct",
 "o": {
 "D": {
@@ -3955,7 +3955,7 @@
 },
 {
 "stt": "60",
-"ten": "UBND xã Sà Phìn",
+"ten": "Xã Sà Phìn",
 "loai": "ct",
 "o": {
 "D": {
@@ -3997,7 +3997,7 @@
 },
 {
 "stt": "61",
-"ten": "UBND xã Phố Bảng",
+"ten": "Xã Phố Bảng",
 "loai": "ct",
 "o": {
 "D": {
@@ -4039,7 +4039,7 @@
 },
 {
 "stt": "62",
-"ten": "UBND xã Lũng Phìn",
+"ten": "Xã Lũng Phìn",
 "loai": "ct",
 "o": {
 "D": {
@@ -4081,7 +4081,7 @@
 },
 {
 "stt": "63",
-"ten": "UBND xã Mậu Duệ",
+"ten": "Xã Mậu Duệ",
 "loai": "ct",
 "o": {
 "D": {
@@ -4123,7 +4123,7 @@
 },
 {
 "stt": "64",
-"ten": "UBND xã Thắng Mố",
+"ten": "Xã Thắng Mố",
 "loai": "ct",
 "o": {
 "D": {
@@ -4165,7 +4165,7 @@
 },
 {
 "stt": "65",
-"ten": "UBND xã Bạch Đích",
+"ten": "Xã Bạch Đích",
 "loai": "ct",
 "o": {
 "D": {
@@ -4207,7 +4207,7 @@
 },
 {
 "stt": "66",
-"ten": "UBND xã Yên Minh",
+"ten": "Xã Yên Minh",
 "loai": "ct",
 "o": {
 "D": {
@@ -4249,7 +4249,7 @@
 },
 {
 "stt": "67",
-"ten": "UBND xã Du Già",
+"ten": "Xã Du Già",
 "loai": "ct",
 "o": {
 "D": {
@@ -4291,7 +4291,7 @@
 },
 {
 "stt": "68",
-"ten": "UBND xã Đường Thượng",
+"ten": "Xã Đường Thượng",
 "loai": "ct",
 "o": {
 "D": {
@@ -4333,7 +4333,7 @@
 },
 {
 "stt": "69",
-"ten": "UBND xã Ngọc Long",
+"ten": "Xã Ngọc Long",
 "loai": "ct",
 "o": {
 "D": {
@@ -4375,7 +4375,7 @@
 },
 {
 "stt": "70",
-"ten": "UBND xã Lùng Tám",
+"ten": "Xã Lùng Tám",
 "loai": "ct",
 "o": {
 "D": {
@@ -4417,7 +4417,7 @@
 },
 {
 "stt": "71",
-"ten": "UBND xã Cán Tỷ",
+"ten": "Xã Cán Tỷ",
 "loai": "ct",
 "o": {
 "D": {
@@ -4459,7 +4459,7 @@
 },
 {
 "stt": "72",
-"ten": "UBND xã Nghĩa Thuận",
+"ten": "Xã Nghĩa Thuận",
 "loai": "ct",
 "o": {
 "D": {
@@ -4501,7 +4501,7 @@
 },
 {
 "stt": "73",
-"ten": "UBND xã Quản Bạ",
+"ten": "Xã Quản Bạ",
 "loai": "ct",
 "o": {
 "D": {
@@ -4543,7 +4543,7 @@
 },
 {
 "stt": "74",
-"ten": "UBND xã Tùng Vài",
+"ten": "Xã Tùng Vài",
 "loai": "ct",
 "o": {
 "D": {
@@ -4585,7 +4585,7 @@
 },
 {
 "stt": "75",
-"ten": "UBND xã Yên Cường",
+"ten": "Xã Yên Cường",
 "loai": "ct",
 "o": {
 "D": {
@@ -4627,7 +4627,7 @@
 },
 {
 "stt": "76",
-"ten": "UBND xã Đường Hồng",
+"ten": "Xã Đường Hồng",
 "loai": "ct",
 "o": {
 "D": {
@@ -4670,7 +4670,7 @@
 },
 {
 "stt": "77",
-"ten": "UBND xã Bắc Mê",
+"ten": "Xã Bắc Mê",
 "loai": "ct",
 "o": {
 "D": {
@@ -4713,7 +4713,7 @@
 },
 {
 "stt": "78",
-"ten": "UBND xã Minh Ngọc",
+"ten": "Xã Minh Ngọc",
 "loai": "ct",
 "o": {
 "D": {
@@ -4755,7 +4755,7 @@
 },
 {
 "stt": "79",
-"ten": "UBND xã Minh Sơn",
+"ten": "Xã Minh Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -4797,7 +4797,7 @@
 },
 {
 "stt": "80",
-"ten": "UBND xã Giáp Trung",
+"ten": "Xã Giáp Trung",
 "loai": "ct",
 "o": {
 "D": {
@@ -4839,7 +4839,7 @@
 },
 {
 "stt": "81",
-"ten": "UBND xã Ngọc Đường",
+"ten": "Xã Ngọc Đường",
 "loai": "ct",
 "o": {
 "D": {
@@ -4881,7 +4881,7 @@
 },
 {
 "stt": "82",
-"ten": "UBND phường Hà Giang 1",
+"ten": "Phường Hà Giang 1",
 "loai": "ct",
 "o": {
 "D": {
@@ -4923,7 +4923,7 @@
 },
 {
 "stt": "83",
-"ten": "UBND phường Hà Giang 2",
+"ten": "Phường Hà Giang 2",
 "loai": "ct",
 "o": {
 "D": {
@@ -4965,7 +4965,7 @@
 },
 {
 "stt": "84",
-"ten": "UBND xã Lao Chải",
+"ten": "Xã Lao Chải",
 "loai": "ct",
 "o": {
 "D": {
@@ -5007,7 +5007,7 @@
 },
 {
 "stt": "85",
-"ten": "UBND xã Thanh Thủy",
+"ten": "Xã Thanh Thủy",
 "loai": "ct",
 "o": {
 "D": {
@@ -5049,7 +5049,7 @@
 },
 {
 "stt": "86",
-"ten": "UBND xã Phú Linh",
+"ten": "Xã Phú Linh",
 "loai": "ct",
 "o": {
 "D": {
@@ -5091,7 +5091,7 @@
 },
 {
 "stt": "87",
-"ten": "UBND xã Linh Hồ",
+"ten": "Xã Linh Hồ",
 "loai": "ct",
 "o": {
 "D": {
@@ -5133,7 +5133,7 @@
 },
 {
 "stt": "88",
-"ten": "UBND xã Bạch Ngọc",
+"ten": "Xã Bạch Ngọc",
 "loai": "ct",
 "o": {
 "D": {
@@ -5175,7 +5175,7 @@
 },
 {
 "stt": "89",
-"ten": "UBND xã Vị Xuyên",
+"ten": "Xã Vị Xuyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -5217,7 +5217,7 @@
 },
 {
 "stt": "90",
-"ten": "UBND xã Việt Lâm",
+"ten": "Xã Việt Lâm",
 "loai": "ct",
 "o": {
 "D": {
@@ -5259,7 +5259,7 @@
 },
 {
 "stt": "91",
-"ten": "UBND xã Minh Tân",
+"ten": "Xã Minh Tân",
 "loai": "ct",
 "o": {
 "D": {
@@ -5301,7 +5301,7 @@
 },
 {
 "stt": "92",
-"ten": "UBND xã Thuận Hòa",
+"ten": "Xã Thuận Hòa",
 "loai": "ct",
 "o": {
 "D": {
@@ -5343,7 +5343,7 @@
 },
 {
 "stt": "93",
-"ten": "UBND xã Tùng Bá",
+"ten": "Xã Tùng Bá",
 "loai": "ct",
 "o": {
 "D": {
@@ -5385,7 +5385,7 @@
 },
 {
 "stt": "94",
-"ten": "UBND xã Thượng Sơn",
+"ten": "Xã Thượng Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -5427,7 +5427,7 @@
 },
 {
 "stt": "95",
-"ten": "UBND xã Cao Bồ",
+"ten": "Xã Cao Bồ",
 "loai": "ct",
 "o": {
 "D": {
@@ -5469,7 +5469,7 @@
 },
 {
 "stt": "96",
-"ten": "UBND xã Tân Quang",
+"ten": "Xã Tân Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -5511,7 +5511,7 @@
 },
 {
 "stt": "97",
-"ten": "UBND xã Đồng Tâm",
+"ten": "Xã Đồng Tâm",
 "loai": "ct",
 "o": {
 "D": {
@@ -5553,7 +5553,7 @@
 },
 {
 "stt": "98",
-"ten": "UBND xã Liên Hiệp",
+"ten": "Xã Liên Hiệp",
 "loai": "ct",
 "o": {
 "D": {
@@ -5595,7 +5595,7 @@
 },
 {
 "stt": "99",
-"ten": "UBND xã Bằng Hành",
+"ten": "Xã Bằng Hành",
 "loai": "ct",
 "o": {
 "D": {
@@ -5637,7 +5637,7 @@
 },
 {
 "stt": "100",
-"ten": "UBND xã Bắc Quang",
+"ten": "Xã Bắc Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -5679,7 +5679,7 @@
 },
 {
 "stt": "101",
-"ten": "UBND xã Hùng An",
+"ten": "Xã Hùng An",
 "loai": "ct",
 "o": {
 "D": {
@@ -5721,7 +5721,7 @@
 },
 {
 "stt": "102",
-"ten": "UBND xã Vĩnh Tuy",
+"ten": "Xã Vĩnh Tuy",
 "loai": "ct",
 "o": {
 "D": {
@@ -5763,7 +5763,7 @@
 },
 {
 "stt": "103",
-"ten": "UBND xã Đồng Yên",
+"ten": "Xã Đồng Yên",
 "loai": "ct",
 "o": {
 "D": {
@@ -5805,7 +5805,7 @@
 },
 {
 "stt": "104",
-"ten": "UBND xã Tiên Yên",
+"ten": "Xã Tiên Yên",
 "loai": "ct",
 "o": {
 "D": {
@@ -5847,7 +5847,7 @@
 },
 {
 "stt": "105",
-"ten": "UBND xã Xuân Giang",
+"ten": "Xã Xuân Giang",
 "loai": "ct",
 "o": {
 "D": {
@@ -5889,7 +5889,7 @@
 },
 {
 "stt": "106",
-"ten": "UBND xã Bằng Lang",
+"ten": "Xã Bằng Lang",
 "loai": "ct",
 "o": {
 "D": {
@@ -5931,7 +5931,7 @@
 },
 {
 "stt": "107",
-"ten": "UBND xã Yên Thành",
+"ten": "Xã Yên Thành",
 "loai": "ct",
 "o": {
 "D": {
@@ -5973,7 +5973,7 @@
 },
 {
 "stt": "108",
-"ten": "UBND xã Quang Bình",
+"ten": "Xã Quang Bình",
 "loai": "ct",
 "o": {
 "D": {
@@ -6015,7 +6015,7 @@
 },
 {
 "stt": "109",
-"ten": "UBND xã Tân Trịnh",
+"ten": "Xã Tân Trịnh",
 "loai": "ct",
 "o": {
 "D": {
@@ -6057,7 +6057,7 @@
 },
 {
 "stt": "110",
-"ten": "UBND xã Tiên Nguyên",
+"ten": "Xã Tiên Nguyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -6099,7 +6099,7 @@
 },
 {
 "stt": "111",
-"ten": "UBND xã Thông Nguyên",
+"ten": "Xã Thông Nguyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -6141,7 +6141,7 @@
 },
 {
 "stt": "112",
-"ten": "UBND xã Nậm Dịch",
+"ten": "Xã Nậm Dịch",
 "loai": "ct",
 "o": {
 "D": {
@@ -6183,7 +6183,7 @@
 },
 {
 "stt": "113",
-"ten": "UBND xã Hồ Thầu",
+"ten": "Xã Hồ Thầu",
 "loai": "ct",
 "o": {
 "D": {
@@ -6225,7 +6225,7 @@
 },
 {
 "stt": "114",
-"ten": "UBND xã Tân Tiến",
+"ten": "Xã Tân Tiến",
 "loai": "ct",
 "o": {
 "D": {
@@ -6267,7 +6267,7 @@
 },
 {
 "stt": "115",
-"ten": "UBND xã Hoàng Su Phì",
+"ten": "Xã Hoàng Su Phì",
 "loai": "ct",
 "o": {
 "D": {
@@ -6309,7 +6309,7 @@
 },
 {
 "stt": "116",
-"ten": "UBND xã Thàng Tín",
+"ten": "Xã Thàng Tín",
 "loai": "ct",
 "o": {
 "D": {
@@ -6351,7 +6351,7 @@
 },
 {
 "stt": "117",
-"ten": "UBND xã Bản Máy",
+"ten": "Xã Bản Máy",
 "loai": "ct",
 "o": {
 "D": {
@@ -6393,7 +6393,7 @@
 },
 {
 "stt": "118",
-"ten": "UBND xã Pờ Ly Ngài",
+"ten": "Xã Pờ Ly Ngài",
 "loai": "ct",
 "o": {
 "D": {
@@ -6435,7 +6435,7 @@
 },
 {
 "stt": "119",
-"ten": "UBND xã Xín Mần",
+"ten": "Xã Xín Mần",
 "loai": "ct",
 "o": {
 "D": {
@@ -6477,7 +6477,7 @@
 },
 {
 "stt": "120",
-"ten": "UBND xã Pà Vầy Sủ",
+"ten": "Xã Pà Vầy Sủ",
 "loai": "ct",
 "o": {
 "D": {
@@ -6519,7 +6519,7 @@
 },
 {
 "stt": "121",
-"ten": "UBND xã Nấm Dẩn",
+"ten": "Xã Nấm Dẩn",
 "loai": "ct",
 "o": {
 "D": {
@@ -6561,7 +6561,7 @@
 },
 {
 "stt": "122",
-"ten": "UBND xã Trung Thịnh",
+"ten": "Xã Trung Thịnh",
 "loai": "ct",
 "o": {
 "D": {
@@ -6603,7 +6603,7 @@
 },
 {
 "stt": "123",
-"ten": "UBND xã Khuôn Lùng",
+"ten": "Xã Khuôn Lùng",
 "loai": "ct",
 "o": {
 "D": {
@@ -6645,7 +6645,7 @@
 },
 {
 "stt": "124",
-"ten": "UBND xã Quảng Nguyên",
+"ten": "Xã Quảng Nguyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -7150,7 +7150,7 @@
 },
 {
 "stt": "1",
-"ten": "BQLDA ĐTXD công trình số 01 tỉnh Tuyên Quang",
+"ten": "Ban QLDA ĐTXD công trình số 01 tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7181,7 +7181,7 @@
 },
 {
 "stt": "2",
-"ten": "BQLDA ĐTXD công trình tỉnh Tuyên Quang",
+"ten": "Ban QLDA ĐTXD công trình tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7213,7 +7213,7 @@
 },
 {
 "stt": "3",
-"ten": "Ban điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
+"ten": "Ban Điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7244,7 +7244,7 @@
 },
 {
 "stt": "4",
-"ten": "BQL các khu Công nghiệp và khu Kinh tế tỉnh Tuyên Quang",
+"ten": "Ban QL các khu công nghiệp và khu kinh tế tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7275,7 +7275,7 @@
 },
 {
 "stt": "5",
-"ten": "BCH Biên phòng tỉnh Tuyên Quang",
+"ten": "Bộ Chỉ huy Bộ đội Biên phòng tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7306,7 +7306,7 @@
 },
 {
 "stt": "6",
-"ten": "BCH Quân sự tỉnh Tuyên Quang",
+"ten": "Bộ Chỉ huy Quân sự tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7493,7 +7493,7 @@
 },
 {
 "stt": "12",
-"ten": "Sở Văn hóa, Thể thao và Du lịch Tuyên Quang",
+"ten": "Sở Văn hóa, Thể thao và Du lịch tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7565,7 +7565,7 @@
 },
 {
 "stt": "13.2",
-"ten": "BQL khai thác Công trình thủy lợi Tuyên Quang",
+"ten": "Ban QL khai thác công trình thủy lợi tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7596,7 +7596,7 @@
 },
 {
 "stt": "13.3",
-"ten": "TT Nước sạch nông thôn",
+"ten": "Trung tâm Nước sạch nông thôn tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7669,7 +7669,7 @@
 },
 {
 "stt": "14.2",
-"ten": "Bệnh viện Đa khoa Hà Giang",
+"ten": "Bệnh viện Đa khoa Hà Giang tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7793,7 +7793,7 @@
 },
 {
 "stt": "16",
-"ten": "Sở Công thương tỉnh Tuyên Quang",
+"ten": "Sở Công Thương tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7824,7 +7824,7 @@
 },
 {
 "stt": "17",
-"ten": "Báo và phát thanh truyền hình tỉnh Tuyên Quang",
+"ten": "Báo và Phát thanh, Truyền hình tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7855,7 +7855,7 @@
 },
 {
 "stt": "18",
-"ten": "Văn phòng tỉnh ủy Tuyên Quang",
+"ten": "Văn phòng Tỉnh ủy tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7917,7 +7917,7 @@
 },
 {
 "stt": "20",
-"ten": "Liên minh hợp tác xã tỉnh Tuyên Quang",
+"ten": "Liên minh Hợp tác xã tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7948,7 +7948,7 @@
 },
 {
 "stt": "21",
-"ten": "Sở Dân tộc & Tôn giáo tỉnh Tuyên Quang",
+"ten": "Sở Dân tộc và Tôn giáo tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -7979,7 +7979,7 @@
 },
 {
 "stt": "22",
-"ten": "Sở Khoa học & Công nghệ tỉnh Tuyên Quang",
+"ten": "Sở Khoa học và Công nghệ tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -8010,7 +8010,7 @@
 },
 {
 "stt": "23",
-"ten": "Thanh Tra tỉnh Tuyên Quang",
+"ten": "Thanh tra tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -8041,7 +8041,7 @@
 },
 {
 "stt": "24",
-"ten": "Trung tâm phát triển quỹ đất tỉnh",
+"ten": "Trung tâm Phát triển quỹ đất tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -8203,7 +8203,7 @@
 },
 {
 "stt": "1",
-"ten": "UBND xã Thượng Lâm",
+"ten": "Xã Thượng Lâm",
 "loai": "ct",
 "o": {
 "D": {
@@ -8234,7 +8234,7 @@
 },
 {
 "stt": "2",
-"ten": "UBND xã Lâm Bình",
+"ten": "Xã Lâm Bình",
 "loai": "ct",
 "o": {
 "D": {
@@ -8265,7 +8265,7 @@
 },
 {
 "stt": "3",
-"ten": "UBND xã Minh Quang",
+"ten": "Xã Minh Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -8296,7 +8296,7 @@
 },
 {
 "stt": "4",
-"ten": "UBND xã Bình An",
+"ten": "Xã Bình An",
 "loai": "ct",
 "o": {
 "D": {
@@ -8327,7 +8327,7 @@
 },
 {
 "stt": "5",
-"ten": "UBND xã Côn Lôn",
+"ten": "Xã Côn Lôn",
 "loai": "ct",
 "o": {
 "D": {
@@ -8358,7 +8358,7 @@
 },
 {
 "stt": "6",
-"ten": "UBND xã Yên Hoa",
+"ten": "Xã Yên Hoa",
 "loai": "ct",
 "o": {
 "D": {
@@ -8389,7 +8389,7 @@
 },
 {
 "stt": "7",
-"ten": "UBND xã Thượng Nông",
+"ten": "Xã Thượng Nông",
 "loai": "ct",
 "o": {
 "D": {
@@ -8420,7 +8420,7 @@
 },
 {
 "stt": "8",
-"ten": "UBND xã Hồng Thái",
+"ten": "Xã Hồng Thái",
 "loai": "ct",
 "o": {
 "D": {
@@ -8451,7 +8451,7 @@
 },
 {
 "stt": "9",
-"ten": "UBND xã Nà Hang",
+"ten": "Xã Nà Hang",
 "loai": "ct",
 "o": {
 "D": {
@@ -8482,7 +8482,7 @@
 },
 {
 "stt": "10",
-"ten": "UBND xã Tân Mỹ",
+"ten": "Xã Tân Mỹ",
 "loai": "ct",
 "o": {
 "D": {
@@ -8513,7 +8513,7 @@
 },
 {
 "stt": "11",
-"ten": "UBND xã Yên Lập",
+"ten": "Xã Yên Lập",
 "loai": "ct",
 "o": {
 "D": {
@@ -8544,7 +8544,7 @@
 },
 {
 "stt": "12",
-"ten": "UBND xã Tân An",
+"ten": "Xã Tân An",
 "loai": "ct",
 "o": {
 "D": {
@@ -8575,7 +8575,7 @@
 },
 {
 "stt": "13",
-"ten": "UBND xã Chiêm Hóa",
+"ten": "Xã Chiêm Hóa",
 "loai": "ct",
 "o": {
 "D": {
@@ -8606,7 +8606,7 @@
 },
 {
 "stt": "14",
-"ten": "UBND xã Hòa An",
+"ten": "Xã Hòa An",
 "loai": "ct",
 "o": {
 "D": {
@@ -8637,7 +8637,7 @@
 },
 {
 "stt": "15",
-"ten": "UBND xã Kiên Đài",
+"ten": "Xã Kiên Đài",
 "loai": "ct",
 "o": {
 "D": {
@@ -8668,7 +8668,7 @@
 },
 {
 "stt": "16",
-"ten": "UBND xã Tri Phú",
+"ten": "Xã Tri Phú",
 "loai": "ct",
 "o": {
 "D": {
@@ -8699,7 +8699,7 @@
 },
 {
 "stt": "17",
-"ten": "UBND xã Kim Bình",
+"ten": "Xã Kim Bình",
 "loai": "ct",
 "o": {
 "D": {
@@ -8730,7 +8730,7 @@
 },
 {
 "stt": "18",
-"ten": "UBND xã Yên Nguyên",
+"ten": "Xã Yên Nguyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -8761,7 +8761,7 @@
 },
 {
 "stt": "19",
-"ten": "UBND xã Trung Hà",
+"ten": "Xã Trung Hà",
 "loai": "ct",
 "o": {
 "D": {
@@ -8792,7 +8792,7 @@
 },
 {
 "stt": "20",
-"ten": "UBND xã Yên Phú",
+"ten": "Xã Yên Phú",
 "loai": "ct",
 "o": {
 "D": {
@@ -8823,7 +8823,7 @@
 },
 {
 "stt": "21",
-"ten": "UBND xã Bạch Xa",
+"ten": "Xã Bạch Xa",
 "loai": "ct",
 "o": {
 "D": {
@@ -8854,7 +8854,7 @@
 },
 {
 "stt": "22",
-"ten": "UBND xã Phù Lưu",
+"ten": "Xã Phù Lưu",
 "loai": "ct",
 "o": {
 "D": {
@@ -8885,7 +8885,7 @@
 },
 {
 "stt": "23",
-"ten": "UBND xã Hàm Yên",
+"ten": "Xã Hàm Yên",
 "loai": "ct",
 "o": {
 "D": {
@@ -8916,7 +8916,7 @@
 },
 {
 "stt": "24",
-"ten": "UBND xã Bình Xa",
+"ten": "Xã Bình Xa",
 "loai": "ct",
 "o": {
 "D": {
@@ -8947,7 +8947,7 @@
 },
 {
 "stt": "25",
-"ten": "UBND xã Thái Sơn",
+"ten": "Xã Thái Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -8978,7 +8978,7 @@
 },
 {
 "stt": "26",
-"ten": "UBND xã Thái Hòa",
+"ten": "Xã Thái Hòa",
 "loai": "ct",
 "o": {
 "D": {
@@ -9009,7 +9009,7 @@
 },
 {
 "stt": "27",
-"ten": "UBND xã Hùng Lợi",
+"ten": "Xã Hùng Lợi",
 "loai": "ct",
 "o": {
 "D": {
@@ -9040,7 +9040,7 @@
 },
 {
 "stt": "28",
-"ten": "UBND xã Trung Sơn",
+"ten": "Xã Trung Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -9071,7 +9071,7 @@
 },
 {
 "stt": "29",
-"ten": "UBND xã Thái Bình",
+"ten": "Xã Thái Bình",
 "loai": "ct",
 "o": {
 "D": {
@@ -9102,7 +9102,7 @@
 },
 {
 "stt": "30",
-"ten": "UBND xã Tân Long",
+"ten": "Xã Tân Long",
 "loai": "ct",
 "o": {
 "D": {
@@ -9133,7 +9133,7 @@
 },
 {
 "stt": "31",
-"ten": "UBND xã Xuân Vân",
+"ten": "Xã Xuân Vân",
 "loai": "ct",
 "o": {
 "D": {
@@ -9164,7 +9164,7 @@
 },
 {
 "stt": "32",
-"ten": "UBND xã Lực Hành",
+"ten": "Xã Lực Hành",
 "loai": "ct",
 "o": {
 "D": {
@@ -9195,7 +9195,7 @@
 },
 {
 "stt": "33",
-"ten": "UBND xã Yên Sơn",
+"ten": "Xã Yên Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -9226,7 +9226,7 @@
 },
 {
 "stt": "34",
-"ten": "UBND xã Nhữ Khê",
+"ten": "Xã Nhữ Khê",
 "loai": "ct",
 "o": {
 "D": {
@@ -9257,7 +9257,7 @@
 },
 {
 "stt": "35",
-"ten": "UBND xã Kiến Thiết",
+"ten": "Xã Kiến Thiết",
 "loai": "ct",
 "o": {
 "D": {
@@ -9288,7 +9288,7 @@
 },
 {
 "stt": "36",
-"ten": "UBND xã Hùng Đức",
+"ten": "Xã Hùng Đức",
 "loai": "ct",
 "o": {
 "D": {
@@ -9319,7 +9319,7 @@
 },
 {
 "stt": "37",
-"ten": "UBND xã Tân Trào",
+"ten": "Xã Tân Trào",
 "loai": "ct",
 "o": {
 "D": {
@@ -9350,7 +9350,7 @@
 },
 {
 "stt": "38",
-"ten": "UBND xã Minh Thanh",
+"ten": "Xã Minh Thanh",
 "loai": "ct",
 "o": {
 "D": {
@@ -9381,7 +9381,7 @@
 },
 {
 "stt": "39",
-"ten": "UBND xã Sơn Dương",
+"ten": "Xã Sơn Dương",
 "loai": "ct",
 "o": {
 "D": {
@@ -9412,7 +9412,7 @@
 },
 {
 "stt": "40",
-"ten": "UBND xã Bình Ca",
+"ten": "Xã Bình Ca",
 "loai": "ct",
 "o": {
 "D": {
@@ -9443,7 +9443,7 @@
 },
 {
 "stt": "41",
-"ten": "UBND xã Tân Thanh",
+"ten": "Xã Tân Thanh",
 "loai": "ct",
 "o": {
 "D": {
@@ -9474,7 +9474,7 @@
 },
 {
 "stt": "42",
-"ten": "UBND xã Sơn Thủy",
+"ten": "Xã Sơn Thủy",
 "loai": "ct",
 "o": {
 "D": {
@@ -9505,7 +9505,7 @@
 },
 {
 "stt": "43",
-"ten": "UBND xã Phú Lương",
+"ten": "Xã Phú Lương",
 "loai": "ct",
 "o": {
 "D": {
@@ -9536,7 +9536,7 @@
 },
 {
 "stt": "44",
-"ten": "UBND xã Trường Sinh",
+"ten": "Xã Trường Sinh",
 "loai": "ct",
 "o": {
 "D": {
@@ -9567,7 +9567,7 @@
 },
 {
 "stt": "45",
-"ten": "UBND xã Hồng Sơn",
+"ten": "Xã Hồng Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -9598,7 +9598,7 @@
 },
 {
 "stt": "46",
-"ten": "UBND xã Đông Thọ",
+"ten": "Xã Đông Thọ",
 "loai": "ct",
 "o": {
 "D": {
@@ -9629,7 +9629,7 @@
 },
 {
 "stt": "47",
-"ten": "UBND phường Mỹ Lâm",
+"ten": "Phường Mỹ Lâm",
 "loai": "ct",
 "o": {
 "D": {
@@ -9660,7 +9660,7 @@
 },
 {
 "stt": "48",
-"ten": "UBND phường Minh Xuân",
+"ten": "Phường Minh Xuân",
 "loai": "ct",
 "o": {
 "D": {
@@ -9691,7 +9691,7 @@
 },
 {
 "stt": "49",
-"ten": "UBND phường Nông Tiến",
+"ten": "Phường Nông Tiến",
 "loai": "ct",
 "o": {
 "D": {
@@ -9722,7 +9722,7 @@
 },
 {
 "stt": "50",
-"ten": "UBND phường An Tường",
+"ten": "Phường An Tường",
 "loai": "ct",
 "o": {
 "D": {
@@ -9753,7 +9753,7 @@
 },
 {
 "stt": "51",
-"ten": "UBND phường Bình Thuận",
+"ten": "Phường Bình Thuận",
 "loai": "ct",
 "o": {
 "D": {
@@ -9784,7 +9784,7 @@
 },
 {
 "stt": "52",
-"ten": "UBND xã Sủng Máng",
+"ten": "Xã Sủng Máng",
 "loai": "ct",
 "o": {
 "D": {
@@ -9815,7 +9815,7 @@
 },
 {
 "stt": "53",
-"ten": "UBND xã Sơn Vĩ",
+"ten": "Xã Sơn Vĩ",
 "loai": "ct",
 "o": {
 "D": {
@@ -9846,7 +9846,7 @@
 },
 {
 "stt": "54",
-"ten": "UBND xã Mèo Vạc",
+"ten": "Xã Mèo Vạc",
 "loai": "ct",
 "o": {
 "D": {
@@ -9877,7 +9877,7 @@
 },
 {
 "stt": "55",
-"ten": "UBND xã Khâu Vai",
+"ten": "Xã Khâu Vai",
 "loai": "ct",
 "o": {
 "D": {
@@ -9908,7 +9908,7 @@
 },
 {
 "stt": "56",
-"ten": "UBND xã Niêm Sơn",
+"ten": "Xã Niêm Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -9939,7 +9939,7 @@
 },
 {
 "stt": "57",
-"ten": "UBND xã Tát Ngà",
+"ten": "Xã Tát Ngà",
 "loai": "ct",
 "o": {
 "D": {
@@ -9970,7 +9970,7 @@
 },
 {
 "stt": "58",
-"ten": "UBND xã Lũng Cú",
+"ten": "Xã Lũng Cú",
 "loai": "ct",
 "o": {
 "D": {
@@ -10001,7 +10001,7 @@
 },
 {
 "stt": "59",
-"ten": "UBND xã Đồng Văn",
+"ten": "Xã Đồng Văn",
 "loai": "ct",
 "o": {
 "D": {
@@ -10032,7 +10032,7 @@
 },
 {
 "stt": "60",
-"ten": "UBND xã Sà Phìn",
+"ten": "Xã Sà Phìn",
 "loai": "ct",
 "o": {
 "D": {
@@ -10063,7 +10063,7 @@
 },
 {
 "stt": "61",
-"ten": "UBND xã Phố Bảng",
+"ten": "Xã Phố Bảng",
 "loai": "ct",
 "o": {
 "D": {
@@ -10094,7 +10094,7 @@
 },
 {
 "stt": "62",
-"ten": "UBND xã Lũng Phìn",
+"ten": "Xã Lũng Phìn",
 "loai": "ct",
 "o": {
 "D": {
@@ -10125,7 +10125,7 @@
 },
 {
 "stt": "63",
-"ten": "UBND xã Mậu Duệ",
+"ten": "Xã Mậu Duệ",
 "loai": "ct",
 "o": {
 "D": {
@@ -10156,7 +10156,7 @@
 },
 {
 "stt": "64",
-"ten": "UBND xã Thắng Mố",
+"ten": "Xã Thắng Mố",
 "loai": "ct",
 "o": {
 "D": {
@@ -10187,7 +10187,7 @@
 },
 {
 "stt": "65",
-"ten": "UBND xã Bạch Đích",
+"ten": "Xã Bạch Đích",
 "loai": "ct",
 "o": {
 "D": {
@@ -10218,7 +10218,7 @@
 },
 {
 "stt": "66",
-"ten": "UBND xã Yên Minh",
+"ten": "Xã Yên Minh",
 "loai": "ct",
 "o": {
 "D": {
@@ -10249,7 +10249,7 @@
 },
 {
 "stt": "67",
-"ten": "UBND xã Du Già",
+"ten": "Xã Du Già",
 "loai": "ct",
 "o": {
 "D": {
@@ -10280,7 +10280,7 @@
 },
 {
 "stt": "68",
-"ten": "UBND xã Đường Thượng",
+"ten": "Xã Đường Thượng",
 "loai": "ct",
 "o": {
 "D": {
@@ -10311,7 +10311,7 @@
 },
 {
 "stt": "69",
-"ten": "UBND xã Ngọc Long",
+"ten": "Xã Ngọc Long",
 "loai": "ct",
 "o": {
 "D": {
@@ -10342,7 +10342,7 @@
 },
 {
 "stt": "70",
-"ten": "UBND xã Lùng Tám",
+"ten": "Xã Lùng Tám",
 "loai": "ct",
 "o": {
 "D": {
@@ -10373,7 +10373,7 @@
 },
 {
 "stt": "71",
-"ten": "UBND xã Cán Tỷ",
+"ten": "Xã Cán Tỷ",
 "loai": "ct",
 "o": {
 "D": {
@@ -10404,7 +10404,7 @@
 },
 {
 "stt": "72",
-"ten": "UBND xã Nghĩa Thuận",
+"ten": "Xã Nghĩa Thuận",
 "loai": "ct",
 "o": {
 "D": {
@@ -10435,7 +10435,7 @@
 },
 {
 "stt": "73",
-"ten": "UBND xã Quản Bạ",
+"ten": "Xã Quản Bạ",
 "loai": "ct",
 "o": {
 "D": {
@@ -10466,7 +10466,7 @@
 },
 {
 "stt": "74",
-"ten": "UBND xã Tùng Vài",
+"ten": "Xã Tùng Vài",
 "loai": "ct",
 "o": {
 "D": {
@@ -10497,7 +10497,7 @@
 },
 {
 "stt": "75",
-"ten": "UBND xã Yên Cường",
+"ten": "Xã Yên Cường",
 "loai": "ct",
 "o": {
 "D": {
@@ -10528,7 +10528,7 @@
 },
 {
 "stt": "76",
-"ten": "UBND xã Đường Hồng",
+"ten": "Xã Đường Hồng",
 "loai": "ct",
 "o": {
 "D": {
@@ -10560,7 +10560,7 @@
 },
 {
 "stt": "77",
-"ten": "UBND xã Bắc Mê",
+"ten": "Xã Bắc Mê",
 "loai": "ct",
 "o": {
 "D": {
@@ -10592,7 +10592,7 @@
 },
 {
 "stt": "78",
-"ten": "UBND xã Minh Ngọc",
+"ten": "Xã Minh Ngọc",
 "loai": "ct",
 "o": {
 "D": {
@@ -10623,7 +10623,7 @@
 },
 {
 "stt": "79",
-"ten": "UBND xã Minh Sơn",
+"ten": "Xã Minh Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -10654,7 +10654,7 @@
 },
 {
 "stt": "80",
-"ten": "UBND xã Giáp Trung",
+"ten": "Xã Giáp Trung",
 "loai": "ct",
 "o": {
 "D": {
@@ -10685,7 +10685,7 @@
 },
 {
 "stt": "81",
-"ten": "UBND xã Ngọc Đường",
+"ten": "Xã Ngọc Đường",
 "loai": "ct",
 "o": {
 "D": {
@@ -10716,7 +10716,7 @@
 },
 {
 "stt": "82",
-"ten": "UBND phường Hà Giang 1",
+"ten": "Phường Hà Giang 1",
 "loai": "ct",
 "o": {
 "D": {
@@ -10747,7 +10747,7 @@
 },
 {
 "stt": "83",
-"ten": "UBND phường Hà Giang 2",
+"ten": "Phường Hà Giang 2",
 "loai": "ct",
 "o": {
 "D": {
@@ -10778,7 +10778,7 @@
 },
 {
 "stt": "84",
-"ten": "UBND xã Lao Chải",
+"ten": "Xã Lao Chải",
 "loai": "ct",
 "o": {
 "D": {
@@ -10809,7 +10809,7 @@
 },
 {
 "stt": "85",
-"ten": "UBND xã Thanh Thủy",
+"ten": "Xã Thanh Thủy",
 "loai": "ct",
 "o": {
 "D": {
@@ -10840,7 +10840,7 @@
 },
 {
 "stt": "86",
-"ten": "UBND xã Phú Linh",
+"ten": "Xã Phú Linh",
 "loai": "ct",
 "o": {
 "D": {
@@ -10871,7 +10871,7 @@
 },
 {
 "stt": "87",
-"ten": "UBND xã Linh Hồ",
+"ten": "Xã Linh Hồ",
 "loai": "ct",
 "o": {
 "D": {
@@ -10902,7 +10902,7 @@
 },
 {
 "stt": "88",
-"ten": "UBND xã Bạch Ngọc",
+"ten": "Xã Bạch Ngọc",
 "loai": "ct",
 "o": {
 "D": {
@@ -10933,7 +10933,7 @@
 },
 {
 "stt": "89",
-"ten": "UBND xã Vị Xuyên",
+"ten": "Xã Vị Xuyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -10964,7 +10964,7 @@
 },
 {
 "stt": "90",
-"ten": "UBND xã Việt Lâm",
+"ten": "Xã Việt Lâm",
 "loai": "ct",
 "o": {
 "D": {
@@ -10995,7 +10995,7 @@
 },
 {
 "stt": "91",
-"ten": "UBND xã Minh Tân",
+"ten": "Xã Minh Tân",
 "loai": "ct",
 "o": {
 "D": {
@@ -11026,7 +11026,7 @@
 },
 {
 "stt": "92",
-"ten": "UBND xã Thuận Hòa",
+"ten": "Xã Thuận Hòa",
 "loai": "ct",
 "o": {
 "D": {
@@ -11057,7 +11057,7 @@
 },
 {
 "stt": "93",
-"ten": "UBND xã Tùng Bá",
+"ten": "Xã Tùng Bá",
 "loai": "ct",
 "o": {
 "D": {
@@ -11088,7 +11088,7 @@
 },
 {
 "stt": "94",
-"ten": "UBND xã Thượng Sơn",
+"ten": "Xã Thượng Sơn",
 "loai": "ct",
 "o": {
 "D": {
@@ -11119,7 +11119,7 @@
 },
 {
 "stt": "95",
-"ten": "UBND xã Cao Bồ",
+"ten": "Xã Cao Bồ",
 "loai": "ct",
 "o": {
 "D": {
@@ -11150,7 +11150,7 @@
 },
 {
 "stt": "96",
-"ten": "UBND xã Tân Quang",
+"ten": "Xã Tân Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -11181,7 +11181,7 @@
 },
 {
 "stt": "97",
-"ten": "UBND xã Đồng Tâm",
+"ten": "Xã Đồng Tâm",
 "loai": "ct",
 "o": {
 "D": {
@@ -11212,7 +11212,7 @@
 },
 {
 "stt": "98",
-"ten": "UBND xã Liên Hiệp",
+"ten": "Xã Liên Hiệp",
 "loai": "ct",
 "o": {
 "D": {
@@ -11243,7 +11243,7 @@
 },
 {
 "stt": "99",
-"ten": "UBND xã Bằng Hành",
+"ten": "Xã Bằng Hành",
 "loai": "ct",
 "o": {
 "D": {
@@ -11274,7 +11274,7 @@
 },
 {
 "stt": "100",
-"ten": "UBND xã Bắc Quang",
+"ten": "Xã Bắc Quang",
 "loai": "ct",
 "o": {
 "D": {
@@ -11305,7 +11305,7 @@
 },
 {
 "stt": "101",
-"ten": "UBND xã Hùng An",
+"ten": "Xã Hùng An",
 "loai": "ct",
 "o": {
 "D": {
@@ -11336,7 +11336,7 @@
 },
 {
 "stt": "102",
-"ten": "UBND xã Vĩnh Tuy",
+"ten": "Xã Vĩnh Tuy",
 "loai": "ct",
 "o": {
 "D": {
@@ -11367,7 +11367,7 @@
 },
 {
 "stt": "103",
-"ten": "UBND xã Đồng Yên",
+"ten": "Xã Đồng Yên",
 "loai": "ct",
 "o": {
 "D": {
@@ -11398,7 +11398,7 @@
 },
 {
 "stt": "104",
-"ten": "UBND xã Tiên Yên",
+"ten": "Xã Tiên Yên",
 "loai": "ct",
 "o": {
 "D": {
@@ -11429,7 +11429,7 @@
 },
 {
 "stt": "105",
-"ten": "UBND xã Xuân Giang",
+"ten": "Xã Xuân Giang",
 "loai": "ct",
 "o": {
 "D": {
@@ -11460,7 +11460,7 @@
 },
 {
 "stt": "106",
-"ten": "UBND xã Bằng Lang",
+"ten": "Xã Bằng Lang",
 "loai": "ct",
 "o": {
 "D": {
@@ -11491,7 +11491,7 @@
 },
 {
 "stt": "107",
-"ten": "UBND xã Yên Thành",
+"ten": "Xã Yên Thành",
 "loai": "ct",
 "o": {
 "D": {
@@ -11522,7 +11522,7 @@
 },
 {
 "stt": "108",
-"ten": "UBND xã Quang Bình",
+"ten": "Xã Quang Bình",
 "loai": "ct",
 "o": {
 "D": {
@@ -11553,7 +11553,7 @@
 },
 {
 "stt": "109",
-"ten": "UBND xã Tân Trịnh",
+"ten": "Xã Tân Trịnh",
 "loai": "ct",
 "o": {
 "D": {
@@ -11584,7 +11584,7 @@
 },
 {
 "stt": "110",
-"ten": "UBND xã Tiên Nguyên",
+"ten": "Xã Tiên Nguyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -11615,7 +11615,7 @@
 },
 {
 "stt": "111",
-"ten": "UBND xã Thông Nguyên",
+"ten": "Xã Thông Nguyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -11646,7 +11646,7 @@
 },
 {
 "stt": "112",
-"ten": "UBND xã Nậm Dịch",
+"ten": "Xã Nậm Dịch",
 "loai": "ct",
 "o": {
 "D": {
@@ -11677,7 +11677,7 @@
 },
 {
 "stt": "113",
-"ten": "UBND xã Hồ Thầu",
+"ten": "Xã Hồ Thầu",
 "loai": "ct",
 "o": {
 "D": {
@@ -11708,7 +11708,7 @@
 },
 {
 "stt": "114",
-"ten": "UBND xã Tân Tiến",
+"ten": "Xã Tân Tiến",
 "loai": "ct",
 "o": {
 "D": {
@@ -11739,7 +11739,7 @@
 },
 {
 "stt": "115",
-"ten": "UBND xã Hoàng Su Phì",
+"ten": "Xã Hoàng Su Phì",
 "loai": "ct",
 "o": {
 "D": {
@@ -11770,7 +11770,7 @@
 },
 {
 "stt": "116",
-"ten": "UBND xã Thàng Tín",
+"ten": "Xã Thàng Tín",
 "loai": "ct",
 "o": {
 "D": {
@@ -11801,7 +11801,7 @@
 },
 {
 "stt": "117",
-"ten": "UBND xã Bản Máy",
+"ten": "Xã Bản Máy",
 "loai": "ct",
 "o": {
 "D": {
@@ -11832,7 +11832,7 @@
 },
 {
 "stt": "118",
-"ten": "UBND xã Pờ Ly Ngài",
+"ten": "Xã Pờ Ly Ngài",
 "loai": "ct",
 "o": {
 "D": {
@@ -11863,7 +11863,7 @@
 },
 {
 "stt": "119",
-"ten": "UBND xã Xín Mần",
+"ten": "Xã Xín Mần",
 "loai": "ct",
 "o": {
 "D": {
@@ -11894,7 +11894,7 @@
 },
 {
 "stt": "120",
-"ten": "UBND xã Pà Vầy Sủ",
+"ten": "Xã Pà Vầy Sủ",
 "loai": "ct",
 "o": {
 "D": {
@@ -11925,7 +11925,7 @@
 },
 {
 "stt": "121",
-"ten": "UBND xã Nấm Dẩn",
+"ten": "Xã Nấm Dẩn",
 "loai": "ct",
 "o": {
 "D": {
@@ -11956,7 +11956,7 @@
 },
 {
 "stt": "122",
-"ten": "UBND xã Trung Thịnh",
+"ten": "Xã Trung Thịnh",
 "loai": "ct",
 "o": {
 "D": {
@@ -11987,7 +11987,7 @@
 },
 {
 "stt": "123",
-"ten": "UBND xã Khuôn Lùng",
+"ten": "Xã Khuôn Lùng",
 "loai": "ct",
 "o": {
 "D": {
@@ -12018,7 +12018,7 @@
 },
 {
 "stt": "124",
-"ten": "UBND xã Quảng Nguyên",
+"ten": "Xã Quảng Nguyên",
 "loai": "ct",
 "o": {
 "D": {
@@ -12497,7 +12497,7 @@
 },
 {
 "stt": "1.1",
-"ten": "BQLDA ĐTXD công trình số 01 tỉnh Tuyên Quang",
+"ten": "Ban QLDA ĐTXD công trình số 01 tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -12533,7 +12533,7 @@
 },
 {
 "stt": "1.2",
-"ten": "BQLDA ĐTXD khu vực Thành Tuyên",
+"ten": "Ban QLDA ĐTXD khu vực Thành Tuyên",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -12569,7 +12569,7 @@
 },
 {
 "stt": "1.3",
-"ten": "BQLDA ĐTXD khu vực Sơn Dương",
+"ten": "Ban QLDA ĐTXD khu vực Sơn Dương",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -12605,7 +12605,7 @@
 },
 {
 "stt": "1.4",
-"ten": "BQLDA ĐTXD khu vực Yên Sơn",
+"ten": "Ban QLDA ĐTXD khu vực Yên Sơn",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -12641,7 +12641,7 @@
 },
 {
 "stt": "1.5",
-"ten": "BQLDA ĐTXD khu vực Hàm Yên",
+"ten": "Ban QLDA ĐTXD khu vực Hàm Yên",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -12677,7 +12677,7 @@
 },
 {
 "stt": "1.6",
-"ten": "BQLDA ĐTXD khu vực Chiêm Hóa",
+"ten": "Ban QLDA ĐTXD khu vực Chiêm Hóa",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -12713,7 +12713,7 @@
 },
 {
 "stt": "1.7",
-"ten": "BQLDA ĐTXD khu vực Na Hang",
+"ten": "Ban QLDA ĐTXD khu vực Na Hang",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -12749,7 +12749,7 @@
 },
 {
 "stt": "1.8",
-"ten": "BQLDA ĐTXD khu vực Lâm Bình",
+"ten": "Ban QLDA ĐTXD khu vực Lâm Bình",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -12804,7 +12804,7 @@
 },
 {
 "stt": "2.1",
-"ten": "BQLDA ĐTXD công trình tỉnh Tuyên Quang",
+"ten": "Ban QLDA ĐTXD công trình tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -12840,7 +12840,7 @@
 },
 {
 "stt": "2.2",
-"ten": "BQLDA ĐTXD khu vực Hà Giang",
+"ten": "Ban QLDA ĐTXD khu vực Hà Giang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -12876,7 +12876,7 @@
 },
 {
 "stt": "2.3",
-"ten": "BQLDA ĐTXD khu vực Bắc Quang",
+"ten": "Ban QLDA ĐTXD khu vực Bắc Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -12907,7 +12907,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Bắc Quang",
+"ten": "Ban QLDA ĐTXD khu vực Bắc Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -12945,7 +12945,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Bắc Quang",
+"ten": "Ban QLDA ĐTXD khu vực Bắc Quang",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -12983,7 +12983,7 @@
 },
 {
 "stt": "2.4",
-"ten": "BQLDA ĐTXD khu vực Quang Bình",
+"ten": "Ban QLDA ĐTXD khu vực Quang Bình",
 "loai": "ct",
 "o": {
 "E": {
@@ -13014,7 +13014,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Quang Bình",
+"ten": "Ban QLDA ĐTXD khu vực Quang Bình",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13052,7 +13052,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Quang Bình",
+"ten": "Ban QLDA ĐTXD khu vực Quang Bình",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -13090,7 +13090,7 @@
 },
 {
 "stt": "2.5",
-"ten": "BQLDA ĐTXD khu vực Xín Mần",
+"ten": "Ban QLDA ĐTXD khu vực Xín Mần",
 "loai": "ct",
 "o": {
 "E": {
@@ -13121,7 +13121,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Xín Mần",
+"ten": "Ban QLDA ĐTXD khu vực Xín Mần",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13159,7 +13159,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Xín Mần",
+"ten": "Ban QLDA ĐTXD khu vực Xín Mần",
 "kbnn": "2472",
 "loai": "ct",
 "o": {
@@ -13197,7 +13197,7 @@
 },
 {
 "stt": "2.6",
-"ten": "BQLDA ĐTXD khu vực Hoàng Su Phì",
+"ten": "Ban QLDA ĐTXD khu vực Hoàng Su Phì",
 "loai": "ct",
 "o": {
 "E": {
@@ -13228,7 +13228,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Hoàng Su Phì",
+"ten": "Ban QLDA ĐTXD khu vực Hoàng Su Phì",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13266,7 +13266,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Hoàng Su Phì",
+"ten": "Ban QLDA ĐTXD khu vực Hoàng Su Phì",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -13304,7 +13304,7 @@
 },
 {
 "stt": "2.7",
-"ten": "BQLDA ĐTXD khu vực Vị Xuyên",
+"ten": "Ban QLDA ĐTXD khu vực Vị Xuyên",
 "loai": "ct",
 "o": {
 "E": {
@@ -13335,7 +13335,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Vị Xuyên",
+"ten": "Ban QLDA ĐTXD khu vực Vị Xuyên",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13373,7 +13373,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Vị Xuyên",
+"ten": "Ban QLDA ĐTXD khu vực Vị Xuyên",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -13411,7 +13411,7 @@
 },
 {
 "stt": "2.8",
-"ten": "BQLDA ĐTXD khu vực Quản Bạ",
+"ten": "Ban QLDA ĐTXD khu vực Quản Bạ",
 "loai": "ct",
 "o": {
 "E": {
@@ -13443,7 +13443,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Quản Bạ",
+"ten": "Ban QLDA ĐTXD khu vực Quản Bạ",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13482,7 +13482,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Quản Bạ",
+"ten": "Ban QLDA ĐTXD khu vực Quản Bạ",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -13520,7 +13520,7 @@
 },
 {
 "stt": "2.9",
-"ten": "BQLDA ĐTXD khu vực Yên Minh",
+"ten": "Ban QLDA ĐTXD khu vực Yên Minh",
 "loai": "ct",
 "o": {
 "E": {
@@ -13551,7 +13551,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Yên Minh",
+"ten": "Ban QLDA ĐTXD khu vực Yên Minh",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13589,7 +13589,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Yên Minh",
+"ten": "Ban QLDA ĐTXD khu vực Yên Minh",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -13627,7 +13627,7 @@
 },
 {
 "stt": "2.1",
-"ten": "BQLDA ĐTXD khu vực Đồng Văn",
+"ten": "Ban QLDA ĐTXD khu vực Đồng Văn",
 "loai": "ct",
 "o": {
 "E": {
@@ -13658,7 +13658,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Đồng Văn",
+"ten": "Ban QLDA ĐTXD khu vực Đồng Văn",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13696,7 +13696,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Đồng Văn",
+"ten": "Ban QLDA ĐTXD khu vực Đồng Văn",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -13734,7 +13734,7 @@
 },
 {
 "stt": "2.11",
-"ten": "BQLDA ĐTXD khu vực Mèo Vạc",
+"ten": "Ban QLDA ĐTXD khu vực Mèo Vạc",
 "loai": "ct",
 "o": {
 "E": {
@@ -13765,7 +13765,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Mèo Vạc",
+"ten": "Ban QLDA ĐTXD khu vực Mèo Vạc",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13803,7 +13803,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Mèo Vạc",
+"ten": "Ban QLDA ĐTXD khu vực Mèo Vạc",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -13841,7 +13841,7 @@
 },
 {
 "stt": "2.12",
-"ten": "BQLDA ĐTXD khu vực Bắc Mê",
+"ten": "Ban QLDA ĐTXD khu vực Bắc Mê",
 "loai": "ct",
 "o": {
 "E": {
@@ -13872,7 +13872,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Bắc Mê",
+"ten": "Ban QLDA ĐTXD khu vực Bắc Mê",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -13910,7 +13910,7 @@
 },
 {
 "stt": "",
-"ten": "BQLDA ĐTXD khu vực Bắc Mê",
+"ten": "Ban QLDA ĐTXD khu vực Bắc Mê",
 "kbnn": "2477",
 "loai": "ct",
 "o": {
@@ -13948,7 +13948,7 @@
 },
 {
 "stt": "3",
-"ten": "Ban điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
+"ten": "Ban Điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -13979,7 +13979,7 @@
 },
 {
 "stt": "",
-"ten": "Ban điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
+"ten": "Ban Điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -14017,7 +14017,7 @@
 },
 {
 "stt": "",
-"ten": "Ban điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
+"ten": "Ban Điều phối các dự án vốn nước ngoài tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -14055,7 +14055,7 @@
 },
 {
 "stt": "4",
-"ten": "BQL các khu Công nghiệp và khu Kinh tế tỉnh Tuyên Quang",
+"ten": "Ban QL các khu công nghiệp và khu kinh tế tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -14086,7 +14086,7 @@
 },
 {
 "stt": "",
-"ten": "BQL các khu Công nghiệp và khu Kinh tế tỉnh Tuyên Quang",
+"ten": "Ban QL các khu công nghiệp và khu kinh tế tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -14124,7 +14124,7 @@
 },
 {
 "stt": "",
-"ten": "BQL các khu Công nghiệp và khu Kinh tế tỉnh Tuyên Quang",
+"ten": "Ban QL các khu công nghiệp và khu kinh tế tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -14162,7 +14162,7 @@
 },
 {
 "stt": "5",
-"ten": "BCH Biên phòng tỉnh Tuyên Quang",
+"ten": "Bộ Chỉ huy Bộ đội Biên phòng tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -14198,7 +14198,7 @@
 },
 {
 "stt": "6",
-"ten": "BCH Quân sự tỉnh Tuyên Quang",
+"ten": "Bộ Chỉ huy Quân sự tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -14229,7 +14229,7 @@
 },
 {
 "stt": "",
-"ten": "BCH Quân sự tỉnh Tuyên Quang",
+"ten": "Bộ Chỉ huy Quân sự tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -14267,7 +14267,7 @@
 },
 {
 "stt": "",
-"ten": "BCH Quân sự tỉnh Tuyên Quang",
+"ten": "Bộ Chỉ huy Quân sự tỉnh Tuyên Quang",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -14842,7 +14842,7 @@
 },
 {
 "stt": "12",
-"ten": "Sở Văn hóa, Thể thao và Du lịch Tuyên Quang",
+"ten": "Sở Văn hóa, Thể thao và Du lịch tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -14873,7 +14873,7 @@
 },
 {
 "stt": "",
-"ten": "Sở Văn hóa, Thể thao và Du lịch Tuyên Quang",
+"ten": "Sở Văn hóa, Thể thao và Du lịch tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -14911,7 +14911,7 @@
 },
 {
 "stt": "",
-"ten": "Sở Văn hóa, Thể thao và Du lịch Tuyên Quang",
+"ten": "Sở Văn hóa, Thể thao và Du lịch tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -15066,7 +15066,7 @@
 },
 {
 "stt": "13.2",
-"ten": "BQL khai thác Công trình thủy lợi Tuyên Quang",
+"ten": "Ban QL khai thác công trình thủy lợi tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -15097,7 +15097,7 @@
 },
 {
 "stt": "",
-"ten": "BQL khai thác Công trình thủy lợi Tuyên Quang",
+"ten": "Ban QL khai thác công trình thủy lợi tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15135,7 +15135,7 @@
 },
 {
 "stt": "",
-"ten": "BQL khai thác Công trình thủy lợi Tuyên Quang",
+"ten": "Ban QL khai thác công trình thủy lợi tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -15173,7 +15173,7 @@
 },
 {
 "stt": "13.3",
-"ten": "TT Nước sạch nông thôn",
+"ten": "Trung tâm Nước sạch nông thôn tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -15204,7 +15204,7 @@
 },
 {
 "stt": "",
-"ten": "TT Nước sạch nông thôn",
+"ten": "Trung tâm Nước sạch nông thôn tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15242,7 +15242,7 @@
 },
 {
 "stt": "",
-"ten": "TT Nước sạch nông thôn",
+"ten": "Trung tâm Nước sạch nông thôn tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -15327,7 +15327,7 @@
 },
 {
 "stt": "14.2",
-"ten": "Bệnh viện Đa khoa Hà Giang",
+"ten": "Bệnh viện Đa khoa Hà Giang tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -15471,7 +15471,7 @@
 },
 {
 "stt": "16",
-"ten": "Sở Công thương tỉnh Tuyên Quang",
+"ten": "Sở Công Thương tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -15502,7 +15502,7 @@
 },
 {
 "stt": "",
-"ten": "Sở Công thương tỉnh Tuyên Quang",
+"ten": "Sở Công Thương tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15540,7 +15540,7 @@
 },
 {
 "stt": "",
-"ten": "Sở Công thương tỉnh Tuyên Quang",
+"ten": "Sở Công Thương tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -15578,7 +15578,7 @@
 },
 {
 "stt": "17",
-"ten": "Báo và phát thanh truyền hình tỉnh Tuyên Quang",
+"ten": "Báo và Phát thanh, Truyền hình tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -15609,7 +15609,7 @@
 },
 {
 "stt": "",
-"ten": "Báo và phát thanh truyền hình tỉnh Tuyên Quang",
+"ten": "Báo và Phát thanh, Truyền hình tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15647,7 +15647,7 @@
 },
 {
 "stt": "",
-"ten": "Báo và phát thanh truyền hình tỉnh Tuyên Quang",
+"ten": "Báo và Phát thanh, Truyền hình tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -15685,7 +15685,7 @@
 },
 {
 "stt": "18",
-"ten": "Văn phòng tỉnh ủy Tuyên Quang",
+"ten": "Văn phòng Tỉnh ủy tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -15716,7 +15716,7 @@
 },
 {
 "stt": "",
-"ten": "Văn phòng tỉnh ủy Tuyên Quang",
+"ten": "Văn phòng Tỉnh ủy tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15754,7 +15754,7 @@
 },
 {
 "stt": "",
-"ten": "Văn phòng tỉnh ủy Tuyên Quang",
+"ten": "Văn phòng Tỉnh ủy tỉnh Tuyên Quang",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -15828,7 +15828,7 @@
 },
 {
 "stt": "20",
-"ten": "Liên minh hợp tác xã tỉnh Tuyên Quang",
+"ten": "Liên minh Hợp tác xã tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15864,7 +15864,7 @@
 },
 {
 "stt": "21",
-"ten": "Sở Dân tộc & Tôn giáo tỉnh Tuyên Quang",
+"ten": "Sở Dân tộc và Tôn giáo tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15900,7 +15900,7 @@
 },
 {
 "stt": "22",
-"ten": "Sở Khoa học & Công nghệ tỉnh Tuyên Quang",
+"ten": "Sở Khoa học và Công nghệ tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15936,7 +15936,7 @@
 },
 {
 "stt": "23",
-"ten": "Thanh Tra tỉnh Tuyên Quang",
+"ten": "Thanh tra tỉnh Tuyên Quang",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -15972,7 +15972,7 @@
 },
 {
 "stt": "24",
-"ten": "Trung tâm phát triển quỹ đất tỉnh",
+"ten": "Trung tâm Phát triển quỹ đất tỉnh Tuyên Quang",
 "loai": "ct",
 "o": {
 "E": {
@@ -16003,7 +16003,7 @@
 },
 {
 "stt": "",
-"ten": "Trung tâm phát triển quỹ đất tỉnh",
+"ten": "Trung tâm Phát triển quỹ đất tỉnh Tuyên Quang",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16041,7 +16041,7 @@
 },
 {
 "stt": "",
-"ten": "Trung tâm phát triển quỹ đất tỉnh",
+"ten": "Trung tâm Phát triển quỹ đất tỉnh Tuyên Quang",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -16210,7 +16210,7 @@
 },
 {
 "stt": "1",
-"ten": "UBND xã Thượng Lâm",
+"ten": "Xã Thượng Lâm",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16246,7 +16246,7 @@
 },
 {
 "stt": "2",
-"ten": "UBND xã Lâm Bình",
+"ten": "Xã Lâm Bình",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16282,7 +16282,7 @@
 },
 {
 "stt": "3",
-"ten": "UBND xã Minh Quang",
+"ten": "Xã Minh Quang",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16318,7 +16318,7 @@
 },
 {
 "stt": "4",
-"ten": "UBND xã Bình An",
+"ten": "Xã Bình An",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16354,7 +16354,7 @@
 },
 {
 "stt": "5",
-"ten": "UBND xã Côn Lôn",
+"ten": "Xã Côn Lôn",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16390,7 +16390,7 @@
 },
 {
 "stt": "6",
-"ten": "UBND xã Yên Hoa",
+"ten": "Xã Yên Hoa",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16426,7 +16426,7 @@
 },
 {
 "stt": "7",
-"ten": "UBND xã Thượng Nông",
+"ten": "Xã Thượng Nông",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16462,7 +16462,7 @@
 },
 {
 "stt": "8",
-"ten": "UBND xã Hồng Thái",
+"ten": "Xã Hồng Thái",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16498,7 +16498,7 @@
 },
 {
 "stt": "9",
-"ten": "UBND xã Nà Hang",
+"ten": "Xã Nà Hang",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16534,7 +16534,7 @@
 },
 {
 "stt": "10",
-"ten": "UBND xã Tân Mỹ",
+"ten": "Xã Tân Mỹ",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16570,7 +16570,7 @@
 },
 {
 "stt": "11",
-"ten": "UBND xã Yên Lập",
+"ten": "Xã Yên Lập",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16606,7 +16606,7 @@
 },
 {
 "stt": "12",
-"ten": "UBND xã Tân An",
+"ten": "Xã Tân An",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16642,7 +16642,7 @@
 },
 {
 "stt": "13",
-"ten": "UBND xã Chiêm Hóa",
+"ten": "Xã Chiêm Hóa",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16678,7 +16678,7 @@
 },
 {
 "stt": "14",
-"ten": "UBND xã Hòa An",
+"ten": "Xã Hòa An",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16714,7 +16714,7 @@
 },
 {
 "stt": "15",
-"ten": "UBND xã Kiên Đài",
+"ten": "Xã Kiên Đài",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16750,7 +16750,7 @@
 },
 {
 "stt": "16",
-"ten": "UBND xã Tri Phú",
+"ten": "Xã Tri Phú",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16786,7 +16786,7 @@
 },
 {
 "stt": "17",
-"ten": "UBND xã Kim Bình",
+"ten": "Xã Kim Bình",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16822,7 +16822,7 @@
 },
 {
 "stt": "18",
-"ten": "UBND xã Yên Nguyên",
+"ten": "Xã Yên Nguyên",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16858,7 +16858,7 @@
 },
 {
 "stt": "19",
-"ten": "UBND xã Trung Hà",
+"ten": "Xã Trung Hà",
 "kbnn": "2462",
 "loai": "ct",
 "o": {
@@ -16894,7 +16894,7 @@
 },
 {
 "stt": "20",
-"ten": "UBND xã Yên Phú",
+"ten": "Xã Yên Phú",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -16930,7 +16930,7 @@
 },
 {
 "stt": "21",
-"ten": "UBND xã Bạch Xa",
+"ten": "Xã Bạch Xa",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -16966,7 +16966,7 @@
 },
 {
 "stt": "22",
-"ten": "UBND xã Phù Lưu",
+"ten": "Xã Phù Lưu",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17002,7 +17002,7 @@
 },
 {
 "stt": "23",
-"ten": "UBND xã Hàm Yên",
+"ten": "Xã Hàm Yên",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17038,7 +17038,7 @@
 },
 {
 "stt": "24",
-"ten": "UBND xã Bình Xa",
+"ten": "Xã Bình Xa",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17074,7 +17074,7 @@
 },
 {
 "stt": "25",
-"ten": "UBND xã Thái Sơn",
+"ten": "Xã Thái Sơn",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17110,7 +17110,7 @@
 },
 {
 "stt": "26",
-"ten": "UBND xã Thái Hòa",
+"ten": "Xã Thái Hòa",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17146,7 +17146,7 @@
 },
 {
 "stt": "27",
-"ten": "UBND xã Hùng Lợi",
+"ten": "Xã Hùng Lợi",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17182,7 +17182,7 @@
 },
 {
 "stt": "28",
-"ten": "UBND xã Trung Sơn",
+"ten": "Xã Trung Sơn",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17218,7 +17218,7 @@
 },
 {
 "stt": "29",
-"ten": "UBND xã Thái Bình",
+"ten": "Xã Thái Bình",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17254,7 +17254,7 @@
 },
 {
 "stt": "30",
-"ten": "UBND xã Tân Long",
+"ten": "Xã Tân Long",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17290,7 +17290,7 @@
 },
 {
 "stt": "31",
-"ten": "UBND xã Xuân Vân",
+"ten": "Xã Xuân Vân",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17326,7 +17326,7 @@
 },
 {
 "stt": "32",
-"ten": "UBND xã Lực Hành",
+"ten": "Xã Lực Hành",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17362,7 +17362,7 @@
 },
 {
 "stt": "33",
-"ten": "UBND xã Yên Sơn",
+"ten": "Xã Yên Sơn",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17398,7 +17398,7 @@
 },
 {
 "stt": "34",
-"ten": "UBND xã Nhữ Khê",
+"ten": "Xã Nhữ Khê",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17434,7 +17434,7 @@
 },
 {
 "stt": "35",
-"ten": "UBND xã Kiến Thiết",
+"ten": "Xã Kiến Thiết",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17470,7 +17470,7 @@
 },
 {
 "stt": "36",
-"ten": "UBND xã Hùng Đức",
+"ten": "Xã Hùng Đức",
 "kbnn": "2466",
 "loai": "ct",
 "o": {
@@ -17506,7 +17506,7 @@
 },
 {
 "stt": "37",
-"ten": "UBND xã Tân Trào",
+"ten": "Xã Tân Trào",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17542,7 +17542,7 @@
 },
 {
 "stt": "38",
-"ten": "UBND xã Minh Thanh",
+"ten": "Xã Minh Thanh",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17578,7 +17578,7 @@
 },
 {
 "stt": "39",
-"ten": "UBND xã Sơn Dương",
+"ten": "Xã Sơn Dương",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17614,7 +17614,7 @@
 },
 {
 "stt": "40",
-"ten": "UBND xã Bình Ca",
+"ten": "Xã Bình Ca",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17650,7 +17650,7 @@
 },
 {
 "stt": "41",
-"ten": "UBND xã Tân Thanh",
+"ten": "Xã Tân Thanh",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17686,7 +17686,7 @@
 },
 {
 "stt": "42",
-"ten": "UBND xã Sơn Thủy",
+"ten": "Xã Sơn Thủy",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17722,7 +17722,7 @@
 },
 {
 "stt": "43",
-"ten": "UBND xã Phú Lương",
+"ten": "Xã Phú Lương",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17758,7 +17758,7 @@
 },
 {
 "stt": "44",
-"ten": "UBND xã Trường Sinh",
+"ten": "Xã Trường Sinh",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17794,7 +17794,7 @@
 },
 {
 "stt": "45",
-"ten": "UBND xã Hồng Sơn",
+"ten": "Xã Hồng Sơn",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17830,7 +17830,7 @@
 },
 {
 "stt": "46",
-"ten": "UBND xã Đông Thọ",
+"ten": "Xã Đông Thọ",
 "kbnn": "2465",
 "loai": "ct",
 "o": {
@@ -17866,7 +17866,7 @@
 },
 {
 "stt": "47",
-"ten": "UBND phường Mỹ Lâm",
+"ten": "Phường Mỹ Lâm",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -17902,7 +17902,7 @@
 },
 {
 "stt": "48",
-"ten": "UBND phường Minh Xuân",
+"ten": "Phường Minh Xuân",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -17938,7 +17938,7 @@
 },
 {
 "stt": "49",
-"ten": "UBND phường Nông Tiến",
+"ten": "Phường Nông Tiến",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -17974,7 +17974,7 @@
 },
 {
 "stt": "50",
-"ten": "UBND phường An Tường",
+"ten": "Phường An Tường",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -18010,7 +18010,7 @@
 },
 {
 "stt": "51",
-"ten": "UBND phường Bình Thuận",
+"ten": "Phường Bình Thuận",
 "kbnn": "2461",
 "loai": "ct",
 "o": {
@@ -18046,7 +18046,7 @@
 },
 {
 "stt": "52",
-"ten": "UBND xã Sủng Máng",
+"ten": "Xã Sủng Máng",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18082,7 +18082,7 @@
 },
 {
 "stt": "53",
-"ten": "UBND xã Sơn Vĩ",
+"ten": "Xã Sơn Vĩ",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18118,7 +18118,7 @@
 },
 {
 "stt": "54",
-"ten": "UBND xã Mèo Vạc",
+"ten": "Xã Mèo Vạc",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18154,7 +18154,7 @@
 },
 {
 "stt": "55",
-"ten": "UBND xã Khâu Vai",
+"ten": "Xã Khâu Vai",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18190,7 +18190,7 @@
 },
 {
 "stt": "56",
-"ten": "UBND xã Niêm Sơn",
+"ten": "Xã Niêm Sơn",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18226,7 +18226,7 @@
 },
 {
 "stt": "57",
-"ten": "UBND xã Tát Ngà",
+"ten": "Xã Tát Ngà",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18262,7 +18262,7 @@
 },
 {
 "stt": "58",
-"ten": "UBND xã Lũng Cú",
+"ten": "Xã Lũng Cú",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18298,7 +18298,7 @@
 },
 {
 "stt": "59",
-"ten": "UBND xã Đồng Văn",
+"ten": "Xã Đồng Văn",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18334,7 +18334,7 @@
 },
 {
 "stt": "60",
-"ten": "UBND xã Sà Phìn",
+"ten": "Xã Sà Phìn",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18370,7 +18370,7 @@
 },
 {
 "stt": "61",
-"ten": "UBND xã Phố Bảng",
+"ten": "Xã Phố Bảng",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18406,7 +18406,7 @@
 },
 {
 "stt": "62",
-"ten": "UBND xã Lũng Phìn",
+"ten": "Xã Lũng Phìn",
 "kbnn": "2476",
 "loai": "ct",
 "o": {
@@ -18442,7 +18442,7 @@
 },
 {
 "stt": "63",
-"ten": "UBND xã Mậu Duệ",
+"ten": "Xã Mậu Duệ",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18478,7 +18478,7 @@
 },
 {
 "stt": "64",
-"ten": "UBND xã Thắng Mố",
+"ten": "Xã Thắng Mố",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18514,7 +18514,7 @@
 },
 {
 "stt": "65",
-"ten": "UBND xã Bạch Đích",
+"ten": "Xã Bạch Đích",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18550,7 +18550,7 @@
 },
 {
 "stt": "66",
-"ten": "UBND xã Yên Minh",
+"ten": "Xã Yên Minh",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18586,7 +18586,7 @@
 },
 {
 "stt": "67",
-"ten": "UBND xã Du Già",
+"ten": "Xã Du Già",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18622,7 +18622,7 @@
 },
 {
 "stt": "68",
-"ten": "UBND xã Đường Thượng",
+"ten": "Xã Đường Thượng",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18658,7 +18658,7 @@
 },
 {
 "stt": "69",
-"ten": "UBND xã Ngọc Long",
+"ten": "Xã Ngọc Long",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18694,7 +18694,7 @@
 },
 {
 "stt": "70",
-"ten": "UBND xã Lùng Tám",
+"ten": "Xã Lùng Tám",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18730,7 +18730,7 @@
 },
 {
 "stt": "71",
-"ten": "UBND xã Cán Tỷ",
+"ten": "Xã Cán Tỷ",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18766,7 +18766,7 @@
 },
 {
 "stt": "72",
-"ten": "UBND xã Nghĩa Thuận",
+"ten": "Xã Nghĩa Thuận",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18802,7 +18802,7 @@
 },
 {
 "stt": "73",
-"ten": "UBND xã Quản Bạ",
+"ten": "Xã Quản Bạ",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18838,7 +18838,7 @@
 },
 {
 "stt": "74",
-"ten": "UBND xã Tùng Vài",
+"ten": "Xã Tùng Vài",
 "kbnn": "2475",
 "loai": "ct",
 "o": {
@@ -18874,7 +18874,7 @@
 },
 {
 "stt": "75",
-"ten": "UBND xã Yên Cường",
+"ten": "Xã Yên Cường",
 "kbnn": "2477",
 "loai": "ct",
 "o": {
@@ -18910,7 +18910,7 @@
 },
 {
 "stt": "76",
-"ten": "UBND xã Đường Hồng",
+"ten": "Xã Đường Hồng",
 "kbnn": "2477",
 "loai": "ct",
 "o": {
@@ -18947,7 +18947,7 @@
 },
 {
 "stt": "77",
-"ten": "UBND xã Bắc Mê",
+"ten": "Xã Bắc Mê",
 "kbnn": "2477",
 "loai": "ct",
 "o": {
@@ -18984,7 +18984,7 @@
 },
 {
 "stt": "78",
-"ten": "UBND xã Minh Ngọc",
+"ten": "Xã Minh Ngọc",
 "kbnn": "2477",
 "loai": "ct",
 "o": {
@@ -19020,7 +19020,7 @@
 },
 {
 "stt": "79",
-"ten": "UBND xã Minh Sơn",
+"ten": "Xã Minh Sơn",
 "kbnn": "2477",
 "loai": "ct",
 "o": {
@@ -19056,7 +19056,7 @@
 },
 {
 "stt": "80",
-"ten": "UBND xã Giáp Trung",
+"ten": "Xã Giáp Trung",
 "kbnn": "2477",
 "loai": "ct",
 "o": {
@@ -19092,7 +19092,7 @@
 },
 {
 "stt": "81",
-"ten": "UBND xã Ngọc Đường",
+"ten": "Xã Ngọc Đường",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -19128,7 +19128,7 @@
 },
 {
 "stt": "82",
-"ten": "UBND phường Hà Giang 1",
+"ten": "Phường Hà Giang 1",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -19164,7 +19164,7 @@
 },
 {
 "stt": "83",
-"ten": "UBND phường Hà Giang 2",
+"ten": "Phường Hà Giang 2",
 "kbnn": "2470",
 "loai": "ct",
 "o": {
@@ -19200,7 +19200,7 @@
 },
 {
 "stt": "84",
-"ten": "UBND xã Lao Chải",
+"ten": "Xã Lao Chải",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19236,7 +19236,7 @@
 },
 {
 "stt": "85",
-"ten": "UBND xã Thanh Thủy",
+"ten": "Xã Thanh Thủy",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19272,7 +19272,7 @@
 },
 {
 "stt": "86",
-"ten": "UBND xã Phú Linh",
+"ten": "Xã Phú Linh",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19308,7 +19308,7 @@
 },
 {
 "stt": "87",
-"ten": "UBND xã Linh Hồ",
+"ten": "Xã Linh Hồ",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19344,7 +19344,7 @@
 },
 {
 "stt": "88",
-"ten": "UBND xã Bạch Ngọc",
+"ten": "Xã Bạch Ngọc",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19380,7 +19380,7 @@
 },
 {
 "stt": "89",
-"ten": "UBND xã Vị Xuyên",
+"ten": "Xã Vị Xuyên",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19416,7 +19416,7 @@
 },
 {
 "stt": "90",
-"ten": "UBND xã Việt Lâm",
+"ten": "Xã Việt Lâm",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19452,7 +19452,7 @@
 },
 {
 "stt": "91",
-"ten": "UBND xã Minh Tân",
+"ten": "Xã Minh Tân",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19488,7 +19488,7 @@
 },
 {
 "stt": "92",
-"ten": "UBND xã Thuận Hòa",
+"ten": "Xã Thuận Hòa",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19524,7 +19524,7 @@
 },
 {
 "stt": "93",
-"ten": "UBND xã Tùng Bá",
+"ten": "Xã Tùng Bá",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19560,7 +19560,7 @@
 },
 {
 "stt": "94",
-"ten": "UBND xã Thượng Sơn",
+"ten": "Xã Thượng Sơn",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19596,7 +19596,7 @@
 },
 {
 "stt": "95",
-"ten": "UBND xã Cao Bồ",
+"ten": "Xã Cao Bồ",
 "kbnn": "2474",
 "loai": "ct",
 "o": {
@@ -19632,7 +19632,7 @@
 },
 {
 "stt": "96",
-"ten": "UBND xã Tân Quang",
+"ten": "Xã Tân Quang",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19668,7 +19668,7 @@
 },
 {
 "stt": "97",
-"ten": "UBND xã Đồng Tâm",
+"ten": "Xã Đồng Tâm",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19704,7 +19704,7 @@
 },
 {
 "stt": "98",
-"ten": "UBND xã Liên Hiệp",
+"ten": "Xã Liên Hiệp",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19740,7 +19740,7 @@
 },
 {
 "stt": "99",
-"ten": "UBND xã Bằng Hành",
+"ten": "Xã Bằng Hành",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19776,7 +19776,7 @@
 },
 {
 "stt": "100",
-"ten": "UBND xã Bắc Quang",
+"ten": "Xã Bắc Quang",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19812,7 +19812,7 @@
 },
 {
 "stt": "101",
-"ten": "UBND xã Hùng An",
+"ten": "Xã Hùng An",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19848,7 +19848,7 @@
 },
 {
 "stt": "102",
-"ten": "UBND xã Vĩnh Tuy",
+"ten": "Xã Vĩnh Tuy",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19884,7 +19884,7 @@
 },
 {
 "stt": "103",
-"ten": "UBND xã Đồng Yên",
+"ten": "Xã Đồng Yên",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19920,7 +19920,7 @@
 },
 {
 "stt": "104",
-"ten": "UBND xã Tiên Yên",
+"ten": "Xã Tiên Yên",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19956,7 +19956,7 @@
 },
 {
 "stt": "105",
-"ten": "UBND xã Xuân Giang",
+"ten": "Xã Xuân Giang",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -19992,7 +19992,7 @@
 },
 {
 "stt": "106",
-"ten": "UBND xã Bằng Lang",
+"ten": "Xã Bằng Lang",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -20028,7 +20028,7 @@
 },
 {
 "stt": "107",
-"ten": "UBND xã Yên Thành",
+"ten": "Xã Yên Thành",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -20064,7 +20064,7 @@
 },
 {
 "stt": "108",
-"ten": "UBND xã Quang Bình",
+"ten": "Xã Quang Bình",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -20100,7 +20100,7 @@
 },
 {
 "stt": "109",
-"ten": "UBND xã Tân Trịnh",
+"ten": "Xã Tân Trịnh",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -20136,7 +20136,7 @@
 },
 {
 "stt": "110",
-"ten": "UBND xã Tiên Nguyên",
+"ten": "Xã Tiên Nguyên",
 "kbnn": "2471",
 "loai": "ct",
 "o": {
@@ -20172,7 +20172,7 @@
 },
 {
 "stt": "111",
-"ten": "UBND xã Thông Nguyên",
+"ten": "Xã Thông Nguyên",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -20208,7 +20208,7 @@
 },
 {
 "stt": "112",
-"ten": "UBND xã Nậm Dịch",
+"ten": "Xã Nậm Dịch",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -20244,7 +20244,7 @@
 },
 {
 "stt": "113",
-"ten": "UBND xã Hồ Thầu",
+"ten": "Xã Hồ Thầu",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -20280,7 +20280,7 @@
 },
 {
 "stt": "114",
-"ten": "UBND xã Tân Tiến",
+"ten": "Xã Tân Tiến",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -20316,7 +20316,7 @@
 },
 {
 "stt": "115",
-"ten": "UBND xã Hoàng Su Phì",
+"ten": "Xã Hoàng Su Phì",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -20352,7 +20352,7 @@
 },
 {
 "stt": "116",
-"ten": "UBND xã Thàng Tín",
+"ten": "Xã Thàng Tín",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -20388,7 +20388,7 @@
 },
 {
 "stt": "117",
-"ten": "UBND xã Bản Máy",
+"ten": "Xã Bản Máy",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -20424,7 +20424,7 @@
 },
 {
 "stt": "118",
-"ten": "UBND xã Pờ Ly Ngài",
+"ten": "Xã Pờ Ly Ngài",
 "kbnn": "2473",
 "loai": "ct",
 "o": {
@@ -20460,7 +20460,7 @@
 },
 {
 "stt": "119",
-"ten": "UBND xã Xín Mần",
+"ten": "Xã Xín Mần",
 "kbnn": "2472",
 "loai": "ct",
 "o": {
@@ -20496,7 +20496,7 @@
 },
 {
 "stt": "120",
-"ten": "UBND xã Pà Vầy Sủ",
+"ten": "Xã Pà Vầy Sủ",
 "kbnn": "2472",
 "loai": "ct",
 "o": {
@@ -20532,7 +20532,7 @@
 },
 {
 "stt": "121",
-"ten": "UBND xã Nấm Dẩn",
+"ten": "Xã Nấm Dẩn",
 "kbnn": "2472",
 "loai": "ct",
 "o": {
@@ -20568,7 +20568,7 @@
 },
 {
 "stt": "122",
-"ten": "UBND xã Trung Thịnh",
+"ten": "Xã Trung Thịnh",
 "kbnn": "2472",
 "loai": "ct",
 "o": {
@@ -20604,7 +20604,7 @@
 },
 {
 "stt": "123",
-"ten": "UBND xã Khuôn Lùng",
+"ten": "Xã Khuôn Lùng",
 "kbnn": "2472",
 "loai": "ct",
 "o": {
@@ -20640,7 +20640,7 @@
 },
 {
 "stt": "124",
-"ten": "UBND xã Quảng Nguyên",
+"ten": "Xã Quảng Nguyên",
 "kbnn": "2472",
 "loai": "ct",
 "o": {
