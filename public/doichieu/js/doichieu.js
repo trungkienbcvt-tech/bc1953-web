@@ -9,6 +9,9 @@ const ICON_TAB = { b5: '🔍', b585: '🔎', tt3785: '🔁', dtkb: '🧾', dbhc:
 const S = { tab: TABS[location.hash.slice(1)] ? location.hash.slice(1) : 'b5', cdt: [] };
 const tabsCua = () => TABS;
 const coXuat = () => true;
+// Danh mục hành chính dùng chung với hệ thống Tổng hợp: đọc công khai từ máy chủ (bảng th_dmhc), không cần đăng nhập
+const DMHC_API = { url: 'https://omtcphhbbrizxybmyiuh.supabase.co', key: 'sb_publishable_fF-qdkYisDpmjlATOuixbA_csqgP9K1' };
+const ngay = s => s ? new Date(s).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '';
 
 // ---------------------------------------------------------------- Tiện ích
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -382,9 +385,56 @@ async function xuatDoiChieu(M, opt) {
 const TK_UU_TIEN = ['1523', '1513', '1713', '8211', '8123', '8113', '8126'];
 const DBS = { file: null, tk: TK_UU_TIEN.join(', '), phamVi: 'ut', nguong: 2, kb: '*', tim: '', loai: 'nhieu', mo: new Set() };
 let DMHC = null;
-async function taiDMHC() {
-  if (!DMHC) DMHC = await (await fetch(new URL('./dmhc.json', import.meta.url))).json();
-  return DMHC;
+// Danh mục lưu trên máy chủ (bảng th_dmhc, ai cũng đọc được); không đọc được máy chủ thì dùng bản kèm theo trang (dmhc.json)
+async function taiDMHC(moi = false) {
+  if (DMHC && !moi) return DMHC;
+  let d = null;
+  try {
+    if (typeof sb !== 'undefined') d = await q(sb.from('th_dmhc').select('*').eq('id', 1).maybeSingle());
+    else if (typeof DMHC_API !== 'undefined') {
+      const res = await fetch(`${DMHC_API.url}/rest/v1/th_dmhc?id=eq.1&select=*`, { headers: { apikey: DMHC_API.key, Authorization: 'Bearer ' + DMHC_API.key } });
+      if (res.ok) d = (await res.json())[0] || null;
+    }
+  } catch (e) { console.warn('Không đọc được danh mục hành chính trên máy chủ', e); }
+  if (d?.tinh && d?.xa) d.luu = true;
+  else { d = await (await fetch(new URL('./dmhc.json', import.meta.url))).json(); d.luu = false; }
+  DMHC = d; return d;
+}
+const coSuaDMHC = () => typeof sb !== 'undefined' && typeof canEdit === 'function' && canEdit();
+// Cập nhật danh mục từ file: tỉnh (xlsx: Mã số, Tên tỉnh) và/hoặc xã (docx của Cục Thống kê, hoặc xlsx: Mã số, Tên, Tỉnh)
+async function capNhatDMHC(files) {
+  const cu = await taiDMHC(), tinh = { ...cu.tinh }, xa = { ...cu.xa }, nguon = { ...(cu.nguon || {}) };
+  const dsTinh = [], dsXa = [];
+  for (const fl of files) {
+    let rows = [];
+    if (/\.docx$/i.test(fl.name)) {
+      const JSZip = (await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm')).default;
+      const xml = await (await JSZip.loadAsync(await fl.arrayBuffer())).file('word/document.xml').async('string');
+      const doc = new DOMParser().parseFromString(xml, 'application/xml'), W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+      rows = [...doc.getElementsByTagNameNS(W, 'tr')].map(tr => [...tr.getElementsByTagNameNS(W, 'tc')].map(tc => [...tc.getElementsByTagNameNS(W, 't')].map(t => t.textContent).join('').trim()));
+    } else {
+      const XLSX = await loadXLSX(), wb = XLSX.read(await fl.arrayBuffer(), { type: 'array' });
+      rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '', raw: false }).map(r => r.map(v => String(v).trim()));
+    }
+    // dòng có mã 2 số → tỉnh; mã 5 số → xã (cột kế tiếp là tên, cột sau nữa là tỉnh)
+    for (const r of rows) for (let j = 0; j < r.length - 1; j++) {
+      const m = r[j], ten = r[j + 1];
+      if (!ten || /^\d+$/.test(ten)) continue;
+      if (/^\d{1,2}$/.test(m) && /^(tỉnh|thành phố|tp)\b/i.test(ten)) { dsTinh.push([m.padStart(2, '0'), ten]); break; }
+      if (/^\d{5}$/.test(m)) { dsXa.push([m, ten, r[j + 2] || '']); break; }
+    }
+  }
+  if (!dsTinh.length && !dsXa.length) throw new Error('Không tìm thấy mã tỉnh (2 số) hoặc mã xã (5 số) trong file.');
+  if (dsTinh.length) { for (const k in tinh) delete tinh[k]; for (const [m, t] of dsTinh) tinh[m] = t; nguon.tinh = files.map(f => f.name).join(', '); }
+  if (dsXa.length) {
+    const theoTen = new Map(Object.entries(tinh).map(([m, t]) => [boDau(t).replace(/^(tinh|thanh pho|tp)\s+/, ''), m]));
+    for (const k in xa) delete xa[k];
+    for (const [m, t, tt] of dsXa) xa[m] = [t, theoTen.get(boDau(tt).replace(/^(tinh|thanh pho|tp)\s+/, '')) || tt];
+    nguon.xa = files.map(f => f.name).join(', ');
+  }
+  await q(sb.from('th_dmhc').upsert({ id: 1, tinh, xa, nguon, cap_nhat_luc: new Date().toISOString(), cap_nhat_boi: S.me?.ho_ten || null }));
+  await taiDMHC(true);
+  return { tinh: dsTinh.length, xa: dsXa.length };
 }
 const boDau = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().replace(/\s+/g, ' ').trim();
 function tenDiaBan(db) {
@@ -444,10 +494,15 @@ function phanTichDB(f, st) {
 }
 async function viewDBHC(v) {
   const st = DBS, f = st.file;
+  if (!DMHC) { v.innerHTML = '<div class="loading">Đang tải danh mục hành chính…</div>'; try { await taiDMHC(); } catch (e) { fail(e); } }
   v.innerHTML = `<div class="card dc-gon no-print"><h2>Đối chiếu mã địa bàn hành chính</h2>
     ${dongDC('Nguồn số liệu', `${f ? `<span class="dc-chip ok" title="${esc(f.tieuDe.join(' · '))}">✓ <b>Báo cáo chi tiết số dư</b> <span>${esc(f.ten_file)}${f.ky ? ` · ${esc(f.ky.tu)} – ${esc(f.ky.den)}` : ''} · ${fmtDong(f.rows.length)} dòng</span></span>` : '<span class="dc-chip no">○ <b>Báo cáo chi tiết số dư</b> <span>chưa tải file</span></span>'}
       <label class="btn small primary">📂 Tải file báo cáo chi tiết số dư…<input type="file" id="dbf" accept=".xls,.xlsx" hidden></label>
-      <span class="muted small">File xuất từ TABMIS (cột Mã tài khoản, Mã đơn vị sử dụng ngân sách, Mã địa bàn…). File chỉ xử lý trên máy bạn. Danh mục đối chiếu: 34 tỉnh, thành phố và 3.321 xã, phường, đặc khu (Công văn 1027/CTK-CSCL ngày 25/6/2025).</span>`)}
+      <span class="muted small">File xuất từ TABMIS (cột Mã tài khoản, Mã đơn vị sử dụng ngân sách, Mã địa bàn…); nạp mỗi lần đối chiếu, chỉ xử lý trên máy bạn.</span>`)}
+    ${dongDC('Danh mục', `<span class="dc-chip ${DMHC?.luu ? 'ok' : ''}">${DMHC?.luu ? '✓' : '○'} <b>${fmtDong(Object.keys(DMHC?.tinh || {}).length)} tỉnh, thành phố · ${fmtDong(Object.keys(DMHC?.xa || {}).length)} xã, phường, đặc khu</b>
+      <span>${DMHC?.luu ? `lưu trên máy chủ · cập nhật ${esc(ngay(DMHC.cap_nhat_luc))}${DMHC.cap_nhat_boi ? ' · ' + esc(DMHC.cap_nhat_boi) : ''}` : 'bản kèm theo trang'}</span></span>
+      ${DMHC?.nguon?.van_ban ? `<span class="muted small">${esc(DMHC.nguon.van_ban)}</span>` : ''}
+      ${coSuaDMHC() ? '<label class="btn small ghost" title="Chọn file danh mục tỉnh (.xlsx) và/hoặc danh mục xã (.docx hoặc .xlsx) mới để thay danh mục trên máy chủ">🔄 Cập nhật danh mục…<input type="file" id="dbdm" accept=".xlsx,.xls,.docx" multiple hidden></label>' : ''}`)}
     ${dongDC('Phạm vi', `<label class="chk"><input type="radio" name="dbpv" value="ut" ${st.phamVi === 'ut' ? 'checked' : ''}> Tài khoản ưu tiên</label>
       <input id="dbtk" class="dc-sel" style="min-width:300px" value="${esc(st.tk)}" ${st.phamVi === 'ut' ? '' : 'disabled'} title="Danh sách mã tài khoản, cách nhau bằng dấu phẩy">
       <label class="chk"><input type="radio" name="dbpv" value="all" ${st.phamVi === 'all' ? 'checked' : ''}> Tất cả tài khoản</label>
@@ -465,6 +520,11 @@ async function viewDBHC(v) {
       const x = docSoDu(rows); x.ten_file = fl.name; st.file = x; st.mo = new Set();
       toast(`Đã đọc ${fmtDong(x.rows.length)} dòng số dư.`, 'ok');
     } catch (err) { fail(err); }
+    viewDBHC(v);
+  });
+  v.querySelector('#dbdm')?.addEventListener('change', async e => {
+    const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
+    try { const n = await capNhatDMHC(files); toast(`Đã cập nhật danh mục trên máy chủ${n.tinh ? `: ${n.tinh} tỉnh` : ''}${n.xa ? `${n.tinh ? ',' : ':'} ${fmtDong(n.xa)} xã` : ''}.`, 'ok'); } catch (err) { fail(err); }
     viewDBHC(v);
   });
   v.querySelectorAll('[name=dbpv]').forEach(r => r.onchange = () => { st.phamVi = r.value; viewDBHC(v); });

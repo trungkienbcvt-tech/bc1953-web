@@ -395,3 +395,19 @@ alter table public.th_cds_luu enable row level security;
 create policy th_cds_luu_xem on public.th_cds_luu for select to authenticated using (public.th_xem());
 create policy th_cds_luu_sua on public.th_cds_luu for all to authenticated using (public.th_sua()) with check (public.th_sua());
 grant select, insert, update, delete on public.th_cds_luu to authenticated;
+
+-- ---------------------------------------------------------------- Danh mục đơn vị hành chính (34 tỉnh, 3.321 xã) – mục Đối chiếu mã địa bàn hành chính
+create table if not exists public.th_dmhc (
+  id int primary key default 1 check (id = 1),
+  tinh jsonb not null,          -- { "08": "Tỉnh Tuyên Quang", ... }
+  xa jsonb not null,            -- { "00715": ["Xã Lũng Cú", "08"], ... }
+  nguon jsonb,
+  cap_nhat_luc timestamptz not null default now(),
+  cap_nhat_boi text
+);
+alter table public.th_dmhc enable row level security;
+create policy th_dmhc_xem on public.th_dmhc for select to anon, authenticated using (true);
+create policy th_dmhc_sua on public.th_dmhc for all to authenticated using (public.th_sua()) with check (public.th_sua());
+grant select on public.th_dmhc to anon, authenticated;
+grant insert, update on public.th_dmhc to authenticated;
+-- Dữ liệu ban đầu: public/tonghop/tonghop/dmhc.json (từ 2 file danh mục của Cục Thống kê, CV 1027/CTK-CSCL ngày 25/6/2025)
