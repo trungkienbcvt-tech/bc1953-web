@@ -221,3 +221,15 @@ tr.click{cursor:pointer} tr.click:hover td{background:#f2f6fb} tr.chon td{backgr
 .tbl.dc-phong thead tr:nth-child(2) th:nth-child(odd){border-left:2px solid #9fb4d1}
 .tbl.dc-phong td.dauct,.tbl.dc-phong th.nhomct{border-left:2px solid #c7d6ec}
 .mau-o{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.25);vertical-align:-1px;margin-right:6px}
+/* Đối chiếu mã địa bàn hành chính */
+.db-chip{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:#fff;white-space:nowrap}
+.db-chip.chinh{background:#eaf7ee;border-color:#9fd3b0;color:#1d6b3a}
+.db-chip.khac{background:#fff4e5;border-color:#f3c37b;color:#8a5a00}
+.db-chip.sai{background:#fde2e2;border-color:#e9a1a1;color:#a61b1b}
+.db-chip i{font-style:normal;color:var(--muted)}
+.tbl.db-bang td.db-ds{min-width:420px;white-space:normal}
+.tbl tr.db-mo > td{background:#fafcff}
+.tbl tr.db-lech td{background:#fff8ec}
+.tbl.db-bang > tbody > tr > td{vertical-align:top}
+.db-hai{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media (max-width:1000px){ .db-hai{grid-template-columns:1fr} }
