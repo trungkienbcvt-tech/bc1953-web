@@ -194,6 +194,10 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
       assert.strictEqual((await T37.ds(th)).ds.length, 1); assert.strictEqual((await T37.taiXuong(th, id)).b64, fake);
       await assert.rejects(() => T37.ds(p20), /quyền/); assert.strictEqual((await T37.xoa(th, id)).ds.length, 0);
     }
+    {
+      const bc = require('../lib/tt37bc'), T37 = require('../lib/tt37');
+      await assert.rejects(() => bc.baoCao(p20, 'a', 'eA==', ''), /Chỉ Chuyên viên/);
+    }
     M.api.goi = null; delete process.env.TONGHOP_KHOA; await assert.rejects(() => M.dmDs(th, {}, 0), /TONGHOP_KHOA/);
   }
   // ---- BC KPI: đối chiếu THBC theo mốc ngày, PGD xác nhận / ghi nhận số khác kèm lý do ----
