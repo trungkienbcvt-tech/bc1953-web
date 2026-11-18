@@ -180,6 +180,12 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await assert.rejects(() => M.dmHangLoat(p20, '1', 'cdt', 'A'), /Cột/);
     assert((await M.dmXuat(th, {})).b64.length > 300);
     {
+      const SS = require('../lib/so_sanh_b501_tt85.json'), mk = Object.keys(SS).find((m) => SS[m].s === 'BT' && SS[m].x === 'Khác nội dung tên');
+      const sv = M.api.goi; M.api.goi = async (fn) => { if (fn === 'cv_dm_canh_bao') return { tong: 0, nhom: {}, rows: [] }; if (fn === 'cv_dm_ban_do') return [[mk, 'Tên', mauT, mauT, 'Phòng giao dịch số 20']]; return { ok: true }; };
+      const cb = await M.dmCanhBao(th); assert.strictEqual(cb.tong, 1); assert(cb.rows[0].ly_do.includes('B501:') && cb.rows[0].loai[0] === 'Tên B501 khác TT85'); M.api.goi = sv;
+      let goi2; M.api.goi = async (fn, b) => { goi2 = [fn, b]; return { giu: 1 }; }; await M.dmDongBo(th, false); assert.strictEqual(goi2[0], 'cv_dm_dong_bo'); assert.strictEqual(goi2[1].p_ghi, false); assert(goi2[1].p_rows.length > 4000); M.api.goi = sv;
+    }
+    {
       const ma0 = Object.keys(require('../lib/so_sanh_b501_tt85.json')).find((m) => require('../lib/so_sanh_b501_tt85.json')[m].s === 'BT');
       const sv = M.api.goi; M.api.goi = async (fn) => { if (fn === 'cv_dm_ds') return { tong: 2, rows: [[ma0, 'Tên web khác hẳn', mauT, mauT, 'Phòng giao dịch số 20', '', '', '', false, false, null, null, ''], ['9999999', 'DA ngoài file', mauT, mauT, 'Phòng giao dịch số 21', '', '', '', false, false, null, null, '']] }; if (fn === 'cv_dm_cdt_ten') return { ten: [mauT], lon: [mauT], tt: {} }; return { ok: true }; };
       M._reset && M._reset(); const kq = await M.dmXuatDeXuat(th); assert(kq.b64.length > 2000); M.api.goi = sv; M._reset && M._reset();
