@@ -1195,7 +1195,7 @@ function dmForm(r,mac){var o=DM.opt,moi=!r,d=r||mac||{};
   $('modal').style.display='flex';
   if(d.tenB&&d.tenT){var rs=document.getElementsByName('fTenR');Array.prototype.forEach.call(rs,function(r){r.checked=(r.value==='B'?d.tenB:d.tenT)===d.ten_da;r.onchange=function(){$('fTen').value=r.value==='B'?d.tenB:d.tenT}})}
   var ctT=null,ctSeq=0;function ctPv(){var v=$('fCtMa').value.trim(),q=++ctSeq,bx=$('fCtPv');if(!v){bx.innerHTML='';return}
-    run('dmCtmtTra',S.token,v).then(function(r){if(q!==ctSeq)return;var h=r.rows.map(function(x){return '<div style="border-left:3px solid #c7a2a8;padding:2px 8px;margin:4px 0">'+x.chuoi.map(function(c,i){return '<div style="margin-left:'+(i*14)+'px"><span style="color:var(--mut)">'+esc(c.cap)+'</span> <b>'+esc(c.ma)+'</b> – '+esc(c.ten)+'</div>'}).join('')+'</div>'}).join('');
+    run('dmCtmtTra',S.token,v).then(function(r){if(q!==ctSeq)return;var h=r.rows.map(function(x){return '<div style="border-left:3px solid #c7a2a8;padding:2px 8px;margin:4px 0"><div style="font-weight:600;color:#7a1622">'+esc(x.nhan)+'</div>'+x.chuoi.map(function(c,i){return '<div style="margin-left:'+(i*14)+'px"><span style="color:var(--mut)">'+esc(c.cap)+'</span> <b>'+esc(c.ma)+'</b> – '+esc(c.ten)+'</div>'}).join('')+'</div>'}).join('');
       if(r.loi.length)h+='<div style="color:#b91c1c;margin:4px 0">Mã không có trong mục lục ngân sách: <b>'+esc(r.loi.join(', '))+'</b></div>';bx.innerHTML=h}).catch(function(){})}
   $('fCtMa').oninput=function(){clearTimeout(ctT);ctT=setTimeout(ctPv,400)};ctPv();
   var lon=d.cdt2||d.cdt||'',tt=(d.cdt&&d.cdt2&&d.cdt!==d.cdt2)?d.cdt:'';$('fCdt2').value=lon;$('fTt').value=tt;
