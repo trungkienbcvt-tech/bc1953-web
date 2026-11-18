@@ -1242,7 +1242,7 @@ function dmForm(r,mac){var o=DM.opt,moi=!r,d=r||mac||{},thbc=!!o.toanBo,khoa=!mo
     '<p class="fnote">Chủ đầu tư lớn / trực thuộc <b>mới</b> chưa có trong danh sách: thêm ở mục <a href="#" id="fToCdt">Danh mục chủ đầu tư</a>'+(thbc?'':' (nút “Đề xuất thêm chủ đầu tư”, THBC duyệt)')+' rồi chọn lại.</p>';
   var s4='<div class="fgrid">'+DMC.filter(function(c){return c[0]!=='ctmt'}).map(function(c){return '<label>'+c[1]+dmSel(o,c[0],'f_'+c[0],d[c[0]]||'')+'</label>'}).join('')+'</div>';
   var s5='<label>Nhập mã CTMT, mã tiểu chương trình hoặc mã nhiệm vụ/dự án thành phần (ví dụ <b>1102</b>) – tên tự hiện bên dưới. Nhiều mã cách nhau dấu ; hoặc dấu phẩy<input type="text" id="fCtMa" value="'+esc(d.ctMa||'')+'" placeholder="Ví dụ: 1102; 0514"></label><div id="fCtPv"></div>';
-  b.innerHTML='<h3 class="fh">'+(moi?'➕ Thêm dự án vào danh mục':'✏️ Sửa dự án <span>'+esc(d.ma_da)+'</span>')+'</h3>'+
+  b.innerHTML='<h3 class="fh">'+(moi?'➕ Thêm dự án vào danh mục':'✏️ Sửa dự án <span>'+esc(d.ma_da)+'</span>')+' <small style="font-size:11px;color:#94a3b8;font-weight:400">bản 19/11 01:35</small></h3>'+
    '<div class="fcols"><div>'+sec('#16a34a','🏢','Chủ đầu tư',s3)+sec('#d97706','🗂','Phân loại',s4)+sec('#b91c1c','🏷','Chương trình mục tiêu quốc gia (CTMT)',s5)+'</div><div>'+sec('#64748b','🔖','Thông tin gốc',s1)+sec('#2563eb','📝','Tên dự án',s2)+'</div></div>'+
    '<div id="fErr" style="color:#b91c1c;font-size:14px;min-height:20px"></div><div style="margin-top:8px;display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">Lưu</button></div>';
   $('modal').style.display='flex';

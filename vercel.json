@@ -12,6 +12,7 @@
     { "source": "/tonghop.html", "destination": "/tonghop/", "permanent": false }
   ],
   "headers": [
+    { "source": "/cv1953/(.*)", "headers": [ { "key": "Cache-Control", "value": "no-cache, must-revalidate" } ] },
     { "source": "/(.*)", "headers": [
       { "key": "X-Content-Type-Options", "value": "nosniff" },
       { "key": "X-Frame-Options", "value": "DENY" },
