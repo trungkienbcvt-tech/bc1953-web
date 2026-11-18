@@ -207,7 +207,7 @@ td.a{text-align:right}td.a.glk{font-style:normal;font-weight:700;color:#1d3566;b
 .dnl{list-style:none;margin:0;padding:0;font-size:13px;flex:1;min-width:120px}.dnl li{display:flex;align-items:center;gap:7px;padding:2px 0}.dnl li i{width:10px;height:10px;border-radius:3px;flex:none}.dnl li b{margin-left:auto;padding-left:8px}
 .hbs{display:flex;flex-direction:column;gap:7px}.hb{display:grid;grid-template-columns:minmax(90px,200px) 1fr 86px;align-items:center;gap:10px;font-size:13px}.hb .hl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hb .ht{position:relative;height:14px;background:#f6ebed;border-radius:7px;overflow:hidden}.hb .ht i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#d4586a,#a31d2f);border-radius:7px}.hb .ht i.b2{background:#5c0f1b;top:4px;bottom:4px}.hb b{text-align:right;font-variant-numeric:tabular-nums}
-.mnu{position:relative}.mnu summary{list-style:none;cursor:pointer;padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px}.mnu summary::-webkit-details-marker{display:none}.mnub{position:absolute;z-index:20;top:100%;left:0;margin-top:4px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.15);padding:6px;display:flex;flex-direction:column;gap:4px;min-width:330px}.mnub button{text-align:left;border:0;background:none}.mnub button:hover{background:#f3f4f6}.expb{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 10px}.expb label{margin:0;font-size:13px;display:flex;align-items:center;gap:6px}.expb input{width:120px;padding:6px 9px}
+.dmnav{margin:2px 0 8px 12px;border-left:2px solid #e5d3d6;padding-left:6px}.dmnav button{display:block;width:100%;text-align:left;font-size:13px;padding:5px 8px;background:none;border:0;border-radius:6px;cursor:pointer;color:#374151}.dmnav button:hover{background:#faf1f2}.dmnav button.on{background:#f3e3e6;color:#7a1622;font-weight:600}.dmnav h6{margin:8px 0 2px 4px;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.3px}.mnu{position:relative}.mnu summary{list-style:none;cursor:pointer;padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px}.mnu summary::-webkit-details-marker{display:none}.mnub{position:absolute;z-index:20;top:100%;left:0;margin-top:4px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.15);padding:6px;display:flex;flex-direction:column;gap:4px;min-width:330px}.mnub button{text-align:left;border:0;background:none}.mnub button:hover{background:#f3f4f6}.expb{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 10px}.expb label{margin:0;font-size:13px;display:flex;align-items:center;gap:6px}.expb input{width:120px;padding:6px 9px}
 .bt.tt{table-layout:fixed;width:100%}.bt.tt th:nth-child(1){width:4.5%}.bt.tt th:nth-child(2){width:25%}.bt.tt th:nth-child(n+3):nth-child(-n+6){width:11%}.bt.tt th:nth-child(7){width:13%}.bt.tt .ts{padding:2px 8px;font-size:12px}.bt.tt td:nth-child(n+3):nth-child(-n+7){vertical-align:middle}.bt.tt td.sm{text-align:left!important;font-size:13px;font-weight:600;padding-left:12px}.bt.tt tr.bt-k td.sm{color:#fff}.bt.tt th{text-align:center}.bt.tt th:nth-child(2),.bt.tt th:last-child{text-align:left}.bt.tt td:nth-child(n+3){text-align:center}.bt.tt td:nth-child(2),.bt.tt td.gc{text-align:left;font-size:12.5px;color:inherit}.bt.tt td.gc{font-weight:400;color:var(--mut)}.bt.tt tr.bt-k td.gc{color:#f3d9dd}.bt.tt tr.bt-k td:nth-child(2){color:#fff}.bt.tt tr.bt-k td:nth-child(n+3):not(.gc){color:#fff}.bt.tt tr.bt-t td.gc{color:#46204a}.ts.du{background:#fde4cf;color:#b45309}.ts{display:inline-block;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:600;white-space:nowrap}.ts.dg{background:#dcfce7;color:#15803d}.ts.cham{background:#fff1d6;color:#b45309}.ts.chua{background:#fee2e2;color:#b91c1c}.ts.chn{background:#eceff5;color:#5b6577}.ts.x{color:var(--mut);background:none;font-weight:400}
 .ucr{margin:6px 0 12px}.uch{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}.ucb{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#f1e6e8}.ucb i{display:block}.ucl{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:4px}
 .dvr{text-align:right;font-style:italic;color:#5b4a4e;margin:2px 6px 2px}td.gn{font-size:12.5px;color:#5b4a4e;white-space:normal;min-width:140px}
@@ -471,7 +471,7 @@ function drawTabs(){
     {id:'gkpi',t:'🎯 BC đánh giá KPI',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Số liệu & xác nhận'],['kpibt','⚖ Phòng ghi nhận khác THBC']].concat(S.vt!=='PGD'?[['kpvb','📄 Công văn & theo dõi']]:[])},
     {id:'gchung',t:'🗂 Dùng chung',it:[['dm','📁 Danh mục dự án'],['cdt','🏢 Danh mục chủ đầu tư']].concat(S.vt!=='PGD'?[['tt37','📥 Tải số liệu THBC (TT37)']]:[])}],h='';
   h+='<button data-t="home" style="font-weight:600;margin-bottom:6px">🏠 Trang chủ</button>';
-  G.forEach(function(g){h+='<div class="tg'+(S.shut[g.id]?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+g.it.map(function(x){return '<button data-t="'+x[0]+'">'+esc(x[1])+'</button>'}).join('')+'</div></div>'});
+  G.forEach(function(g){h+='<div class="tg'+(S.shut[g.id]?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+g.it.map(function(x){return '<button data-t="'+x[0]+'">'+esc(x[1])+'</button>'+(x[0]==='dm'?'<div class="dmnav" id="dmNav"></div>':'')}).join('')+'</div></div>'});
   $('tabs').innerHTML=h;
   [].forEach.call($('tabs').querySelectorAll('button'),function(b){b.onclick=function(){show(b.getAttribute('data-t'))}});
   [].forEach.call($('tabs').querySelectorAll('.tgh'),function(e){e.onclick=function(){var g=e.getAttribute('data-g');S.shut[g]=!S.shut[g];e.parentNode.classList.toggle('shut',!!S.shut[g])}});
@@ -487,7 +487,7 @@ function show(t){nbDuyet();S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e
   if(S.nv2tp&&!isB&&S.xem!==S.pgd){S.xem=S.pgd;S.data=null}
   $('pgdBar').style.display=((isV()||S.nv2tp)&&isB)?'flex':'none';if(isV()||S.nv2tp)$('xemSel').value=S.xem;
   if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='tt37')drawTt37();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
-  $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar()}
+  $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar();if(typeof dmNav==='function')dmNav()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
 var NAMEB={b01:'B01',b02:'B02',b03a:'B03(21-25)',b03b:'B03(26-30)'};
 function homNay(){var d=new Date();return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()}
@@ -959,10 +959,23 @@ function drawDm(){
    DMC.map(function(c){return '<datalist id="dl_'+c[0]+'">'+(o[c[0]]||[]).map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist>'}).join('');
   dmSub();
 }
-function dmSub(){var o=DM.opt,T=[['tq','📊 Tổng quan'],['ht','🛠 Hoàn thiện dự án'],['tc','🔎 Tra cứu danh mục']];
-  $('dmTabs').innerHTML=T.map(function(t){return '<button class="pill'+(DM.sub===t[0]?' on':'')+'" data-ds="'+t[0]+'">'+t[1]+(t[0]==='ht'&&DM.cb?' <span class="cbn">'+DM.cb.tong+'</span>':'')+'</button>'}).join('');
-  $('dmTabs').onclick=function(e){var b=e.target.closest('[data-ds]');if(!b)return;DM.sub=b.getAttribute('data-ds');DM.seq++;dmSub()};
+function dmSub(){$('dmTabs').style.display='none';dmNav();
   if(DM.sub==='tq')dmTqDraw();else if(DM.sub==='ht')dmHtDraw();else dmTcDraw()}
+// Menu con ở thanh bên trái: mục + bộ lọc của Tra cứu
+function dmNav(){var el=$('dmNav');if(!el)return;if(S.tab!=='dm'||!DM||!DM.opt){el.innerHTML='';return}
+  var o=DM.opt,L=DM.loc,d=DM.d||{},B=function(k,t,on,n){return '<button data-n="'+esc(k)+'" class="'+(on?'on':'')+'">'+esc(t)+(n!=null&&n!==''?' <span class="cbn" style="background:'+(k==='s:ht'?'#b91c1c':'#6b7280')+'">'+Number(n).toLocaleString('vi-VN')+'</span>':'')+'</button>'},
+   h=B('s:tq','📊 Tổng quan',DM.sub==='tq')+B('s:ht','🛠 Hoàn thiện dự án',DM.sub==='ht',DM.cb?DM.cb.tong:'')+B('s:tc','🔎 Tra cứu danh mục',DM.sub==='tc');
+  if(DM.sub==='tc'){
+    var G=function(t,f,vals,all){return '<h6>'+t+'</h6>'+B('f:'+f+':','Tất cả',!L[f])+vals.map(function(x){return B('f:'+f+':'+x[0],x[1],L[f]===x[0],x[2])}).join('')};
+    h+=G('Tính chất dự án','dac_thu',(o.dac_thu||[]).map(function(x){return [x,x]}).concat([['__trong','Chưa phân loại']]));
+    h+=G('Chương trình mục tiêu','ctmt',(o.ctmt||[]).map(function(x){return [x,ctl(x)]}));
+    h+='<h6>Mã CTMT (theo B501 / nhập tay)</h6>'+B('c:','Tất cả',!L.ctf)+B('c:co','Có mã CTMT',L.ctf==='co',d.soCo)+B('c:khong','Chưa có mã CTMT',L.ctf==='khong',d.soKhong);
+    if(o.toanBo)h+=G('Phòng giao dịch','kbnn',(o.kbnn||[]).map(function(x){return [x,x]}))}
+  el.innerHTML=h;
+  el.onclick=function(e){var b=e.target.closest('button[data-n]');if(!b)return;var k=b.getAttribute('data-n'),p=k.split(':');
+    if(p[0]==='s'){DM.sub=p[1];DM.seq++;DM.cbL='';dmSub();return}
+    if(p[0]==='f'){L[p[1]]=p.slice(2).join(':')}else if(p[0]==='c'){L.ctf=p[1]}
+    DM.trang=0;dmNav();dmLoad()}}
 // ---- Tổng quan ----
 function dmTqDraw(){var box=$('dmBody');box.innerHTML='<p class="hint">⏳ Đang tổng hợp...</p>';
   var base={tim:'',cdt:'',kbnn:'',dac_thu:'',ctmt:'',ctmt_2630:''};
@@ -980,7 +993,7 @@ function dmTqDraw(){var box=$('dmBody');box.innerHTML='<p class="hint">⏳ Đang
     box.innerHTML=h;DM.sub==='tq'&&dmSubTabs();
     box.onclick=function(e){var a=e.target.closest('[data-act]');if(a){var ac=a.getAttribute('data-act');DM.sub='ht';if(ac==='UP')DM.moUp=true;else DM.act=ac;dmSub();return}var g=e.target.closest('[data-go]');if(!g)return;var v=g.getAttribute('data-go');DM.sub='ht';DM.cbL=v.indexOf('L:')===0?v.slice(2):'';if(v==='UP:')DM.moUp=true;dmSub()}
   }).catch(function(e){box.innerHTML='<p class="hint" style="color:#b91c1c">'+esc(msg(e))+'</p>'})}
-function dmSubTabs(){var t=$('dmTabs');if(t&&DM.cb){var b=t.querySelector('[data-ds="ht"]');if(b&&!b.querySelector('.cbn'))b.insertAdjacentHTML('beforeend',' <span class="cbn">'+DM.cb.tong+'</span>')}}
+function dmSubTabs(){dmNav();var t=$('dmTabs');if(t&&DM.cb){var b=t.querySelector('[data-ds="ht"]');if(b&&!b.querySelector('.cbn'))b.insertAdjacentHTML('beforeend',' <span class="cbn">'+DM.cb.tong+'</span>')}}
 // ---- Hoàn thiện dự án ----
 function dmHtDraw(){var o=DM.opt,box=$('dmBody');
   box.innerHTML='<div class="expb"><button class="pri" id="dmAdd">＋ Thêm dự án</button><button id="dmUp">📤 Dự án mới từ B501/TT85</button><button id="dmDx">📝 Đề xuất CĐT trực thuộc</button><button id="dmHt">⚠ Dự án phát sinh giải ngân chưa vào báo cáo</button>'+(o.toanBo?'<details class="mnu"><summary>⋯ Công cụ</summary><div class="mnub"><button id="dmDb">🔄 Cập nhật danh mục theo B501/TT85</button><button id="dmTong">⬇ Xuất danh mục tổng thể (đối chiếu B501/TT85)</button><button id="dmCt">🏷 Gắn mã CTMT theo B501</button></div></details>':'')+'</div>'+
@@ -1004,14 +1017,12 @@ function dmHtDraw(){var o=DM.opt,box=$('dmBody');
   if(DM.act){var ac=DM.act;DM.act='';if($(ac))$(ac).click()}}
 // ---- Tra cứu danh mục ----
 function dmTcDraw(){var o=DM.opt,box=$('dmBody');
-  box.innerHTML='<p class="hint" style="margin:0 0 8px">Tra cứu theo chủ đầu tư, phòng giao dịch, tính chất, chương trình mục tiêu... Dự án <b>đang cảnh báo cần hoàn thiện</b> chưa hiện ở đây – xử lý ở mục <b>Hoàn thiện dự án</b>.</p>'+
-   '<div class="dst" id="dmCf" style="margin-bottom:8px"></div>'+
+  box.innerHTML='<p class="hint" style="margin:0 0 8px">Chọn bộ lọc (tính chất, chương trình mục tiêu, mã CTMT, phòng giao dịch) ở menu bên trái. Dự án <b>đang cảnh báo cần hoàn thiện</b> chưa hiện ở đây – xử lý ở mục <b>Hoàn thiện dự án</b>.</p>'+
    '<div class="dmf"><input type="text" class="q" id="dmQ" placeholder="🔍 Tìm mã hoặc tên dự án..." value="'+esc(DM.loc.tim)+'">'+
-   '<select id="dmC">'+dmOpts(o.cdt,'Tất cả chủ đầu tư')+'</select>'+(o.toanBo?'<select id="dmB">'+dmOpts(o.kbnn,'Tất cả phòng giao dịch')+'</select>':'')+
-   DMC.map(function(c){return dmSelCol(c[0],c[1],o)}).join('')+'<button class="mini" id="dmClr">✕ Xóa lọc</button><button id="dmXls">⬇ Xuất Excel</button><button id="dmBulk">Gán phân loại hàng loạt</button></div>'+
+   '<select id="dmC">'+dmOpts(o.cdt,'Tất cả chủ đầu tư')+'</select><button class="mini" id="dmClr">✕ Xóa lọc</button><button id="dmXls">⬇ Xuất Excel</button><button id="dmBulk">Gán phân loại hàng loạt</button></div>'+
    '<div class="dmw"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư lớn</th><th>Chủ đầu tư trực thuộc</th>'+(o.toanBo?'<th>Phòng giao dịch</th>':'')+'<th>Tính chất dự án</th><th>Chương trình mục tiêu</th><th style="min-width:200px">Mã &amp; tên gọi CTMT (theo B501)</th><th></th></tr></thead><tbody id="dmB1"></tbody></table></div><div class="dmp" id="dmP"></div><div class="dmk" id="dmK" style="display:none"></div>';
-  $('dmC').value=DM.loc.cdt;if($('dmB'))$('dmB').value=DM.loc.kbnn;DMC.forEach(function(c){box.querySelector('select[data-f="'+c[0]+'"]').value=DM.loc[c[0]]});
-  $('dmClr').onclick=function(){DM.loc.tim='';DM.loc.cdt='';DM.loc.ctf='';if(o.toanBo)DM.loc.kbnn='';DMC.forEach(function(c){DM.loc[c[0]]=''});DM.trang=0;dmTcDraw()};
+  $('dmC').value=DM.loc.cdt;
+  $('dmClr').onclick=function(){DM.loc.tim='';DM.loc.cdt='';DM.loc.ctf='';if(o.toanBo)DM.loc.kbnn='';DMC.forEach(function(c){DM.loc[c[0]]=''});DM.trang=0;dmNav();dmTcDraw()};
   var tm;$('dmQ').oninput=function(){clearTimeout(tm);var v=this.value;tm=setTimeout(function(){DM.loc.tim=v;DM.trang=0;dmLoad()},350)};
   $('dmC').onchange=function(){DM.loc.cdt=this.value;DM.trang=0;dmLoad()};if($('dmB'))$('dmB').onchange=function(){DM.loc.kbnn=this.value;DM.trang=0;dmLoad()};
   [].forEach.call(box.querySelectorAll('select[data-f]'),function(e){e.onchange=function(){DM.loc[e.getAttribute('data-f')]=e.value;DM.trang=0;dmLoad()}});
@@ -1025,7 +1036,7 @@ function dmTcDraw(){var o=DM.opt,box=$('dmBody');
   $('dmB1').onclick=function(e){var b=e.target.closest('[data-sua]');if(!b)return;dmForm(DM.d.rows.filter(function(x){return x.ma_da===b.getAttribute('data-sua')})[0])};
   $('dmP').onclick=function(e){var b=e.target.closest('[data-pg]');if(!b)return;DM.trang=+b.getAttribute('data-pg');dmLoad()};
   dmLoad()}
-function dmLoad(){if(!$('dmB1'))return;var sq=++DM.seq;run('dmDs',S.token,DM.loc,DM.trang).then(function(d){if(sq!==DM.seq||S.tab!=='dm')return;DM.d=d;dmDrawRows()}).catch(function(e){toast(msg(e),6000)})}
+function dmLoad(){if(!$('dmB1'))return;var sq=++DM.seq;run('dmDs',S.token,DM.loc,DM.trang).then(function(d){if(sq!==DM.seq||S.tab!=='dm')return;DM.d=d;dmDrawRows();dmNav()}).catch(function(e){toast(msg(e),6000)})}
 function dmDrawRows(){if(!$('dmB1'))return;var d=DM.d,o=DM.opt,k=d.kpi||{};
   if(false)$('dmK').innerHTML=[['Tổng số dự án',k.tong],['Có tính chất dự án',k.dt],['Thuộc chương trình mục tiêu',k.c1],['Đã sửa / thêm trên web',k.them]].map(function(x){return '<div><b>'+(x[1]==null?'—':Number(x[1]).toLocaleString('vi-VN'))+'</b><span>'+x[0]+'</span></div>'}).join('');
   $('dmB1').innerHTML=d.rows.map(function(r){return '<tr data-ma="'+esc(r.ma_da)+'"><td><b>'+esc(r.ma_da)+'</b></td><td class="ten">'+esc(r.ten_da)+(r.them_tay?' <small>(thêm tay)</small>':'')+'</td><td>'+esc(r.cdt2||r.cdt)+'</td><td>'+(r.cdt2&&r.cdt!==r.cdt2?esc(r.cdt):'<span style="color:var(--mut)">—</span>')+dmDxTag(r.ma_da)+'</td>'+(o.toanBo?'<td>'+esc(r.kbnn)+'</td>':'')+
