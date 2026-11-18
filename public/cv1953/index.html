@@ -939,15 +939,16 @@ function saveKy(){var i=S.info;if(!$('kLap'))return Promise.resolve();i.lap=$('k
 /* ===== Danh mục dự án (sheet CDT): PGD chỉ phần của mình, Tổng hợp toàn bộ ===== */
 var DM={loc:{tim:'',cdt:'',kbnn:'',dac_thu:'',ctmt:'',ctmt_2630:''},trang:0,opt:null,d:null,moHT:false,ht:null,seq:0};
 var DMC=[['dac_thu','Tính chất dự án'],['ctmt','Chương trình mục tiêu']];
-function dmSel(o,f,id,v,cls){var a=(o[f]||[]).slice();if(v&&a.indexOf(v)<0)a.push(v);return '<select '+(id?'id="'+id+'"':'data-f="'+f+'"')+(cls?' class="'+cls+'"':'')+'><option value=""></option>'+a.map(function(x){return '<option value="'+esc(x)+'"'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select>'}
+var CTL={DTTS:'DTTS 21-25',NTM:'NTM 21-25',GNBV:'GNBV 21-25',PTVH:'PTVH 25-35',PCMT:'PCMT 2030',GDDT:'GDDT 26-30',SKDS:'SKDS 26-30'};function ctl(x){return CTL[x]||x}
+function dmSel(o,f,id,v,cls){var a=(o[f]||[]).slice();if(v&&a.indexOf(v)<0)a.push(v);return '<select '+(id?'id="'+id+'"':'data-f="'+f+'"')+(cls?' class="'+cls+'"':'')+'><option value=""></option>'+a.map(function(x){return '<option value="'+esc(x)+'"'+(x===v?' selected':'')+'>'+esc(f==='ctmt'?ctl(x):x)+'</option>'}).join('')+'</select>'}
 function dmDxTag(ma){var x=DM.dxMap&&DM.dxMap[ma];if(!x)return '';return x.tt_==='cho'?'<br><small style="color:#b45309">⏳ Đề xuất: '+(x.tt?esc(x.tt):'bỏ CĐT trực thuộc')+' (chờ duyệt)</small>':'<br><small style="color:#b91c1c">✗ Đề xuất bị từ chối'+(x.ly_do?': '+esc(x.ly_do):'')+'</small>'}
 function dmCt(o,v,id){var s=('+'+(v||'')+'+'),a=o.ctmt||[],n=(v||'').split('+').filter(Boolean).length;
-  return '<details class="ctm"'+(id?' id="'+id+'"':' data-ct="1"')+'><summary>'+(v?esc(v.replace(/\+/g,', ')):'—')+'</summary><div class="ctl">'+a.map(function(x){return '<label><input type="checkbox" value="'+x+'"'+(s.indexOf('+'+x+'+')>=0?' checked':'')+'> '+x+'</label>'}).join('')+'</div></details>'}
+  return '<details class="ctm"'+(id?' id="'+id+'"':' data-ct="1"')+'><summary>'+(v?esc(v.split('+').map(ctl).join(', ')):'—')+'</summary><div class="ctl">'+a.map(function(x){return '<label><input type="checkbox" value="'+x+'"'+(s.indexOf('+'+x+'+')>=0?' checked':'')+'> '+esc(ctl(x))+'</label>'}).join('')+'</div></details>'}
 function dmCtVal(el){return [].map.call(el.querySelectorAll('input:checked'),function(i){return i.value}).join('+')}
 function dmLonOpts(o,cur){var a=(o.lon&&o.lon.length?o.lon:o.mau).slice();if(cur&&a.indexOf(cur)<0)a.push(cur);return a}
 function dmTtOpts(o,lon,cur){var a=((o.ttMap||{})[lon]||[]).slice();if(!o.lon||!o.lon.length)a=o.mau.slice();if(cur&&a.indexOf(cur)<0)a.push(cur);return a}
 function dmOpts(a,all){return '<option value="">'+all+'</option>'+a.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('')}
-function dmSelCol(f,t,o){return '<select data-f="'+f+'" title="'+t+'"><option value="">'+t+': tất cả</option><option value="__co">'+t+': đã có</option><option value="__trong">'+t+': chưa có</option>'+(o[f]||[]).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('')+'</select>'}
+function dmSelCol(f,t,o){return '<select data-f="'+f+'" title="'+t+'"><option value="">'+t+': tất cả</option><option value="__co">'+t+': đã có</option><option value="__trong">'+t+': chưa có</option>'+(o[f]||[]).map(function(x){return '<option value="'+esc(x)+'">'+esc(f==='ctmt'?ctl(x):x)+'</option>'}).join('')+'</select>'}
 function drawDm(){
   var m=$('main');
   if(!DM.opt){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh mục dự án...</p>';
