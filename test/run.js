@@ -184,6 +184,16 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
       const sv = M.api.goi; M.api.goi = async (fn) => { if (fn === 'cv_dm_canh_bao') return { tong: 0, nhom: {}, rows: [] }; if (fn === 'cv_dm_ban_do') return [[mk, 'Tên', mauT, mauT, 'Phòng giao dịch số 20']]; return { ok: true }; };
       const cb = await M.dmCanhBao(th); assert.strictEqual(cb.tong, 1); assert(cb.rows[0].ly_do.includes('B501:') && cb.rows[0].loai[0] === 'Tên B501 khác TT85'); M.api.goi = sv;
       { const sv2 = M.api.goi; M.api.goi = async (fn) => (fn === 'cv_dm_cdt_ten' ? { ten: [mauT], lon: [mauT], tt: {} } : { ok: 1 }); await assert.rejects(() => M.dmSua(th, mk, { ten_da: 'Tên tự gõ' }), /một trong hai tên/); await M.dmSua(th, mk, { ten_da: SS[mk].b }); M.api.goi = sv2; }
+      {
+        const UP = require('../lib/dmup'), DO = require('../lib/dmdoichieu'); DO._reset();
+        const chiB = Object.keys(DO.STATIC).find((m) => DO.STATIC[m].s === 'B' && DO.STATIC[m].n), sv3 = M.api.goi, got = [];
+        M.api.goi = async (fn, b) => { got.push([fn, b]); if (fn === 'cv_dm_ban_do') return []; if (fn === 'cv_dm_them_moi') return { them: b.p_rows.length }; return { ok: 1 }; };
+        const d = await UP.ds(th); assert(d.tong > 100 && d.tai === true); assert(d.rows.some((x) => x.ma === chiB && x.nguon === 'Chỉ có ở B501'));
+        const dp = await UP.ds(p20); assert(d.rows.length >= dp.rows.length && dp.tai === false);
+        await assert.rejects(() => UP.quyet(th, [], true), /Chưa chọn/); await assert.rejects(() => UP.tai(p20, 'x.xlsx', 'AAAA'), /Chỉ Chuyên viên THBC/);
+        const kq = await UP.quyet(th, [chiB], true); assert.strictEqual(kq.them, 1); const ct = got.filter((g) => g[0] === 'cv_dm_them_moi').pop(); assert.strictEqual(ct[1].p_rows[0].m, chiB);
+        M.api.goi = sv3;
+      }
       let goi2; M.api.goi = async (fn, b) => { goi2 = [fn, b]; return { giu: 1 }; }; await M.dmDongBo(th, false); assert.strictEqual(goi2[0], 'cv_dm_dong_bo'); assert.strictEqual(goi2[1].p_ghi, false); assert(goi2[1].p_rows.length > 4000); M.api.goi = sv;
     }
     {
