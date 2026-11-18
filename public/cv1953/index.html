@@ -212,7 +212,7 @@ td.a{text-align:right}td.a.glk{font-style:normal;font-weight:700;color:#1d3566;b
 .ucr{margin:6px 0 12px}.uch{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}.ucb{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#f1e6e8}.ucb i{display:block}.ucl{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:4px}
 .dvr{text-align:right;font-style:italic;color:#5b4a4e;margin:2px 6px 2px}td.gn{font-size:12.5px;color:#5b4a4e;white-space:normal;min-width:140px}
 .dmk{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0 12px}.dmk div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px}.dmk b{display:block;font-size:22px;color:var(--acc2)}.dmk span{font-size:12.5px;color:var(--mut)}
-.dmlay{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;align-items:start}.dmmain{min-width:0}.dmside{position:sticky;top:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}.dmsh{font-weight:700;font-size:14px;color:var(--acc2)}.dmfl span{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}.dmside select,.dmside input{width:100%;max-width:none;min-width:0}@media(max-width:900px){.dmlay{grid-template-columns:1fr}.dmside{position:static}}
+.dst{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}.cbn{background:#b91c1c;color:#fff;border-radius:10px;padding:0 7px;font-size:11px;margin-left:4px}.dmgo{cursor:pointer}.dmgo:hover{border-color:var(--acc)!important;box-shadow:0 2px 8px rgba(0,0,0,.08)}.dmlay{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;align-items:start}.dmmain{min-width:0}.dmside{position:sticky;top:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}.dmsh{font-weight:700;font-size:14px;color:var(--acc2)}.dmfl span{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}.dmside select,.dmside input{width:100%;max-width:none;min-width:0}@media(max-width:900px){.dmlay{grid-template-columns:1fr}.dmside{position:static}}
 .dmf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 10px}.dmf input,.dmf select{width:auto;min-width:130px;max-width:230px;padding:7px 10px;font-size:13.5px}.dmf input.q{min-width:230px}
 .dmt{width:100%;border-collapse:collapse;font-size:13px}.dmt th{position:sticky;top:0;background:#f6e3e6;padding:7px 8px;text-align:left;font-size:12px;color:var(--acc2);border-bottom:2px solid #ead3d7;z-index:1}.dmt td{padding:4px 8px;border-bottom:1px solid #f0e4e6;vertical-align:top}
 .dmt td input{width:100%;min-width:100px;padding:5px 7px;font-size:12.5px;border:1px solid #e3d5d8;border-radius:7px}.dmt td input.sua{background:#e8f7ec;border-color:#86d19b}.dmt td.ten{min-width:260px;max-width:420px}.dmt td small{color:var(--mut)}
@@ -952,35 +952,63 @@ function drawDm(){
   var m=$('main');
   if(!DM.opt){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh mục dự án...</p>';
     run('dmTuyChon',S.token).then(function(o){DM.opt=o;if(S.tab==='dm')drawDm()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
-  var o=DM.opt;
-  m.innerHTML='<h3 style="margin:0 0 4px">📁 Danh mục dự án</h3><p class="hint">'+(o.toanBo?'Cán bộ tổng hợp: xem, hoàn thiện và điều chỉnh <b>tất cả</b> mã dự án.':'Danh sách dự án của <b>'+esc(o.phamVi)+'</b>. Hoàn thiện chủ đầu tư và phân loại để số liệu vào đúng báo cáo.')+'</p>'+
-   '<div class="dmk" id="dmK"></div><div class="dmlay"><aside class="dmside"><div class="dmsh">🔎 Bộ lọc dự án</div>'+
-   '<label class="dmfl"><span>Tìm kiếm</span><input type="text" class="q" id="dmQ" placeholder="Mã hoặc tên dự án..." value="'+esc(DM.loc.tim)+'"></label>'+
-   '<label class="dmfl"><span>Chủ đầu tư</span><select id="dmC">'+dmOpts(o.cdt,'Tất cả chủ đầu tư')+'</select></label>'+(o.toanBo?'<label class="dmfl"><span>Phòng giao dịch</span><select id="dmB">'+dmOpts(o.kbnn,'Tất cả phòng giao dịch')+'</select></label>':'')+
-   DMC.map(function(c){return '<label class="dmfl"><span>'+c[1]+'</span>'+dmSelCol(c[0],c[1],o)+'</label>'}).join('')+
-   '<button class="mini" id="dmClr">✕ Xóa bộ lọc</button></aside><div class="dmmain">'+
-   '<div class="expb"><button class="pri" id="dmAdd">＋ Thêm dự án</button><button id="dmCb" style="border-color:#b91c1c;color:#b91c1c">🚩 Cảnh báo &amp; cần hoàn thiện</button><button id="dmUp">📤 Dự án mới từ B501/TT85</button><button id="dmDx">📝 Đề xuất CĐT trực thuộc</button><button id="dmXls">⬇ Xuất Excel</button>'+(o.toanBo?'<details class="mnu"><summary>⋯ Công cụ</summary><div class="mnub"><button id="dmDb">🔄 Cập nhật danh mục theo B501/TT85</button><button id="dmTong">⬇ Xuất danh mục tổng thể (đối chiếu B501/TT85)</button><button id="dmHt">⚠ Hoàn thiện dự án đã phát sinh giải ngân</button><button id="dmBulk">Gán phân loại hàng loạt</button></div></details>':'<details class="mnu"><summary>⋯ Công cụ</summary><div class="mnub"><button id="dmHt">⚠ Hoàn thiện dự án đã phát sinh giải ngân</button><button id="dmBulk">Gán phân loại hàng loạt</button></div></details>')+'</div>'+
-   '<div id="dmH"></div><div id="dmW"></div><div id="dmD"></div><div id="dmU"></div>'+
-   '<div class="dmw"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư lớn</th><th>Chủ đầu tư trực thuộc</th>'+(o.toanBo?'<th>Phòng giao dịch</th>':'')+'<th>Tính chất dự án</th><th>Chương trình mục tiêu</th><th></th></tr></thead><tbody id="dmB1"></tbody></table></div><div class="dmp" id="dmP"></div></div></div>'+
+  var o=DM.opt;if(!DM.sub)DM.sub='tq';DM.loc.sach=true;
+  m.innerHTML='<h3 style="margin:0 0 4px">📁 Danh mục dự án</h3><p class="hint">'+(o.toanBo?'Cán bộ tổng hợp: xem, hoàn thiện và tra cứu <b>tất cả</b> mã dự án.':'Danh sách dự án của <b>'+esc(o.phamVi)+'</b>. Hoàn thiện chủ đầu tư và phân loại để số liệu vào đúng báo cáo.')+'</p>'+
+   '<div class="dst" id="dmTabs"></div><div id="dmBody"></div>'+
    DMC.map(function(c){return '<datalist id="dl_'+c[0]+'">'+(o[c[0]]||[]).map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist>'}).join('');
-  $('dmC').value=DM.loc.cdt;if($('dmB'))$('dmB').value=DM.loc.kbnn;DMC.forEach(function(c){m.querySelector('select[data-f="'+c[0]+'"]').value=DM.loc[c[0]]});
-  $('dmClr').onclick=function(){DM.loc.tim='';DM.loc.cdt='';if(o.toanBo)DM.loc.kbnn='';DMC.forEach(function(c){DM.loc[c[0]]=''});DM.trang=0;drawDm()};
-  var tm;$('dmQ').oninput=function(){clearTimeout(tm);var v=this.value;tm=setTimeout(function(){DM.loc.tim=v;DM.trang=0;dmLoad()},350)};
-  $('dmC').onchange=function(){DM.loc.cdt=this.value;DM.trang=0;dmLoad()};if($('dmB'))$('dmB').onchange=function(){DM.loc.kbnn=this.value;DM.trang=0;dmLoad();if(DM.moHT)dmDrawHt();if(DM.moCb)dmDrawCb()};
-  [].forEach.call(m.querySelectorAll('select[data-f]'),function(e){e.onchange=function(){DM.loc[e.getAttribute('data-f')]=e.value;DM.trang=0;dmLoad()}});
+  dmSub();
+}
+function dmSub(){var o=DM.opt,T=[['tq','📊 Tổng quan'],['ht','🛠 Hoàn thiện dự án'],['tc','🔎 Tra cứu danh mục']];
+  $('dmTabs').innerHTML=T.map(function(t){return '<button class="pill'+(DM.sub===t[0]?' on':'')+'" data-ds="'+t[0]+'">'+t[1]+(t[0]==='ht'&&DM.cb?' <span class="cbn">'+DM.cb.tong+'</span>':'')+'</button>'}).join('');
+  $('dmTabs').onclick=function(e){var b=e.target.closest('[data-ds]');if(!b)return;DM.sub=b.getAttribute('data-ds');DM.seq++;dmSub()};
+  if(DM.sub==='tq')dmTqDraw();else if(DM.sub==='ht')dmHtDraw();else dmTcDraw()}
+// ---- Tổng quan ----
+function dmTqDraw(){var box=$('dmBody');box.innerHTML='<p class="hint">⏳ Đang tổng hợp...</p>';
+  var base={tim:'',cdt:'',kbnn:'',dac_thu:'',ctmt:'',ctmt_2630:''};
+  Promise.all([run('dmDs',S.token,base,0),run('dmCanhBao',S.token),run('dmupDs',S.token).catch(function(){return null})]).then(function(r){
+    if(DM.sub!=='tq'||S.tab!=='dm')return;var k=r[0].kpi||{},cb=r[1],up=r[2];DM.cb=cb;
+    var ng=function(l){return CB_NGAN[l]||l},cnt={};cb.rows.forEach(function(x){var s={};x.loai.forEach(function(l){var n=ng(l);if(!s[n]){s[n]=1;cnt[n]=(cnt[n]||0)+1}})});
+    var card=function(v,t,cls,go){return '<div'+(go?' class="dmgo" data-go="'+esc(go)+'"':'')+(cls?' style="'+cls+'"':'')+'><b>'+(v==null?'—':Number(v).toLocaleString('vi-VN'))+'</b><span>'+t+'</span></div>'};
+    var h='<div class="dmk">'+[card(k.tong,'Tổng số dự án trong danh mục'),card(k.dt,'Có tính chất dự án'),card(k.c1,'Thuộc chương trình mục tiêu'),card(k.them,'Đã sửa / thêm trên web')].join('')+'</div>'+
+     '<h4 style="margin:14px 0 6px">🛠 Cần hoàn thiện <small style="font-weight:400;color:var(--mut)">– các dự án này chưa hiện trong mục Tra cứu</small></h4><div class="dmk">'+
+     card(cb.tong,'Dự án đang cảnh báo','border-color:#fca5a5;background:#fff5f5','')+
+     Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).map(function(n){return card(cnt[n],esc(n),'','L:'+n)}).join('')+
+     (up&&up.tong?card(up.tong,'Dự án mới từ B501/TT85 chờ chọn','border-color:#93c5fd;background:#eff6ff','UP:'):'')+'</div>'+
+     '<p class="hint">Bấm vào một ô để mở danh sách tương ứng ở mục <b>Hoàn thiện dự án</b>. Sau khi hoàn thiện, dự án sẽ tự chuyển sang mục <b>Tra cứu danh mục</b>.</p>';
+    box.innerHTML=h;DM.sub==='tq'&&dmSubTabs();
+    box.onclick=function(e){var g=e.target.closest('[data-go]');if(!g)return;var v=g.getAttribute('data-go');DM.sub='ht';DM.cbL=v.indexOf('L:')===0?v.slice(2):'';if(v==='UP:')DM.moUp=true;dmSub()}
+  }).catch(function(e){box.innerHTML='<p class="hint" style="color:#b91c1c">'+esc(msg(e))+'</p>'})}
+function dmSubTabs(){var t=$('dmTabs');if(t&&DM.cb){var b=t.querySelector('[data-ds="ht"]');if(b&&!b.querySelector('.cbn'))b.insertAdjacentHTML('beforeend',' <span class="cbn">'+DM.cb.tong+'</span>')}}
+// ---- Hoàn thiện dự án ----
+function dmHtDraw(){var o=DM.opt,box=$('dmBody');
+  box.innerHTML='<div class="expb"><button class="pri" id="dmAdd">＋ Thêm dự án</button><button id="dmUp">📤 Dự án mới từ B501/TT85</button><button id="dmDx">📝 Đề xuất CĐT trực thuộc</button><button id="dmHt">⚠ Dự án phát sinh giải ngân chưa vào báo cáo</button>'+(o.toanBo?'<details class="mnu"><summary>⋯ Công cụ</summary><div class="mnub"><button id="dmDb">🔄 Cập nhật danh mục theo B501/TT85</button><button id="dmTong">⬇ Xuất danh mục tổng thể (đối chiếu B501/TT85)</button></div></details>':'')+'</div>'+
+   (o.toanBo?'<div class="expb" style="margin-top:-4px"><label>Phòng giao dịch:<select id="dmB">'+dmOpts(o.kbnn,'Tất cả')+'</select></label></div>':'')+
+   '<div id="dmU"></div><div id="dmD"></div><div id="dmH"></div><div id="dmW"></div>';
+  if($('dmB')){$('dmB').value=DM.loc.kbnn;$('dmB').onchange=function(){DM.loc.kbnn=this.value;if(DM.moHT)dmDrawHt();dmDrawCb()}}
   $('dmAdd').onclick=function(){dmForm(null)};
   if($('dmDb'))$('dmDb').onclick=function(){var b=this;b.disabled=true;run('dmDongBo',S.token,false).then(function(k){b.disabled=false;
     if(!confirm('Cập nhật danh mục dự án theo B501 + TT85 (chỉ giữ dự án có số liệu):\n• Giữ '+k.giu+' dự án hiện có\n• XÓA '+k.xoa+' dự án không có số liệu ở B501/TT85\n• Thêm mới '+k.them+' dự án\n• Đổi tên '+k.doiTen+' dự án theo B501\n• Đổi phòng giao dịch '+k.doiKbnn+' dự án theo mã kho bạc\nChủ đầu tư, tính chất, chương trình mục tiêu của dự án giữ lại được giữ nguyên. Đã có bản sao lưu.\n\nĐồng ý ghi?'))return;
     b.disabled=true;return run('dmDongBo',S.token,true).then(function(r){b.disabled=false;toast('Đã cập nhật: giữ '+r.giu+', xóa '+r.xoa+', thêm '+r.them+', đổi tên '+r.doiTen+', đổi phòng GD '+r.doiKbnn+'.',9000);DM.ht=null;DM.cb=null;dmLoad()})}).catch(function(e){b.disabled=false;toast(msg(e),8000)})};
-  if($('dmTen'))$('dmTen').onclick=function(){var b=this;b.disabled=true;run('dmTenCoSan',S.token,false).then(function(k){b.disabled=false;
-    if(!confirm('Cập nhật danh mục dự án theo B501:\n• Đổi tên '+k.soDoiTen+' dự án (độ giống từ 60% trở lên)\n• Thêm '+k.soThem+' dự án chưa có trong danh mục (chưa có chủ đầu tư)\n• Giữ nguyên '+k.soGiu+' dự án độ giống thấp để rà soát\n• '+k.soKhop+' dự án tên đã khớp\n\nĐồng ý ghi?'))return;
-    b.disabled=true;return run('dmTenCoSan',S.token,true).then(function(r){b.disabled=false;toast('Đã đổi tên '+r.daDoi+' dự án, thêm mới '+r.daThem+' dự án.',8000);DM.ht=null;DM.cb=null;dmLoad()})}).catch(function(e){b.disabled=false;toast(msg(e),8000)})};
+  if($('dmTong'))$('dmTong').onclick=function(){var b=this;xuat(function(){return run('dmXuatDeXuat',S.token)},b,'xlsx')};
   $('dmHt').onclick=function(){DM.moHT=!DM.moHT;if(DM.moHT&&!DM.ht){run('dmCanHT',S.token).then(function(r){DM.ht=r;dmDrawHt()}).catch(function(e){toast(msg(e),6000)})}else dmDrawHt()};
   $('dmUp').onclick=function(){DM.moUp=!DM.moUp;if(DM.moUp)dmUpLoad();else dmUpDraw()};
-  $('dmBulk').onclick=dmBulk;Array.prototype.forEach.call(document.querySelectorAll('.mnub button'),function(x){x.addEventListener('click',function(){var d=x.closest('details');if(d)d.open=false})});
+  Array.prototype.forEach.call(document.querySelectorAll('.mnub button'),function(x){x.addEventListener('click',function(){var d=x.closest('details');if(d)d.open=false})});
   $('dmDx').onclick=function(){DM.moDx=!DM.moDx;dmDxDraw()};dmDxLoad();
-  $('dmCb').onclick=function(){DM.moCb=!DM.moCb;if(DM.moCb&&!DM.cb){run('dmCanhBao',S.token).then(function(r){DM.cb=r;dmDrawCb()}).catch(function(e){toast(msg(e),6000)})}else dmDrawCb()};
-  if($('dmTong'))$('dmTong').onclick=function(){var b=this;xuat(function(){return run('dmXuatDeXuat',S.token)},b,'xlsx')};
+  DM.moCb=true;if(DM.cb)dmDrawCb();else run('dmCanhBao',S.token).then(function(r){DM.cb=r;dmDrawCb();dmSubTabs()}).catch(function(e){toast(msg(e),6000)});
+  if(DM.moUp)dmUpLoad();if(DM.moHT)dmDrawHt()}
+// ---- Tra cứu danh mục ----
+function dmTcDraw(){var o=DM.opt,box=$('dmBody');
+  box.innerHTML='<p class="hint" style="margin:0 0 8px">Tra cứu theo chủ đầu tư, phòng giao dịch, tính chất, chương trình mục tiêu... Dự án <b>đang cảnh báo cần hoàn thiện</b> chưa hiện ở đây – xử lý ở mục <b>Hoàn thiện dự án</b>.</p>'+
+   '<div class="dmf"><input type="text" class="q" id="dmQ" placeholder="🔍 Tìm mã hoặc tên dự án..." value="'+esc(DM.loc.tim)+'">'+
+   '<select id="dmC">'+dmOpts(o.cdt,'Tất cả chủ đầu tư')+'</select>'+(o.toanBo?'<select id="dmB">'+dmOpts(o.kbnn,'Tất cả phòng giao dịch')+'</select>':'')+
+   DMC.map(function(c){return dmSelCol(c[0],c[1],o)}).join('')+'<button class="mini" id="dmClr">✕ Xóa lọc</button><button id="dmXls">⬇ Xuất Excel</button><button id="dmBulk">Gán phân loại hàng loạt</button></div>'+
+   '<div class="dmw"><table class="dmt"><thead><tr><th>Mã DA</th><th>Tên dự án</th><th>Chủ đầu tư lớn</th><th>Chủ đầu tư trực thuộc</th>'+(o.toanBo?'<th>Phòng giao dịch</th>':'')+'<th>Tính chất dự án</th><th>Chương trình mục tiêu</th><th></th></tr></thead><tbody id="dmB1"></tbody></table></div><div class="dmp" id="dmP"></div><div class="dmk" id="dmK" style="display:none"></div>';
+  $('dmC').value=DM.loc.cdt;if($('dmB'))$('dmB').value=DM.loc.kbnn;DMC.forEach(function(c){box.querySelector('select[data-f="'+c[0]+'"]').value=DM.loc[c[0]]});
+  $('dmClr').onclick=function(){DM.loc.tim='';DM.loc.cdt='';if(o.toanBo)DM.loc.kbnn='';DMC.forEach(function(c){DM.loc[c[0]]=''});DM.trang=0;dmTcDraw()};
+  var tm;$('dmQ').oninput=function(){clearTimeout(tm);var v=this.value;tm=setTimeout(function(){DM.loc.tim=v;DM.trang=0;dmLoad()},350)};
+  $('dmC').onchange=function(){DM.loc.cdt=this.value;DM.trang=0;dmLoad()};if($('dmB'))$('dmB').onchange=function(){DM.loc.kbnn=this.value;DM.trang=0;dmLoad()};
+  [].forEach.call(box.querySelectorAll('select[data-f]'),function(e){e.onchange=function(){DM.loc[e.getAttribute('data-f')]=e.value;DM.trang=0;dmLoad()}});
+  $('dmBulk').onclick=dmBulk;
   $('dmXls').onclick=function(){var b=this;xuat(function(){return run('dmXuat',S.token,DM.loc)},b,'xlsx')};
   $('dmB1').onchange=function(e){var i=e.target,dt=i.closest&&i.closest('details[data-ct]');
     if(dt){var ma0=i.closest('tr').getAttribute('data-ma'),val=dmCtVal(dt);run('dmSua',S.token,ma0,{ctmt:val}).then(function(){dt.querySelector('summary').textContent=val?val.replace(/\+/g,', '):'—';toast('Đã lưu – '+ma0)}).catch(function(er){toast(msg(er),6000);i.checked=!i.checked});return}
@@ -988,11 +1016,10 @@ function drawDm(){
     run('dmSua',S.token,ma,rec).then(function(){i.classList.add('sua');toast('Đã lưu – '+ma)}).catch(function(er){toast(msg(er),6000);var r=(DM.d.rows.filter(function(x){return x.ma_da===ma})[0])||{};i.value=r[f]||''})};
   $('dmB1').onclick=function(e){var b=e.target.closest('[data-sua]');if(!b)return;dmForm(DM.d.rows.filter(function(x){return x.ma_da===b.getAttribute('data-sua')})[0])};
   $('dmP').onclick=function(e){var b=e.target.closest('[data-pg]');if(!b)return;DM.trang=+b.getAttribute('data-pg');dmLoad()};
-  dmLoad();if(DM.moHT)dmDrawHt();if(DM.moCb)dmDrawCb();
-}
-function dmLoad(){var sq=++DM.seq;run('dmDs',S.token,DM.loc,DM.trang).then(function(d){if(sq!==DM.seq||S.tab!=='dm')return;DM.d=d;dmDrawRows()}).catch(function(e){toast(msg(e),6000)})}
-function dmDrawRows(){var d=DM.d,o=DM.opt,k=d.kpi||{};
-  $('dmK').innerHTML=[['Tổng số dự án',k.tong],['Có tính chất dự án',k.dt],['Thuộc chương trình mục tiêu',k.c1],['Đã sửa / thêm trên web',k.them]].map(function(x){return '<div><b>'+(x[1]==null?'—':Number(x[1]).toLocaleString('vi-VN'))+'</b><span>'+x[0]+'</span></div>'}).join('');
+  dmLoad()}
+function dmLoad(){if(!$('dmB1'))return;var sq=++DM.seq;run('dmDs',S.token,DM.loc,DM.trang).then(function(d){if(sq!==DM.seq||S.tab!=='dm')return;DM.d=d;dmDrawRows()}).catch(function(e){toast(msg(e),6000)})}
+function dmDrawRows(){if(!$('dmB1'))return;var d=DM.d,o=DM.opt,k=d.kpi||{};
+  if(false)$('dmK').innerHTML=[['Tổng số dự án',k.tong],['Có tính chất dự án',k.dt],['Thuộc chương trình mục tiêu',k.c1],['Đã sửa / thêm trên web',k.them]].map(function(x){return '<div><b>'+(x[1]==null?'—':Number(x[1]).toLocaleString('vi-VN'))+'</b><span>'+x[0]+'</span></div>'}).join('');
   $('dmB1').innerHTML=d.rows.map(function(r){return '<tr data-ma="'+esc(r.ma_da)+'"><td><b>'+esc(r.ma_da)+'</b></td><td class="ten">'+esc(r.ten_da)+(r.them_tay?' <small>(thêm tay)</small>':'')+'</td><td>'+esc(r.cdt2||r.cdt)+'</td><td>'+(r.cdt2&&r.cdt!==r.cdt2?esc(r.cdt):'<span style="color:var(--mut)">—</span>')+dmDxTag(r.ma_da)+'</td>'+(o.toanBo?'<td>'+esc(r.kbnn)+'</td>':'')+
     DMC.map(function(c){return '<td>'+(c[0]==='ctmt'?dmCt(DM.opt,r.ctmt):dmSel(DM.opt,c[0],'',r[c[0]],r.sua_tay&&r[c[0]]?'sua':''))+'</td>'}).join('')+'<td><button data-sua="'+esc(r.ma_da)+'">Sửa</button></td></tr>'}).join('')||'<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--mut)">Không có dự án nào phù hợp.</td></tr>';
   var n=Math.max(1,Math.ceil(d.tong/d.per)),t=d.trang;
@@ -1105,7 +1132,7 @@ function dmDrawCb(){var box=$('dmW');if(!box)return;if(!DM.moCb||!DM.cb){box.inn
   base.forEach(function(x){var s={};x.loai.forEach(function(l){var k=ng(l);if(!s[k]){s[k]=1;cnt[k]=(cnt[k]||0)+1}})});
   var ds=base.filter(function(x){return !DM.cbL||x.loai.some(function(l){return ng(l)===DM.cbL})}),MAX=100;
   var ch='<button class="cbp'+(!DM.cbL?' on':'')+'" data-cl="">Tất cả ('+base.length+')</button>'+Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).map(function(k){return '<button class="cbp'+(DM.cbL===k?' on':'')+'" data-cl="'+esc(k)+'">'+esc(k)+' ('+cnt[k]+')</button>'}).join('');
-  box.innerHTML='<div class="cbx"><div class="cbh"><b>Dự án cần hoàn thiện</b><span>'+c.tong+' dự án</span><button class="mini" data-cx="1">Đóng</button></div><div class="cbf">'+ch+'</div>'+(DM.cbL&&CB_MOTA[DM.cbL]?'<p class="hint" style="margin:0 2px 8px">'+esc(CB_MOTA[DM.cbL])+'</p>':'')+
+  box.innerHTML='<div class="cbx"><div class="cbh"><b>Dự án cần hoàn thiện</b><span>'+c.tong+' dự án</span></div><div class="cbf">'+ch+'</div>'+(DM.cbL&&CB_MOTA[DM.cbL]?'<p class="hint" style="margin:0 2px 8px">'+esc(CB_MOTA[DM.cbL])+'</p>':'')+
    (ds.length?'<div class="dmw" style="max-height:320px"><table class="dmt cbt"><thead><tr><th style="width:84px">Mã DA</th><th>Tên dự án</th><th style="width:230px">Cần sửa</th><th style="width:56px"></th></tr></thead><tbody>'+ds.slice(0,MAX).map(function(x){var tg={};x.loai.forEach(function(l){tg[ng(l)]=1});return '<tr><td>'+esc(x.ma_da)+'</td><td class="ten" title="'+esc((x.ten_da||'')+' — '+(x.cdt2||x.cdt||'chưa có CĐT')+' — '+(x.kbnn||'chưa có phòng'))+'">'+esc(x.ten_da||'(trống)')+(x.ly_do&&tg['Tên B501 khác TT85']?'<br><small style="color:#b45309">'+esc(x.ly_do)+'</small>':'')+'</td><td>'+Object.keys(tg).map(function(k){return '<span class="cbg">'+esc(k)+'</span>'}).join('')+'</td><td><button class="mini pri" data-cs="'+esc(x.ma_da)+'">Sửa</button></td></tr>'}).join('')+'</tbody></table></div>'+(ds.length>MAX?'<p class="hint" style="margin:6px 2px 0">Hiện '+MAX+' / '+ds.length+' dự án đầu tiên. Chọn một loại ở trên để thu hẹp.</p>':''):'<p class="hint" style="margin:8px 2px">✓ Không có dự án nào cần hoàn thiện.</p>')+'</div>';
   box.onclick=function(e){if(e.target.closest('[data-cx]')){DM.moCb=false;dmDrawCb();return}
     var f=e.target.closest('[data-cl]');if(f){DM.cbL=f.getAttribute('data-cl');dmDrawCb();return}

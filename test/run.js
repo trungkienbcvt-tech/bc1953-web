@@ -194,6 +194,10 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         const kq = await UP.quyet(th, [chiB], true); assert.strictEqual(kq.them, 1); const ct = got.filter((g) => g[0] === 'cv_dm_them_moi').pop(); assert.strictEqual(ct[1].p_rows[0].m, chiB);
         M.api.goi = sv3;
       }
+      {
+        const sv4 = M.api.goi; M.api.goi = async (fn) => { if (fn === 'cv_dm_ds') return { kpi: {}, tong: 2, rows: [['111', 'A', mauT, mauT, 'Phòng giao dịch số 20', '', '', '', false, false, null, null, ''], ['222', 'B', mauT, mauT, 'Phòng giao dịch số 20', '', '', '', false, false, null, null, '']] }; if (fn === 'cv_dm_canh_bao') return { tong: 1, nhom: {}, rows: [['222', 'B', mauT, mauT, 'Phòng giao dịch số 20', ['Thiếu tên dự án'], '']] }; if (fn === 'cv_dm_ban_do') return []; return { ok: 1 }; };
+        const r = await M.dmDs(th, { sach: true }, 0); assert.strictEqual(r.tong, 1); assert.strictEqual(r.rows[0].ma_da, '111'); M.api.goi = sv4;
+      }
       let goi2; M.api.goi = async (fn, b) => { goi2 = [fn, b]; return { giu: 1 }; }; await M.dmDongBo(th, false); assert.strictEqual(goi2[0], 'cv_dm_dong_bo'); assert.strictEqual(goi2[1].p_ghi, false); assert(goi2[1].p_rows.length > 4000); M.api.goi = sv;
     }
     {
