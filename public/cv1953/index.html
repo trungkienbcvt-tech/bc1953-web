@@ -344,6 +344,11 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kt tr.bt-t td{top:var(--k2,76px)!important;z-index:2}.kt tr.bt-t td:nth-child(1),.kt tr.bt-t td:nth-child(2){z-index:3}
 .kpv{flex-wrap:wrap}.kpv .kph{flex-basis:100%;margin:2px 0 0;color:var(--mut);font-size:12.5px}
 .kt tr.kxl td.kl small{font-weight:400}.kt tr.kedit td.kl{color:#92400e}.kt tr.tagd td.kl{color:#92400e}
+.hm{max-width:1200px}.hmh{padding:12px 22px}.hmh h2{font-size:19px;margin:0 0 2px}.hmh p{font-size:14px}.hmh .hmq{margin:3px 0 0!important;font-size:13px}.hmh .hmd{padding:6px 14px}.hmh .hmd b{font-size:16px}
+.hms{margin:12px 0 6px;font-size:14px}.hmk{padding:8px 14px;gap:12px}.hmk .ic{font-size:20px}
+.hmg{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hmg a,.hmg button.t{display:flex;align-items:center;gap:12px;padding:10px 14px}.hmg .ic{font-size:24px;margin:0}
+.hmpr{padding:6px 12px;margin:0 0 8px}.hmpt{margin-bottom:4px;font-size:14px}.hmbar{height:8px}.hmnote{padding:8px 14px;margin:8px 0 0}.hmnt{font-size:14px}
 </style>
 <script>try{if(localStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
@@ -596,22 +601,20 @@ function drawHome(){
     }
     var han=wf&&wf.hanMs&&wf.hanMs.pgd?'<div class="hmd"><small>Hạn gửi báo cáo kỳ '+esc(wf.ky)+'</small><b>'+esc(wf.hanHienThi.pgd)+'</b> '+cd(wf.hanMs.pgd,pg&&me&&['Chưa gửi','Bị trả lại'].indexOf(me.tt)<0)+'</div>':(wf?'<div class="hmd"><small>Kỳ báo cáo</small><b>'+esc(wf.ky)+'</b><small>Chưa đặt hạn</small></div>':'');
     var who=(S.info.hoten||S.ten),role=pg?(S.info.cvTen||'')+' · '+esc(S.info.donvi||S.ten):(S.vt==='TH'?'Cán bộ tổng hợp toàn tỉnh':'Phòng Nghiệp vụ 2');
-    var tl=function(ic,t,sub,attr){return '<'+(attr.href?'a href="'+attr.href+'"'+(attr.ext?' target="_blank" rel="noopener"':''):'button class="t" data-hg="'+attr.tab+'"')+'><span class="ic">'+ic+'</span><b>'+t+'</b><span class="s">'+sub+'</span></'+(attr.href?'a':'button')+'>'};
+    var tl=function(ic,t,sub,attr){return '<'+(attr.href?'a href="'+attr.href+'"'+(attr.ext?' target="_blank" rel="noopener"':''):'button class="t" data-hg="'+attr.tab+'"')+'><span class="ic">'+ic+'</span><div><b>'+t+'</b><span class="s">'+sub+'</span></div></'+(attr.href?'a':'button')+'>'};
     var hr=new Date().getHours(),chao=hr<11?'Chào buổi sáng':(hr<13?'Chào buổi trưa':(hr<18?'Chào buổi chiều':'Chào buổi tối')),
      LN=['Danh mục dự án đầy đủ, chính xác là nền để báo cáo ra số liệu đúng ngay từ đầu.','Mỗi dự án có cán bộ chuyên quản rõ ràng thì việc đối chiếu, giải trình nhanh hơn rất nhiều.','Làm đều từng chút: mỗi ngày hoàn thiện thêm vài dự án, cuối kỳ sẽ nhẹ nhàng.','Số liệu đúng, nộp đúng hạn – cảm ơn anh/chị đã giữ nhịp báo cáo của đơn vị.','Có vướng mắc về danh mục hoặc số liệu, cứ liên hệ cán bộ tổng hợp để được hỗ trợ.','Cuối tuần là lúc rà lại các dự án còn thiếu thông tin – chuẩn bị tốt cho kỳ báo cáo tới.','Chúc anh/chị một ngày làm việc hiệu quả.'],
      msg0=LN[new Date().getDay()%LN.length];
-    var h='<div class="hm"><div class="hmh"><div><h2>'+chao+', '+esc(who)+'</h2><p>'+role+'</p><p class="hmq">'+esc(msg0)+'</p></div>'+han+'</div>'+
+    var h='<div class="hm"><div class="hmh"><div><h2>'+chao+(S.info.hoten?', '+esc(S.info.hoten):'')+'</h2><p>'+role+'</p><p class="hmq">'+esc(msg0)+'</p></div>'+han+'</div>'+
       '<div id="hmTb"></div><div class="hms">📌 Việc cần làm</div><div class="hmt" id="hmT">'+tasks.join('')+'</div>'+
       '<div class="hms">🗂 Danh mục dùng chung <small>– làm trước, báo cáo sẽ khớp ngay từ đầu</small></div><div id="hmPr"></div><div class="hmg">'+
       tl('👤','Cán bộ chuyên quản','Khai báo cán bộ phụ trách của phòng',{tab:'cbq'})+
       tl('🏢','Danh mục chủ đầu tư','Chủ đầu tư lớn và đơn vị trực thuộc',{tab:'cdt'})+
       tl('📁','Danh mục dự án','Phân công, hoàn thiện, tra cứu, xuất Excel',{tab:'dm'})+
       '</div>'+
-      '<div class="hms">📊 Báo cáo</div><div class="hmg">'+
+      '<div class="hms">📊 Báo cáo và tra cứu</div><div class="hmg">'+
       tl('📑','Báo cáo CV 1953','Tổng quan và 4 biểu giải ngân',{tab:'tq'})+
       tl('🎯','Báo cáo đánh giá KPI','Số liệu, xác nhận, đối chiếu THBC',{tab:'kpi'})+
-      '</div>'+
-      '<div class="hms">🔗 Ứng dụng khác</div><div class="hmg">'+
       tl('🏛️','TCKB+','Ứng dụng tra cứu Kho bạc',{href:'https://tckb-kbviii.vercel.app/',ext:1})+
       '</div></div>';
     main.innerHTML=h;
