@@ -344,6 +344,11 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .kt tr.bt-t td{top:var(--k2,76px)!important;z-index:2}.kt tr.bt-t td:nth-child(1),.kt tr.bt-t td:nth-child(2){z-index:3}
 .kpv{flex-wrap:wrap}.kpv .kph{flex-basis:100%;margin:2px 0 0;color:var(--mut);font-size:12.5px}
 .kt tr.kxl td.kl small{font-weight:400}.kt tr.kedit td.kl{color:#92400e}.kt tr.tagd td.kl{color:#92400e}
+.hmh{background:linear-gradient(120deg,#fff4cc,#ffe2a8)!important;color:#5b3a06!important;box-shadow:0 4px 14px rgba(0,0,0,.08)!important;justify-content:flex-start}.hmh.t{background:linear-gradient(120deg,#e0f2fe,#bae6fd)!important;color:#0c4a6e!important}.hmh.c{background:linear-gradient(120deg,#ffe8d2,#fdba8c)!important;color:#7c2d12!important}.hmh.o{background:linear-gradient(120deg,#1e2a4a,#3b3f7a)!important;color:#e0e7ff!important}
+.hmh h2{color:inherit!important}.hmh .gt{flex:1}.hmh .gi{font-size:40px;animation:flt 3.2s ease-in-out infinite}@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.hmh .hmd{background:rgba(255,255,255,.6);color:inherit;display:flex;align-items:center;gap:10px;text-align:left;margin-left:auto}.hmh.o .hmd{background:rgba(255,255,255,.14)}.hmh .hmd small{display:block}
+.clk{font-size:30px;display:inline-block;transform-origin:50% 60%;animation:rung 2.8s ease-in-out infinite}@keyframes rung{0%,40%,100%{transform:rotate(0)}5%,15%,25%,35%{transform:rotate(-16deg)}10%,20%,30%{transform:rotate(16deg)}}
+.hmq a{text-decoration:none;color:inherit;opacity:.7;margin-left:4px}.hmlh{display:flex;align-items:center;gap:10px;margin:10px 0 0;padding:8px 14px;border:1px dashed #cbd5e1;border-radius:12px;font-size:14px;background:#fff}.hmlh>div{flex:1}.hmlh .ic{font-size:20px}.hmlt{color:#334155}
 .hm{max-width:1200px}.hmh{padding:12px 22px}.hmh h2{font-size:19px;margin:0 0 2px}.hmh p{font-size:14px}.hmh .hmq{margin:3px 0 0!important;font-size:13px}.hmh .hmd{padding:6px 14px}.hmh .hmd b{font-size:16px}
 .hms{margin:12px 0 6px;font-size:14px}.hmk{padding:8px 14px;gap:12px}.hmk .ic{font-size:20px}
 .hmg{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -599,13 +604,14 @@ function drawHome(){
       if(chua)T(late?'r':'i','📤',chua+' phòng chưa gửi báo cáo',late?late+' phòng đã quá hạn / gửi chậm':'Theo dõi tiến độ gửi','Theo dõi','tq');
       if(!cho&&!chua)T('g','✓','Tất cả '+L.length+' phòng đã gửi báo cáo','Không có việc nào đang chờ','Tổng quan','tq');
     }
-    var han=wf&&wf.hanMs&&wf.hanMs.pgd?'<div class="hmd"><small>Hạn gửi báo cáo kỳ '+esc(wf.ky)+'</small><b>'+esc(wf.hanHienThi.pgd)+'</b> '+cd(wf.hanMs.pgd,pg&&me&&['Chưa gửi','Bị trả lại'].indexOf(me.tt)<0)+'</div>':(wf?'<div class="hmd"><small>Kỳ báo cáo</small><b>'+esc(wf.ky)+'</b><small>Chưa đặt hạn</small></div>':'');
+    var han=wf&&wf.hanMs&&wf.hanMs.pgd?'<div class="hmd"><span class="clk">⏰</span><div><small>Hạn gửi báo cáo kỳ '+esc(wf.ky)+'</small><b>'+esc(wf.hanHienThi.pgd)+'</b> '+cd(wf.hanMs.pgd,pg&&me&&['Chưa gửi','Bị trả lại'].indexOf(me.tt)<0)+'</div></div>':(wf?'<div class="hmd"><span class="clk">⏰</span><div><small>Kỳ báo cáo</small><b>'+esc(wf.ky)+'</b><small>Chưa đặt hạn</small></div></div>':'');
     var who=(S.info.hoten||S.ten),role=pg?(S.info.cvTen||'')+' · '+esc(S.info.donvi||S.ten):(S.vt==='TH'?'Cán bộ tổng hợp toàn tỉnh':'Phòng Nghiệp vụ 2');
     var tl=function(ic,t,sub,attr){return '<'+(attr.href?'a href="'+attr.href+'"'+(attr.ext?' target="_blank" rel="noopener"':''):'button class="t" data-hg="'+attr.tab+'"')+'><span class="ic">'+ic+'</span><div><b>'+t+'</b><span class="s">'+sub+'</span></div></'+(attr.href?'a':'button')+'>'};
     var hr=new Date().getHours(),chao=hr<11?'Chào buổi sáng':(hr<13?'Chào buổi trưa':(hr<18?'Chào buổi chiều':'Chào buổi tối')),
-     LN=['Danh mục dự án đầy đủ, chính xác là nền để báo cáo ra số liệu đúng ngay từ đầu.','Mỗi dự án có cán bộ chuyên quản rõ ràng thì việc đối chiếu, giải trình nhanh hơn rất nhiều.','Làm đều từng chút: mỗi ngày hoàn thiện thêm vài dự án, cuối kỳ sẽ nhẹ nhàng.','Số liệu đúng, nộp đúng hạn – cảm ơn anh/chị đã giữ nhịp báo cáo của đơn vị.','Có vướng mắc về danh mục hoặc số liệu, cứ liên hệ cán bộ tổng hợp để được hỗ trợ.','Cuối tuần là lúc rà lại các dự án còn thiếu thông tin – chuẩn bị tốt cho kỳ báo cáo tới.','Chúc anh/chị một ngày làm việc hiệu quả.'],
-     msg0=LN[new Date().getDay()%LN.length];
-    var h='<div class="hm"><div class="hmh"><div><h2>'+chao+(S.info.hoten?', '+esc(S.info.hoten):'')+'</h2><p>'+role+'</p><p class="hmq">'+esc(msg0)+'</p></div>'+han+'</div>'+
+     th=hr<11?['m','🌅']:(hr<13?['t','☀️']:(hr<18?['c','🌤️']:['o','🌙'])),
+     LN=['Việc lớn bắt đầu từ những việc nhỏ làm đều mỗi ngày.','Số liệu chính xác hôm nay là sự yên tâm của cả đơn vị ngày mai.','Cẩn thận từng con số, vì sau mỗi con số là một công trình, một niềm tin.','Làm ngay một dự án hôm nay, nhẹ đi một dự án cho cuối kỳ.','Kiên trì từng chút, danh mục đầy đủ sẽ đến.','Đồng nghiệp cùng nhịp, báo cáo cùng vui.','Có công mài sắt, có ngày nên kim.','Một giờ rà soát kỹ, tiết kiệm cả ngày sửa sai.','Gọn gàng hôm nay, thong thả cuối tháng.','Mỗi dự án hoàn thiện là thêm một viên gạch cho báo cáo chuẩn.','Đừng đợi hết hạn mới bắt đầu – đi trước một bước, nhẹ hơn một chặng.','Chính xác là phẩm chất, đúng hạn là cam kết.','Tin tưởng vào quy trình, tập trung vào từng bước nhỏ.','Hôm nay làm tốt hơn hôm qua một chút là đủ.','Cùng nhau chia nhỏ việc lớn, việc khó cũng thành dễ.','Nghỉ tay một chút, uống ngụm nước rồi làm tiếp nhé.','Cảm ơn sự cẩn trọng của anh/chị – nhờ đó số liệu của tỉnh đáng tin cậy.','Mỗi ngày một ít, cuối kỳ sẽ nhẹ nhàng.','Gặp vướng mắc cứ hỏi, đừng ngại – hỏi sớm là tiết kiệm thời gian.','Chúc anh/chị một ngày làm việc hiệu quả.'],
+     msg0=LN[(Math.floor(Date.now()/864e5)+(S._qo||0))%LN.length];
+    var h='<div class="hm"><div class="hmh '+th[0]+'"><span class="gi">'+th[1]+'</span><div class="gt"><h2>'+chao+(S.info.hoten?', '+esc(S.info.hoten):'')+'</h2><p>'+role+'</p><p class="hmq">'+esc(msg0)+' <a href="#" id="hmQ" title="Câu khác">↻</a></p></div>'+han+'</div>'+
       '<div id="hmTb"></div><div class="hms">📌 Việc cần làm</div><div class="hmt" id="hmT">'+tasks.join('')+'</div>'+
       '<div class="hms">🗂 Danh mục dùng chung <small>– làm trước, báo cáo sẽ khớp ngay từ đầu</small></div><div id="hmPr"></div><div class="hmg">'+
       tl('👤','Cán bộ chuyên quản','Khai báo cán bộ phụ trách của phòng',{tab:'cbq'})+
@@ -616,9 +622,9 @@ function drawHome(){
       tl('📑','Báo cáo CV 1953','Tổng quan và 4 biểu giải ngân',{tab:'tq'})+
       tl('🎯','Báo cáo đánh giá KPI','Số liệu, xác nhận, đối chiếu THBC',{tab:'kpi'})+
       tl('🏛️','TCKB+','Ứng dụng tra cứu Kho bạc',{href:'https://tckb-kbviii.vercel.app/',ext:1})+
-      '</div></div>';
-    main.innerHTML=h;
-    if(!S._hm||Date.now()-S._hm.t>20000){S._hm={t:Date.now()};run('dmTienDo',S.token).then(function(d){S._hm.pr=d;hmFill()}).catch(function(){});run('tbLay',S.token).then(function(d){S._hm.tb=d;hmFill()}).catch(function(){})}else hmFill();
+      '</div><div id="hmLh"></div></div>';
+    main.innerHTML=h;if($('hmQ'))$('hmQ').onclick=function(e){e.preventDefault();S._qo=(S._qo||0)+1;go()};
+    if(!S._hm||Date.now()-S._hm.t>20000){S._hm={t:Date.now()};run('dmTienDo',S.token).then(function(d){S._hm.pr=d;hmFill()}).catch(function(){});run('tbLay',S.token).then(function(d){S._hm.tb=d;hmFill()}).catch(function(){});run('lhLay',S.token).then(function(d){S._hm.lh=d;hmFill()}).catch(function(){})}else hmFill();
     [].forEach.call(main.querySelectorAll('[data-hg]'),function(b){b.onclick=function(){show(b.getAttribute('data-hg'))}});tick()};
   go();
   if(Date.now()-(S.tqAt||0)>=25000||!S.wf)run('trangThai',S.token,S.ky).then(function(d){S.wf=d;S.tqAt=Date.now();nbDuyet();if(S.tab==='home')go()}).catch(function(){})}
@@ -628,7 +634,10 @@ function hmFill(){var H=S._hm;if(!H||S.tab!=='home')return;var pr=$('hmPr'),tb=$
       tk.insertAdjacentHTML('afterbegin','<div class="hmk u hmdm"><span class="ic">📁</span><div><b>'+a[1]+'</b><span class="s">'+a[2]+'</span></div><button class="pri mini" data-dm="'+a[0]+'">Làm ngay</button></div>');
       tk.querySelector('[data-dm]').onclick=function(){DM.cbG=this.getAttribute('data-dm');DM.sub='ht';DM.cbL='';show('dm')}}}
   if(tb&&H.tb){var b=H.tb;tb.innerHTML=(b.text?'<div class="hmnote"><span class="ic">📢</span><div><b>Thông báo</b><div class="hmnt">'+esc(b.text).replace(/\n/g,'<br>')+'</div><small>'+esc(b.nguoi)+' · '+new Date(b.luc).toLocaleDateString('vi-VN')+'</small></div>'+(b.sua?'<button class="mini" id="tbSua">Sửa</button>':'')+'</div>':(b.sua?'<div class="hmnote" style="background:#f8fafc"><span class="ic">📢</span><div><b>Thông báo chung</b><div class="hmnt" style="color:#64748b">Chưa có thông báo. Đăng thông báo để các phòng thấy ngay ở trang chủ.</div></div><button class="mini" id="tbSua">Đăng thông báo</button></div>':''));
-    var sb=$('tbSua');if(sb)sb.onclick=function(){var v=prompt('Nội dung thông báo gửi các phòng (để trống để gỡ thông báo):',b.text||'');if(v===null)return;run('tbGhi',S.token,v).then(function(){S._hm=null;toast('Đã cập nhật thông báo',2500);show('home')}).catch(function(e){toast(msg(e),6000)})}}}
+    var sb=$('tbSua');if(sb)sb.onclick=function(){hmEdit('Thông báo gửi các phòng','Để trống để gỡ thông báo. Tối đa 600 ký tự.',b.text||'','tbGhi')}}
+  var lh=$('hmLh');if(lh&&H.lh&&(H.lh.text||H.lh.sua)){lh.innerHTML='<div class="hmlh"><span class="ic">☎️</span><div><b>Liên hệ hỗ trợ</b> '+(H.lh.text?'<span class="hmlt">'+esc(H.lh.text).replace(/\n/g,' &nbsp;·&nbsp; ')+'</span>':'<span class="hmlt" style="color:#64748b">Chưa có thông tin liên hệ.</span>')+'</div>'+(H.lh.sua?'<button class="mini" id="lhSua">'+(H.lh.text?'Sửa':'Thêm liên hệ')+'</button>':'')+'</div>';var ls=$('lhSua');if(ls)ls.onclick=function(){hmEdit('Liên hệ hỗ trợ','Mỗi dòng một liên hệ, ví dụ: Chuyên viên THBC – Nguyễn Văn A – 0912 345 678. Tối đa 500 ký tự.',H.lh.text||'','lhGhi')}}}
+function hmEdit(ti,hint,cur,fn){var b=$('mbox');b.className='box';b.innerHTML='<div class="fxw"><button type="button" id="fX" aria-label="Đóng">✕</button></div><h3 class="fh">'+esc(ti)+'</h3><p class="fnote" style="margin-top:0">'+esc(hint)+'</p><textarea id="hmTx" rows="5" style="width:100%">'+esc(cur)+'</textarea><div id="fErr" style="color:#b91c1c;font-size:14px;min-height:20px"></div><div style="display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">Lưu</button></div>';$('modal').style.display='flex';var dong=function(){$('modal').style.display='none'};$('fNo').onclick=dong;$('fX').onclick=dong;$('hmTx').focus();
+  $('fOk').onclick=function(){var bt=this;bt.disabled=true;run(fn,S.token,$('hmTx').value).then(function(){dong();S._hm=null;toast('Đã lưu',2500);show('home')}).catch(function(e){bt.disabled=false;$('fErr').textContent=msg(e)})}}
 function drawTq(){
   var render=function(){var wf=S.wf,t=S.tt;if(!wf||!t)return;S.off=wf.nowMs-Date.now();$('main').innerHTML=(S.tab==='qt'?drawQt(wf,t):(S.vt==='PGD'?drawPgd(wf,t):drawViewer(wf,t)));bindTq();bindDc();tick();dcLoad();btLoad();ttLoad();ttLoad()};
   render();
