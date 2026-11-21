@@ -964,7 +964,7 @@ function drawDm(){
   var m=$('main');
   if(!DM.opt){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh mục dự án...</p>';
     run('dmTuyChon',S.token).then(function(o){DM.opt=o;if(S.tab==='dm')drawDm()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
-  var o=DM.opt;if(!DM.sub)DM.sub='tq';DM.loc.sach=true;
+  var o=DM.opt;if(!DM.sub||DM.sub==='tq')DM.sub='ht';DM.loc.sach=true;
   m.innerHTML=pgHead('Danh mục dự án',(o.toanBo?'Xem, hoàn thiện và tra cứu <b>tất cả</b> mã dự án.':'Dự án của <b>'+esc(o.phamVi)+'</b>: phân công cán bộ chuyên quản, hoàn thiện thông tin, tra cứu và xuất Excel.'))+
    '<div class="dst" id="dmTabs"></div><div id="dmBody"></div>'+
    DMC.map(function(c){return '<datalist id="dl_'+c[0]+'">'+(o[c[0]]||[]).map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist>'}).join('');
@@ -975,7 +975,7 @@ function dmSub(){$('dmTabs').style.display='none';dmNav();
 // Menu con ở thanh bên trái: mục + bộ lọc của Tra cứu
 function dmNav(){var el=$('dmNav');if(!el)return;if(S.tab!=='dm'||!DM||!DM.opt){el.innerHTML='';return}
   var o=DM.opt,L=DM.loc,d=DM.d||{},B=function(k,t,on,n){return '<button data-n="'+esc(k)+'" class="'+(on?'on':'')+'">'+esc(t)+(n!=null&&n!==''?' <span class="cbn" style="background:'+(k==='s:ht'?'#b91c1c':'#6b7280')+'">'+Number(n).toLocaleString('vi-VN')+'</span>':'')+'</button>'},
-   h=B('s:tq','📊 Tổng quan',DM.sub==='tq')+B('s:ht','🛠 Hoàn thiện dự án',DM.sub==='ht',DM.cb?DM.cb.tong:'')+B('s:tc','🔎 Tra cứu danh mục',DM.sub==='tc');
+   h=B('s:ht','🛠 Hoàn thiện dự án',DM.sub==='ht',DM.cb?DM.cb.tong:'')+B('s:tc','🔎 Tra cứu danh mục',DM.sub==='tc');
   el.innerHTML=h;
   el.onchange=function(e){var t=e.target,f=t.getAttribute&&t.getAttribute('data-f');if(!f)return;L[f]=t.value;DM.trang=0;dmNav();dmLoad()};
   el.onclick=function(e){var c=e.target.closest('[data-clr]');if(c){e.preventDefault();L.dac_thu='';L.ctmt='';L.ctf='';L.kbnn='';DM.trang=0;dmNav();dmLoad();return}var b=e.target.closest('button[data-n]');if(!b)return;var k=b.getAttribute('data-n'),p=k.split(':');
