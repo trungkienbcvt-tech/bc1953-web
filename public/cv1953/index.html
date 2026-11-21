@@ -349,7 +349,7 @@ header h1 small::before{content:"";width:7px;height:7px;border-radius:50%;backgr
 .hmh .hmd{background:rgba(255,255,255,.6);color:inherit;display:flex;align-items:center;gap:10px;text-align:left;margin-left:auto}.hmh.o .hmd{background:rgba(255,255,255,.14)}.hmh .hmd small{display:block}
 .clk{font-size:30px;display:inline-block;transform-origin:50% 60%;animation:rung 2.8s ease-in-out infinite}@keyframes rung{0%,40%,100%{transform:rotate(0)}5%,15%,25%,35%{transform:rotate(-16deg)}10%,20%,30%{transform:rotate(16deg)}}
 .hmq a{text-decoration:none;color:inherit;opacity:.7;margin-left:4px}.hmlh{display:flex;align-items:center;gap:10px;margin:10px 0 0;padding:8px 14px;border:1px dashed #cbd5e1;border-radius:12px;font-size:14px;background:#fff}.hmlh>div{flex:1}.hmlh .ic{font-size:20px}.hmlt{color:#334155}
-.hm{max-width:1200px}.hmh{padding:12px 22px}.hmh h2{font-size:19px;margin:0 0 2px}.hmh p{font-size:14px}.hmh .hmq{margin:4px 0 0!important;font-size:13.5px;max-width:640px;line-height:1.45;font-style:normal}.hmh .hmd{padding:6px 14px}.hmh .hmd b{font-size:16px}
+.hm{max-width:1200px}.hmh{padding:12px 22px}.hmh h2{font-size:19px;margin:0 0 2px}.hmh p{font-size:14px}.hmh .hmq{margin:8px 0 0;max-width:660px}.hmq .hql{font-size:12.5px;letter-spacing:.3px;opacity:.75}.hmq .hqt{font-family:'Palatino Linotype','Noto Serif',Georgia,'Times New Roman',serif;font-style:italic;font-size:16.5px;line-height:1.45;margin-top:2px}.hmh .hmd{padding:6px 14px}.hmh .hmd b{font-size:16px}
 .hms{margin:12px 0 6px;font-size:14px}.hmk{padding:8px 14px;gap:12px}.hmk .ic{font-size:20px}
 .hmg{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .hmg a,.hmg button.t{display:flex;align-items:center;gap:12px;padding:10px 14px}.hmg .ic{font-size:24px;margin:0}
@@ -610,7 +610,7 @@ function drawHome(){
     var hr=new Date().getHours(),chao=hr<11?'Chào buổi sáng':(hr<13?'Chào buổi trưa':(hr<18?'Chào buổi chiều':'Chào buổi tối')),
      th=hr<11?['m','🌅']:(hr<13?['t','☀️']:(hr<18?['c','🌤️']:['o','🌙'])),
      msg0=tdiep();
-    var h='<div class="hm"><div class="hmh '+th[0]+'"><span class="gi">'+th[1]+'</span><div class="gt"><h2>'+chao+(S.info.hoten?', '+esc(S.info.hoten):'')+'</h2><p>'+role+'</p><p class="hmq"><b>Thông điệp cảm hứng hôm nay là:</b> '+esc(msg0)+'</p></div>'+han+'</div>'+
+    var h='<div class="hm"><div class="hmh '+th[0]+'"><span class="gi">'+th[1]+'</span><div class="gt"><h2>'+chao+(S.info.hoten?', '+esc(S.info.hoten):'')+'</h2><p>'+role+'</p><div class="hmq"><div class="hql">☘️ Thông điệp cảm hứng hôm nay là</div><div class="hqt">“'+esc(msg0)+'”</div></div></div>'+han+'</div>'+
       '<div id="hmTb"></div><div class="hms">📌 Việc cần làm</div><div class="hmt" id="hmT">'+tasks.join('')+'</div>'+
       '<div class="hms">🗂 Danh mục dùng chung <small>– làm trước, báo cáo sẽ khớp ngay từ đầu</small></div><div id="hmPr"></div><div class="hmg">'+
       tl('👤','Cán bộ chuyên quản','Khai báo cán bộ phụ trách của phòng',{tab:'cbq'})+
