@@ -207,6 +207,12 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         const bp = arr.findIndex((o) => /Bộ Chỉ huy Bộ đội Biên phòng/.test(o.b) && o.c === 'Phòng giao dịch 20'); assert.strictEqual(arr[bp + 1].b, 'Giao dịch tại'); assert.strictEqual(arr[bp + 1].c, 'Phòng giao dịch 21');
         const kids = new Set(); arr.forEach((o) => (o.kids || []).forEach((k) => { assert(by[k]); assert(!kids.has(k)); kids.add(k); })); assert.strictEqual(arr.length, DY.BASE.length + 3); }
       { const x = await M.dmHtXuat(th, ''); assert.ok(x.b64 && /xlsx$/.test(x.name), 'xuất Excel hoàn thiện'); }
+      await assert.rejects(() => M.cbqLuu(p20, { ten: 'A', ma: 'hanhht04' }), /họ và tên/); await assert.rejects(() => M.cbqLuu(p20, { ten: 'Hoàng Thúy Hạnh', ma: 'Hạnh 04' }), /Mã nhân viên/);
+      { const x = await M.cbqLuu(p20, { ten: 'Hoàng Thúy Hạnh', ma: 'HanhHT04' }); assert.ok(x.ok);
+        const d = await M.cbqDs(p20); assert.strictEqual(d.rows.length >= 1 && d.rows.some((r) => r.ma === 'hanhht04'), true);
+        await assert.rejects(() => M.cbqLuu(th, { ten: 'Người khác', ma: 'hanhht04', kbnn: 'Phòng giao dịch số 21' }), /đã có/);
+        await assert.rejects(() => M.cbqLuu(th, { ten: 'Người khác', ma: 'abc123' }), /Chọn phòng/);
+        const r = d.rows.find((y) => y.ma === 'hanhht04'); await M.cbqXoa(p20, r.id); assert.strictEqual((await M.cbqDs(p20)).rows.some((y) => y.ma === 'hanhht04'), false); }
       await assert.rejects(() => M.dmCbcqLuu(p20, [], 'A'), /Thiếu mã dự án/);
       await assert.rejects(() => M.dmTenDeXuat(th, '1', 'Tên', 'lý do dài đủ mười'), /không cần đề xuất/); await assert.rejects(() => M.dmTenDeXuat(p20, '1', 'Tên mới', 'ngắn'), /Bắt buộc ghi lý do/); await assert.rejects(() => M.dmTenDxDuyet(p20, '1', true), /Chỉ Chuyên viên THBC/);
       { const t = M.ctmtTra('1102; 11102 ; 0514'); assert.strictEqual(t.rows.length, 2); assert.deepStrictEqual(t.rows[0].chuoi.map((x) => x.ma), ['0100', '0102', '1102']); assert(/Rà soát, lập, phê duyệt quy hoạch chung xã/.test(t.rows[0].chuoi[2].ten)); assert.deepStrictEqual(t.rows[1].chuoi.map((x) => x.ma), ['0510', '0514']); assert.strictEqual(t.rows[0].nhan, 'NTM-GNBV-DTTS 26-30'); assert.strictEqual(t.rows[1].nhan, 'DTTS 21-25'); assert.strictEqual(M.ctmtTra('0022').rows[0].nhan, 'Không xác định'); assert.deepStrictEqual(M.ctmtTra('9999 12').loi, ['9999', '12']); await assert.rejects(() => M.dmCtmtLuu(th, '8011836', '9999'), /không có trong mục lục/); }
