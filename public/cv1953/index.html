@@ -972,7 +972,7 @@ function drawDm(){
   dmSub();dmStatLoad();
 }
 function dmStatDraw(){var b=$('dmStat');if(!b)return;var k=DM.kpi;if(!k){b.innerHTML='';return}var n=DM.cb?DM.cb.nhom:null,c=function(v,l,cl){return '<div class="stc '+cl+'"><b>'+(v==null?'—':Number(v).toLocaleString('vi-VN'))+'</b><span>'+l+'</span></div>'};
-  b.innerHTML=c(k.tong,'Tổng số dự án','s0')+c(n?n['Đã phân công cán bộ']||0:null,'Đã phân công cán bộ','s1')+c(n?n['Chưa có cán bộ chuyên quản']||0:null,'Chưa phân công','s2')+c(DM.cb?DM.cb.tong:null,'Dự án cần hoàn thiện','s3')+c(k.c1,'Thuộc chương trình mục tiêu','s4')+c(k.dt,'Có tính chất dự án','s5')}
+  b.innerHTML=c(k.tong,'Tổng số dự án','s0')+c(n?n['Đã phân công cán bộ']||0:null,'Đã phân công cán bộ','s1')+c(n?n['Chưa có cán bộ chuyên quản']||0:null,'Chưa phân công','s2')+c(DM.cb?DM.cb.tong:null,'Dự án cần hoàn thiện','s3')+c(k.c1,'Thuộc chương trình mục tiêu','s4')}
 function dmStatLoad(){dmStatDraw();run('dmDs',S.token,{tim:'',cdt:'',kbnn:'',dac_thu:'',ctmt:'',ctmt_2630:''},0).then(function(r){DM.kpi=r.kpi||null;dmStatDraw()}).catch(function(){})}
 function dmSub(){$('dmTabs').style.display='none';dmNav();
   if(DM.sub==='tq')dmTqDraw();else if(DM.sub==='ht')dmHtDraw();else dmTcDraw()}
