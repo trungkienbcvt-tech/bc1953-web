@@ -50,8 +50,8 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const M = require('../lib/danhmuc'), ad = (await L.dangNhap('Quản trị hệ thống', ma('Quản trị hệ thống'))).token;
     await L.doiMa(ad, ma('Quản trị hệ thống'), 'QuanTri2026');
     assert((await L.dsTaiKhoan()).some((a) => a.vt === 'AD'), 'tài khoản quản trị có trong danh sách đăng nhập');
-    await assert.rejects(() => L.tongHop(ad, '2026-09'), /quản trị/);
-    await assert.rejects(() => L.luu(ad, [], '2026-09'), /quản trị/);
+    assert((await L.tongHop(ad, '2026-09')), 'admin xem được báo cáo toàn tỉnh');
+    await assert.rejects(() => L.luu(ad, [{ id: 'b01', r: 1, c: 5, v: '1' }], '2026-09'));
     await assert.rejects(() => M.adDs(th), /quản trị/);
     await assert.rejects(() => M.adDatMa(th, 'Phòng giao dịch 20', 'abc12345'), /quản trị/);
     const ds = await M.adDs(ad); assert(ds.length > 5 && ds.every((a) => a.vt !== 'AD' && a.ma), 'admin xem được mật khẩu người dùng');

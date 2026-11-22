@@ -539,7 +539,7 @@ run('dsTaiKhoan').then(function(ds){var g={TH:'Cán bộ tổng hợp',NV2:'Cán
 $('lgMa').addEventListener('keydown',function(e){if(e.key==='Enter')dangNhap()});
 $('lgBtn').onclick=dangNhap;
 function vaoApp(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=r;S.pgd=r.donvi||r.ten;S.xem=r.vt==='PGD'?S.pgd:r.scope[0];S.nv2tp=!!r.xemAll;
-  if(r.vt==='AD'){$('login').style.display='none';$('app').style.display='block';$('who').textContent='🛡 '+r.ten;setGreet();['tabs','kySel','pgdBar','sbar','cvNotice'].forEach(function(i){var e=$(i);if(e)e.style.display='none'});adDraw();if(r.phaiDoi)setTimeout(function(){$('maBtn').click()},300);return Promise.resolve()}
+  if(r.phaiDoi){$('login').style.display='none';$('app').style.display='block';$('who').textContent='🛡 '+r.ten;setGreet();['tabs','kySel','pgdBar','sbar','cvNotice'].forEach(function(i){var e=$(i);if(e)e.style.display='none'});adPhaiDoi();setTimeout(function(){$('maBtn').click()},300);return Promise.resolve()}
   $('xemSel').innerHTML=(r.vt!=='PGD'||S.nv2tp?'<option value="*">★ Toàn tỉnh (tất cả phòng)</option>':'')+(S.nv2tp?r.xemAll:r.scope).map(function(p){return'<option>'+esc(p)+'</option>'}).join('');
   return Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.data=null;S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();$('login').style.display='none';$('app').style.display='block';
     $('who').textContent=(S.vt==='TH'?'★ ':'')+S.ten;setGreet();start()})}
@@ -547,7 +547,6 @@ function vaoApp(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=
 /* ===== Màn hình quản trị hệ thống (tài khoản AD): không xem/sửa số liệu báo cáo ===== */
 function adDraw(){
   var m=$('main');m.style.display='block';
-  if(S.info&&S.info.phaiDoi){m.innerHTML='<div class="card"><h3>🛡 Quản trị hệ thống</h3><p class="hint">Tài khoản đang dùng mật khẩu mặc định. Hãy đổi mật khẩu (hộp thoại vừa mở hoặc nút “🔑 Đổi mật khẩu” ở góc trên) để bắt đầu quản trị.</p></div>';return}
   m.innerHTML='<div class="pgh"><h2 style="margin:0 0 4px">🛡 Quản trị hệ thống</h2><div class="hint" style="margin:0 0 12px">Tài khoản quản trị không xem và không sửa số liệu báo cáo. Chỉ quản lý người dùng, thông báo và liên hệ hỗ trợ.</div></div>'+
   '<div class="card" style="margin-bottom:14px"><h3>🔐 Tài khoản và mật khẩu người dùng</h3><input id="adQ" placeholder="Tìm tài khoản, đơn vị…" style="max-width:320px;margin-bottom:8px"><div id="adTb"><span class="hint">Đang tải…</span></div></div>'+
   '<div class="row2" style="gap:14px;align-items:flex-start"><div class="card"><h3>📢 Thông báo chung ở trang chủ</h3><textarea id="adTbT" rows="4" maxlength="600" style="width:100%"></textarea><div style="margin-top:8px"><button class="pri" id="adTbB">Lưu thông báo</button> <span class="hint" id="adTbM"></span></div></div>'+
@@ -556,6 +555,7 @@ function adDraw(){
   $('adTbB').onclick=function(){run('adTbGhi',S.token,$('adTbT').value).then(function(){$('adTbM').textContent='Đã lưu.'}).catch(function(e){$('adTbM').textContent=msg(e)})};
   $('adLhB').onclick=function(){run('adLhGhi',S.token,$('adLhT').value).then(function(){$('adLhM').textContent='Đã lưu.'}).catch(function(e){$('adLhM').textContent=msg(e)})};
   run('adDs',S.token).then(function(ds){S.adDs=ds;adRows();$('adQ').oninput=adRows}).catch(function(e){$('adTb').innerHTML='<span class="hint" style="color:#b91c1c">'+esc(msg(e))+'</span>'})}
+function adPhaiDoi(){var m=$('main');m.innerHTML='<div class="card"><h3>🛡 Quản trị hệ thống</h3><p class="hint">Tài khoản đang dùng mật khẩu mặc định. Hãy đổi mật khẩu (hộp thoại vừa mở hoặc nút “🔑 Đổi mật khẩu” ở góc trên) để bắt đầu sử dụng.</p></div>'}
 function adRows(){
   var q=($('adQ').value||'').trim().toLowerCase(),G={TH:'Chuyên viên THBC',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},cv={LAP:'Người lập biểu',KTT:'Kế toán trưởng',TP:'Trưởng phòng',TTH:'Trưởng phòng THBC'};
   var l=(S.adDs||[]).filter(function(a){return !q||(a.ten+' '+a.donvi+' '+a.hoten).toLowerCase().indexOf(q)>=0});
@@ -579,7 +579,7 @@ $('maBtn').onclick=function(){
   $('modal').style.display='flex';$('mCu').focus();
   $('mNo').onclick=function(){$('modal').style.display='none'};
   $('mOk').onclick=function(){if($('mMoi').value!==$('mLai').value){$('mErr').textContent='Hai lần nhập mật khẩu mới chưa giống nhau.';return}
-    run('doiMa',S.token,$('mCu').value,$('mMoi').value).then(function(){$('modal').style.display='none';toast('Đã đổi mật khẩu. Lần sau đăng nhập bằng mật khẩu mới.',6000);if(S.vt==='AD'){S.info.phaiDoi=false;try{var ss=JSON.parse(localStorage.getItem('cv1953s'));ss.phaiDoi=false;localStorage.setItem('cv1953s',JSON.stringify(ss))}catch(x){}adDraw()}}).catch(function(e){$('mErr').textContent=msg(e)})}};
+    run('doiMa',S.token,$('mCu').value,$('mMoi').value).then(function(){$('modal').style.display='none';toast('Đã đổi mật khẩu. Lần sau đăng nhập bằng mật khẩu mới.',6000);if(S.info&&S.info.phaiDoi){try{var ss=JSON.parse(localStorage.getItem('cv1953s'));ss.phaiDoi=false;localStorage.setItem('cv1953s',JSON.stringify(ss))}catch(x){}setTimeout(function(){location.reload()},800)}}).catch(function(e){$('mErr').textContent=msg(e)})}};
 $('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{localStorage.removeItem('cv1953s');localStorage.removeItem('cv1953t');sessionStorage.removeItem('cv1953s')}catch(e){}location.reload()};
 window.addEventListener('beforeunload',function(e){if(nDirty()){e.preventDefault();e.returnValue=''}});
 $('xemSel').onchange=function(){S.xem=$('xemSel').value;loadXem()};
@@ -596,7 +596,7 @@ function drawTabs(){
   var G=[{id:'gchung',t:'🗂 Dùng chung',it:[['cbq','Cán bộ chuyên quản'],['cdt','Danh mục chủ đầu tư'],['dm','Danh mục dự án']].concat(S.vt!=='PGD'?[['tt37','📥 Tải số liệu THBC (TT37)']]:[])},
     {id:'g1953',t:'📑 BC 1953',it:[['tq',S.vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan']].concat(BTAB.map(function(id){return [id,BN[id]]})).concat([['tt','Biểu 04-KBNN'],['bt','⚖ Đối chiếu THBC']]).concat(S.vt==='TH'?[['qt','🔄 Quy trình & hạn nộp']]:(S.vt==='NV2'?[['qt','📥 Hộp tiếp nhận']]:[]))},
     {id:'gkpi',t:'🎯 BC đánh giá KPI',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Số liệu & xác nhận'],['kpibt','⚖ Phòng ghi nhận khác THBC']].concat(S.vt!=='PGD'?[['kpvb','📄 Công văn & theo dõi']]:[])}],h='';
-  h+='<button data-t="home" style="font-weight:600;margin-bottom:6px">🏠 Trang chủ</button>';
+  h+='<button data-t="home" style="font-weight:600;margin-bottom:6px">🏠 Trang chủ</button>'+(S.info&&S.info.ad?'<button data-t="adm" style="font-weight:600;margin-bottom:6px;color:#7a1622">🛡 Quản trị hệ thống</button>':'');
   G.forEach(function(g){h+='<div class="tg'+(S.shut[g.id]?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+g.it.map(function(x){return '<button data-t="'+x[0]+'">'+esc(x[1])+'</button>'+(x[0]==='dm'?'<div class="dmnav" id="dmNav"></div>':'')}).join('')+'</div></div>'});
   $('tabs').innerHTML=h;
   [].forEach.call($('tabs').querySelectorAll('button'),function(b){b.onclick=function(){show(b.getAttribute('data-t'))}});
@@ -612,7 +612,7 @@ function show(t){nbDuyet();S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   if(S.nv2tp&&!isB&&S.xem!==S.pgd){S.xem=S.pgd;S.data=null}
   $('pgdBar').style.display=((isV()||S.nv2tp)&&isB)?'flex':'none';if(isV()||S.nv2tp)$('xemSel').value=S.xem;
-  if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='cbq')drawCbq();else if(t==='tt37')drawTt37();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
+  if(t==='adm'&&S.info&&S.info.ad)adDraw();else if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='cbq')drawCbq();else if(t==='tt37')drawTt37();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
   $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar();if(typeof dmNav==='function')dmNav()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
 var NAMEB={b01:'B01',b02:'B02',b03a:'B03(21-25)',b03b:'B03(26-30)'};
