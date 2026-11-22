@@ -533,15 +533,40 @@ function hoi(html,okText,withText){return new Promise(function(res){
 /* đăng nhập */
 run('dsTaiKhoan').then(function(ds){var g={TH:'Cán bộ tổng hợp',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},h='';
   var og=function(lb,l){if(l.length)h+='<optgroup label="'+esc(lb)+'">'+l.map(function(x){return'<option>'+esc(x.ten)+'</option>'}).join('')+'</optgroup>'};
-  og('Chuyên viên THBC',ds.filter(function(x){return x.vt==='TH'}));og('Cán bộ Nghiệp vụ 2',ds.filter(function(x){return x.vt==='NV2'}));
+  og('Quản trị hệ thống',ds.filter(function(x){return x.vt==='AD'}));og('Chuyên viên THBC',ds.filter(function(x){return x.vt==='TH'}));og('Cán bộ Nghiệp vụ 2',ds.filter(function(x){return x.vt==='NV2'}));
   PGDS.forEach(function(p){og(p,ds.filter(function(x){return x.vt==='PGD'&&x.donvi===p}))});
   $('lgPgd').innerHTML=h||'<option>(chưa có tài khoản)</option>'}).catch(function(e){$('lgErr').textContent=msg(e)});
 $('lgMa').addEventListener('keydown',function(e){if(e.key==='Enter')dangNhap()});
 $('lgBtn').onclick=dangNhap;
 function vaoApp(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=r;S.pgd=r.donvi||r.ten;S.xem=r.vt==='PGD'?S.pgd:r.scope[0];S.nv2tp=!!r.xemAll;
+  if(r.vt==='AD'){$('login').style.display='none';$('app').style.display='block';$('who').textContent='🛡 '+r.ten;setGreet();['tabs','kySel','pgdBar','sbar','cvNotice'].forEach(function(i){var e=$(i);if(e)e.style.display='none'});adDraw();if(r.phaiDoi)setTimeout(function(){$('maBtn').click()},300);return Promise.resolve()}
   $('xemSel').innerHTML=(r.vt!=='PGD'||S.nv2tp?'<option value="*">★ Toàn tỉnh (tất cả phòng)</option>':'')+(S.nv2tp?r.xemAll:r.scope).map(function(p){return'<option>'+esc(p)+'</option>'}).join('');
   return Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.data=null;S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();$('login').style.display='none';$('app').style.display='block';
     $('who').textContent=(S.vt==='TH'?'★ ':'')+S.ten;setGreet();start()})}
+
+/* ===== Màn hình quản trị hệ thống (tài khoản AD): không xem/sửa số liệu báo cáo ===== */
+function adDraw(){
+  var m=$('main');m.style.display='block';
+  if(S.info&&S.info.phaiDoi){m.innerHTML='<div class="card"><h3>🛡 Quản trị hệ thống</h3><p class="hint">Tài khoản đang dùng mật khẩu mặc định. Hãy đổi mật khẩu (hộp thoại vừa mở hoặc nút “🔑 Đổi mật khẩu” ở góc trên) để bắt đầu quản trị.</p></div>';return}
+  m.innerHTML='<div class="pgh"><h2 style="margin:0 0 4px">🛡 Quản trị hệ thống</h2><div class="hint" style="margin:0 0 12px">Tài khoản quản trị không xem và không sửa số liệu báo cáo. Chỉ quản lý người dùng, thông báo và liên hệ hỗ trợ.</div></div>'+
+  '<div class="card" style="margin-bottom:14px"><h3>🔐 Tài khoản và mật khẩu người dùng</h3><input id="adQ" placeholder="Tìm tài khoản, đơn vị…" style="max-width:320px;margin-bottom:8px"><div id="adTb"><span class="hint">Đang tải…</span></div></div>'+
+  '<div class="row2" style="gap:14px;align-items:flex-start"><div class="card"><h3>📢 Thông báo chung ở trang chủ</h3><textarea id="adTbT" rows="4" maxlength="600" style="width:100%"></textarea><div style="margin-top:8px"><button class="pri" id="adTbB">Lưu thông báo</button> <span class="hint" id="adTbM"></span></div></div>'+
+  '<div class="card"><h3>☎️ Dòng liên hệ hỗ trợ</h3><textarea id="adLhT" rows="4" maxlength="500" style="width:100%"></textarea><div style="margin-top:8px"><button class="pri" id="adLhB">Lưu liên hệ</button> <span class="hint" id="adLhM"></span></div></div></div>';
+  run('adNoiDung',S.token).then(function(d){$('adTbT').value=d.tb;$('adLhT').value=d.lh}).catch(function(e){toast(msg(e))});
+  $('adTbB').onclick=function(){run('adTbGhi',S.token,$('adTbT').value).then(function(){$('adTbM').textContent='Đã lưu.'}).catch(function(e){$('adTbM').textContent=msg(e)})};
+  $('adLhB').onclick=function(){run('adLhGhi',S.token,$('adLhT').value).then(function(){$('adLhM').textContent='Đã lưu.'}).catch(function(e){$('adLhM').textContent=msg(e)})};
+  run('adDs',S.token).then(function(ds){S.adDs=ds;adRows();$('adQ').oninput=adRows}).catch(function(e){$('adTb').innerHTML='<span class="hint" style="color:#b91c1c">'+esc(msg(e))+'</span>'})}
+function adRows(){
+  var q=($('adQ').value||'').trim().toLowerCase(),G={TH:'Chuyên viên THBC',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},cv={LAP:'Người lập biểu',KTT:'Kế toán trưởng',TP:'Trưởng phòng',TTH:'Trưởng phòng THBC'};
+  var l=(S.adDs||[]).filter(function(a){return !q||(a.ten+' '+a.donvi+' '+a.hoten).toLowerCase().indexOf(q)>=0});
+  $('adTb').innerHTML='<table class="dmt" style="width:100%"><thead><tr><th>Tài khoản</th><th>Nhóm</th><th>Người dùng</th><th>Mật khẩu</th><th></th></tr></thead><tbody>'+l.map(function(a,i){
+    return '<tr><td>'+esc(a.ten)+'</td><td>'+esc((G[a.vt]||a.vt)+(a.cv&&cv[a.cv]?' · '+cv[a.cv]:''))+'</td><td>'+esc(a.hoten||'')+'</td><td><code style="font-size:14px;letter-spacing:.5px">'+esc(a.ma)+'</code>'+(a.macdinh?' <small style="color:#b45309">(mặc định)</small>':'')+'</td><td><button class="mini" data-i="'+S.adDs.indexOf(a)+'">Đặt lại</button></td></tr>'}).join('')+(l.length?'':'<tr><td colspan="5" class="hint">Không có tài khoản phù hợp.</td></tr>')+'</tbody></table>';
+  [].forEach.call($('adTb').querySelectorAll('button[data-i]'),function(b){b.onclick=function(){adDat(S.adDs[+b.getAttribute('data-i')])}})}
+function adDat(a){
+  $('mbox').innerHTML='<h3 style="margin:0 0 8px">Đặt lại mật khẩu</h3><p class="hint" style="margin:0 0 8px">Tài khoản: <b>'+esc(a.ten)+'</b>. Mật khẩu mới gồm 6 đến 12 ký tự chữ hoặc số. Người dùng đang đăng nhập sẽ phải đăng nhập lại.</p><input id="adMa" value="bc1953" autocomplete="off"><div class="hint" id="adE" style="color:#b91c1c;min-height:18px"></div><div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end"><button id="mNo">Hủy</button><button class="pri" id="mOk">Lưu</button></div>';
+  $('modal').style.display='flex';$('adMa').select();
+  $('mNo').onclick=function(){$('modal').style.display='none'};
+  $('mOk').onclick=function(){run('adDatMa',S.token,a.ten,$('adMa').value).then(function(){$('modal').style.display='none';toast('Đã đặt lại mật khẩu cho '+a.ten);return run('adDs',S.token)}).then(function(ds){if(ds){S.adDs=ds;adRows()}}).catch(function(e){$('adE').textContent=msg(e)})}}
 function dangNhap(){
   $('lgErr').textContent='';$('lgBtn').disabled=true;$('lgBtn').textContent='Đang kiểm tra...';
   run('dangNhap',$('lgPgd').value,$('lgMa').value).then(function(r){try{localStorage.setItem('cv1953s',JSON.stringify(r))}catch(e){}return vaoApp(r)})
@@ -554,7 +579,7 @@ $('maBtn').onclick=function(){
   $('modal').style.display='flex';$('mCu').focus();
   $('mNo').onclick=function(){$('modal').style.display='none'};
   $('mOk').onclick=function(){if($('mMoi').value!==$('mLai').value){$('mErr').textContent='Hai lần nhập mật khẩu mới chưa giống nhau.';return}
-    run('doiMa',S.token,$('mCu').value,$('mMoi').value).then(function(){$('modal').style.display='none';toast('Đã đổi mật khẩu. Lần sau đăng nhập bằng mật khẩu mới.',6000)}).catch(function(e){$('mErr').textContent=msg(e)})}};
+    run('doiMa',S.token,$('mCu').value,$('mMoi').value).then(function(){$('modal').style.display='none';toast('Đã đổi mật khẩu. Lần sau đăng nhập bằng mật khẩu mới.',6000);if(S.vt==='AD'){S.info.phaiDoi=false;try{var ss=JSON.parse(localStorage.getItem('cv1953s'));ss.phaiDoi=false;localStorage.setItem('cv1953s',JSON.stringify(ss))}catch(x){}adDraw()}}).catch(function(e){$('mErr').textContent=msg(e)})}};
 $('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{localStorage.removeItem('cv1953s');localStorage.removeItem('cv1953t');sessionStorage.removeItem('cv1953s')}catch(e){}location.reload()};
 window.addEventListener('beforeunload',function(e){if(nDirty()){e.preventDefault();e.returnValue=''}});
 $('xemSel').onchange=function(){S.xem=$('xemSel').value;loadXem()};
