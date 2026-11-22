@@ -123,7 +123,6 @@ td input{font-weight:600;font-variant-numeric:tabular-nums}td input.gc{font-weig
 .dl:not(.done) .dlic svg{animation:clkRing 1.8s ease-in-out infinite;transform-origin:50% 60%}
 @keyframes clkRing{0%,40%,100%{transform:rotate(0)}5%{transform:rotate(-16deg)}10%{transform:rotate(14deg)}15%{transform:rotate(-14deg)}20%{transform:rotate(12deg)}25%{transform:rotate(-8deg)}30%{transform:rotate(6deg)}35%{transform:rotate(-3deg)}}
 .dl:not(.done) .dlic{animation:clkPulse 1.8s ease-in-out infinite}@keyframes clkPulse{0%,40%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.0)}10%{box-shadow:0 0 0 6px rgba(255,255,255,.18)}}
-@media (prefers-reduced-motion:reduce){.dl:not(.done) .dlic,.dl:not(.done) .dlic svg{animation:none}}
 .dlic{flex:none;width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;border:2px solid rgba(255,255,255,.35)}
 .dlt{flex:1;min-width:0}.dlt small{display:block;opacity:.8;font-size:13px}.dlt>b{display:block;font-size:20px;margin:1px 0 8px}
 .cdbig{display:flex;gap:7px;align-items:stretch;flex-wrap:wrap}.cdbig em{align-self:center;font-style:normal;font-size:13px;opacity:.85;margin-right:2px}
@@ -241,7 +240,6 @@ td.a{text-align:right}td.a.glk{font-style:normal;font-weight:700;color:#1d3566;b
 .sc .cl{animation:drift 70s linear infinite}.sc .c1{animation-duration:80s}.sc .c2{animation-duration:55s;animation-delay:-20s}.sc .c3{animation-duration:95s;animation-delay:-50s}
 @keyframes drift{from{transform:translateX(-90px)}to{transform:translateX(510px)}}
 .sc .car{animation:drive 24s linear infinite}@keyframes drive{from{transform:translateX(-60px)}to{transform:translateX(1260px)}}
-@media (prefers-reduced-motion:reduce){.sc *{animation:none!important}}
 .sc .cp{font-size:17px;font-style:italic;fill:#4d6a45;font-family:'Nunito','Be Vietnam Pro',sans-serif}.sc.o .cp{fill:#c7cdf5}.sc.c .cp{fill:#7c4a2a}
 .sc .sp rect{fill:#e8d9c4;stroke:#a98b6a;stroke-width:1}.sc.o .sp rect{fill:#4a5390;stroke:#7c84b8}
 .sc .fl line{stroke:#7a1622;stroke-width:2.5}.sc .fl .fg{fill:#dc2626;transform-box:fill-box;transform-origin:0 50%;animation:wave 1.6s ease-in-out infinite}@keyframes wave{50%{transform:skewY(-8deg) scaleX(.9)}}
@@ -297,7 +295,6 @@ td.a{text-align:right}td.a.glk{font-style:normal;font-weight:700;color:#1d3566;b
 .sc2.o .z-bf{display:none}.sc2 .z-wing{transform-box:fill-box;transform-origin:center;animation:zwg .35s ease-in-out infinite alternate}@keyframes zwg{to{transform:scaleX(.45)}}
 .sc2 .z-bd{fill:none;stroke:#334155;stroke-width:1.6;stroke-linecap:round;animation:zfly 20s linear infinite}@keyframes zfly{from{transform:translate(-30px,95px)}to{transform:translate(470px,60px)}}
 .sc2 .z-cl2{animation:zdr2 70s linear infinite}@keyframes zdr2{from{transform:translateX(-90px)}to{transform:translateX(520px)}}
-@media (prefers-reduced-motion:reduce){.sc2 *{animation:none!important}.sc2 .z-tree,.sc2 .z-fr,.sc2 .z-fw,.sc2 .z-rb,.sc2 .z-sunw{opacity:1!important}.sc2 .z-bl,.sc2 .z-dr{opacity:0!important}}
 .hml .hmd{padding:14px 20px!important;gap:16px!important;border-radius:16px!important;border-color:#f3c9a4!important;background:#fff8ee!important}.hml .hmd .clk{font-size:46px}.hml .hmd small{font-size:14.5px!important}.hml .hmd b{font-size:24px!important;margin-right:10px!important}.hml .hmd .cd{font-size:15px}
 .hm>#hmLh .hmlh{margin-top:14px}
 .hm{height:calc(100vh - 106px);min-height:470px;display:flex;flex-direction:column;position:relative;padding-bottom:30px;box-sizing:border-box}
@@ -735,7 +732,7 @@ var TD=["Không cần làm mọi thứ thật lớn lao, chỉ cần làm tốt 
 // Thông điệp mỗi ngày: thứ tự xáo trộn cố định, quay vòng đúng 30 ngày – không câu nào lặp lại trong 30 ngày, mọi người cùng thấy một câu
 function tdiep(){var d=Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/864e5),n=TD.length,a=[],i,s=20261121;for(i=0;i<n;i++)a.push(i);function rnd(){s=(s*1664525+1013904223)%4294967296;return s/4294967296}for(i=n-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return TD[a[((d%n)+n)%n]]}
 function hmType(){var el=$('hqt');if(!el)return;var full=el.getAttribute('data-t')||'';
-  if(S._twd===full||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)){el.textContent=full;return}
+  if(S._twd===full){el.textContent=full;return}
   S._twd=full;var i=0;el.classList.add('tw');(function nx(){if(!document.body.contains(el))return;i++;el.textContent=full.slice(0,i);if(i<full.length)setTimeout(nx,32);else el.classList.remove('tw')})()}
 function hmFill(){var H=S._hm;if(!H||S.tab!=='home')return;var pr=$('hmPr'),tb=$('hmTb'),tk=$('hmT');
   if(pr&&H.pr&&H.pr.tong){var d=H.pr,pc=Math.round(d.xong*100/d.tong);pr.innerHTML='<div class="hmpr"><div class="hmpt"><b>Danh mục dự án: '+d.xong.toLocaleString('vi-VN')+' / '+d.tong.toLocaleString('vi-VN')+' dự án đã hoàn thiện</b><span>'+pc+'%</span></div><div class="hmbar"><i style="width:'+pc+'%"></i></div></div>';
