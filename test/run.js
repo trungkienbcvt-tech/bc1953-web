@@ -63,6 +63,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   // ---- Quy trình thí điểm PGD 17 ----
   {
     const P = 'Phòng giao dịch 17';
+    { const g = await L.dangNhap('Trưởng phòng Tổng hợp', ma('Trưởng phòng Tổng hợp')); assert(g.vai2 && g.vai2.ten === 'NV2 - Lãnh đạo phòng' && g.vai2.vt === 'PGD' && g.vai2.token !== g.token && g.vt === 'TH', 'một mã đăng nhập có hai vai'); assert((await L.dsTaiKhoan()).every((a) => a.ten !== 'NV2 - Lãnh đạo phòng'), 'ẩn tài khoản NV2 - Lãnh đạo khỏi danh sách đăng nhập'); }
     const lap = await lg('PGD17 - Người lập biểu'), ktt = await lg('PGD17 - Kế toán trưởng'), tp = await lg('PGD17 - Trưởng phòng'), tth = await lg('Trưởng phòng Tổng hợp');
     assert((await L.dsTaiKhoan()).every((a) => a.ten !== P), 'tài khoản PGD17 cũ được ẩn khỏi danh sách đăng nhập');
     assert((await L.dsTaiKhoan()).every((a) => a.vt !== 'NV2' && a.ten !== 'Phòng giao dịch 20') && (await L.dsTaiKhoan()).some((a) => a.ten === 'Trưởng phòng Tổng hợp'), 'ẩn tài khoản chung và cán bộ NV2');
@@ -105,7 +106,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await L.duyet(lap, 'lap_trinh', '', ''); await L.duyet(ktt, 'ktt_trinh', '', ''); await L.duyet(tp, 'tp_duyet', '', ''); await L.duyet(th, 'th_nhan', '', '', P); await L.duyet(th, 'th_trinh', '', '', P);
     assert.strictEqual((await L.duyet(tth, 'th_duyet', '', '', P)).list.find((y) => y.pgd === P).tt, 'Trưởng phòng TH đã phê duyệt');
     // Phòng Nghiệp vụ 2: Lập biểu → Lãnh đạo phòng → Tổng hợp
-    const nl = await lg('NV2 - Người lập biểu'), nt = await lg('NV2 - Lãnh đạo phòng'), NV = 'Phòng Nghiệp vụ 2', sn = async () => (await L.trangThai(th)).list.find((y) => y.pgd === NV);
+    const nl = await lg('NV2 - Người lập biểu'), nt = (await L.dangNhap('NV2 - Lãnh đạo phòng', ma('Trưởng phòng Tổng hợp'))).token, NV = 'Phòng Nghiệp vụ 2', sn = async () => (await L.trangThai(th)).list.find((y) => y.pgd === NV);
     await dienTT(nl); await L.duyet(nl, 'lap_trinh', '', ''); assert.strictEqual((await sn()).tt, 'Chờ TP phê duyệt');
     await L.duyet(nl, 'lap_rut', '', ''); assert.strictEqual((await sn()).tt, 'Chưa gửi'); await L.duyet(nl, 'lap_trinh', '', '');
     await assert.rejects(() => L.duyet(nt, 'ktt_trinh', '', ''), /Kế toán trưởng/);
