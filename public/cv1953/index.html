@@ -61,7 +61,7 @@ h3{margin:0 0 4px;font-size:17px}
 .lg1{display:flex;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--mut)}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
 .sum{display:flex;gap:18px;margin-top:8px;font-size:13px;color:var(--mut)}.sum b{display:block;color:var(--ink);font-size:15px}
-.wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;max-height:calc(100vh - 345px);min-height:260px;scrollbar-color:#9b2335 #f1e4e6}
+.wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;max-height:calc(100vh - 300px);min-height:260px;scrollbar-color:#9b2335 #f1e4e6}
 .wrap::-webkit-scrollbar{height:16px;width:14px}.wrap::-webkit-scrollbar-track{background:#f1e4e6}.wrap::-webkit-scrollbar-thumb{background:#9b2335;border-radius:8px;border:3px solid #f1e4e6}
 table{border-collapse:separate;border-spacing:0;font-size:13px}
 th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:5px 7px;background:#fff}
@@ -565,6 +565,11 @@ function adDat(a){
   $('modal').style.display='flex';$('adMa').select();
   $('mNo').onclick=function(){$('modal').style.display='none'};
   $('mOk').onclick=function(){run('adDatMa',S.token,a.ten,$('adMa').value).then(function(){$('modal').style.display='none';toast('Đã đặt lại mật khẩu cho '+a.ten);return run('adDs',S.token)}).then(function(ds){if(ds){S.adDs=ds;adRows()}}).catch(function(e){$('adE').textContent=msg(e)})}}
+
+/* khung bảng nhập: cao vừa tới sát thanh Lưu thay đổi (thanh trượt ngang luôn nhìn thấy) */
+function fitWraps(){var sb=$('sbar'),h=sb&&sb.offsetHeight?sb.offsetHeight:70;[].forEach.call(document.querySelectorAll('#main .wrap'),function(w){var r=w.getBoundingClientRect();if(!r.width)return;var mh=window.innerHeight-r.top-h-10;w.style.maxHeight=Math.max(260,mh)+'px'})}
+(function(){var p=0;function q(){if(p)return;p=1;requestAnimationFrame(function(){p=0;fitWraps()})}
+window.addEventListener('scroll',q,true);window.addEventListener('resize',q);setInterval(fitWraps,700)})();
 function dangNhap(){
   $('lgErr').textContent='';$('lgBtn').disabled=true;$('lgBtn').textContent='Đang kiểm tra...';
   run('dangNhap',$('lgPgd').value,$('lgMa').value).then(function(r){try{localStorage.setItem('cv1953s',JSON.stringify(r))}catch(e){}return vaoApp(r)})
