@@ -609,7 +609,7 @@ function drawTabs0(){drawTabs()}
 function drawTabs(){
   var M=!!S.vaiNv,thv=M?'th':'',nvv=M?'nv':'',vt0=M?'TH':S.vt;
   var G=[{id:'gchung',v:thv,t:'🗂 Dùng chung',it:[['cbq','Cán bộ chuyên quản'],['cdt','Danh mục chủ đầu tư'],['dm','Danh mục dự án']].concat(vt0!=='PGD'?[['tt37','📥 Tải số liệu THBC (TT37)']]:[])}]
-   .concat(M?[{id:'g1953',v:S.vai,t:'📑 BC 1953',pre:'<div class="bcv"><span data-vai="nv" title="Phòng Nghiệp vụ 2" class="'+(S.vai==='nv'?'on':'')+'">Phòng NV2</span><span data-vai="th" title="Tổng hợp toàn tỉnh" class="'+(S.vai!=='nv'?'on':'')+'">Toàn tỉnh</span></div>',it:bcItems(S.vai==='nv'?'PGD':'TH')}]:[{id:'g1953',v:'',t:'📑 BC 1953',it:bcItems(S.vt)}])
+   .concat(M?[{id:'g1953n',v:nvv,t:'📑 Phòng Nghiệp vụ 2',it:bcItems('PGD')},{id:'g1953t',v:thv,t:'📑 Tổng hợp toàn tỉnh',it:bcItems('TH')}]:[{id:'g1953',v:'',t:'📑 BC 1953',it:bcItems(S.vt)}])
    .concat([{id:'gkpi',v:thv,t:'🎯 BC đánh giá KPI',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Số liệu & xác nhận'],['kpibt','⚖ Phòng ghi nhận khác THBC']].concat(vt0!=='PGD'?[['kpvb','📄 Công văn & theo dõi']]:[])}]),h='';
   h+='<button data-t="home"'+(M?' data-v="th"':'')+' style="font-weight:600;margin-bottom:6px">🏠 Trang chủ</button>'+(S.info&&S.info.ad?'<button data-t="adm" style="font-weight:600;margin-bottom:6px;color:#7a1622">🛡 Quản trị hệ thống</button>':'');
   G.forEach(function(g){h+='<div class="tg'+(S.shut[g.id]?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+(g.pre||'')+g.it.map(function(x){return '<button data-t="'+x[0]+'"'+(g.v?' data-v="'+g.v+'"':'')+'>'+esc(x[1])+'</button>'+(x[0]==='dm'?'<div class="dmnav" id="dmNav"></div>':'')}).join('')+'</div></div>'});
