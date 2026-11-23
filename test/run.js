@@ -116,6 +116,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   // ---- Biểu tổng theo danh mục CĐT ----
   {
     const BT = require('../lib/bieutong'), r = await BT.bieuTong(th, ''), tot = r.rows.find((x) => x.k === 'tot');
+    { const l1 = r.rows.find((x) => x.k === 'row'); await BT.btGhiChu(th, '', BT.gcKey(l1), 'Lệch do chờ số THBC'); assert.strictEqual((await BT.bieuTong(th, '')).rows.find((x) => BT.gcKey(x) === BT.gcKey(l1)).gc, 'Lệch do chờ số THBC', 'ghi chú đối chiếu được lưu'); await assert.rejects(() => BT.btGhiChu(p20, '', BT.gcKey(l1), 'x'), /THBC/); await BT.btGhiChu(th, '', BT.gcKey(l1), ''); }
     assert.strictEqual(r.soThua, 0, 'mọi dòng web đều khớp danh mục'); assert.strictEqual(r.rows.filter((x) => x.k === 'row').length, 195);
     const tp = await L.tongHop(th), s4 = tp.list.reduce((a, p) => a + Object.values(p.b).reduce((z, b) => z + b.luyke, 0), 0), t4 = tp.list.reduce((a, p) => a + Object.values(p.b).reduce((z, b) => z + b.thang, 0), 0);
     assert(Math.abs(tot.lk - s4) < 0.01 && Math.abs(tot.th - t4) < 0.01, 'tổng biểu tổng = tổng 4 biểu con');
