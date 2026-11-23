@@ -230,6 +230,10 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         const moi = arr.find((o) => o.b === 'Sở Mới Toanh'); assert.strictEqual(moi.a, '26'); assert.strictEqual(arr[arr.indexOf(moi) + 1].a, 'II');
         const bp = arr.findIndex((o) => /Bộ Chỉ huy Bộ đội Biên phòng/.test(o.b) && o.c === 'Phòng giao dịch 20'); assert.strictEqual(arr[bp + 1].b, 'Giao dịch tại'); assert.strictEqual(arr[bp + 1].c, 'Phòng giao dịch 21');
         const kids = new Set(); arr.forEach((o) => (o.kids || []).forEach((k) => { assert(by[k]); assert(!kids.has(k)); kids.add(k); })); assert.strictEqual(arr.length, DY.BASE.length + 3); }
+      { const sv = M.api.goi, gl = []; M.api.goi = async (fn, b) => { gl.push([fn, b]); if (fn === 'cv_dm_ban_do') return [['9001', 'DA thiếu phòng', '', '', ''], ['9002', 'DA có phòng', '', '', 'Phòng giao dịch số 20']]; return { ok: true }; };
+        const d = await M.pgdThieuDs(p20); assert.deepStrictEqual(d.rows.map((r) => r.ma), ['9001']); assert.ok(d.pgd.includes('Phòng giao dịch số 21'));
+        await M.pgdThieuGan(p20, '9001', 'Phòng giao dịch số 21'); const c = gl.find((g) => g[0] === 'cv_dm_sua'); assert.strictEqual(c[1].p_gh, null); assert.strictEqual(c[1].p_rec.kbnn, 'Phòng giao dịch số 21');
+        await assert.rejects(() => M.pgdThieuGan(p20, '9002', 'Phòng giao dịch số 21'), /đã có phòng giao dịch/); await assert.rejects(() => M.pgdThieuGan(p20, '9001', 'Phòng lạ'), /không hợp lệ/); M.api.goi = sv; }
       { const x = await M.dmHtXuat(th, ''); assert.ok(x.b64 && /xlsx$/.test(x.name), 'xuất Excel hoàn thiện'); }
       await assert.rejects(() => M.cbqLuu(p20, { ten: 'A', ma: 'hanhht04' }), /họ và tên/); await assert.rejects(() => M.cbqLuu(p20, { ten: 'Hoàng Thúy Hạnh', ma: 'Hạnh 04' }), /Mã nhân viên/);
       { const x = await M.cbqLuu(p20, { ten: 'Hoàng Thúy Hạnh', ma: 'HanhHT04' }); assert.ok(x.ok);
