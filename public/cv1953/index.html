@@ -628,7 +628,7 @@ function bcItems(vt){return [['tq',vt==='TH'?'📈 Tổng quan toàn tỉnh':'�
 function drawTabs0(){drawTabs()}
 function drawTabs(){
   var M=!!S.vaiNv,thv=M?'th':'',nvv=M?'nv':'',vt0=M?'TH':S.vt;
-  var G=[{id:'gchung',v:thv,t:'🗂 Dùng chung',it:[['cbq','Cán bộ chuyên quản'],['cdt','Danh mục chủ đầu tư'],['dm','Danh mục dự án'],['pgdht','Hoàn thiện phòng giao dịch']].concat(vt0!=='PGD'?[['tt37','📥 Tải số liệu THBC (TT37)']]:[])}]
+  var G=[{id:'gchung',v:thv,t:'🗂 Dùng chung',it:[['cbq','Cán bộ chuyên quản'],['cdt','Danh mục chủ đầu tư'],['dm','Danh mục dự án']].concat(vt0!=='PGD'?[['tt37','📥 Tải số liệu THBC (TT37)']]:[])}]
    .concat(M?[{id:'g1953',v:'',t:'📑 BC 1953',it:[],sub:[{id:'g1953n',v:nvv,t:'Phòng Nghiệp vụ 2',it:bcItems('PGD')},{id:'g1953t',v:thv,t:'Tổng hợp toàn tỉnh',it:bcItems('TH')}]}]:[{id:'g1953',v:'',t:'📑 BC 1953',it:bcItems(S.vt)}])
    .concat([{id:'gkpi',v:thv,t:'🎯 BC đánh giá KPI',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Số liệu & xác nhận'],['kpibt','⚖ Phòng ghi nhận khác THBC']].concat(vt0!=='PGD'?[['kpvb','📄 Công văn & theo dõi']]:[])}]),h='';
   h+='<button data-t="home"'+(M?' data-v="th"':'')+' style="font-weight:600;margin-bottom:6px">🏠 Trang chủ</button>'+(S.info&&S.info.ad?'<button data-t="adm" style="font-weight:600;margin-bottom:6px;color:#7a1622">🛡 Quản trị hệ thống</button>':'');
@@ -651,7 +651,7 @@ function show(t){nbDuyet();S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e
   if(S.nv2tp&&!isB&&S.xem!==S.pgd){S.xem=S.pgd;S.data=null}
   var isBT=(t==='bt'||t==='tt')&&S.vt==='TH';if(!isBT&&S.xemB&&S.xemB!=='*'){S.xemB='*';S.bt=null;S.ttd=null}
   $('pgdBar').style.display=((isV()||S.nv2tp)&&isB)||isBT?'flex':'none';if(isBT)$('xemSel').value=S.xemB||'*';else if(isV()||S.nv2tp)$('xemSel').value=S.xem;
-  if(t==='adm'&&S.info&&S.info.ad)adDraw();else if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='cv')drawCv();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='cbq')drawCbq();else if(t==='pgdht'){PGDHT.d=null;drawPgdHt()}else if(t==='tt37')drawTt37();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
+  if(t==='adm'&&S.info&&S.info.ad)adDraw();else if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='cv')drawCv();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='cbq')drawCbq();else if(t==='tt37')drawTt37();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
   $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar();if(typeof dmNav==='function')dmNav()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
 var NAMEB={b01:'B01',b02:'B02',b03a:'B03(21-25)',b03b:'B03(26-30)'};
@@ -1188,7 +1188,8 @@ function dmSubTabs(){dmNav();dmStatDraw();var t=$('dmTabs');if(t&&DM.cb){var b=t
 function dmHtDraw(){var o=DM.opt,box=$('dmBody');
   box.innerHTML='<div class="expb">'+(o.toanBo?'<button class="pri" id="dmAdd">＋ Thêm dự án</button><button id="dmUp">📤 Dự án mới từ B501/TT85</button>':'')+''+(o.toanBo?'<details class="mnu"><summary>⋯ Công cụ</summary><div class="mnub"><button id="dmDb">🔄 Cập nhật danh mục theo B501/TT85</button><button id="dmTong">⬇ Xuất danh mục tổng thể (đối chiếu B501/TT85)</button><button id="dmCt">🏷 Gắn mã CTMT theo B501</button></div></details>':'')+'</div>'+
    (o.toanBo?'<div class="expb" style="margin-top:-4px"><label>Phòng giao dịch:<select id="dmB">'+dmOpts(o.kbnn,'Tất cả')+'</select></label></div>':'')+
-   '<div id="dmTd"></div><div id="dmU"></div><div id="dmD"></div><div id="dmW"></div>';
+   '<div id="dmPg"></div><div id="dmTd"></div><div id="dmU"></div><div id="dmD"></div><div id="dmW"></div>';
+  PGDHT.d=null;dmPgDraw();
   if($('dmB')){$('dmB').value=DM.loc.kbnn;$('dmB').onchange=function(){DM.loc.kbnn=this.value;dmDrawCb()}}
   if($('dmAdd'))$('dmAdd').onclick=function(){dmForm(null)};
   if($('dmDb'))$('dmDb').onclick=function(){var b=this;b.disabled=true;run('dmDongBo',S.token,false).then(function(k){b.disabled=false;
@@ -1291,19 +1292,19 @@ function drawTt37(){var m=$('main'),x=T37.x,f=function(n){return Number(n).toLoc
     var btn=this;btn.disabled=true;var hn=$('t37H').value;
     run('tt37Ghi',S.token,{thbc:a,kpi:c,ky:$('t37K').value,ngay:$('t37D').value,han:hn,id:T37.id},T37.ten,'').then(function(r){T37.done=r.ghi;S.bt=null;S.kp=null;if(a&&($('t37K').value||'')===(S.ky||'')){toast('Đã ghi số liệu THBC. Đang mở bảng đối chiếu...',4000);show('bt')}else{toast('Đã ghi số liệu THBC.',5000);drawTt37()}}).catch(function(er){btn.disabled=false;toast(msg(er),8000)})}}
 function pgHead(t,h){return '<div class="pgh"><h2>'+t+'</h2><p class="hint">'+h+'</p></div>'}
-/* ===== Hoàn thiện phòng giao dịch: dự án chưa có phòng, phòng nào cũng thấy và chọn được ===== */
+/* ===== Dự án chưa có phòng giao dịch: nằm trong Danh mục dự án > Hoàn thiện dự án; phòng nào cũng thấy và chọn được ===== */
 var PGDHT={d:null,q:''};
-function drawPgdHt(){var m=$('main');
-  if(!PGDHT.d){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh sách dự án chưa có phòng giao dịch...</p>';run('pgdThieuDs',S.token).then(function(r){PGDHT.d=r;if(S.tab==='pgdht')drawPgdHt()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
+function dmPgDraw(){var m=$('dmPg');if(!m)return;
+  if(!PGDHT.d){run('pgdThieuDs',S.token).then(function(r){PGDHT.d=r;dmPgDraw()}).catch(function(){});return}
   var d=PGDHT.d,q=PGDHT.q.toLowerCase(),ds=d.rows.filter(function(x){return !q||(x.ma+' '+x.ten).toLowerCase().indexOf(q)>=0});
+  if(!d.rows.length){m.innerHTML='';return}
   var opt='<option value="">— chọn phòng giao dịch —</option>'+d.pgd.map(function(p){return '<option>'+esc(p)+'</option>'}).join('');
-  m.innerHTML=pgHead('Hoàn thiện phòng giao dịch','Các dự án <b>chưa xác định phòng giao dịch</b>. Phòng nào quản lý dự án thì chọn đúng phòng ở cột bên phải; dự án sẽ chuyển ngay về phòng đó.')+
-   '<div class="cbx"><div class="cbh"><div class="cbt0"><b style="font-size:17px">Còn <span id="pgN">'+d.rows.length+'</span> dự án chưa có phòng giao dịch</b></div><input type="text" id="pgQ" placeholder="Tìm theo mã hoặc tên dự án..." value="'+esc(PGDHT.q)+'" style="max-width:320px"></div>'+
-   (ds.length?'<div class="dmw" style="max-height:none"><table class="dmt cbt2"><thead><tr><th style="width:92px">Mã DA</th><th>Tên dự án</th><th style="width:260px">Phòng giao dịch quản lý</th></tr></thead><tbody>'+ds.map(function(x){return '<tr><td><b>'+esc(x.ma)+'</b></td><td>'+esc(x.ten)+'</td><td><select class="cbsel" data-m="'+esc(x.ma)+'">'+opt+'</select></td></tr>'}).join('')+'</tbody></table></div>':'<p class="hint" style="padding:18px">'+(d.rows.length?'Không có dự án khớp tìm kiếm.':'✅ Tất cả dự án đã có phòng giao dịch.')+'</p>')+'</div>';
-  $('pgQ').oninput=function(){PGDHT.q=this.value;var p=this.selectionStart;drawPgdHt();var i=$('pgQ');i.focus();try{i.setSelectionRange(p,p)}catch(e){}};
+  m.innerHTML='<div class="cbx" style="margin:0 0 14px"><div class="cbh"><div class="cbt0"><b style="font-size:16px">🏢 Còn '+d.rows.length+' dự án chưa xác định phòng giao dịch</b><div class="hint" style="margin:2px 0 0">Tất cả các phòng đều thấy danh sách này. Phòng nào quản lý dự án thì chọn đúng phòng ở cột bên phải; dự án chuyển ngay về phòng đó.</div></div><input type="text" id="pgQ" placeholder="Tìm theo mã hoặc tên dự án..." value="'+esc(PGDHT.q)+'" style="max-width:300px"></div>'+
+   (ds.length?'<div class="dmw" style="max-height:none"><table class="dmt cbt2"><thead><tr><th style="width:92px">Mã DA</th><th>Tên dự án</th><th style="width:260px">Phòng giao dịch quản lý</th></tr></thead><tbody>'+ds.map(function(x){return '<tr><td><b>'+esc(x.ma)+'</b></td><td>'+esc(x.ten)+'</td><td><select class="cbsel" data-m="'+esc(x.ma)+'">'+opt+'</select></td></tr>'}).join('')+'</tbody></table></div>':'<p class="hint" style="padding:12px">Không có dự án khớp tìm kiếm.</p>')+'</div>';
+  $('pgQ').oninput=function(){PGDHT.q=this.value;var p=this.selectionStart;dmPgDraw();var i=$('pgQ');i.focus();try{i.setSelectionRange(p,p)}catch(e){}};
   [].forEach.call(m.querySelectorAll('select[data-m]'),function(sel){sel.onchange=function(){var v=sel.value,ma=sel.getAttribute('data-m');if(!v)return;
     if(!confirm('Gán dự án '+ma+' cho '+v+'?')){sel.value='';return}
-    sel.disabled=true;run('pgdThieuGan',S.token,ma,v).then(function(){d.rows=d.rows.filter(function(x){return x.ma!==ma});toast('Đã gán '+ma+' cho '+v,3000);DM.d=null;drawPgdHt()}).catch(function(e){sel.disabled=false;sel.value='';toast(msg(e),6000)})}});
+    sel.disabled=true;run('pgdThieuGan',S.token,ma,v).then(function(){d.rows=d.rows.filter(function(x){return x.ma!==ma});toast('Đã gán '+ma+' cho '+v,3000);DM.d=null;DM.cb=null;dmPgDraw()}).catch(function(e){sel.disabled=false;sel.value='';toast(msg(e),6000)})}});
 }
 /* ===== Cán bộ chuyên quản ===== */
 var CBQ={d:null,sid:''};
