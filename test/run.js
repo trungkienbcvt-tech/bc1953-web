@@ -45,6 +45,12 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await assert.rejects(() => L.luu(p20, [{ id: 'b01', r: d9.sheets[0].rows[0].r, c: 5, v: '1' }], '2026-09'), /số gốc/);
     await assert.rejects(() => L.duyet(th, 'th_nhan', '', '2026-09', P20), /số gốc/);
   }
+  // ---- Công văn BC 1953 ----
+  {
+    const CV = require('../lib/cv1953'), d = await CV.cvLay(th, ''); assert(d.so.n > 0 && d.vb.so === '' && /Sở Tài chính/.test(d.vb.kinhGui), 'công văn có số liệu và mẫu mặc định');
+    await assert.rejects(() => CV.cvLay(p20, ''), /tổng hợp/); await assert.rejects(() => CV.cvLuu(th, '', { ngay: 'abc' }), /03\/11/);
+    await CV.cvLuu(th, '', { so: '1841', ngay: '03/11/2026' }); const x = await CV.cvXuat(th, ''); assert(x.b64.length > 1000 && /\.docx$/.test(x.name), 'xuất công văn Word');
+  }
   // ---- Tài khoản quản trị ----
   {
     const M = require('../lib/danhmuc'), ad = (await L.dangNhap('Quản trị hệ thống', ma('Quản trị hệ thống'))).token;
