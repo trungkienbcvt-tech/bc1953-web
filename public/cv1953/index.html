@@ -1369,14 +1369,14 @@ function cdForm(r,dxId){var moi=!r||!!dxId,d=r||{khoi:'Khối tỉnh',lon:'',tt:
    (moi?'':'<p class="fnote" style="color:#b45309">⚠ Đổi tên sẽ tự cập nhật tên chủ đầu tư của '+d.so+' dự án. Dòng tương ứng trong biểu báo cáo (tên dòng) cần được đổi theo để số liệu còn khớp.</p>')+
    '<div id="fErr" style="color:#b91c1c;font-size:14px;min-height:18px"></div><div style="margin-top:8px;display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">Lưu</button></div>';
   $('cKh').value=d.khoi;$('modal').style.display='flex';
-  var EX={'Khối tỉnh':['Lựa chọn tên đơn vị: Ban QLDA ĐTXD công trình số 01 tỉnh Tuyên Quang','Nhập tên đơn vị, ví dụ: Ban QLDA ĐTXD khu vực Thành Tuyên','Ví dụ: Đơn vị mới thành lập theo Quyết định số …/QĐ-UBND','Khối tỉnh: các sở, ban, ngành, Ban QLDA… cấp tỉnh.'],'Khối xã, phường':['Lựa chọn tên đơn vị: Phường Minh Xuân','Nhập tên đơn vị, ví dụ: Phòng Kinh tế hạ tầng và đô thị','Ví dụ: Chủ đầu tư mới sau sáp nhập đơn vị hành chính','Khối xã, phường: UBND xã/phường và các đơn vị trực thuộc (phòng, ban, trường học…).']};
+  var EX={'Khối tỉnh':['Chọn trong danh sách hoặc gõ tên chủ đầu tư lớn mới','Nhập tên đơn vị, ví dụ: Ban QLDA ĐTXD khu vực Thành Tuyên','Ví dụ: Đơn vị mới thành lập theo Quyết định số …/QĐ-UBND','Khối tỉnh: các sở, ban, ngành, Ban QLDA… cấp tỉnh.'],'Khối xã, phường':['Chọn trong danh sách hoặc gõ tên chủ đầu tư lớn mới','Nhập tên đơn vị, ví dụ: Phòng Kinh tế hạ tầng và đô thị','Ví dụ: Chủ đầu tư mới sau sáp nhập đơn vị hành chính','Khối xã, phường: UBND xã/phường và các đơn vị trực thuộc (phòng, ban, trường học…).']};
   function ph(){var e=EX[$('cKh').value]||EX['Khối tỉnh'];$('cLon').placeholder=e[0];$('cTt').placeholder=e[1];$('cGc').placeholder=e[2];$('cKhN').textContent=e[3]}
-  function combo(id,lid,src){var inp=$(id),lb=$(lid);function show(){var q=inp.value.trim().toLowerCase(),a=src().filter(function(x){return !q||x.toLowerCase().indexOf(q)>=0}).slice(0,40);
+  function combo(id,lid,src){var inp=$(id),lb=$(lid);function show(){var q=inp.value.trim().toLowerCase(),a=src().filter(function(x){return !q||x.toLowerCase().indexOf(q)>=0}).slice(0,80);
       if(!a.length){lb.style.display='none';return}lb.innerHTML=a.map(function(x){return '<div class="opt">'+esc(x)+'</div>'}).join('');lb.style.display='block'}
     inp.onfocus=inp.oninput=show;inp.onblur=function(){setTimeout(function(){lb.style.display='none'},180)};
     lb.onmousedown=function(e){var o=e.target.closest('.opt');if(!o)return;e.preventDefault();inp.value=o.textContent;lb.style.display='none';if(id==='cLon')$('cTt').value=''}}
-  combo('cLon','cLonL',function(){var k=$('cKh').value,r=[];CD.d.rows.forEach(function(x){if((!x.khoi||x.khoi===k)&&r.indexOf(x.lon)<0)r.push(x.lon)});return r});
-  combo('cTt','cTtL',function(){var l=$('cLon').value.trim(),r=[];CD.d.rows.forEach(function(x){if(x.lon===l&&x.tt&&r.indexOf(x.tt)<0)r.push(x.tt)});return r});
+  combo('cLon','cLonL',function(){var k=$('cKh').value,r=[];(CD.d.tatCa||CD.d.rows).forEach(function(x){if((!x.khoi||x.khoi===k)&&r.indexOf(x.lon)<0)r.push(x.lon)});return r});
+  combo('cTt','cTtL',function(){var l=$('cLon').value.trim(),r=[];(CD.d.tatCa||CD.d.rows).forEach(function(x){if(x.lon===l&&x.tt&&r.indexOf(x.tt)<0)r.push(x.tt)});return r});
   $('cKh').onchange=ph;ph();
   function dong(){$('modal').style.display='none';$('mbox').className='box';$('mbox').style.maxWidth=''}
   $('fNo').onclick=dong;$('fX').onclick=dong;
