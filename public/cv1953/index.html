@@ -585,7 +585,7 @@ $('maBtn').onclick=function(){
     run('doiMa',S.token,$('mCu').value,$('mMoi').value).then(function(){$('modal').style.display='none';toast('Đã đổi mật khẩu. Lần sau đăng nhập bằng mật khẩu mới.',6000);if(S.info&&S.info.phaiDoi){try{var ss=JSON.parse(localStorage.getItem('cv1953s'));ss.phaiDoi=false;localStorage.setItem('cv1953s',JSON.stringify(ss))}catch(x){}setTimeout(function(){location.reload()},800)}}).catch(function(e){$('mErr').textContent=msg(e)})}};
 $('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{localStorage.removeItem('cv1953s');localStorage.removeItem('cv1953t');sessionStorage.removeItem('cv1953s')}catch(e){}location.reload()};
 window.addEventListener('beforeunload',function(e){if(nDirty()){e.preventDefault();e.returnValue=''}});
-$('xemSel').onchange=function(){S.xem=$('xemSel').value;loadXem()};
+$('xemSel').onchange=function(){if(S.tab==='bt'||S.tab==='tt'){S.xemB=$('xemSel').value;S.bt=null;S.ttd=null;S.btF='all';if(S.tab==='bt')drawBt();else drawTt();return}S.xem=$('xemSel').value;loadXem()};
 function loadXem(){run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;S.dirty={};show(S.tab)}).catch(function(e){toast(msg(e),6000)})}
 
 function fillKy(){var l=(S.wf&&S.wf.dsKy)||S.dsKy||[];S.dsKy=l;var sel=$('kySel');if(!sel)return;
@@ -614,7 +614,8 @@ function show(t){nbDuyet();S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e
   var isB=BTAB.indexOf(t)>=0,needData=isB;
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   if(S.nv2tp&&!isB&&S.xem!==S.pgd){S.xem=S.pgd;S.data=null}
-  $('pgdBar').style.display=((isV()||S.nv2tp)&&isB)?'flex':'none';if(isV()||S.nv2tp)$('xemSel').value=S.xem;
+  var isBT=(t==='bt'||t==='tt')&&S.vt==='TH';if(!isBT&&S.xemB&&S.xemB!=='*'){S.xemB='*';S.bt=null;S.ttd=null}
+  $('pgdBar').style.display=((isV()||S.nv2tp)&&isB)||isBT?'flex':'none';if(isBT)$('xemSel').value=S.xemB||'*';else if(isV()||S.nv2tp)$('xemSel').value=S.xem;
   if(t==='adm'&&S.info&&S.info.ad)adDraw();else if(t==='home')drawHome();else if(t==='tq'||t==='qt')drawTq();else if(t==='bt')drawBt();else if(t==='dm')drawDm();else if(t==='cdt')drawCdt();else if(t==='cbq')drawCbq();else if(t==='tt37')drawTt37();else if(t==='kpi'||t==='kpib'||t==='kpibt'||t==='kpvb'){S.kp=null;drawKpi(t)}else if(t==='tt')drawTt();else{drawTable(t);bindEx()}
   $('sbar').style.display=(canEdit()&&isB)?'flex':'none';updBar();if(typeof dmNav==='function')dmNav()}
 /* ===== Thanh in PDF / xuất Excel đặt ngay tại từng biểu ===== */
@@ -628,8 +629,8 @@ function bindEx(){
   if($('eNgay'))$('eNgay').oninput=function(){S.ngay=this.value};
   [].forEach.call($('main').querySelectorAll('[data-ex]'),function(b){b.onclick=function(){var f=b.getAttribute('data-ex'),k=b.getAttribute('data-ek'),id=b.getAttribute('data-ei');
     xuat(function(){
-      if(k==='bt')return run('xuatBieuTong',S.token,f,S.ky);
-      if(k==='tt')return run('xuatTinhTrang',S.token,f,S.ky);
+      if(k==='bt')return run('xuatBieuTong',S.token,f,S.ky,S.xemB||'*');
+      if(k==='tt')return run('xuatTinhTrang',S.token,f,S.ky,S.xemB||'*');
       var ng=dmyIso(($('eNgay')||{}).value||S.ngay||homNay());if(!ng)return Promise.reject(new Error('Ngày lập báo cáo không đúng, nhập dạng 30/10/2026.'));
       if((S.vt==='TH'||S.nv2tp)&&S.xem==='*')return run('xuatTong',S.token,id,f,S.ky);
       return run('xuatBieu',S.token,NAMEB[id],ng,S.xem,f,S.ky)},b,f)}});
@@ -793,7 +794,7 @@ function actions(x){var h='',cv=S.info.cv,p=esc(x.pgd),B=function(a,l,c){return 
   return h+B('xem','Xem số liệu')}
 function btFull(){return S.vt==='TH'||(S.vt==='NV2'&&S.scope.length>=12)}
 function btLoad(){var d=S.bt;if(S.btBusy||!S.wf||(d&&d.ky===S.wf.ky))return;S.btBusy=1;
-  run('bieuTong',S.token,S.ky).then(function(r){S.bt=r;S.btF=r.co&&btLech(r).n?'lech':'all'}).catch(function(){S.bt={err:1,rows:[],ky:S.wf.ky}}).then(function(){S.btBusy=0;if(S.tab==='tq')drawTq();else if(S.tab==='bt')drawBt()})}
+  run('bieuTong',S.token,S.ky,S.xemB||'*').then(function(r){S.bt=r;S.btF=r.co&&btLech(r).n?'lech':'all'}).catch(function(){S.bt={err:1,rows:[],ky:S.wf.ky}}).then(function(){S.btBusy=0;if(S.tab==='tq')drawTq();else if(S.tab==='bt')drawBt()})}
 function btLeaf(d){return d.rows.filter(function(x){return x.k==='row'&&x.n!=null})}
 function btLech(d){var n=0,th=0,ca=0,kh=0;if(d.co)d.rows.filter(function(x){return x.lv===1&&(x.k==='row'||x.k==='nhom')&&x.n!=null&&x.n>0}).forEach(function(x){if(x.ttl==='khop')kh++;else{n++;if(x.ttl==='thap')th++;if(x.ttl==='cao')ca++}});return{n:n,thap:th,cao:ca,khop:kh}}
 function btD(tt,l){return '<span class="dck '+tt+'">'+(tt==='khop'?'✓ Khớp':(l>0?'+':'−')+fmt(Math.abs(r2(l))))+'</span>'}
@@ -831,7 +832,7 @@ function drawBt(){$('main').innerHTML=btCard();bindTq();bindEx();btLoad();btGcBi
 /* ----- Tab Tình trạng gửi BC ----- */
 var TTN={dung:['Gửi đúng hạn','dg'],cham:['Gửi chậm','cham'],du:['Gửi chưa đầy đủ','du'],chua:['Chưa gửi','chua']};
 function ttLoad(){var d=S.ttd;if(S.ttBusy||!S.wf||(d&&d.ky===S.wf.ky))return;S.ttBusy=1;
-  run('tinhTrang',S.token,S.ky).then(function(r){S.ttd=r;S.ttF='all'}).catch(function(){S.ttd={err:1,rows:[],ky:S.wf.ky,tk:{n:0,tinh:0,xa:0,dung:0,cham:0,du:0,chua:0}}}).then(function(){S.ttBusy=0;if(S.tab==='tt')drawTt();else if(S.tab==='tq')drawTq()})}
+  run('tinhTrang',S.token,S.ky,S.xemB||'*').then(function(r){S.ttd=r;S.ttF='all'}).catch(function(){S.ttd={err:1,rows:[],ky:S.wf.ky,tk:{n:0,tinh:0,xa:0,dung:0,cham:0,du:0,chua:0}}}).then(function(){S.ttBusy=0;if(S.tab==='tt')drawTt();else if(S.tab==='tq')drawTq()})}
 function ttSt(v){if(!v||v==='—')return '<span class="ts x">—</span>';var m={'Đã gửi BC':['dg','✓ Đã gửi'],'Gửi BC chậm':['cham','⏱ Chậm'],'Chưa gửi BC':['chua','✗ Chưa gửi'],'Không phát sinh':['dg','✓ Không phát sinh'],'Chưa chọn':['chn','○ Chưa chọn']}[v]||['x',esc(v)];return '<span class="ts '+m[0]+'">'+m[1]+'</span>'}
 function ttBody(d){var f=S.ttF||'all',q=(S.ttQ||'').toLowerCase().trim(),h='',leaf=f!=='all'||q;
   var rows=d.rows.filter(function(x){if(leaf){if(x.k!=='row'||!x.cat||x.cat==='khong')return false;if(f!=='all'&&x.cat!==f)return false}
