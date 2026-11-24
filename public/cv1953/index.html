@@ -475,6 +475,7 @@ header select.kysel{font-family:'Inter','Be Vietnam Pro',sans-serif;font-weight:
   <div class="lg">
     <div class="logo"><svg viewBox="0 0 32 32" width="30" height="30"><path d="M5 26V15M12 26V7M19 26v-9M26 26V11" stroke="#fff" stroke-width="3.4" stroke-linecap="round" fill="none"/></svg></div>
     <h2>Đăng nhập hệ thống</h2><p>Chọn tài khoản và nhập mã đăng nhập của đơn vị.</p>
+    <label>Đơn vị</label><select id="lgDv"><option>Đang tải...</option></select>
     <label>Tài khoản</label><select id="lgPgd"><option>Đang tải...</option></select>
     <label>Mã đăng nhập</label><input id="lgMa" type="text" autocomplete="off" maxlength="12" placeholder="Nhập mã được cấp">
     <div style="margin-top:22px"><button class="pri" id="lgBtn" style="width:100%;padding:13px;font-weight:600">Đăng nhập</button></div>
@@ -552,11 +553,14 @@ function hoi(html,okText,withText){return new Promise(function(res){
   $('mOk').onclick=function(){var v=t?t.value.trim():true;if(t&&!v){t.style.borderColor='#dc2626';return}$('modal').style.display='none';res(v)}})}
 
 /* đăng nhập */
-run('dsTaiKhoan').then(function(ds){var g={TH:'Cán bộ tổng hợp',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},h='';
-  var og=function(lb,l){if(l.length)h+='<optgroup label="'+esc(lb)+'">'+l.map(function(x){return'<option>'+esc(x.ten)+'</option>'}).join('')+'</optgroup>'};
-  og('Quản trị hệ thống',ds.filter(function(x){return x.vt==='AD'}));og('Tổng hợp',ds.filter(function(x){return x.vt==='TH'&&x.ten!=='Chuyên viên THBC'}));og('Cán bộ Nghiệp vụ 2',ds.filter(function(x){return x.vt==='NV2'}));
-  PGDS.forEach(function(p){og(p,ds.filter(function(x){return x.vt==='TH'&&x.ten==='Chuyên viên THBC'&&p==='Phòng Nghiệp vụ 2'}).concat(ds.filter(function(x){return x.vt==='PGD'&&x.donvi===p})))});
-  $('lgPgd').innerHTML=h||'<option>(chưa có tài khoản)</option>'}).catch(function(e){$('lgErr').textContent=msg(e)});
+run('dsTaiKhoan').then(function(ds){var NV='Phòng Nghiệp vụ 2',U={},ord=[NV].concat(PGDS.filter(function(p){return p!==NV})),lb=function(x){return x.ten==='Trưởng phòng Tổng hợp'?'Lãnh đạo phòng':x.ten};
+  ord.forEach(function(p){U[p]=[]});U['Quản trị hệ thống']=[];
+  ds.forEach(function(x){var u=x.vt==='AD'?'Quản trị hệ thống':(x.vt==='TH'||x.vt==='NV2')?NV:x.donvi;if(!U[u])U[u]=[];U[u].push(x)});
+  var rk=function(x){return x.ten==='Chuyên viên THBC'?0:(x.ten==='Trưởng phòng Tổng hợp'?1:2)};U[NV].sort(function(a,b){return rk(a)-rk(b)});
+  var us=ord.concat(['Quản trị hệ thống']).filter(function(u){return U[u]&&U[u].length});
+  $('lgDv').innerHTML=us.map(function(u){return'<option>'+esc(u)+'</option>'}).join('');
+  var fill=function(){var l=U[$('lgDv').value]||[];$('lgPgd').innerHTML=l.map(function(x){return'<option value="'+esc(x.ten)+'">'+esc(lb(x))+'</option>'}).join('')||'<option>(chưa có tài khoản)</option>'};
+  $('lgDv').onchange=fill;fill()}).catch(function(e){$('lgErr').textContent=msg(e)});
 $('lgMa').addEventListener('keydown',function(e){if(e.key==='Enter')dangNhap()});
 $('lgBtn').onclick=dangNhap;
 function ganVai(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=r;S.pgd=r.donvi||r.ten;S.xem=r.vt==='PGD'?S.pgd:r.scope[0];S.nv2tp=!!r.xemAll;
