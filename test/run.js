@@ -50,6 +50,10 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const CV = require('../lib/cv1953'), d = await CV.cvLay(th, ''); assert(d.so.n > 0 && d.vb.so === '' && /Sở Tài chính/.test(d.vb.kinhGui), 'công văn có số liệu và mẫu mặc định');
     await assert.rejects(() => CV.cvLay(p20, ''), /tổng hợp/); await assert.rejects(() => CV.cvLuu(th, '', { ngay: 'abc' }), /03\/11/);
     await CV.cvLuu(th, '', { so: '1841', ngay: '03/11/2026' }); const x = await CV.cvXuat(th, ''); assert(x.b64.length > 1000 && /\.docx$/.test(x.name), 'xuất công văn Word');
+    const mo = [{ t: 'p', jc: 'center', first: 0, before: 0, after: 0, ln: 312, sz: 28, r: [{ t: 'Kính gửi: Sở', b: 1 }, { t: ' X\nY', i: 1, a: 'n' }] }, { t: 'tbl', cols: [4500, 4855], c: [[{ t: 'g', ind: 1390 }], [{ t: 'p', jc: 'left', r: [{ t: '<&>' }] }]] }];
+    await CV.cvLuuTay(th, '', mo); const dl = await CV.cvLay(th, ''); assert(dl.tay && dl.tay.length === 2, 'lưu công văn soạn trên web');
+    const xt = await CV.cvXuatTay(th, '', mo); assert(xt.b64.length > 800 && /\.docx$/.test(xt.name), 'xuất Word từ bản soạn trên web');
+    await CV.cvLamLai(th, ''); assert(!(await CV.cvLay(th, '')).tay, 'làm lại công văn từ mẫu');
   }
   // ---- Tài khoản quản trị ----
   {

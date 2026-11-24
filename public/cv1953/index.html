@@ -469,6 +469,12 @@ nav#tabs button{font-size:13px;font-weight:500;padding:6px 8px;line-height:1.3;l
 nav#tabs button.on{font-weight:600}
 nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.5px}
 @media(max-width:899px){.sbar{left:0}}
+/* Công văn soạn trực tiếp như Word */
+.cvtool{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fff;border:1px solid #ead3d7;border-radius:10px;padding:8px 10px;margin:0 0 10px}.cvtool .sp{width:1px;height:20px;background:#e5d3d6;margin:0 4px}
+.cvwrap{background:#e9e4e5;border-radius:12px;padding:18px;overflow:auto}
+.cvpaper{width:794px;min-height:1000px;margin:0 auto;background:#fff;padding:57px 57px 57px 113px;box-sizing:border-box;font-family:'Times New Roman',Times,serif;color:#000;box-shadow:0 2px 14px rgba(0,0,0,.18);outline:none;font-size:14pt}
+.cvpaper p{margin:0;min-height:1em;word-break:break-word}.cvpaper table.cvt{width:624px;border-collapse:collapse;table-layout:fixed}.cvpaper td{vertical-align:top;padding:0}.cvpaper .gch{border-bottom:1px solid #000;height:0;margin-top:2px;margin-bottom:2px}
+.cvpaper .au,.pgh .au{background:#fff4cc;border-radius:3px}
 </style>
 <script>try{if(localStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
@@ -625,21 +631,85 @@ window.addEventListener('scroll',q,true);window.addEventListener('resize',q);set
 /* ===== Công văn gửi Sở Tài chính kèm báo cáo CV 1953 (phần Tổng hợp toàn tỉnh) ===== */
 function drawCv(){var m=$('main');m.style.display='block';m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải công văn...</p>';
   run('cvLay',S.token,S.ky).then(function(d){if(S.tab!=='cv')return;cvForm(d)}).catch(function(e){m.innerHTML='<div class="card"><p class="hint" style="color:#b91c1c">'+esc(msg(e))+'</p></div>'})}
-function cvForm(d){var v=d.vb,s=d.so,m=$('main');
-  var inp=function(id,lab,val,ph,w){return '<div style="flex:'+(w||1)+';min-width:160px"><label>'+lab+'</label><input id="'+id+'" value="'+esc(val||'')+'" placeholder="'+esc(ph||'')+'"></div>'};
-  var chua=function(a,b){var p=[];if(a)p.push(a+' đơn vị khối tỉnh');if(b)p.push(b+' xã/phường');return p.length?'gồm '+p.join(' và '):'0 đơn vị'};
-  var tx='Tổng số chủ đầu tư và UBND xã/phường được giao kế hoạch vốn: '+s.n+' đơn vị\n- Đã gửi báo cáo: '+s.daGui+' đơn vị\n    + Đầy đủ: '+s.dayDu+' ('+s.dayDuTinh+' khối tỉnh, '+s.dayDuXa+' xã/phường)\n    + Chưa đầy đủ: '+chua(s.chuaDuTinh,s.chuaDuXa)+'\n- Chưa gửi báo cáo: '+s.chuaGui+' đơn vị';
-  m.innerHTML='<div class="pgh"><h2 style="margin:0 0 4px">📄 Công văn báo cáo số liệu giải ngân (BC CV 1953)</h2><div class="hint" style="margin:0 0 12px">Kỳ báo cáo tháng '+esc(d.nhan)+'. Mẫu soạn sẵn theo công văn tháng trước; số liệu tình hình gửi báo cáo của các chủ đầu tư, UBND xã/phường lấy tự động. Biểu 01, 02, 03 và Phụ lục 01 (Biểu 04-KBNN) tải ở các mục tương ứng để đính kèm.</div></div>'+
-   '<div class="card" style="margin-bottom:14px"><h3>Thông tin văn bản</h3><div style="display:flex;gap:10px;flex-wrap:wrap">'+inp('cvSo','Số văn bản',v.so,'VD: 1841')+inp('cvNgay','Ngày văn bản',v.ngay,'dd/mm/yyyy')+inp('cvDen','Số liệu đến ngày',v.denNgay,'dd/mm/yyyy')+inp('cvDd','Địa danh',v.diaDanh)+'</div>'+
-   '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">'+inp('cvTy','Trích yếu (V/v) – {denNgay} tự thay bằng ngày số liệu',v.trichYeu,'',3)+inp('cvKg','Kính gửi',v.kinhGui,'',2)+'</div>'+
-   '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">'+inp('cvKt','Thẩm quyền ký',v.kt)+inp('cvCv','Chức vụ',v.chucVu)+inp('cvNk','Người ký (họ tên)',v.nguoiKy,'',1.4)+'</div>'+
-   '<label>Căn cứ / đoạn mở đầu (mỗi đoạn một dòng)</label><textarea id="cvCc" rows="9" style="width:100%">'+esc(v.canCu)+'</textarea>'+
-   '<label>Nơi nhận (mỗi dòng một nơi)</label><textarea id="cvNn" rows="5" style="width:100%">'+esc(v.noiNhan)+'</textarea>'+
-   '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px"><button class="mini" id="cvSave">💾 Lưu thông tin</button><button class="pri mini" id="cvWord">⬇ Tải công văn (Word)</button></div></div>'+
-   '<div class="card"><h3>Số liệu tự điền vào mục II của công văn</h3><pre class="kpvb">'+esc(tx)+'</pre><p class="hint" style="margin:6px 0 0">Số liệu theo Biểu 04-KBNN (tình trạng gửi báo cáo) của kỳ đang chọn; thay đổi thì tải lại công văn để có bản mới nhất.</p></div>';
-  var ob=function(){return {so:$('cvSo').value,ngay:$('cvNgay').value,denNgay:$('cvDen').value,diaDanh:$('cvDd').value,trichYeu:$('cvTy').value,kinhGui:$('cvKg').value,kt:$('cvKt').value,chucVu:$('cvCv').value,nguoiKy:$('cvNk').value,canCu:$('cvCc').value,noiNhan:$('cvNn').value}};
-  $('cvSave').onclick=function(){run('cvLuu',S.token,S.ky,ob()).then(function(){toast('Đã lưu thông tin công văn.',3500)}).catch(function(e){toast(msg(e),8000)})};
-  $('cvWord').onclick=function(){var b=this;xuat(function(){return run('cvLuu',S.token,S.ky,ob()).then(function(){return run('cvXuat',S.token,S.ky)})},b,'docx')}}
+/* Công văn BC 1953: hiện nguyên văn bản như file Word để sửa trực tiếp; số liệu tự điền sẵn (phần tô vàng nhạt), bấm Lưu & tải Word là có file. */
+var CV_PHAN={n:1,daGui:1,dayDu:1,dayDuTinh:1,dayDuXa:1,chuaDu:1,chuaGui:1};
+function cvAuto(d){var s=d.so,bi=function(x){return x<10?'0'+x:String(x)},p=[];if(s.chuaDuTinh)p.push(bi(s.chuaDuTinh)+' đơn vị khối tỉnh');if(s.chuaDuXa)p.push(bi(s.chuaDuXa)+' đơn vị xã/phường');
+  return {n:String(s.n),daGui:String(s.daGui),dayDu:String(s.dayDu),dayDuTinh:String(s.dayDuTinh),dayDuXa:String(s.dayDuXa),chuaDu:p.length?'gồm '+p.join(' và '):'0 đơn vị',chuaGui:String(s.chuaGui)}}
+function cvMau(d){var v=d.vb,A=cvAuto(d),nam=d.ky.substring(0,4),den=v.denNgay||'',ty=String(v.trichYeu||'').split('{denNgay}').join(den),
+  dm=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(v.ngay||''),dn=(v.diaDanh||'Phú Thọ')+', ngày '+(dm?dm[1]:'......')+' tháng '+(dm?dm[2]:'......')+' năm '+(dm?dm[3]:nam),
+  R=function(t,o){o=o||{};return {t:t,b:o.b?1:0,i:o.i?1:0,u:o.u?1:0,a:o.a||''}},
+  P=function(r,o){o=o||{};return {t:'p',jc:o.jc||'both',first:o.first||0,left:o.left||0,before:o.before||0,after:o.after||0,ln:o.ln||312,sz:o.sz||28,keep:o.keep?1:0,r:r}},
+  C=function(sz,ln,x){return Object.assign({jc:'center',sz:sz,ln:ln},x||{})},
+  B=function(r,o){return P(r,Object.assign({first:720,before:60},o||{}))},
+  au=function(k,b){return R(A[k],{a:k,b:b})},
+  head=[{t:'tbl',cols:[4500,4855],c:[
+    [P([R('KHO BẠC NHÀ NƯỚC')],C(22,240)),P([R('KHO BẠC NHÀ NƯỚC KHU VỰC VIII',{b:1})],C(22,240)),{t:'g',ind:1390},P([R('Số: '+(v.so||'......')+' /KBVIII-NV2')],C(26,300,{before:80})),P([R('V/v '+ty)],C(24,300,{before:40}))],
+    [P([R('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM',{b:1})],C(22,240)),P([R('Độc lập – Tự do – Hạnh phúc',{b:1})],C(26,240)),{t:'g',ind:690},P([R(dn,{i:1})],C(28,300,{before:120}))]]}],
+  nd=[P([R('Kính gửi:  '),R(v.kinhGui+'.')],{jc:'center',before:240,after:80})];
+  String(v.canCu||'').split(/\n+/).forEach(function(t){if(t)nd.push(B([R(t)]))});
+  nd.push(B([R('KBNN khu vực VIII (địa bàn Tuyên Quang) tổng hợp số liệu giải ngân vốn đầu tư công đến hết ngày '+den+', cụ thể như sau:')]),
+    B([R('I. Kết quả giải ngân vốn đầu tư năm '+nam+' (đối với Chủ đầu tư, UBND cấp xã đã gửi báo cáo):',{b:1})]),
+    B([R('1. Báo cáo tổng hợp kết quả giải ngân vốn đầu tư ngân sách địa phương theo chủ đầu tư năm '+nam+' '),R('(chi tiết tại Biểu 01-KBNN đính kèm).',{i:1})]),
+    B([R('2. Báo cáo tổng hợp kết quả giải ngân vốn đầu tư ngân sách trung ương theo chủ đầu tư năm '+nam+' '),R('(chi tiết tại Biểu 02-KBNN đính kèm).',{i:1})]),
+    B([R('3. Báo cáo giải ngân vốn đầu tư năm '+nam+' (Vốn chuyển nguồn) chương trình MTQG giai đoạn 2021-2025 '),R('(chi tiết tại Biểu 03.KBNN.21-25(ĐT) đính kèm).',{i:1})]),
+    B([R('4. Báo cáo giải ngân vốn đầu tư năm '+nam+' chương trình MTQG giai đoạn 2026-2030 '),R('(chi tiết tại Biểu 03.KBNN.26-30(ĐT) đính kèm).',{i:1})]),
+    B([R('II. Tình hình thực hiện báo cáo của các Chủ đầu tư, UBND xã.',{b:1})]),
+    B([R('Tổng số chủ đầu tư và UBND xã/phường được giao kế hoạch vốn năm '+nam+' là '),au('n'),R(' đơn vị, trong đó:')]),
+    B([R('- Đơn vị đã gửi báo cáo: '),au('daGui'),R(' đơn vị, trong đó:')]),
+    B([R('+ Đơn vị đã gửi báo cáo đầy đủ: '),au('dayDu'),R(' đơn vị, chia ra: '),au('dayDuTinh'),R(' đơn vị khối tỉnh và '),au('dayDuXa'),R(' xã/phường.')],{first:1000}),
+    B([R('+ Đơn vị báo cáo chưa đầy đủ: '),au('chuaDu'),R('.')],{first:1000}),
+    B([R('- Đơn vị chưa gửi báo cáo: '),au('chuaGui'),R(' đơn vị.')]),
+    P([R('(chi tiết tại Phụ lục số 01 đính kèm)',{i:1})],{jc:'center',before:60}),
+    B([R('Kho bạc Nhà nước khu vực VIII trân trọng gửi '+String(v.kinhGui).replace(/\s*tỉnh Tuyên Quang\s*$/i,'')+' tổng hợp số liệu báo cáo./.')]));
+  var nn=[P([R('Nơi nhận:',{b:1,i:1})],{jc:'left',sz:24,ln:300,keep:1})];
+  String(v.noiNhan||'').split(/\n+/).forEach(function(t){if(t)nn.push(P([R('- '+t.replace(/^-\s*/,''))],{jc:'left',sz:22,ln:300}))});
+  var ky=[P([R(v.kt,{b:1})],C(28,300)),P([R(v.chucVu,{b:1})],C(28,300)),P([R('')],{jc:'center',before:1100,ln:300}),P([R(v.nguoiKy,{b:1})],C(28,300))];
+  return head.concat(nd,[P([R('')],{before:360,ln:300}),{t:'tbl',cols:[4300,5055],c:[nn,ky]}])}
+/* mô hình → HTML của khung soạn */
+function cvHtmlR(r){var h=esc(r.t).replace(/\n/g,'<br>');if(r.u)h='<u>'+h+'</u>';if(r.i)h='<i>'+h+'</i>';if(r.b)h='<b>'+h+'</b>';return r.a?'<span class="au" data-a="'+esc(r.a)+'">'+h+'</span>':h}
+function cvHtmlK(b){if(b.t==='g')return '<div class="gch" contenteditable="false" data-ind="'+b.ind+'" style="margin:0 '+Math.round(b.ind/15)+'px"></div>';
+  if(b.t==='tbl')return '<table class="cvt" data-cols="'+b.cols.join(',')+'"><tr>'+b.c.map(function(c,i){return '<td style="width:'+Math.round(b.cols[i]/15)+'px">'+c.map(cvHtmlK).join('')+'</td>'}).join('')+'</tr></table>';
+  var rs=(b.r||[]).map(cvHtmlR).join('');return '<p data-jc="'+b.jc+'" data-first="'+b.first+'" data-left="'+b.left+'" data-before="'+b.before+'" data-after="'+b.after+'" data-ln="'+b.ln+'" data-sz="'+b.sz+'" data-keep="'+(b.keep?1:0)+'" style="'+cvStyle(b)+'">'+(rs||'<br>')+'</p>'}
+function cvStyle(b){return 'text-align:'+(b.jc==='both'?'justify':b.jc)+';text-indent:'+Math.round(b.first/15)+'px;margin:'+Math.round(b.before/15)+'px 0 '+Math.round(b.after/15)+'px '+Math.round(b.left/15)+'px;line-height:'+(b.ln/240).toFixed(2)+';font-size:'+(b.sz/2)+'pt'}
+/* HTML khung soạn → mô hình */
+function cvRuns(n,f,out){for(var k=0;k<n.childNodes.length;k++){var c=n.childNodes[k];
+  if(c.nodeType===3){var t=c.nodeValue.replace(/ /g,' ').replace(/[\r\n]+/g,' ');if(t)out.push({t:t,b:f.b,i:f.i,u:f.u,a:f.a})}
+  else if(c.nodeType===1){var g={b:f.b,i:f.i,u:f.u,a:f.a},tg=c.tagName,st=c.style||{};
+    if(tg==='BR'){out.push({t:'\n',b:0,i:0,u:0,a:''});continue}
+    if(tg==='B'||tg==='STRONG'||st.fontWeight==='bold'||+st.fontWeight>=600)g.b=1;if(tg==='I'||tg==='EM'||st.fontStyle==='italic')g.i=1;
+    if(tg==='U'||/underline/.test(st.textDecoration||st.textDecorationLine||''))g.u=1;if(c.getAttribute&&c.getAttribute('data-a'))g.a=c.getAttribute('data-a');
+    cvRuns(c,g,out)}}}
+function cvGop(rs){var o=[];rs.forEach(function(r){var l=o[o.length-1];if(l&&l.b===r.b&&l.i===r.i&&l.u===r.u&&l.a===r.a&&r.t!=='\n'&&l.t.slice(-1)!=='\n')l.t+=r.t;else o.push({t:r.t,b:r.b,i:r.i,u:r.u,a:r.a})});
+  if(o.length&&o[o.length-1].t==='\n')o.pop();return o.filter(function(r){return r.t!==''})}
+function cvPara(e){var g=function(k,m){var x=e.getAttribute&&e.getAttribute('data-'+k);return x==null||x===''||isNaN(+x)?m:+x},rs=[];cvRuns(e,{b:0,i:0,u:0,a:''},rs);
+  var jc=e.getAttribute&&e.getAttribute('data-jc')||'both';return {t:'p',jc:jc,first:g('first',0),left:g('left',0),before:g('before',0),after:g('after',0),ln:g('ln',312),sz:g('sz',28),keep:g('keep',0),r:cvGop(rs)}}
+function cvKhoiList(box){var out=[],cur=null,flush=function(){if(cur){var rs=[];cur.forEach(function(n){var w=document.createElement('p');w.appendChild(n.cloneNode(true));cvRuns(w,{b:0,i:0,u:0,a:''},rs)});var m=cvPara(document.createElement('p'));m.r=cvGop(rs);if(m.r.length)out.push(m);cur=null}};
+  for(var k=0;k<box.childNodes.length;k++){var c=box.childNodes[k];
+    if(c.nodeType===1&&c.tagName==='TABLE'){flush();var cols=(c.getAttribute('data-cols')||'').split(',').map(Number),cs=[];[].forEach.call(c.rows[0].cells,function(td){cs.push(cvKhoiList(td))});out.push({t:'tbl',cols:cols,c:cs})}
+    else if(c.nodeType===1&&c.classList.contains('gch')){flush();out.push({t:'g',ind:+c.getAttribute('data-ind')||0})}
+    else if(c.nodeType===1&&(c.tagName==='P'||c.tagName==='DIV')){flush();out.push(cvPara(c))}
+    else{cur=cur||[];cur.push(c)}}
+  flush();return out}
+function cvDong(){var s=$('cvDoc');return cvKhoiList(s)}
+function cvTuDong(bl,A){(bl||[]).forEach(function(b){if(b.t==='tbl')b.c.forEach(function(c){cvTuDong(c,A)});else if(b.t==='p')(b.r||[]).forEach(function(r){if(r.a&&A[r.a]!=null)r.t=A[r.a]})});return bl}
+function cvForm(d){var m=$('main'),A=cvAuto(d),moi=!d.tay,bl=d.tay?cvTuDong(d.tay,A):cvMau(d),sau=null,doi=0;
+  m.innerHTML='<div class="pgh"><h2 style="margin:0 0 4px">📄 Công văn báo cáo số liệu giải ngân (BC CV 1953)</h2><div class="hint" style="margin:0 0 10px">Kỳ báo cáo tháng '+esc(d.nhan)+'. Sửa trực tiếp ngay trên văn bản như trong Word; phần <span class="au">tô vàng nhạt</span> là số liệu hệ thống tự điền và tự cập nhật mỗi lần mở trang. Bấm <b>Lưu &amp; tải Word</b> để có file. Biểu 01, 02, 03 và Phụ lục 01 (Biểu 04-KBNN) tải ở các mục tương ứng để đính kèm.</div></div>'+
+   '<div class="cvtool"><button class="mini" data-c="bold" title="Đậm (Ctrl+B)"><b>B</b></button><button class="mini" data-c="italic" title="Nghiêng (Ctrl+I)"><i>I</i></button><button class="mini" data-c="underline" title="Gạch chân (Ctrl+U)"><u>U</u></button><span class="sp"></span>'+
+   '<button class="mini" data-j="left" title="Căn trái">⯇</button><button class="mini" data-j="center" title="Căn giữa">≡</button><button class="mini" data-j="right" title="Căn phải">⯈</button><button class="mini" data-j="both" title="Căn đều hai bên">☰</button><button class="mini" data-th="1" title="Bật/tắt thụt đầu dòng">⇥</button><span class="sp"></span>'+
+   '<button class="mini" id="cvLam">↺ Làm lại từ mẫu</button><button class="mini" id="cvSave">💾 Lưu</button><button class="pri mini" id="cvWord">⬇ Lưu &amp; tải Word</button><span class="hint" id="cvTt" style="margin-left:6px"></span></div>'+
+   '<div class="cvwrap"><div class="cvpaper" id="cvDoc" contenteditable="true" spellcheck="false">'+bl.map(cvHtmlK).join('')+'</div></div>';
+  var doc=$('cvDoc'),tt=function(x){$('cvTt').textContent=x},luu=function(){var b=cvDong();return run('cvLuuTay',S.token,S.ky,b).then(function(){doi=0;tt('Đã lưu '+new Date().toLocaleTimeString('vi-VN'));return b})};
+  try{document.execCommand('defaultParagraphSeparator',false,'p')}catch(e){}
+  doc.addEventListener('input',function(){doi=1;tt('Chưa lưu…');clearTimeout(sau);sau=setTimeout(function(){if(S.tab==='cv'&&doi&&$('cvDoc')===doc)luu().catch(function(){})},2500)});
+  doc.addEventListener('paste',function(e){e.preventDefault();var t=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,t)});
+  var hdP=function(){var s=window.getSelection();if(!s.rangeCount)return null;var n=s.anchorNode;n=n&&n.nodeType===3?n.parentNode:n;var p=n&&n.closest?n.closest('p'):null;return p&&doc.contains(p)?p:null};
+  [].forEach.call(m.querySelectorAll('.cvtool button'),function(b){b.onmousedown=function(e){e.preventDefault()}});
+  [].forEach.call(m.querySelectorAll('[data-c]'),function(b){b.onclick=function(){doc.focus();document.execCommand(b.getAttribute('data-c'));doc.dispatchEvent(new Event('input'))}});
+  [].forEach.call(m.querySelectorAll('[data-j]'),function(b){b.onclick=function(){var p=hdP();if(!p)return;var j=b.getAttribute('data-j');p.setAttribute('data-jc',j);p.style.textAlign=j==='both'?'justify':j;doc.dispatchEvent(new Event('input'))}});
+  m.querySelector('[data-th]').onclick=function(){var p=hdP();if(!p)return;var x=+p.getAttribute('data-first')||0,y=x?0:720;p.setAttribute('data-first',y);p.style.textIndent=Math.round(y/15)+'px';doc.dispatchEvent(new Event('input'))};
+  $('cvSave').onclick=function(){luu().then(function(){toast('Đã lưu công văn.',3000)}).catch(function(e){toast(msg(e),8000)})};
+  $('cvWord').onclick=function(){var b=this;xuat(function(){var x=cvDong();return run('cvLuuTay',S.token,S.ky,x).then(function(){doi=0;tt('Đã lưu '+new Date().toLocaleTimeString('vi-VN'));return run('cvXuatTay',S.token,S.ky,x)})},b,'docx')};
+  $('cvLam').onclick=function(){if(!confirm('Làm lại công văn từ mẫu? Mọi chỗ bạn đã sửa trên văn bản sẽ mất, số liệu được điền lại mới nhất.'))return;run('cvLamLai',S.token,S.ky).then(function(){drawCv()}).catch(function(e){toast(msg(e),8000)})}}
 function dangNhap(){
   $('lgErr').textContent='';$('lgBtn').disabled=true;$('lgBtn').textContent='Đang kiểm tra...';
   run('dangNhap',$('lgPgd').value,$('lgMa').value).then(function(r){try{localStorage.setItem('cv1953s',JSON.stringify(r))}catch(e){}return vaoApp(r)})
