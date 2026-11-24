@@ -106,7 +106,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert.strictEqual((await L.duyet(th, 'th_nhan', '', '', P)).list.find((y) => y.pgd === P).tt, 'Tổng hợp đã tiếp nhận');
     await assert.rejects(() => L.duyet(tth, 'th_duyet', '', '', P), /Không thực hiện/);
     assert.strictEqual((await L.duyet(th, 'th_trinh', '', '', P)).list.find((y) => y.pgd === P).tt, 'Đã trình lãnh đạo phòng');
-    await assert.rejects(() => L.duyet(th, 'th_duyet', '', '', P), /Trưởng phòng Tổng hợp/);
+    await assert.rejects(() => L.duyet(th, 'th_duyet', '', '', P), /Lãnh đạo phòng/);
     await assert.rejects(() => L.duyet(tth, 'th_tra', '', '', P), /lý do/);
     await L.duyet(tth, 'th_tra', 'xem lại số', '', P); assert.strictEqual((await st(th)).tt, 'Bị trả lại');
     await L.duyet(lap, 'lap_trinh', '', ''); await L.duyet(ktt, 'ktt_trinh', '', ''); await L.duyet(tp, 'tp_duyet', '', ''); await L.duyet(th, 'th_nhan', '', '', P); await L.duyet(th, 'th_trinh', '', '', P);

@@ -566,7 +566,8 @@ $('lgBtn').onclick=dangNhap;
 function ganVai(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=r;S.pgd=r.donvi||r.ten;S.xem=r.vt==='PGD'?S.pgd:r.scope[0];S.nv2tp=!!r.xemAll;
   $('xemSel').innerHTML=(r.vt!=='PGD'||S.nv2tp?'<option value="*">★ Toàn tỉnh (tất cả phòng)</option>':'')+(S.nv2tp?r.xemAll:r.scope).map(function(p){return'<option>'+esc(p)+'</option>'}).join('')}
 /* Một mã đăng nhập hai vai (Trưởng phòng Tổng hợp + Lãnh đạo Phòng NV2): r.vai2 là phiên của vai Phòng NV2 */
-function whoTxt(){var b=S.vaiNv;return (S.vt==='TH'?'★ ':'')+(b?S.vaiTh.ten:S.ten)+(b?(S.vai==='nv'?' · Phòng NV2':' · Tổng hợp'):'')}
+function tenHt(t){return t==='Trưởng phòng Tổng hợp'?'Lãnh đạo phòng':t}
+function whoTxt(){var b=S.vaiNv;return (S.vt==='TH'?'★ ':'')+tenHt(b?S.vaiTh.ten:S.ten)+(b?(S.vai==='nv'?' · Phòng NV2':' · Tổng hợp'):'')}
 function nvKiem(){S.nvPend=false;if(!S.vaiNv||S.vai!=='th')return Promise.resolve();return run('trangThai',S.vaiNv.token,S.ky).then(function(w){var me=(w.list||[]).filter(function(x){return x.pgd===(S.vaiNv.donvi||S.vaiNv.ten)})[0];S.nvPend=!!(me&&me.tt==='Chờ TP phê duyệt');nbDuyet()}).catch(function(){})}
 function setVai(v){if(S.vai===v)return Promise.resolve();var r=v==='nv'?S.vaiNv:S.vaiTh;if(!r)return Promise.resolve();
   if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển sang phần khác?'))return Promise.reject(new Error('huy'));
@@ -590,7 +591,7 @@ function adDraw(){
   run('adDs',S.token).then(function(ds){S.adDs=ds;adRows();$('adQ').oninput=adRows}).catch(function(e){$('adTb').innerHTML='<span class="hint" style="color:#b91c1c">'+esc(msg(e))+'</span>'})}
 function adPhaiDoi(){var m=$('main');m.innerHTML='<div class="card"><h3>🛡 Quản trị hệ thống</h3><p class="hint">Tài khoản đang dùng mật khẩu mặc định. Hãy đổi mật khẩu (hộp thoại vừa mở hoặc nút “Đổi mật khẩu” ở góc trên) để bắt đầu sử dụng.</p></div>'}
 function adRows(){
-  var q=($('adQ').value||'').trim().toLowerCase(),G={TH:'Chuyên viên THBC',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},cv={LAP:'Người lập biểu',KTT:'Kế toán trưởng',TP:'Trưởng phòng',TTH:'Trưởng phòng THBC'};
+  var q=($('adQ').value||'').trim().toLowerCase(),G={TH:'Chuyên viên THBC',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},cv={LAP:'Người lập biểu',KTT:'Kế toán trưởng',TP:'Trưởng phòng',TTH:'Lãnh đạo phòng'};
   var l=(S.adDs||[]).filter(function(a){return !q||(a.ten+' '+a.donvi+' '+a.hoten).toLowerCase().indexOf(q)>=0});
   $('adTb').innerHTML='<table class="dmt" style="width:100%"><thead><tr><th>Tài khoản</th><th>Nhóm</th><th>Người dùng</th><th>Mật khẩu</th><th></th></tr></thead><tbody>'+l.map(function(a,i){
     return '<tr><td>'+esc(a.ten)+'</td><td>'+esc((G[a.vt]||a.vt)+(a.cv&&cv[a.cv]?' · '+cv[a.cv]:''))+'</td><td>'+esc(a.hoten||'')+'</td><td><code style="font-size:14px;letter-spacing:.5px">'+esc(a.ma)+'</code>'+(a.macdinh?' <small style="color:#b45309">(mặc định)</small>':'')+'</td><td><button class="mini" data-i="'+S.adDs.indexOf(a)+'">Đặt lại</button></td></tr>'}).join('')+(l.length?'':'<tr><td colspan="5" class="hint">Không có tài khoản phù hợp.</td></tr>')+'</tbody></table>';
