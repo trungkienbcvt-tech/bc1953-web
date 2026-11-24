@@ -1803,7 +1803,14 @@ function kpNote(d,hasProp){
       h+='<div class="kpni"><b>'+esc(x.b)+'</b> <span class="kpnd">'+kpLech(kpPr(x)-kpTh(x))+'</span>'+ch.join('')+'<div class="kpnl">Lý do: '+esc(x.ly)+'</div></div>'});h+='</div>'}
   return '<div class="kpt"><div class="card kpf"><div id="kpFrWait" class="hint" style="padding:20px">⏳ Đang tạo biểu...</div><iframe id="kpFrame" title="Biểu KPI"></iframe></div>'+h+'</div></div>'}
 function kpPdfLoad(){var f=$('kpFrame');if(!f)return;
-  run('xuatKpi',S.token,S.kp.moc.id,'pdf',S.kpEv||'goc').then(function(r){var t=new TextDecoder('utf-8').decode(Uint8Array.from(atob(r.b64),function(c){return c.charCodeAt(0)})).replace(/<script>setTimeout[\s\S]*?<\/script>/,'').replace('</head>','<style>.np{display:none}</style></head>');f.onload=function(){fitFrame(f)};f.srcdoc=t;var w=$('kpFrWait');if(w)w.style.display='none'})
+  run('xuatKpi',S.token,S.kp.moc.id,'pdf',S.kpEv||'goc').then(function(r){var t=new TextDecoder('utf-8').decode(Uint8Array.from(atob(r.b64),function(c){return c.charCodeAt(0)})).replace(/<script>setTimeout[\s\S]*?<\/script>/,'').replace('</head>','<style>.np{display:none}/* Menu trái: rộng hơn, chữ gọn, ít thụt lề để tên mục không bị rơi dòng */
+nav#tabs{width:272px;padding-left:6px;padding-right:6px}.sbar{left:272px}
+nav#tabs .tgb{margin-left:6px;padding-left:6px}nav#tabs .tg.sub .tgb{margin-left:4px}
+nav#tabs button{font-size:13px;font-weight:500;padding:6px 8px;line-height:1.3;letter-spacing:0}
+nav#tabs button.on{font-weight:600}
+nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.5px}
+@media(max-width:899px){.sbar{left:0}}
+</style></head>');f.onload=function(){fitFrame(f)};f.srcdoc=t;var w=$('kpFrWait');if(w)w.style.display='none'})
   .catch(function(e){var w=$('kpFrWait');if(w)w.textContent='Không tạo được biểu: '+msg(e)})}
 function kpDuyet(d,hasProp){
   var m=d.ds[0]||{},tot=d.rows.filter(function(x){return x.k==='tot'})[0]||{t0:0,t1:0,t2:0,t3:0,p0:0,p1:0,p2:0,p3:0,e0:0,e1:0,e2:0,e3:0,nd:0},q=d.quyen||{},tt=q.tt||m.tt,cho=tt==='gui',
