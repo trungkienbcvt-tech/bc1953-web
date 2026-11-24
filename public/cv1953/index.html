@@ -443,6 +443,18 @@ nav#tabs .tg.sub{margin:4px 0 6px}nav#tabs .tg.sub .tgh{background:#e8f1f8!impor
 #login .lg h2{font-size:24px;font-weight:700;letter-spacing:-.4px}#login .lg label{font-weight:600}
 #login #lgBtn{font-family:'Inter','Be Vietnam Pro',sans-serif;font-weight:600;letter-spacing:.1px}
 @media(max-width:900px){#login .lhero h1{font-size:26px;letter-spacing:-.2px}#login .lhero h1 span.ln{white-space:normal}}
+/* Thanh tiêu đề: gọn, hiện đại */
+header,header button,header select,header .chip,header .greet{font-family:'Inter','Be Vietnam Pro',sans-serif}
+header{padding-top:10px;padding-bottom:10px;gap:12px;box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 6px 18px rgba(80,10,25,.18)}
+header h1{font-size:17px;font-weight:650;letter-spacing:-.2px;padding-left:54px;min-height:42px}
+header h1::before{width:40px;height:40px;margin-top:-20px;border-radius:12px;box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 4px 12px rgba(0,0,0,.25)}
+header h1 small{font-size:11.5px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;opacity:.72;margin-top:3px}
+header h1 small::before{display:none}
+header button{border-radius:999px;padding:7px 16px;font-size:13px;font-weight:500;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(6px);transition:background .15s}
+header button:hover{background:rgba(255,255,255,.22)}
+header .greet{font-size:13px;font-weight:500;opacity:.9}
+header .chip{border-radius:999px;font-size:12.5px;font-weight:600;letter-spacing:.2px}
+header select.kysel{font-family:'Inter','Be Vietnam Pro',sans-serif;font-weight:600;border-radius:999px}
 </style>
 <script>try{if(localStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
@@ -477,7 +489,7 @@ nav#tabs .tg.sub{margin:4px 0 6px}nav#tabs .tg.sub .tgh{background:#e8f1f8!impor
   <header>
     <h1>Hệ thống quản lý danh mục và báo cáo đầu tư công<small>KBNN khu vực VIII · Danh mục · Báo cáo 1953 · Báo cáo KPI</small></h1>
     <select id="kySel" class="kysel" title="Chọn kỳ báo cáo"></select><span class="greet" id="greet"></span><span class="chip" id="who"></span>
-    <button id="maBtn" title="Đổi mật khẩu đăng nhập">🔑 Đổi mật khẩu</button><button id="outBtn">Đăng xuất</button>
+    <button id="maBtn" title="Đổi mật khẩu đăng nhập">Đổi mật khẩu</button><button id="outBtn">Đăng xuất</button>
   </header>
   <div id="shell"><nav id="tabs"></nav><div id="cont">
   <div id="cvNotice"></div>
@@ -572,7 +584,7 @@ function adDraw(){
   $('adTbB').onclick=function(){run('adTbGhi',S.token,$('adTbT').value).then(function(){$('adTbM').textContent='Đã lưu.'}).catch(function(e){$('adTbM').textContent=msg(e)})};
   $('adLhB').onclick=function(){run('adLhGhi',S.token,$('adLhT').value).then(function(){$('adLhM').textContent='Đã lưu.'}).catch(function(e){$('adLhM').textContent=msg(e)})};
   run('adDs',S.token).then(function(ds){S.adDs=ds;adRows();$('adQ').oninput=adRows}).catch(function(e){$('adTb').innerHTML='<span class="hint" style="color:#b91c1c">'+esc(msg(e))+'</span>'})}
-function adPhaiDoi(){var m=$('main');m.innerHTML='<div class="card"><h3>🛡 Quản trị hệ thống</h3><p class="hint">Tài khoản đang dùng mật khẩu mặc định. Hãy đổi mật khẩu (hộp thoại vừa mở hoặc nút “🔑 Đổi mật khẩu” ở góc trên) để bắt đầu sử dụng.</p></div>'}
+function adPhaiDoi(){var m=$('main');m.innerHTML='<div class="card"><h3>🛡 Quản trị hệ thống</h3><p class="hint">Tài khoản đang dùng mật khẩu mặc định. Hãy đổi mật khẩu (hộp thoại vừa mở hoặc nút “Đổi mật khẩu” ở góc trên) để bắt đầu sử dụng.</p></div>'}
 function adRows(){
   var q=($('adQ').value||'').trim().toLowerCase(),G={TH:'Chuyên viên THBC',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},cv={LAP:'Người lập biểu',KTT:'Kế toán trưởng',TP:'Trưởng phòng',TTH:'Trưởng phòng THBC'};
   var l=(S.adDs||[]).filter(function(a){return !q||(a.ten+' '+a.donvi+' '+a.hoten).toLowerCase().indexOf(q)>=0});
@@ -616,7 +628,7 @@ function dangNhap(){
 (function(){var r;try{r=JSON.parse(localStorage.getItem('cv1953s')||sessionStorage.getItem('cv1953s')||'null')}catch(e){}   // tải lại trang vẫn giữ phiên đăng nhập
   if(r&&r.token)vaoApp(r).catch(function(e){document.documentElement.className='';if(/hết hạn|không còn hiệu lực|đăng nhập lại/i.test(msg(e))){try{localStorage.removeItem('cv1953s');sessionStorage.removeItem('cv1953s')}catch(x){}}});else document.documentElement.className=''})();
 $('maBtn').onclick=function(){
-  $('mbox').innerHTML='<h3 style="margin:0 0 8px">🔑 Đổi mật khẩu đăng nhập</h3><p class="hint" style="margin:0 0 8px">Tài khoản: <b>'+esc(S.ten)+'</b>. Mật khẩu mới gồm 6 đến 12 ký tự chữ hoặc số, không dùng mật khẩu mặc định.</p><label>Mật khẩu hiện tại</label><input id="mCu" type="password" autocomplete="off"><label>Mật khẩu mới</label><input id="mMoi" type="password" autocomplete="off" maxlength="12"><label>Nhập lại mật khẩu mới</label><input id="mLai" type="password" autocomplete="off" maxlength="12"><div id="mErr" class="err"></div><div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end"><button id="mNo">Hủy</button><button class="pri" id="mOk">Đổi mã</button></div>';
+  $('mbox').innerHTML='<h3 style="margin:0 0 8px">Đổi mật khẩu đăng nhập</h3><p class="hint" style="margin:0 0 8px">Tài khoản: <b>'+esc(S.ten)+'</b>. Mật khẩu mới gồm 6 đến 12 ký tự chữ hoặc số, không dùng mật khẩu mặc định.</p><label>Mật khẩu hiện tại</label><input id="mCu" type="password" autocomplete="off"><label>Mật khẩu mới</label><input id="mMoi" type="password" autocomplete="off" maxlength="12"><label>Nhập lại mật khẩu mới</label><input id="mLai" type="password" autocomplete="off" maxlength="12"><div id="mErr" class="err"></div><div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end"><button id="mNo">Hủy</button><button class="pri" id="mOk">Đổi mã</button></div>';
   $('modal').style.display='flex';$('mCu').focus();
   $('mNo').onclick=function(){$('modal').style.display='none'};
   $('mOk').onclick=function(){if($('mMoi').value!==$('mLai').value){$('mErr').textContent='Hai lần nhập mật khẩu mới chưa giống nhau.';return}
