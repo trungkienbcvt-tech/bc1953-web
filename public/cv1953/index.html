@@ -575,7 +575,7 @@ function ganVai(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=
 /* Một mã đăng nhập hai vai (Trưởng phòng Tổng hợp + Lãnh đạo Phòng NV2): r.vai2 là phiên của vai Phòng NV2 */
 function pd0(L){return L.filter(function(x){return x.tt==='Đã trình lãnh đạo phòng'}).length}
 function tenHt(t){return t==='Trưởng phòng Tổng hợp'?'Lãnh đạo phòng':t}
-function whoTxt(){var b=S.vaiNv;return (S.vt==='TH'?'★ ':'')+tenHt(b?S.vaiTh.ten:S.ten)+(b?(S.vai==='nv'?' · Phòng NV2':' · Tổng hợp'):'')}
+function whoTxt(){var b=S.vaiNv;return (S.vt==='TH'?'★ ':'')+tenHt(b?S.vaiTh.ten:S.ten)+(b?(S.vai==='nv'?' · Báo cáo Phòng NV2':' · Báo cáo tổng hợp'):'')}
 function nvKiem(){S.nvPend=false;if(!S.vaiNv||S.vai!=='th')return Promise.resolve();return run('trangThai',S.vaiNv.token,S.ky).then(function(w){var me=(w.list||[]).filter(function(x){return x.pgd===(S.vaiNv.donvi||S.vaiNv.ten)})[0];S.nvPend=!!(me&&me.tt==='Chờ TP phê duyệt');nbDuyet()}).catch(function(){})}
 function setVai(v){if(S.vai===v)return Promise.resolve();var r=v==='nv'?S.vaiNv:S.vaiTh;if(!r)return Promise.resolve();
   if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển sang phần khác?'))return Promise.reject(new Error('huy'));
@@ -676,7 +676,7 @@ function drawTabs(){
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
 function nbDuyet(){var e=$('cvNotice');if(!e)return;e.className='';e.innerHTML='';
-  if(S.vaiNv&&S.vai==='th'&&S.nvPend){e.className='cvn';e.innerHTML='<span>🔔 Có <b>1 báo cáo của Phòng Nghiệp vụ 2 đợi Trưởng phòng phê duyệt</b> – kỳ '+esc(S.ky||'')+'.</span><button>Chuyển sang phần Phòng NV2 để duyệt</button>';e.onclick=function(){setVai('nv').then(function(){drawTabs();show('tq')}).catch(function(){})};return}
+  if(S.vaiNv&&S.vai==='th'&&S.nvPend){e.className='cvn';e.innerHTML='<span>🔔 Có <b>1 báo cáo của Phòng Nghiệp vụ 2 đợi Lãnh đạo phòng phê duyệt</b> – kỳ '+esc(S.ky||'')+'.</span><button>Chuyển sang phần Phòng NV2 để duyệt</button>';e.onclick=function(){setVai('nv').then(function(){drawTabs();show('tq')}).catch(function(){})};return}
   if(S.vt!=='PGD'||!S.info||!S.wf||!S.wf.list)return;var cv=S.info.cv,me=S.wf.list.filter(function(x){return x.pgd===S.pgd})[0];if(!me)return;
   var cho=(cv==='KTT'&&me.tt==='Chờ KTT duyệt')||(cv==='TP'&&me.tt==='Chờ TP phê duyệt');if(!cho)return;
   e.className='cvn';e.innerHTML='<span>🔔 Có <b>1 báo cáo đợi '+(cv==='KTT'?'Kế toán trưởng duyệt':'Trưởng phòng phê duyệt')+'</b> – kỳ '+esc(S.wf.ky||S.ky||'')+', người lập biểu vừa gửi lên.</span><button>Xem &amp; duyệt ngay</button>';e.onclick=function(){show('tq')}}
