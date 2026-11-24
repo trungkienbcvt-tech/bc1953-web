@@ -55,7 +55,11 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const xt = await CV.cvXuatTay(th, '', mo); assert(xt.b64.length > 800 && /\.docx$/.test(xt.name), 'xuất Word từ bản soạn trên web');
     await CV.cvLamLai(th, ''); assert(!(await CV.cvLay(th, '')).tay, 'làm lại công văn từ mẫu');
     { const bk = await X.bangKemXuat(th, ''), zp = Buffer.from(bk.b64, 'base64').toString('latin1'); assert(/\.xlsx$/.test(bk.name) && (zp.match(/xl\/worksheets\/sheet\d+\.xml/g) || []).length >= 5, 'bảng kèm theo xuất 5 sheet');
-      const xm = await X.bangKemXem(th, '', 'b01'); assert(xm.rows.length > 5 && xm.cols.length > 3, 'xem trước bảng kèm theo'); }
+      const xm = await X.bangKemXem(th, '', 'b01'); assert(xm.rows.length > 5 && xm.cols.length > 3 && xm.hdr && xm.keys, 'xem trước bảng kèm theo');
+      const kb = Object.keys(xm.keys).find((r) => !/^H/.test(xm.keys[r])), kc = xm.keys[kb] + '@3'; await X.bangKemSua(th, '', 'b01', kc, '1.234');
+      const x2 = await X.bangKemXem(th, '', 'b01'); assert(x2.rows[kb][3].v === 1234 && x2.sua.includes(kb + ',3'), 'sửa ô bảng kèm theo (số)');
+      await X.bangKemSua(th, '', 'b01', xm.keys[kb] + '@' + (xm.cols.length - 1), 'Ghi chú thử'); assert((await X.bangKemXem(th, '', 'b01')).rows[kb][xm.cols.length - 1].v === 'Ghi chú thử', 'ghi chú tự nhập');
+      await X.bangKemSuaXoa(th, '', 'b01'); assert((await X.bangKemXem(th, '', 'b01')).rows[kb][3].v !== 1234, 'bỏ chỉnh sửa'); await assert.rejects(() => X.bangKemSua(p20, '', 'b01', kc, '1'), /tổng hợp/); }
   }
   // ---- Tài khoản quản trị ----
   {
