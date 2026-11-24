@@ -660,11 +660,11 @@ function drawTabs(){
    .concat(M?[{id:'g1953',v:'',t:'📑 BC 1953',it:[],sub:[{id:'g1953n',v:nvv,t:'Phòng Nghiệp vụ 2',it:bcItems('PGD')},{id:'g1953t',v:thv,t:'Tổng hợp toàn tỉnh',it:bcItems('TH')}]}]:[{id:'g1953',v:'',t:'📑 BC 1953',it:bcItems(S.vt)}])
    .concat([{id:'gkpi',v:thv,t:'🎯 BC đánh giá KPI',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Số liệu & xác nhận'],['kpibt','⚖ Phòng ghi nhận khác THBC']].concat(vt0!=='PGD'?[['kpvb','📄 Công văn & theo dõi']]:[])}]),h='';
   h+='<button data-t="home"'+(M?' data-v="th"':'')+' style="font-weight:600;margin-bottom:6px">🏠 Trang chủ</button>'+(S.info&&S.info.ad?'<button data-t="adm" style="font-weight:600;margin-bottom:6px;color:#7a1622">🛡 Quản trị hệ thống</button>':'');
-  var gh=function(g,sb){return '<div class="tg'+(sb?' sub':'')+(S.shut[g.id]?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+(g.sub?g.sub.map(function(s){return gh(s,true)}).join(''):'')+g.it.map(function(x){return '<button data-t="'+x[0]+'"'+(g.v?' data-v="'+g.v+'"':'')+'>'+esc(x[1])+'</button>'+(x[0]==='dm'?'<div class="dmnav" id="dmNav"></div>':'')}).join('')+'</div></div>'};
+  var gh=function(g,sb){return '<div class="tg'+(sb?' sub':'')+(S.shut[g.id]!==false?' shut':'')+'"><div class="tgh" data-g="'+g.id+'"><i class="tgc">▾</i>'+g.t+(g.tag?'<em>'+g.tag+'</em>':'')+'</div><div class="tgb">'+(g.sub?g.sub.map(function(s){return gh(s,true)}).join(''):'')+g.it.map(function(x){return '<button data-t="'+x[0]+'"'+(g.v?' data-v="'+g.v+'"':'')+'>'+esc(x[1])+'</button>'+(x[0]==='dm'?'<div class="dmnav" id="dmNav"></div>':'')}).join('')+'</div></div>'};
   G.forEach(function(g){h+=gh(g)});
   $('tabs').innerHTML=h;
   [].forEach.call($('tabs').querySelectorAll('button'),function(b){b.onclick=function(){var tt=b.getAttribute('data-t'),v=b.getAttribute('data-v');if(v&&v!==S.vai)setVai(v).then(function(){drawTabs();show(tt)}).catch(function(){});else show(tt)}});
-  [].forEach.call($('tabs').querySelectorAll('.tgh'),function(e){e.onclick=function(){var g=e.getAttribute('data-g');S.shut[g]=!S.shut[g];e.parentNode.classList.toggle('shut',!!S.shut[g])}});
+  [].forEach.call($('tabs').querySelectorAll('.tgh'),function(e){e.onclick=function(){var g=e.getAttribute('data-g'),was=S.shut[g]!==false;S.shut[g]=!was;e.parentNode.classList.toggle('shut',!was)}});
   [].forEach.call($('tabs').querySelectorAll('.bcv span'),function(s){s.onclick=function(){var v=s.getAttribute('data-vai');if(v===S.vai)return;setVai(v).then(function(){drawTabs();show('tq')}).catch(function(){})}});
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
@@ -674,6 +674,7 @@ function nbDuyet(){var e=$('cvNotice');if(!e)return;e.className='';e.innerHTML='
   var cho=(cv==='KTT'&&me.tt==='Chờ KTT duyệt')||(cv==='TP'&&me.tt==='Chờ TP phê duyệt');if(!cho)return;
   e.className='cvn';e.innerHTML='<span>🔔 Có <b>1 báo cáo đợi '+(cv==='KTT'?'Kế toán trưởng duyệt':'Trưởng phòng phê duyệt')+'</b> – kỳ '+esc(S.wf.ky||S.ky||'')+', người lập biểu vừa gửi lên.</span><button>Xem &amp; duyệt ngay</button>';e.onclick=function(){show('tq')}}
 function show(t){nbDuyet();S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e){}[].forEach.call($('tabs').querySelectorAll('button'),function(b){b.className=(b.getAttribute('data-t')===t&&(!b.getAttribute('data-v')||b.getAttribute('data-v')===S.vai))?'on':''});
+  (function(){var ob=$('tabs').querySelector('button.on'),g=ob&&ob.parentNode&&ob.parentNode.closest('.tg');while(g){g.classList.remove('shut');S.shut[g.querySelector('.tgh').getAttribute('data-g')]=false;g=g.parentNode.closest('.tg')}})();
   var isB=BTAB.indexOf(t)>=0,needData=isB;
   if(needData&&!S.data){$('main').innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải số liệu...</p>';$('sbar').style.display='none';run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;if(S.tab===t)show(t)}).catch(function(e){toast(msg(e),6000)});return}
   if(S.nv2tp&&!isB&&S.xem!==S.pgd){S.xem=S.pgd;S.data=null}
