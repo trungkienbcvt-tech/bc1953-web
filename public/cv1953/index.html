@@ -483,6 +483,10 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 
 #dmPg .cbx{margin-bottom:10px!important}#dmPg .cbh{align-items:center;gap:12px}#dmPg .cbt0 b{font-size:14.5px!important}#dmPg .cbt0 .hint{font-size:12.5px;margin:1px 0 0!important}#dmPg #pgQ{max-width:240px;padding:6px 10px;font-size:13.5px}
 #dmPg .pgmini{max-height:168px!important;overflow:auto}#dmPg .pgmini td,#dmPg .pgmini th{padding:5px 8px;font-size:13px;line-height:1.3}#dmPg .pgmini select.cbsel{padding:4px 8px;font-size:13px;min-height:0}
+
+.xlsh{display:flex;gap:2px;background:#f3f3f3;border:1px solid #c5ced9;border-top:0;border-radius:0 0 6px 6px;padding:0 6px;overflow:auto}.xlsh button{border:0;background:transparent;font:13px Calibri,'Segoe UI',Arial,sans-serif;color:#333;padding:6px 14px;cursor:pointer;box-shadow:none;border-bottom:3px solid transparent;border-radius:0}.xlsh button:hover{background:#e6e6e6}.xlsh button.on{background:#fff;color:#107c41;font-weight:700;border-bottom-color:#107c41}
+#main .xlw{border-radius:6px 6px 0 0;border-color:#c5ced9}#main .xlg,#main .xlg td{font:12px/1.25 Calibri,'Segoe UI',Arial,sans-serif;color:#000}#main .xlg td{font-weight:400;padding:2px 4px;border:1px solid #e1e1e1;background-clip:padding-box}
+#main .xlg th.xn{background:#e6e6e6!important;color:#444;font:11.5px Calibri,'Segoe UI',Arial,sans-serif;font-weight:400;border:1px solid #bdbdbd;padding:1px 4px;text-align:center}
 </style>
 <script>try{if(localStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
@@ -736,8 +740,8 @@ function cvForm(d){var m=$('main');S.xbTab=S.xbTab||'vb';
   m.innerHTML='<div class="pgh"><h2 style="margin:0 0 4px">📤 Xuất báo cáo (BC CV 1953)</h2><div class="hint" style="margin:0 0 10px">Kỳ báo cáo tháng '+esc(d.nhan)+'. Số liệu được hệ thống tự điền; bạn chỉ cần soát lại, sửa nếu cần rồi tải về.</div></div>'+xbTabs(S.xbTab,[['vb','📄 Công văn'],['bk','📊 Bảng kèm theo']],'data-xb')+'<div id="xbBox"></div>';
   [].forEach.call(m.querySelectorAll('[data-xb]'),function(b){b.onclick=function(){S.xbTab=b.getAttribute('data-xb');cvForm(d)}});
   var box=$('xbBox');
-  if(S.xbTab==='bk'){var ls=[['b01','Biểu 01-KBNN'],['b02','Biểu 02-KBNN'],['b03a','Biểu 03 (21-25)'],['b03b','Biểu 03 (26-30)']];S.xbB=S.xbB||'b01';
-    box.innerHTML='<p class="hint" style="margin:0 0 8px">Bốn biểu toàn tỉnh đính kèm công văn (Biểu 01, 02, 03 giai đoạn 2021-2025 và 2026-2030), hiển thị như trong Excel. Phụ lục 01 (Biểu 04-KBNN) tải ở mục Biểu 04-KBNN.</p><div class="xbt2">'+ls.map(function(x){return '<button class="'+(x[0]===S.xbB?'on':'')+'" data-sh="'+x[0]+'">'+x[1]+'</button>'}).join('')+'<span style="flex:1"></span><button class="pri mini" id="bkTai">⬇ Tải Excel (4 sheet)</button></div><div id="bkG"></div>';
+  if(S.xbTab==='bk'){var ls=[['b01','Biểu 01-KBNN'],['b02','Biểu 02-KBNN'],['b03a','Biểu 03 (21-25)'],['b03b','Biểu 03 (26-30)'],['b04','Biểu 04-KBNN']];S.xbB=S.xbB||'b01';
+    box.innerHTML='<div class="xbt2"><span class="hint" style="margin:0">Năm biểu đính kèm công văn (Biểu 01, 02, 03 hai giai đoạn và Biểu 04-KBNN – tình trạng gửi báo cáo), hiển thị như trong Excel.</span><span style="flex:1"></span><button class="pri mini" id="bkTai">⬇ Tải Excel (5 sheet)</button></div><div id="bkG"></div><div class="xlsh">'+ls.map(function(x){return '<button class="'+(x[0]===S.xbB?'on':'')+'" data-sh="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div>';
     [].forEach.call(box.querySelectorAll('[data-sh]'),function(b){b.onclick=function(){S.xbB=b.getAttribute('data-sh');[].forEach.call(box.querySelectorAll('[data-sh]'),function(x){x.className=x===b?'on':''});xlLoad($('bkG'),function(i){return run('bangKemXem',S.token,S.ky,i)},S.xbB)}});
     $('bkTai').onclick=function(){xuat(function(){return run('bangKemXuat',S.token,S.ky)},this,'xlsx')};
     xlLoad($('bkG'),function(i){return run('bangKemXem',S.token,S.ky,i)},S.xbB);return}

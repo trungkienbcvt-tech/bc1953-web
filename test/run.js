@@ -54,7 +54,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await CV.cvLuuTay(th, '', mo); const dl = await CV.cvLay(th, ''); assert(dl.tay && dl.tay.length === 2, 'lưu công văn soạn trên web');
     const xt = await CV.cvXuatTay(th, '', mo); assert(xt.b64.length > 800 && /\.docx$/.test(xt.name), 'xuất Word từ bản soạn trên web');
     await CV.cvLamLai(th, ''); assert(!(await CV.cvLay(th, '')).tay, 'làm lại công văn từ mẫu');
-    { const bk = await X.bangKemXuat(th, ''), zp = Buffer.from(bk.b64, 'base64').toString('latin1'); assert(/\.xlsx$/.test(bk.name) && (zp.match(/xl\/worksheets\/sheet\d+\.xml/g) || []).length >= 4, 'bảng kèm theo xuất 4 sheet');
+    { const bk = await X.bangKemXuat(th, ''), zp = Buffer.from(bk.b64, 'base64').toString('latin1'); assert(/\.xlsx$/.test(bk.name) && (zp.match(/xl\/worksheets\/sheet\d+\.xml/g) || []).length >= 5, 'bảng kèm theo xuất 5 sheet');
       const xm = await X.bangKemXem(th, '', 'b01'); assert(xm.rows.length > 5 && xm.cols.length > 3, 'xem trước bảng kèm theo'); }
   }
   // ---- Tài khoản quản trị ----
