@@ -738,7 +738,7 @@ function xlGrid(sh,o){o=o||{};var sp={},sk={},nc=0,hd=sh.hdr,su={},kz=sh.keys||{
       if(num&&!/text-align/.test(st))st+=';text-align:right';
       if(kh&&vi){st+=';position:sticky;top:'+tops[ri]+'px;z-index:3;';if(!/background/.test(st))st+='background:#fff;'}
       if(su[ri+','+c])cls=' sua';else if(x&&c===nc-1&&gcRow&&vi)cls=' gcE';
-      h+='<td'+(m?' rowspan="'+m[0]+'" colspan="'+m[1]+'"':'')+' data-r="'+ri+'" data-c="'+c+'"'+(ed?' class="xe'+cls+'" contenteditable="true"'+(num?' data-n="'+v+'"':''):'')+' style="'+st+'">'+(num?fmt(v):esc(v))+'</td>'}
+      h+='<td'+(m?' rowspan="'+m[0]+'" colspan="'+m[1]+'"':'')+' data-r="'+ri+'" data-c="'+c+'"'+(ed?' class="xe'+cls+'" contenteditable="true"'+(num?' data-n="'+v+'"':''):'')+' style="'+st+'">'+(num?fmt(v):(x&&x.rt?x.rt.map(function(q){return q.sz&&q.sz<11?'<span style="display:block;font-size:'+q.sz+'pt;line-height:'+q.sz+'pt;white-space:nowrap">'+esc(q.t.replace(/^\n/,''))+'</span>':esc(q.t)}).join(''):esc(v)))+'</td>'}
     h+='</tr>'});
   return h+'</tbody></table></div></div>'}
 function xlBind(box,sh,save){var kz=sh.keys||{};[].forEach.call(box.querySelectorAll('td.xe'),function(td){var cu='',goc=td.hasAttribute('data-n')?+td.getAttribute('data-n'):null;
