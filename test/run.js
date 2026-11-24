@@ -54,6 +54,8 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await CV.cvLuuTay(th, '', mo); const dl = await CV.cvLay(th, ''); assert(dl.tay && dl.tay.length === 2, 'lưu công văn soạn trên web');
     const xt = await CV.cvXuatTay(th, '', mo); assert(xt.b64.length > 800 && /\.docx$/.test(xt.name), 'xuất Word từ bản soạn trên web');
     await CV.cvLamLai(th, ''); assert(!(await CV.cvLay(th, '')).tay, 'làm lại công văn từ mẫu');
+    { const bk = await X.bangKemXuat(th, ''), zp = Buffer.from(bk.b64, 'base64').toString('latin1'); assert(/\.xlsx$/.test(bk.name) && (zp.match(/xl\/worksheets\/sheet\d+\.xml/g) || []).length >= 4, 'bảng kèm theo xuất 4 sheet');
+      const xm = await X.bangKemXem(th, '', 'b01'); assert(xm.rows.length > 5 && xm.cols.length > 3, 'xem trước bảng kèm theo'); }
   }
   // ---- Tài khoản quản trị ----
   {
@@ -288,6 +290,9 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     const r0 = await K.taiThbc(th, '2026-10-15', '', 'doichieu.xlsx', b64); assert(r0.co && r0.full); assert.strictEqual(r0.rows.filter((x) => x.k === 'row').length, 195);
     assert(Math.abs(r0.rows.find((x) => x.k === 'tot').e0 - r0.rows.find((x) => x.k === 'tot').t0) < 1e-6);
     const r20 = await K.lay(lap20, '2026-10-15'), l20 = r20.rows.filter((x) => x.k === 'row'); assert(l20.length > 0 && l20.every((x) => x.c === P20) && r20.quyen.sua && !r20.quyen.xacNhan, 'người lập sửa được, không xác nhận được'); { const tp0 = await K.lay(tp20, '2026-10-15'); assert(!tp0.quyen.sua && tp0.quyen.xnThbc && tp0.quyen.xacNhan, 'Trưởng phòng chỉ xác nhận số THBC'); }
+    { const xk = await X.xuatKpi(th, '2026-10-15', 'xem', 'sau'); assert(xk.rows.length > 5, 'xem trước bảng KPI');
+      const mk = [{ t: 'p', jc: 'left', r: [{ t: 'Số: 77 /KBVIII-NV2' }] }, { t: 'p', jc: 'left', r: [{ t: 'Phú Thọ, ngày 05 tháng 11 năm 2026' }] }]; await K.vbTayLuu(th, '2026-10-15', mk);
+      const vk = await K.vbLay(th, '2026-10-15'); assert(vk.tay && vk.so === '77' && vk.ngay === '5/11/2026', 'công văn KPI soạn trên web: lưu và lấy số/ngày'); assert((await K.vbTayXuat(th, '2026-10-15', mk)).b64.length > 500); await K.vbTayLam(th, '2026-10-15'); assert(!(await K.vbLay(th, '2026-10-15')).tay); }
     const kk = await K.lay(ktt20, '2026-10-15'); assert(!kk.quyen.sua && !kk.quyen.xacNhan, 'KTT chỉ xem');
     const x0 = l20[0], v = [x0.t0 + 5, x0.t1, x0.t2, x0.t3];
     await assert.rejects(() => K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v, ly: '' }]), /bắt buộc ghi lý do/);
