@@ -479,10 +479,12 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 .xbt{display:flex;gap:6px;margin:0 0 12px;border-bottom:2px solid #ead3d7}.xbt button{border:0;background:transparent;font-size:15px;font-weight:600;color:#475569;padding:9px 18px;border-radius:10px 10px 0 0;cursor:pointer;box-shadow:none;margin-bottom:-2px;border-bottom:3px solid transparent}.xbt button:hover{background:#fdf4f5}.xbt button.on{color:#7a1622;border-bottom-color:#7a1622;background:#fdf1f3}
 .xbt2{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 8px}.xbt2 button:not(.pri){border:1px solid #d6dde6;background:#fff;border-radius:8px 8px 0 0;padding:6px 14px;font-size:13.5px;cursor:pointer}.xbt2 button.on{background:#e8f3ec;border-color:#1d7a45;color:#14532d;font-weight:700}
 .xlw2.xlfull{position:fixed;inset:0;z-index:60;background:#fff;padding:10px 14px;display:flex;flex-direction:column}.xlw2.xlfull .xlbg{height:auto;flex:1;min-height:0}.xlw2.xlfull .xlsh{flex:none}
-.xlbg{background:#d9d9d9;padding:0 10px;overflow:auto;height:calc(100vh - 250px);min-height:340px;border:1px solid #bfc7d1;border-radius:6px 6px 0 0}.xlpaper{background:#fff;margin:10px auto;padding:0 18px 18px;box-sizing:content-box;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.xlbg{background:#d9d9d9;padding:0 10px;overflow:auto;height:calc(100vh - 250px);min-height:340px;border:1px solid #bfc7d1;border-radius:0 0 6px 6px}.xlpaper{background:#fff;margin:10px auto;padding:0 18px 18px;box-sizing:content-box;box-shadow:0 2px 12px rgba(0,0,0,.25)}
 #main .xlg{border-collapse:separate;border-spacing:0;table-layout:fixed;font:11pt 'Times New Roman',Times,serif;color:#000}#main .xlg td{border:0;padding:1px 3px;white-space:pre-wrap;word-break:break-word;overflow:hidden;font-weight:400;background:transparent;outline:0}#main .xlg td.xe{cursor:cell}#main .xlg td.xe:hover{box-shadow:inset 0 0 0 1px #9cc2e5}#main .xlg td.xe:focus{background:#e8f2fc!important;box-shadow:inset 0 0 0 2px #2b6cb0}#main .xlg td.sua{background:#fff3b0!important}#main .xlg td.gcE{background:#fffbe6!important}
 
-.xlsh{display:flex;gap:2px;background:#f0f0f0;border:1px solid #bfc7d1;border-top:0;border-radius:0 0 6px 6px;padding:0 8px;overflow:auto}.xlsh button{border:0;background:transparent;font:13px Calibri,'Segoe UI',Arial,sans-serif;color:#333;padding:7px 16px;cursor:pointer;box-shadow:none;border-bottom:3px solid transparent;border-radius:0;white-space:nowrap}.xlsh button:hover{background:#e2e2e2}.xlsh button.on{background:#fff;color:#107c41;font-weight:700;border-bottom-color:#107c41}
+.xlsh{display:flex;gap:4px;background:#f0f0f0;border:1px solid #bfc7d1;border-bottom:0;border-radius:6px 6px 0 0;padding:4px 8px 0;overflow:auto;margin-top:6px}.xlsh button{border:0;background:transparent;font:600 14px Calibri,'Segoe UI',Arial,sans-serif;color:#333;padding:8px 18px;cursor:pointer;box-shadow:none;border-bottom:3px solid transparent;border-radius:6px 6px 0 0;white-space:nowrap}.xlsh button:hover{background:#e2e2e2}.xlsh button.on{background:#fff;color:#107c41;font-weight:700;border-bottom-color:#107c41}
+
+#dmPg .pgbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff7e6;border:1px solid #f0d9a8;border-left:4px solid #d97706;border-radius:10px;padding:6px 12px;margin:0 0 10px;font-size:13.5px}#dmPg .pgbar .mini{white-space:nowrap}
 </style>
 <script>try{if(localStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
@@ -670,9 +672,9 @@ function cvMau(d){var v=d.vb,A=cvAuto(d),nam=d.ky.substring(0,4),den=v.denNgay||
     P([R('(chi tiết tại Phụ lục số 01 đính kèm)',{i:1})],{jc:'center',before:40}),
     B([R('Kho bạc Nhà nước khu vực VIII trân trọng gửi '+String(v.kinhGui).replace(/\s*tỉnh Tuyên Quang\s*$/i,'')+' tổng hợp số liệu báo cáo./.')]));
   var nn=[P([R('Nơi nhận:',{b:1,i:1})],{jc:'left',sz:24,ln:300,keep:1})];
-  String(v.noiNhan||'').split(/\n+/).forEach(function(t){if(t)nn.push(P([R('- '+t.replace(/^-\s*/,''))],{jc:'left',sz:22,ln:300,before:50}))});
+  String(v.noiNhan||'').split(/\n+/).forEach(function(t){if(t)nn.push(P([R('- '+t.replace(/^-\s*/,''))],{jc:'left',sz:22,ln:264}))});
   var ky=[P([R(v.kt,{b:1})],C(28,300)),P([R(v.chucVu,{b:1})],C(28,300)),P([R('')],{jc:'center',before:1100,ln:300}),P([R(v.nguoiKy,{b:1})],C(28,300))];
-  return head.concat(nd,[P([R('')],{before:360,ln:300}),{t:'tbl',cols:[4300,5055],c:[nn,ky]}])}
+  return head.concat(nd,[P([R('')],{ln:300}),{t:'tbl',cols:[4300,5055],c:[nn,ky]}])}
 /* mô hình → HTML của khung soạn */
 function cvHtmlR(r){var h=esc(r.t).replace(/\n/g,'<br>');if(r.u)h='<u>'+h+'</u>';if(r.i)h='<i>'+h+'</i>';if(r.b)h='<b>'+h+'</b>';return r.a?'<span class="au" data-a="'+esc(r.a)+'">'+h+'</span>':h}
 function cvHtmlK(b){if(b.t==='g')return '<div class="gch" contenteditable="false" data-ind="'+b.ind+'" style="margin:0 '+Math.round(b.ind/15)+'px"></div>';
@@ -747,7 +749,7 @@ function xlBind(box,sh,save){var kz=sh.keys||{};[].forEach.call(box.querySelecto
     save(kz[td.getAttribute('data-r')]+'@'+td.getAttribute('data-c'),t).then(function(){toast('Đã lưu chỉnh sửa.',1500)}).catch(function(e){toast(msg(e),6000)})})})}
 function xlFit(box,z){var bg=box.querySelector('.xlbg'),pp=box.querySelector('.xlpaper');if(!bg||!pp)return;if(z==null){var k=(bg.clientWidth-30)/(pp.offsetWidth+40);z=Math.max(.4,Math.min(1,k))}pp.style.zoom=z.toFixed(3);pp.setAttribute('data-z',z)}
 function xlLoad(box,fn,id,save,xoa){box.innerHTML='<p class="hint" style="padding:14px">⏳ Đang dựng bảng...</p>';fn(id).then(function(sh){if(!box.isConnected)return;box.innerHTML=xlGrid(sh);xlFit(box,S.xlZ);xlBind(box,sh,save);if(xoa)box.setAttribute('data-xoa',sh.sua&&sh.sua.length?'1':'')}).catch(function(e){box.innerHTML='<p class="hint" style="color:#b91c1c;padding:14px">'+esc(msg(e))+'</p>'})}
-function xlBar(){return '<button class="mini" data-z="-" title="Thu nhỏ">➖</button><button class="mini" data-z="0" title="Vừa khít chiều ngang">Vừa khít</button><button class="mini" data-z="+" title="Phóng to">➕</button><button class="mini" data-z="f" title="Mở toàn màn hình (Esc để thoát)">⛶ Toàn màn hình</button>'}
+function xlBar(){return '<button class="mini" data-z="-" title="Thu nhỏ">➖</button><button class="mini" data-z="0" title="Về cỡ mặc định (vừa chiều ngang)">↺ Cỡ mặc định</button><button class="mini" data-z="+" title="Phóng to">➕</button><button class="mini" data-z="f" title="Mở toàn màn hình (Esc để thoát)">⛶ Toàn màn hình</button>'}
 function xlBarBind(w,gbox,lai){[].forEach.call(w.querySelectorAll('[data-z]'),function(b){b.onclick=function(){var k=b.getAttribute('data-z'),pp=gbox.querySelector('.xlpaper'),z=pp?+pp.getAttribute('data-z')||1:1;
   if(k==='f'){w.classList.toggle('xlfull');setTimeout(function(){xlFit(gbox,S.xlZ)},50);return}
   if(k==='0')S.xlZ=null;else S.xlZ=Math.max(.4,Math.min(2.5,z+(k==='+'?.1:-.1)));xlFit(gbox,S.xlZ)}});
@@ -759,7 +761,7 @@ function cvForm(d){var m=$('main');S.xbTab=S.xbTab||'vb';
   [].forEach.call(m.querySelectorAll('[data-xb]'),function(b){b.onclick=function(){S.xbTab=b.getAttribute('data-xb');cvForm(d)}});
   var box=$('xbBox');
   if(S.xbTab==='bk'){var ls=[['b01','Biểu 01-KBNN'],['b02','Biểu 02-KBNN'],['b03a','Biểu 03 (21-25)'],['b03b','Biểu 03 (26-30)'],['b04','Biểu 04-KBNN']];S.xbB=S.xbB||'b01';
-    box.innerHTML='<div id="bkW" class="xlw2"><div class="xbt2"><span class="hint" style="margin:0;flex:1;min-width:260px">Năm biểu đính kèm công văn, hiển thị đúng như file Excel tải về. Bấm vào ô để sửa (ô sửa được tô vàng nhạt, tự lưu); cột <b>GHI CHÚ</b> để trống cho bạn hoàn thiện. Số liệu tổng hợp không tự tính lại khi bạn sửa ô.</span>'+xlBar()+'<button class="mini" id="bkXoa" title="Bỏ các chỉnh sửa tay của biểu đang xem">↺ Bỏ chỉnh sửa biểu này</button><button class="pri mini" id="bkTai">⬇ Tải Excel (5 sheet)</button></div><div id="bkG"></div><div class="xlsh">'+ls.map(function(x){return '<button class="'+(x[0]===S.xbB?'on':'')+'" data-sh="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div></div>';
+    box.innerHTML='<div id="bkW" class="xlw2"><div class="xbt2"><span class="hint" style="margin:0;flex:1;min-width:260px">Năm biểu đính kèm công văn, hiển thị đúng như file Excel tải về. Bấm vào ô để sửa (ô sửa được tô vàng nhạt, tự lưu); cột <b>GHI CHÚ</b> để trống cho bạn hoàn thiện. Số liệu tổng hợp không tự tính lại khi bạn sửa ô.</span>'+xlBar()+'<button class="mini" id="bkXoa" title="Bỏ các chỉnh sửa tay của biểu đang xem">↺ Bỏ chỉnh sửa biểu này</button><button class="pri mini" id="bkTai">⬇ Tải Excel (5 sheet)</button></div><div class="xlsh">'+ls.map(function(x){return '<button class="'+(x[0]===S.xbB?'on':'')+'" data-sh="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div><div id="bkG"></div></div>';
     var gb=$('bkG'),ld=function(){xlLoad(gb,function(i){return run('bangKemXem',S.token,S.ky,i)},S.xbB,function(k,t){return run('bangKemSua',S.token,S.ky,S.xbB,k,t)})};
     [].forEach.call(box.querySelectorAll('[data-sh]'),function(b){b.onclick=function(){S.xbB=b.getAttribute('data-sh');[].forEach.call(box.querySelectorAll('[data-sh]'),function(x){x.className=x===b?'on':''});ld()}});
     $('bkTai').onclick=function(){xuat(function(){return run('bangKemXuat',S.token,S.ky)},this,'xlsx')};
@@ -1358,8 +1360,7 @@ function dmTqDraw(){var box=$('dmBody');box.innerHTML='<p class="hint">⏳ Đang
 function dmSubTabs(){dmNav();dmStatDraw();var t=$('dmTabs');if(t&&DM.cb){var b=t.querySelector('[data-ds="ht"]');if(b&&!b.querySelector('.cbn'))b.insertAdjacentHTML('beforeend',' <span class="cbn">'+DM.cb.tong+'</span>')}}
 // ---- Hoàn thiện dự án ----
 function dmHtDraw(){var o=DM.opt,box=$('dmBody');
-  box.innerHTML='<div class="expb">'+(o.toanBo?'<button class="pri" id="dmAdd">＋ Thêm dự án</button>':'')+''+(o.toanBo?'<details class="mnu"><summary>⋯ Công cụ</summary><div class="mnub"><button id="dmDb">🔄 Cập nhật danh mục theo B501/TT85</button><button id="dmTong">⬇ Xuất danh mục tổng thể (đối chiếu B501/TT85)</button><button id="dmCt">🏷 Gắn mã CTMT theo B501</button></div></details>':'')+'</div>'+
-   (o.toanBo?'<div class="expb" style="margin-top:-4px"><label>Phòng giao dịch:<select id="dmB">'+dmOpts(o.kbnn,'Tất cả')+'</select></label></div>':'')+
+  box.innerHTML='<div class="expb">'+(o.toanBo?'<button class="pri" id="dmAdd">＋ Thêm dự án</button>':'')+''+(o.toanBo?'<details class="mnu"><summary>⋯ Công cụ</summary><div class="mnub"><button id="dmDb">🔄 Cập nhật danh mục theo B501/TT85</button><button id="dmTong">⬇ Xuất danh mục tổng thể (đối chiếu B501/TT85)</button><button id="dmCt">🏷 Gắn mã CTMT theo B501</button></div></details>':'')+(o.toanBo?'<label style="white-space:nowrap;display:flex;align-items:center;gap:6px;margin:0">Phòng giao dịch:<select id="dmB">'+dmOpts(o.kbnn,'Tất cả')+'</select></label>':'')+'</div>'+
    '<div id="dmPg"></div><div id="dmTd"></div><div id="dmD"></div><div id="dmW"></div>';
   PGDHT.d=null;dmPgDraw();
   if($('dmB')){$('dmB').value=DM.loc.kbnn;$('dmB').onchange=function(){DM.loc.kbnn=this.value;dmDrawCb()}}
@@ -1463,14 +1464,16 @@ function drawTt37(){var m=$('main'),x=T37.x,f=function(n){return Number(n).toLoc
     run('tt37Ghi',S.token,{thbc:a,kpi:c,ky:$('t37K').value,ngay:$('t37D').value,han:hn,id:T37.id},T37.ten,'').then(function(r){T37.done=r.ghi;S.bt=null;S.kp=null;if(a&&($('t37K').value||'')===(S.ky||'')){toast('Đã ghi số liệu THBC. Đang mở bảng đối chiếu...',4000);show('bt')}else{toast('Đã ghi số liệu THBC.',5000);drawTt37()}}).catch(function(er){btn.disabled=false;toast(msg(er),8000)})}}
 function pgHead(t,h){return '<div class="pgh"><h2>'+t+'</h2><p class="hint">'+h+'</p></div>'}
 /* ===== Dự án chưa có phòng giao dịch: nằm trong Danh mục dự án > Hoàn thiện dự án; phòng nào cũng thấy và chọn được ===== */
-var PGDHT={d:null,q:''};
+var PGDHT={d:null,q:'',open:false};
 function dmPgDraw(){var m=$('dmPg');if(!m)return;
   if(!PGDHT.d){run('pgdThieuDs',S.token).then(function(r){PGDHT.d=r;dmPgDraw()}).catch(function(){});return}
   var d=PGDHT.d,q=PGDHT.q.toLowerCase(),ds=d.rows.filter(function(x){return !q||(x.ma+' '+x.ten).toLowerCase().indexOf(q)>=0});
   if(!d.rows.length){m.innerHTML='';return}
+  if(!PGDHT.open){m.innerHTML='<div class="pgbar"><span>🏢 <b>Còn '+d.rows.length+' dự án chưa xác định phòng giao dịch</b></span><button class="mini" id="pgMo">Xem và gán phòng ▾</button></div>';$('pgMo').onclick=function(){PGDHT.open=true;dmPgDraw()};return}
   var opt='<option value="">— chọn phòng giao dịch —</option>'+d.pgd.map(function(p){return '<option>'+esc(p)+'</option>'}).join('');
-  m.innerHTML='<div class="cbx" style="margin:0 0 14px"><div class="cbh"><div class="cbt0"><b style="font-size:16px">🏢 Còn '+d.rows.length+' dự án chưa xác định phòng giao dịch</b><div class="hint" style="margin:2px 0 0">Tất cả các phòng đều thấy danh sách này. Phòng nào quản lý dự án thì chọn đúng phòng ở cột bên phải; dự án chuyển ngay về phòng đó.</div></div><input type="text" id="pgQ" placeholder="Tìm theo mã hoặc tên dự án..." value="'+esc(PGDHT.q)+'" style="max-width:300px"></div>'+
+  m.innerHTML='<div class="cbx" style="margin:0 0 14px"><div class="cbh"><div class="cbt0"><b style="font-size:16px">🏢 Còn '+d.rows.length+' dự án chưa xác định phòng giao dịch</b> <button class="mini" id="pgDong">Thu gọn ▴</button><div class="hint" style="margin:2px 0 0">Tất cả các phòng đều thấy danh sách này. Phòng nào quản lý dự án thì chọn đúng phòng ở cột bên phải; dự án chuyển ngay về phòng đó.</div></div><input type="text" id="pgQ" placeholder="Tìm theo mã hoặc tên dự án..." value="'+esc(PGDHT.q)+'" style="max-width:300px"></div>'+
    (ds.length?'<div class="dmw pgmini"><table class="dmt cbt2"><thead><tr><th style="width:92px">Mã DA</th><th>Tên dự án</th><th style="width:260px">Phòng giao dịch quản lý</th></tr></thead><tbody>'+ds.map(function(x){return '<tr><td><b>'+esc(x.ma)+'</b></td><td>'+esc(x.ten)+'</td><td><select class="cbsel" data-m="'+esc(x.ma)+'">'+opt+'</select></td></tr>'}).join('')+'</tbody></table></div>':'<p class="hint" style="padding:12px">Không có dự án khớp tìm kiếm.</p>')+'</div>';
+  $('pgDong').onclick=function(){PGDHT.open=false;dmPgDraw()};
   $('pgQ').oninput=function(){PGDHT.q=this.value;var p=this.selectionStart;dmPgDraw();var i=$('pgQ');i.focus();try{i.setSelectionRange(p,p)}catch(e){}};
   [].forEach.call(m.querySelectorAll('select[data-m]'),function(sel){sel.onchange=function(){var v=sel.value,ma=sel.getAttribute('data-m');if(!v)return;
     if(!confirm('Gán dự án '+ma+' cho '+v+'?')){sel.value='';return}
@@ -1894,9 +1897,9 @@ function kpMau(d){var v=d.vbInfo,A=kpSo(d),nhan=d.moc.nhan,nam=String(nhan).slic
   nd.push(P([R('(Số liệu chi tiết của các đơn vị theo biểu đính kèm)',{i:1})],{jc:'center',before:40}),
     B([R('Trên đây là tổng hợp số liệu giải ngân vốn đầu tư công năm '+nam+' tỉnh Tuyên Quang đến ngày '+nhan+'. Kho bạc Nhà nước khu vực VIII trân trọng gửi '+String(v.kinhGui).replace(/\s*tỉnh Tuyên Quang\s*$/i,'')+' tổng hợp./.')]));
   var nn=[P([R('Nơi nhận:',{b:1,i:1})],{jc:'left',sz:24,ln:300,keep:1})];
-  String(v.noiNhan||'').split(/\n+/).forEach(function(t){if(t)nn.push(P([R('- '+t.replace(/^-\s*/,''))],{jc:'left',sz:22,ln:300,before:50}))});
+  String(v.noiNhan||'').split(/\n+/).forEach(function(t){if(t)nn.push(P([R('- '+t.replace(/^-\s*/,''))],{jc:'left',sz:22,ln:264}))});
   var ky=[P([R(v.kt,{b:1})],C(28,300)),P([R(v.chucVu,{b:1})],C(28,300)),P([R('')],{jc:'center',before:1100,ln:300}),P([R(v.nguoiKy,{b:1})],C(28,300))];
-  return head.concat(nd,[P([R('')],{before:480,ln:300}),{t:'tbl',cols:[4300,5055],c:[nn,ky]}])}
+  return head.concat(nd,[P([R('')],{ln:300}),{t:'tbl',cols:[4300,5055],c:[nn,ky]}])}
 function kpXb(d){if(S.vt==='PGD'||!d.vbInfo)return '';S.kpXb=S.kpXb||'vb';
   return '<div class="pgh"><h2 style="margin:0 0 4px">📤 Xuất báo cáo KPI đến ngày '+esc(d.moc.nhan)+'</h2><div class="hint" style="margin:0 0 10px">Số liệu lấy tự động từ mốc này ('+(S.kpChe==='goc'?'số THBC gốc':'số sau điều chỉnh')+'). Soát lại công văn và bảng kèm theo rồi tải về.</div></div>'+xbTabs(S.kpXb,[['vb','📄 Công văn'],['bk','📊 Bảng kèm theo']],'data-kxb')+'<div id="kxBox"></div>'}
 function kpXbInit(d){if(!$('kxBox'))return;var box=$('kxBox');
