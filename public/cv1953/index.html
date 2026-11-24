@@ -1347,7 +1347,7 @@ function dmTqDraw(){var box=$('dmBody');box.innerHTML='<p class="hint">⏳ Đang
     if(DM.sub!=='tq'||S.tab!=='dm')return;var k=r[0].kpi||{},cb=r[1],up=r[2];DM.cb=cb;
     var ng=function(l){return CB_NGAN[l]||l},cnt={};cb.rows.forEach(function(x){var s={};x.loai.forEach(function(l){var n=ng(l);if(!s[n]){s[n]=1;cnt[n]=(cnt[n]||0)+1}})});
     var card=function(v,t,cls,go){return '<div'+(go?' class="dmgo" data-go="'+esc(go)+'"':'')+(cls?' style="'+cls+'"':'')+'><b>'+(v==null?'—':Number(v).toLocaleString('vi-VN'))+'</b><span>'+t+'</span></div>'};
-    var tb=DM.opt.toanBo?'<div class="expb"><button class="pri" data-act="UP">📤 Tải file B501/TT85 (tìm dự án mới)</button><button data-act="dmDb">🔄 Cập nhật danh mục theo B501/TT85</button><button data-act="dmTong">⬇ Xuất danh mục tổng thể</button><button data-act="dmCt">🏷 Gắn mã CTMT theo B501</button></div>':'';
+    var tb='';
     var h=tb+'<div class="dmk">'+[card(k.tong,'Tổng số dự án trong danh mục'),card(k.dt,'Có tính chất dự án'),card(k.c1,'Thuộc chương trình mục tiêu'),card(k.them,'Đã sửa / thêm trên web')].join('')+'</div>'+
      '<h4 style="margin:14px 0 6px">🛠 Cần hoàn thiện <small style="font-weight:400;color:var(--mut)">– các dự án này chưa hiện trong mục Tra cứu</small></h4><div class="dmk">'+
      card(cb.tong,'Dự án đang cảnh báo','border-color:#fca5a5;background:#fff5f5','')+
@@ -1360,18 +1360,11 @@ function dmTqDraw(){var box=$('dmBody');box.innerHTML='<p class="hint">⏳ Đang
 function dmSubTabs(){dmNav();dmStatDraw();var t=$('dmTabs');if(t&&DM.cb){var b=t.querySelector('[data-ds="ht"]');if(b&&!b.querySelector('.cbn'))b.insertAdjacentHTML('beforeend',' <span class="cbn">'+DM.cb.tong+'</span>')}}
 // ---- Hoàn thiện dự án ----
 function dmHtDraw(){var o=DM.opt,box=$('dmBody');
-  box.innerHTML='<div class="expb">'+(o.toanBo?'<button class="pri" id="dmAdd">＋ Thêm dự án</button>':'')+''+(o.toanBo?'<details class="mnu"><summary>⋯ Công cụ</summary><div class="mnub"><button id="dmDb">🔄 Cập nhật danh mục theo B501/TT85</button><button id="dmTong">⬇ Xuất danh mục tổng thể (đối chiếu B501/TT85)</button><button id="dmCt">🏷 Gắn mã CTMT theo B501</button></div></details>':'')+(o.toanBo?'<label style="white-space:nowrap;display:flex;align-items:center;gap:6px;margin:0">Phòng giao dịch:<select id="dmB">'+dmOpts(o.kbnn,'Tất cả')+'</select></label>':'')+'</div>'+
+  box.innerHTML='<div class="expb">'+(o.toanBo?'<button class="pri" id="dmAdd">＋ Thêm dự án</button>':'')+''+(o.toanBo?'<label style="white-space:nowrap;display:flex;align-items:center;gap:6px;margin:0">Phòng giao dịch:<select id="dmB">'+dmOpts(o.kbnn,'Tất cả')+'</select></label>':'')+'</div>'+
    '<div id="dmPg"></div><div id="dmTd"></div><div id="dmD"></div><div id="dmW"></div>';
   PGDHT.d=null;dmPgDraw();
   if($('dmB')){$('dmB').value=DM.loc.kbnn;$('dmB').onchange=function(){DM.loc.kbnn=this.value;dmDrawCb()}}
   if($('dmAdd'))$('dmAdd').onclick=function(){dmForm(null)};
-  if($('dmDb'))$('dmDb').onclick=function(){var b=this;b.disabled=true;run('dmDongBo',S.token,false).then(function(k){b.disabled=false;
-    if(!confirm('Cập nhật danh mục dự án theo B501 + TT85 (chỉ giữ dự án có số liệu):\n• Giữ '+k.giu+' dự án hiện có\n• XÓA '+k.xoa+' dự án không có số liệu ở B501/TT85\n• Thêm mới '+k.them+' dự án\n• Đổi tên '+k.doiTen+' dự án theo B501\n• Đổi phòng giao dịch '+k.doiKbnn+' dự án theo mã kho bạc\nChủ đầu tư, tính chất, chương trình mục tiêu của dự án giữ lại được giữ nguyên. Đã có bản sao lưu.\n\nĐồng ý ghi?'))return;
-    b.disabled=true;return run('dmDongBo',S.token,true).then(function(r){b.disabled=false;toast('Đã cập nhật: giữ '+r.giu+', xóa '+r.xoa+', thêm '+r.them+', đổi tên '+r.doiTen+', đổi phòng GD '+r.doiKbnn+'.',9000);DM.ht=null;DM.cb=null;dmLoad()})}).catch(function(e){b.disabled=false;toast(msg(e),8000)})};
-  if($('dmCt'))$('dmCt').onclick=function(){var b=this;b.disabled=true;run('dmCtmtDongBo',S.token,false).then(function(k){b.disabled=false;
-    if(!confirm('Gắn mã chương trình mục tiêu theo B501 và tra tên gọi trong danh mục mã CTMT:\n• '+k.tong+' dự án có mã CTMT trong B501 ('+k.khop+' dự án đã có trong danh mục)\n• Điền chương trình mục tiêu cho '+k.dien+' dự án đang để trống\n• '+k.cung+' dự án đã khớp sẵn\n• '+k.chenh+' dự án đang ghi khác với B501 – GIỮ NGUYÊN, chỉ hiện mã/tên gọi để bạn đối chiếu\n\nĐồng ý ghi?'))return;
-    b.disabled=true;return run('dmCtmtDongBo',S.token,true).then(function(r){b.disabled=false;toast('Đã gắn mã CTMT cho '+r.tong+' dự án; điền chương trình mục tiêu cho '+r.dien+' dự án; '+r.chenh+' dự án khác B501 giữ nguyên.',10000);DM.d=null;if(DM.sub==='tc')dmLoad()})}).catch(function(e){b.disabled=false;toast(msg(e),8000)})};
-  if($('dmTong'))$('dmTong').onclick=function(){var b=this;xuat(function(){return run('dmXuatDeXuat',S.token)},b,'xlsx')};
   Array.prototype.forEach.call(document.querySelectorAll('.mnub button'),function(x){x.addEventListener('click',function(){var d=x.closest('details');if(d)d.open=false})});
   DM.moDx=false;dmDxLoad();
   dmTdLoad();
@@ -1708,17 +1701,24 @@ function htForm(d,x){var o=DM.opt,thbc=!!o.toanBo,L=x.loai,ma=d.ma_da;
 
 var UP={d:null,l:'',sel:{}};
 function dmUpLoad(){var b=$('dmU');if(b)b.innerHTML='<div class="cbx"><p class="hint">⏳ Đang so sánh với danh mục...</p></div>';run('dmupDs',S.token).then(function(r){UP.d=r;UP.sel={};dmUpDraw()}).catch(function(e){toast(msg(e),7000)})}
+function dmCongCuBind(){
+  if($('dmCt'))$('dmCt').onclick=function(){var b=this;b.disabled=true;run('dmCtmtDongBo',S.token,false).then(function(k){b.disabled=false;
+    if(!confirm('Gắn mã chương trình mục tiêu theo B501 và tra tên gọi trong danh mục mã CTMT:\n• '+k.tong+' dự án có mã CTMT trong B501 ('+k.khop+' dự án đã có trong danh mục)\n• Điền chương trình mục tiêu cho '+k.dien+' dự án đang để trống\n• '+k.cung+' dự án đã khớp sẵn\n• '+k.chenh+' dự án đang ghi khác với B501 – GIỮ NGUYÊN, chỉ hiện mã/tên gọi để bạn đối chiếu\n\nĐồng ý ghi?'))return;
+    b.disabled=true;return run('dmCtmtDongBo',S.token,true).then(function(r){b.disabled=false;toast('Đã gắn mã CTMT cho '+r.tong+' dự án; điền chương trình mục tiêu cho '+r.dien+' dự án; '+r.chenh+' dự án khác B501 giữ nguyên.',10000);DM.d=null;if(DM.sub==='tc')dmLoad()})}).catch(function(e){b.disabled=false;toast(msg(e),8000)})};
+  if($('dmTong'))$('dmTong').onclick=function(){var b=this;xuat(function(){return run('dmXuatDeXuat',S.token)},b,'xlsx')};
+}
 function drawDmUp(){var m=$('main');m.innerHTML=pgHead('📤 Dự án mới từ B501/TT85','Tải file <b>B501</b> / <b>TT85</b> để tìm dự án có số liệu nhưng chưa có trong danh mục, rồi chọn thêm vào danh mục hoặc bỏ qua.')+'<div id="dmU"></div>';DM.moUp=true;dmUpLoad()}
 function dmUpDraw(){var box=$('dmU');if(!box)return;if(!UP.d){box.innerHTML='';return}
   var d=UP.d,cnt={};d.rows.forEach(function(x){cnt[x.nguon]=(cnt[x.nguon]||0)+1});
   var ds=d.rows.filter(function(x){return !UP.l||x.nguon===UP.l}),MAX=200,n=Object.keys(UP.sel).length;
   var ch='<button class="cbp'+(!UP.l?' on':'')+'" data-ul="">Tất cả ('+d.rows.length+')</button>'+Object.keys(cnt).map(function(k){return '<button class="cbp'+(UP.l===k?' on':'')+'" data-ul="'+esc(k)+'">'+esc(k)+' ('+cnt[k]+')</button>'}).join('');
-  var up=d.tai?'<div class="cbf" style="align-items:center"><span style="font-size:13px">Tải file <b>B501</b> (ngân sách tỉnh, ngân sách xã) và <b>TT85</b> bất kỳ lúc nào – chọn một hoặc nhiều file:</span><input type="file" id="upF" multiple accept=".xlsx"><button class="pri mini" id="upGo">Tải lên &amp; so sánh</button></div><p class="hint" id="upSt" style="margin:0 2px 6px">'+(d.meta&&d.meta.length?'Đã tải gần nhất: '+d.meta.slice(0,4).map(function(m){return esc(m.loai)+' ('+m.so+' dự án, '+new Date(m.luc).toLocaleDateString('vi-VN')+')'}).join('; '):'Chưa tải file nào – đang dùng dữ liệu B501/TT85 ngày 15–16/11/2026.')+'</p>':'';
+  var up=d.tai?'<div class="cbf" style="align-items:center"><span style="font-size:13px">Tải file <b>B501</b> (ngân sách tỉnh, ngân sách xã) và <b>TT85</b> bất kỳ lúc nào – chọn một hoặc nhiều file:</span><input type="file" id="upF" multiple accept=".xlsx"><button class="pri mini" id="upGo">Tải lên &amp; so sánh</button></div><p class="hint" id="upSt" style="margin:0 2px 6px">'+(d.meta&&d.meta.length?'Đã tải gần nhất: '+d.meta.slice(0,4).map(function(m){return esc(m.loai)+' ('+m.so+' dự án, '+new Date(m.luc).toLocaleDateString('vi-VN')+')'}).join('; '):'Chưa tải file nào – đang dùng dữ liệu B501/TT85 ngày 15–16/11/2026.')+'</p>'+'<div class="expb" style="margin:0 0 8px"><button id="dmTong">⬇ Xuất danh mục tổng thể (đối chiếu B501/TT85)</button><button id="dmCt">🏷 Gắn mã CTMT theo B501</button></div>':'';
   box.innerHTML='<div class="cbx"><div class="cbh"><b>Dự án mới từ B501/TT85</b><span>'+d.tong+' dự án chưa có trong danh mục'+(d.soBo?' · '+d.soBo+' đã bỏ qua'+(d.tai?' <a href="#" data-ukp="1">khôi phục</a>':''):'')+'</span></div>'+up+
    '<p class="hint" style="margin:0 2px 8px">Dự án có số liệu ở B501 hoặc TT85 nhưng chưa có trong danh mục. Chọn dự án rồi bấm <b>Thêm vào danh mục</b> (sẽ coi như đã có, chỉ còn bị cảnh báo nếu thiếu thông tin) hoặc <b>Không thêm</b>.</p>'+
    '<div class="cbf">'+ch+'</div>'+
    (ds.length?'<div class="expb" style="margin:4px 0"><button class="mini" data-ua="1">Chọn tất cả ('+Math.min(ds.length,MAX)+')</button><button class="mini" data-ub="1">Bỏ chọn</button><button class="mini pri" data-ut="1"'+(n?'':' disabled')+'>✔ Thêm vào danh mục ('+n+')</button><button class="mini" data-uk="1"'+(n?'':' disabled')+'>✖ Không thêm ('+n+')</button></div>'+
    '<div class="dmw" style="max-height:340px"><table class="dmt cbt"><thead><tr><th style="width:30px"></th><th style="width:84px">Mã DA</th><th>Tên dự án</th><th style="width:150px">Nguồn</th><th style="width:150px">Phòng giao dịch</th></tr></thead><tbody>'+ds.slice(0,MAX).map(function(x){return '<tr><td><input type="checkbox" data-us="'+esc(x.ma)+'"'+(UP.sel[x.ma]?' checked':'')+' style="width:auto"></td><td>'+esc(x.ma)+'</td><td class="ten">'+esc(x.ten)+(x.tenT?'<br><small style="color:#b45309">TT85: '+esc(x.tenT)+'</small>':'')+'</td><td>'+esc(x.nguon)+'</td><td>'+esc(x.kbnn||'(chưa xác định)')+'</td></tr>'}).join('')+'</tbody></table></div>'+(ds.length>MAX?'<p class="hint" style="margin:6px 2px 0">Hiện '+MAX+' / '+ds.length+' dự án đầu tiên. Xử lý xong sẽ hiện tiếp.</p>':''):'<p class="hint" style="margin:8px 2px">✓ Không có dự án mới nào cần xử lý.</p>')+'</div>';
+  dmCongCuBind();
   box.onchange=function(e){var c=e.target.getAttribute&&e.target.getAttribute('data-us');if(c){if(e.target.checked)UP.sel[c]=1;else delete UP.sel[c];dmUpDraw()}};
   box.onclick=function(e){var t=e.target;
         var f=t.closest('[data-ul]');if(f){UP.l=f.getAttribute('data-ul');dmUpDraw();return}
