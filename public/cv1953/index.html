@@ -638,9 +638,9 @@ function cvAuto(d){var s=d.so,bi=function(x){return x<10?'0'+x:String(x)},p=[];i
 function cvMau(d){var v=d.vb,A=cvAuto(d),nam=d.ky.substring(0,4),den=v.denNgay||'',ty=String(v.trichYeu||'').split('{denNgay}').join(den),
   dm=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(v.ngay||''),dn=(v.diaDanh||'Phú Thọ')+', ngày '+(dm?dm[1]:'......')+' tháng '+(dm?dm[2]:'......')+' năm '+(dm?dm[3]:nam),
   R=function(t,o){o=o||{};return {t:t,b:o.b?1:0,i:o.i?1:0,u:o.u?1:0,a:o.a||''}},
-  P=function(r,o){o=o||{};return {t:'p',jc:o.jc||'both',first:o.first||0,left:o.left||0,before:o.before||0,after:o.after||0,ln:o.ln||312,sz:o.sz||28,keep:o.keep?1:0,r:r}},
+  P=function(r,o){o=o||{};return {t:'p',jc:o.jc||'both',first:o.first||0,left:o.left||0,before:o.before||0,after:o.after||0,ln:o.ln||276,sz:o.sz||28,keep:o.keep?1:0,r:r}},
   C=function(sz,ln,x){return Object.assign({jc:'center',sz:sz,ln:ln},x||{})},
-  B=function(r,o){return P(r,Object.assign({first:720,before:60},o||{}))},
+  B=function(r,o){return P(r,Object.assign({first:720,before:40},o||{}))},
   au=function(k,b){return R(A[k],{a:k,b:b})},
   head=[{t:'tbl',cols:[4500,4855],c:[
     [P([R('KHO BẠC NHÀ NƯỚC')],C(22,240)),P([R('KHO BẠC NHÀ NƯỚC KHU VỰC VIII',{b:1})],C(22,240)),{t:'g',ind:1390},P([R('Số: '+(v.so||'......')+' /KBVIII-NV2')],C(26,300,{before:80})),P([R('V/v '+ty)],C(24,300,{before:40}))],
@@ -656,10 +656,10 @@ function cvMau(d){var v=d.vb,A=cvAuto(d),nam=d.ky.substring(0,4),den=v.denNgay||
     B([R('II. Tình hình thực hiện báo cáo của các Chủ đầu tư, UBND xã.',{b:1})]),
     B([R('Tổng số chủ đầu tư và UBND xã/phường được giao kế hoạch vốn năm '+nam+' là '),au('n'),R(' đơn vị, trong đó:')]),
     B([R('- Đơn vị đã gửi báo cáo: '),au('daGui'),R(' đơn vị, trong đó:')]),
-    B([R('+ Đơn vị đã gửi báo cáo đầy đủ: '),au('dayDu'),R(' đơn vị, chia ra: '),au('dayDuTinh'),R(' đơn vị khối tỉnh và '),au('dayDuXa'),R(' xã/phường.')],{first:1000}),
-    B([R('+ Đơn vị báo cáo chưa đầy đủ: '),au('chuaDu'),R('.')],{first:1000}),
+    B([R('+ Đơn vị đã gửi báo cáo đầy đủ: '),au('dayDu'),R(' đơn vị, chia ra: '),au('dayDuTinh'),R(' đơn vị khối tỉnh và '),au('dayDuXa'),R(' xã/phường.')],{first:1000,jc:'left'}),
+    B([R('+ Đơn vị báo cáo chưa đầy đủ: '),au('chuaDu'),R('.')],{first:1000,jc:'left'}),
     B([R('- Đơn vị chưa gửi báo cáo: '),au('chuaGui'),R(' đơn vị.')]),
-    P([R('(chi tiết tại Phụ lục số 01 đính kèm)',{i:1})],{jc:'center',before:60}),
+    P([R('(chi tiết tại Phụ lục số 01 đính kèm)',{i:1})],{jc:'center',before:40}),
     B([R('Kho bạc Nhà nước khu vực VIII trân trọng gửi '+String(v.kinhGui).replace(/\s*tỉnh Tuyên Quang\s*$/i,'')+' tổng hợp số liệu báo cáo./.')]));
   var nn=[P([R('Nơi nhận:',{b:1,i:1})],{jc:'left',sz:24,ln:300,keep:1})];
   String(v.noiNhan||'').split(/\n+/).forEach(function(t){if(t)nn.push(P([R('- '+t.replace(/^-\s*/,''))],{jc:'left',sz:22,ln:300}))});
