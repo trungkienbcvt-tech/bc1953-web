@@ -575,7 +575,7 @@ function ganVai(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=
 /* Một mã đăng nhập hai vai (Trưởng phòng Tổng hợp + Lãnh đạo Phòng NV2): r.vai2 là phiên của vai Phòng NV2 */
 function pd0(L){return L.filter(function(x){return x.tt==='Đã trình lãnh đạo phòng'}).length}
 function tenHt(t){return t==='Trưởng phòng Tổng hợp'?'Lãnh đạo phòng':t}
-function whoTxt(){var b=S.vaiNv;return (S.vt==='TH'?'★ ':'')+tenHt(b?S.vaiTh.ten:S.ten)+(b?(S.vai==='nv'?' · Báo cáo Phòng NV2':' · Báo cáo tổng hợp'):'')}
+function whoTxt(){var b=S.vaiNv;return (S.vt==='TH'?'★ ':'')+tenHt(b?S.vaiTh.ten:S.ten)}
 function nvKiem(){S.nvPend=false;if(!S.vaiNv||S.vai!=='th')return Promise.resolve();return run('trangThai',S.vaiNv.token,S.ky).then(function(w){var me=(w.list||[]).filter(function(x){return x.pgd===(S.vaiNv.donvi||S.vaiNv.ten)})[0];S.nvPend=!!(me&&me.tt==='Chờ TP phê duyệt');nbDuyet()}).catch(function(){})}
 function setVai(v){if(S.vai===v)return Promise.resolve();var r=v==='nv'?S.vaiNv:S.vaiTh;if(!r)return Promise.resolve();
   if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển sang phần khác?'))return Promise.reject(new Error('huy'));
