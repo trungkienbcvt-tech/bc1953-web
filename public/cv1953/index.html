@@ -542,8 +542,8 @@ function hoi(html,okText,withText){return new Promise(function(res){
 /* đăng nhập */
 run('dsTaiKhoan').then(function(ds){var g={TH:'Cán bộ tổng hợp',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},h='';
   var og=function(lb,l){if(l.length)h+='<optgroup label="'+esc(lb)+'">'+l.map(function(x){return'<option>'+esc(x.ten)+'</option>'}).join('')+'</optgroup>'};
-  og('Quản trị hệ thống',ds.filter(function(x){return x.vt==='AD'}));og('Chuyên viên THBC',ds.filter(function(x){return x.vt==='TH'}));og('Cán bộ Nghiệp vụ 2',ds.filter(function(x){return x.vt==='NV2'}));
-  PGDS.forEach(function(p){og(p,ds.filter(function(x){return x.vt==='PGD'&&x.donvi===p}))});
+  og('Quản trị hệ thống',ds.filter(function(x){return x.vt==='AD'}));og('Tổng hợp',ds.filter(function(x){return x.vt==='TH'&&x.ten!=='Chuyên viên THBC'}));og('Cán bộ Nghiệp vụ 2',ds.filter(function(x){return x.vt==='NV2'}));
+  PGDS.forEach(function(p){og(p,ds.filter(function(x){return x.vt==='TH'&&x.ten==='Chuyên viên THBC'&&p==='Phòng Nghiệp vụ 2'}).concat(ds.filter(function(x){return x.vt==='PGD'&&x.donvi===p})))});
   $('lgPgd').innerHTML=h||'<option>(chưa có tài khoản)</option>'}).catch(function(e){$('lgErr').textContent=msg(e)});
 $('lgMa').addEventListener('keydown',function(e){if(e.key==='Enter')dangNhap()});
 $('lgBtn').onclick=dangNhap;
