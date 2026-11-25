@@ -6,6 +6,7 @@
     { "source": "/((?!doichieu/).*)", "has": [{ "type": "host", "value": "ungdungdoichieukv8.vercel.app" }], "destination": "/doichieu/", "permanent": false },
     { "source": "/doichieu/:path*", "missing": [{ "type": "host", "value": "ungdungdoichieukv8.vercel.app" }], "destination": "https://ungdungdoichieukv8.vercel.app/", "permanent": false },
     { "source": "/", "has": [{ "type": "host", "value": "tonghopbaocaokv8.vercel.app" }], "missing": [{ "type": "query", "key": "cong" }], "destination": "/tonghop/", "permanent": false },
+    { "source": "/", "has": [{ "type": "host", "value": "bcdautucong-kv8.vercel.app" }], "missing": [{ "type": "query", "key": "cong" }], "destination": "/cv1953/", "permanent": false },
     { "source": "/tonghop", "destination": "/tonghop/", "permanent": false },
     { "source": "/cv1953", "destination": "/cv1953/", "permanent": false },
     { "source": "/doichieu", "destination": "https://ungdungdoichieukv8.vercel.app/", "permanent": false },
