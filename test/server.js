@@ -9,7 +9,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     // Phục vụ tệp tĩnh trong public/ (trang chủ, /cv1953/, /tonghop/)
     const pub = path.join(__dirname, '../public'); let u = decodeURIComponent(req.url.split('?')[0]);
     if (u === '/cv1953' || u === '/tonghop' || u === '/doichieu') { res.writeHead(302, { Location: u + '/' }); return res.end(); }
-    if (u.endsWith('/')) u += 'index.html';
+    if (u === '/') u = '/chon.html'; else if (u.endsWith('/')) u += 'index.html';
     const f = path.join(pub, path.normalize(u));
     if (!f.startsWith(pub) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.statusCode = 404; return res.end('Not found'); }
     const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json' };

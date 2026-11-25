@@ -10,7 +10,7 @@
 Giao diện giữ nguyên bản Apps Script; máy chủ chạy bằng hàm Node.js trên **Vercel**, số liệu lưu trong **Postgres** (Supabase hoặc Vercel/Neon Postgres). Phòng giao dịch không truy cập được file Excel/Google.
 
 ```
-public/index.html   trang chủ chung: chọn phân hệ (CV 1953 / Tổng hợp theo CĐT) + liên kết TCKB+
+public/chon.html    trang chủ chung (gốc "/" được rewrite tới đây, xem vercel.json): chọn phân hệ (CV 1953 / Tổng hợp theo CĐT) + liên kết TCKB+
 public/cv1953/      phân hệ Báo cáo CV 1953 (một trang, gọi POST /api/rpc)
 public/tonghop/     phân hệ Tổng hợp giải ngân theo chủ đầu tư (gọi thẳng Supabase, xem docs-tonghop.md)
 supabase/           lược đồ + hàm SQL của phân hệ Tổng hợp (tonghop.sql, tonghop_seed.sql)

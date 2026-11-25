@@ -12,7 +12,8 @@
     { "source": "/tonghop.html", "destination": "/tonghop/", "permanent": false }
   ],
   "rewrites": [
-    { "source": "/", "has": [{ "type": "host", "value": "bcdautucong-kv8.vercel.app" }], "missing": [{ "type": "query", "key": "cong" }], "destination": "/cv1953/index.html" }
+    { "source": "/", "has": [{ "type": "host", "value": "bcdautucong-kv8.vercel.app" }], "missing": [{ "type": "query", "key": "cong" }], "destination": "/cv1953/index.html" },
+    { "source": "/", "destination": "/chon.html" }
   ],
   "headers": [
     { "source": "/cv1953/(.*)", "headers": [ { "key": "Cache-Control", "value": "no-cache, must-revalidate" } ] },
