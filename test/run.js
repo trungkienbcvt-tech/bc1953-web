@@ -246,6 +246,10 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         await assert.rejects(() => M.cdtDxXoa(p20, 'T2'), /Không tìm thấy/); await assert.rejects(() => M.cdtDxXoa(th, 'T1'), /Duyệt hoặc Từ chối/);
         await M.cdtDxXoa(p20, 'T1'); assert.ok(!(await M.cdtDxDs(p20)).rows.some((x) => x.id === 'T1'));
         await luu([{ id: 'T4', khoi: 'Khối tỉnh', lon: 'Z', tt: '', gc: '', kbnn: ky, nguoi: 'x', luc: 4, st: 'duyet', ly: '' }]); await assert.rejects(() => M.cdtDxXoa(p20, 'T4'), /đã được duyệt/);
+        await luu([{ id: 'T5', khoi: 'Khối tỉnh', lon: 'Q', tt: '', gc: '', kbnn: ky, nguoi: 'x', luc: 5, st: 'tu_choi', ly: 'x' }, { id: 'T6', khoi: 'Khối tỉnh', lon: 'R', tt: '', gc: '', kbnn: ky, nguoi: 'x', luc: 6, st: 'cho', ly: '' }]);
+        await assert.rejects(() => M.cdtDxAn(p20, 'T5'), /Chỉ Phòng NV2/); await assert.rejects(() => M.cdtDxAn(th, 'T6'), /đã bị từ chối/);
+        await M.cdtDxAn(th, 'T5'); assert.ok(!(await M.cdtDxDs(th)).rows.some((x) => x.id === 'T5')); assert.ok((await M.cdtDxDs(p20)).rows.some((x) => x.id === 'T5'));
+        await M.cdtDxSua(p20, 'T5', { khoi: 'Khối tỉnh', cdt_lon: 'Q2' }); assert.ok((await M.cdtDxDs(th)).rows.some((x) => x.id === 'T5'));
         await luu([]);
       }
       { const DY = require('../lib/dmdyn'), BT0 = require('../lib/bieutong'), P = { 'Phòng giao dịch số 21': 1, 'Phòng Nghiệp vụ 2': 1 };
