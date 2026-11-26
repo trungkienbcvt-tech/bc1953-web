@@ -97,7 +97,8 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     x = (await L.duyet(ktt, 'ktt_tra', 'sai số dòng 1', '')).list[0]; assert.strictEqual(x.tt, 'Bị trả lại'); assert(!x.ky.LAP, 'trả lại thì xóa chữ ký'); assert(/sai số/.test(x.lyDo));
     await L.luu(lap, [{ id: 'b01', r: rr.r, c: 5, v: String(rr.v[1] + 10) }]);
     await L.duyet(lap, 'lap_trinh', '', ''); x = (await L.duyet(ktt, 'ktt_trinh', '', '')).list[0]; assert.strictEqual(x.tt, 'Chờ LĐ phê duyệt'); assert(x.ky.KTT);
-    x = (await L.duyet(tp, 'tp_tra', 'xem lại', '')).list[0]; assert.strictEqual(x.tt, 'Bị trả lại'); assert.strictEqual(Object.keys(x.ky).length, 0);
+    x = (await L.duyet(tp, 'tp_tra', 'xem lại', '')).list[0]; assert.strictEqual(x.tt, 'Chờ KTT duyệt', 'Lãnh đạo trả lại → về Kế toán trưởng'); assert.strictEqual(x.lyDo, 'xem lại'); assert.deepStrictEqual(Object.keys(x.ky), ['LAP'], 'giữ chữ ký người lập, bỏ chữ ký KTT/LĐ');
+    x = (await L.duyet(ktt, 'ktt_tra', 'người lập sửa lại', '')).list[0]; assert.strictEqual(x.tt, 'Bị trả lại'); assert.strictEqual(Object.keys(x.ky).length, 0);
     await L.duyet(lap, 'lap_trinh', '', ''); await L.duyet(lap, 'lap_rut', '', ''); assert.strictEqual((await st(lap)).tt, 'Chưa gửi');
     await L.duyet(lap, 'lap_trinh', '', ''); await L.duyet(ktt, 'ktt_trinh', '', ''); x = (await L.duyet(tp, 'tp_duyet', '', '')).list[0];
     assert.strictEqual(x.tt, 'Đã gửi', 'TP phê duyệt → gửi thẳng Tổng hợp'); assert(x.ky.LAP && x.ky.KTT && x.ky.TP); assert.strictEqual(x.soGui, 1);
