@@ -455,6 +455,15 @@ header button:hover{background:rgba(255,255,255,.22)}
 header .greet{font-size:13px;font-weight:500;opacity:.9}
 header .chip{border-radius:999px;font-size:12.5px;font-weight:600;letter-spacing:.2px}
 header select.kysel{font-family:'Inter','Be Vietnam Pro',sans-serif;font-weight:600;border-radius:999px}
+/* header gọn: tên hệ thống tối đa 2 dòng, các nút co nhỏ */
+header{gap:8px 10px;padding-top:8px;padding-bottom:8px}
+header h1{flex:1 1 430px;min-width:min(430px,100%);font-size:16px;line-height:1.25;text-wrap:balance}
+header select.kysel{min-width:0;width:auto;max-width:200px;padding:5px 8px;font-size:12.5px;text-overflow:clip}
+header .greet{font-size:12px;margin-left:0;padding-right:0;white-space:nowrap}
+header .chip{padding:4px 10px;font-size:12px}
+header button{padding:5px 11px;font-size:12.5px;white-space:nowrap}
+@media(max-width:1400px){header .greet{display:none}}
+@media(max-width:1100px){header h1{flex-basis:400px;min-width:min(400px,100%);font-size:14.5px}header select.kysel{max-width:170px}header .chip{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 /* Thẻ trang chủ: mỗi thẻ một màu */
 .hmg .k1{border-left:5px solid #6d28d9!important}.hmg .k1 .ic{background:#f1ecfd!important}.hmg .k1 b{color:#6d28d9}.hmg .k1:hover{border-color:#6d28d9!important;box-shadow:0 8px 20px rgba(0,0,0,.08),0 0 0 1px #6d28d9}
 .hmg .k2{border-left:5px solid #0f766e!important}.hmg .k2 .ic{background:#e3f5f2!important}.hmg .k2 b{color:#0f766e}.hmg .k2:hover{border-color:#0f766e!important;box-shadow:0 8px 20px rgba(0,0,0,.08),0 0 0 1px #0f766e}
