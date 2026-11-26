@@ -3,7 +3,7 @@
 <head>
 <base target="_top">
 <meta charset="utf-8">
-<title>Hệ thống quản lý danh mục và báo cáo đầu tư KV8</title>
+<title>Hệ thống quản lý danh mục và báo cáo đầu tư KVIII - Địa bàn Tuyên Quang (BCĐT-TQ)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23a31d2f'/%3E%3Cpath d='M8 24V15h4v9zm6 0V8h4v16zm6 0v-6h4v6z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Nunito:ital,wght@1,400;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -435,7 +435,7 @@ nav#tabs .tg.sub{margin:4px 0 6px}nav#tabs .tg.sub .tgh{background:#e8f1f8!impor
 .hmpr{padding:6px 12px;margin:0 0 8px}.hmpt{margin-bottom:4px;font-size:14px}.hmbar{height:8px}.hmnote{padding:8px 14px;margin:8px 0 0}.hmnt{font-size:14px}
 /* Trang đăng nhập: phông Inter – sạch, hiện đại, lịch sự */
 #login{font-family:'Inter','Be Vietnam Pro',sans-serif;-webkit-font-smoothing:antialiased}
-#login .lhero h1{font-size:37px;line-height:1.22;letter-spacing:-.4px;font-weight:600;margin:20px 0 16px}#login .lhero h1 span.ln{display:block;white-space:nowrap}
+#login .lhero h1{font-size:37px;line-height:1.22;letter-spacing:-.4px;font-weight:600;margin:20px 0 16px}#login .lhero h1 span.ln{display:block;white-space:nowrap}#login .lhero h1 span.ln3{font-size:26px;font-weight:500;margin-top:6px;opacity:.95}
 #login .lbadge{font-size:11.5px;letter-spacing:2.2px;font-weight:600}
 #login .lhero p{font-size:16px;line-height:1.65;font-weight:400;opacity:.85}
 #login .lst b{font-size:15px;font-weight:600;letter-spacing:-.1px}#login .lst span{font-size:12.5px;font-weight:400}
@@ -492,7 +492,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 <div class="lwrap">
   <div class="lhero">
     <div class="lbadge"><i class="pdot"></i>KBNN KHU VỰC VIII</div>
-    <h1><span class="ln">Hệ thống quản lý danh mục</span><span class="ln">và báo cáo <span class="gx">đầu tư KV8</span></span></h1>
+    <h1><span class="ln">Hệ thống quản lý danh mục</span><span class="ln">và báo cáo <span class="gx">đầu tư KVIII</span></span><span class="ln ln3">Địa bàn Tuyên Quang <span class="gx">(BCĐT-TQ)</span></span></h1>
     <p>Danh mục dự án, báo cáo giải ngân theo Công văn 1953 và báo cáo đánh giá KPI – dùng chung cho các phòng giao dịch và phòng Nghiệp vụ 2.</p>
     <div class="lflow">
       <div class="lst"><div class="lic"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z M4 10h16 M10 5v14"/></svg></div><b>Danh mục dùng chung</b><span>Dự án, chủ đầu tư, cán bộ chuyên quản</span></div>
@@ -518,7 +518,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 <div id="busy"></div>
 <div id="app">
   <header>
-    <h1>Hệ thống quản lý danh mục và báo cáo đầu tư KV8<small>KBNN khu vực VIII</small></h1>
+    <h1>Hệ thống quản lý danh mục và báo cáo đầu tư KVIII - Địa bàn Tuyên Quang (BCĐT-TQ)<small>KBNN khu vực VIII</small></h1>
     <select id="kySel" class="kysel" title="Chọn kỳ báo cáo"></select><span class="greet" id="greet"></span><span class="chip" id="who"></span>
     <button id="maBtn" title="Đổi mật khẩu đăng nhập">Đổi mật khẩu</button><button id="outBtn">Đăng xuất</button>
   </header>
@@ -789,7 +789,7 @@ $('xemSel').onchange=function(){if(S.tab==='bt'||S.tab==='tt'){S.xemB=$('xemSel'
 function loadXem(){run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;S.dirty={};show(S.tab)}).catch(function(e){toast(msg(e),6000)})}
 
 function fillKy(){var l=(S.wf&&S.wf.dsKy)||S.dsKy||[];S.dsKy=l;var sel=$('kySel');if(!sel)return;
-  sel.innerHTML=l.map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'"'+(k.chuaMo?' disabled':'')+'>Kỳ '+k.nhan+(k.chuaMo?' (Chưa mở)':(k.hienTai?' (Đang mở)':(k.soGoc?' · Dữ liệu gốc (Đã đóng)':' (Đã đóng)')))+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Hệ thống quản lý danh mục và báo\u00a0cáo\u00a0đầu\u00a0tư\u00a0KV8'}
+  sel.innerHTML=l.map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'"'+(k.chuaMo?' disabled':'')+'>Kỳ '+k.nhan+(k.chuaMo?' (Chưa mở)':(k.hienTai?' (Đang mở)':(k.soGoc?' · Dữ liệu gốc (Đã đóng)':' (Đã đóng)')))+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Hệ thống quản lý danh mục và báo\u00a0cáo\u00a0đầu\u00a0tư\u00a0KVIII\u00a0- Địa\u00a0bàn\u00a0Tuyên\u00a0Quang (BCĐT-TQ)'}
 function doiKy(v){S.dc=null;S.cb=null;S.bt=null;if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển kỳ?')){$('kySel').value=S.ky||'';return}
   S.ky=v;S.dirty={};S.data=null;Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();fillKy();show(S.tab==='in'?'in':'tq')}).catch(function(e){toast(msg(e),6000);S.ky='';fillKy()})}
 function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();var t0='home';try{var st=localStorage.getItem('cv1953t');if(st&&$('tabs').querySelector('[data-t="'+st+'"]'))t0=st}catch(e){}show(t0)}
