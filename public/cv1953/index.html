@@ -1010,7 +1010,7 @@ function btD(tt,l){return '<span class="dck '+tt+'">'+(tt==='khop'?'✓ Khớp':
 function btKey(x){return [x.a||'',x.b||'',x.c||''].join('|')}
 function btGc(d,x){if(x.k==='tot')return '<td class="gn"></td>';return (d.sua==='TH'||(d.sua==='PGD'&&x.c&&x.c===d.pgd&&x.k==='row'))?'<td class="gn"><input type="text" class="gc btgc" data-bk="'+esc(btKey(x))+'" maxlength="300" value="'+esc(x.gc||'')+'" placeholder="Ghi chú..." autocomplete="off"></td>':'<td class="gn">'+esc(x.gc||'')+'</td>'}
 function btGcBind(){var tb=$('btTb');if(!tb)return;tb.onchange=function(e){var i=e.target;if(!i||!i.classList.contains('btgc'))return;var k=i.getAttribute('data-bk'),v=i.value;run('btGhiChu',S.token,S.ky,k,v).then(function(){(S.bt.rows||[]).forEach(function(x){if(btKey(x)===k)x.gc=v.replace(/\s+/g,' ').trim()});i.style.background='#e8f7ec';setTimeout(function(){i.style.background=''},900)}).catch(function(er){toast(msg(er),6000)})}}
-function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=!!d.co,h='',nc=4+(full?2:0);
+function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=!!d.co,h='',nc=3+(full?2:0);
   var rows=d.rows.filter(function(x){
     if(f!=='all'){if(x.k!=='row'||x.n==null)return false;
       if(f==='lech'&&x.ttl==='khop')return false;if(f==='thap'&&x.ttl!=='thap')return false;if(f==='cao'&&x.ttl!=='cao')return false}
@@ -1019,7 +1019,7 @@ function btBody(d){var f=S.btF||'all',q=(S.btQ||'').toLowerCase().trim(),full=!!
   if(!rows.length)return '<tr><td colspan="'+nc+'" style="text-align:center;padding:22px;color:var(--mut)">'+(f==='all'?'Không có dòng nào.':'✓ Không có dòng nào thuộc nhóm này.')+'</td></tr>';
   rows.forEach(function(x){var leaf=f!=='all'||q,nm=leaf&&x.ten&&x.b==='Giao dịch tại'?x.ten+' <small>· giao dịch tại '+esc(x.c)+'</small>':esc(x.ten&&leaf?x.ten:x.b),cl=x.k==='tot'?'bt-t':(x.k==='khoi'?'bt-k':(x.k==='nhom'?'bt-i':(x.st==='sub'?'bt-s':(x.st==='ind'?'bt-i':''))));
     h+='<tr class="'+cl+'"><td class="bt-a">'+esc(x.a)+'</td><td style="padding-left:'+(leaf?10:8+Math.max(x.lv-1,0)*16)+'px">'+nm+(!leaf&&x.c&&d.full?'<br><small>'+esc(x.c)+'</small>':(leaf&&x.b!=='Giao dịch tại'&&x.c?' <small>· '+esc(x.c)+'</small>':''))+'</td>'+
-      '<td class="v">'+fmt(r2(x.lk))+'</td><td class="v">'+fmt(r2(x.th))+'</td>'+
+      '<td class="v">'+fmt(r2(x.lk))+'</td>'+
       (full?(x.n!=null?'<td class="v">'+fmt(r2(x.tlk))+'</td><td>'+btD(x.ttl,x.dlk)+'</td>':'<td colspan="2"></td>'):'')+btGc(d,x)+'</tr>'});
   return h}
 function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=S.btF||'all';
@@ -1034,7 +1034,7 @@ function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=
   if(d.soThua)h+='<div class="rsn" style="background:#fff7e0;border-color:#f1deaa;color:#7a5200;margin:8px 0">Có <b>'+d.soThua+'</b> dòng chưa có trong danh mục (xếp cuối biểu); tổng vẫn bằng tổng 4 biểu con.</div>';
   h+='<div class="btt"><input type="text" id="btQ" placeholder="🔍 Tìm chủ đầu tư, xã, phường..." value="'+esc(S.btQ||'')+'">'+(d.co?[['lech','Chỉ dòng lệch'],['thap','Lũy kế thấp hơn'],['cao','Lũy kế cao hơn']].map(function(x){return'<button class="pill'+(f===x[0]?' on':'')+'" data-bf="'+x[0]+'">'+x[1]+'</button>'}).join(''):'')+'<button class="pill'+(f==='all'?' on':'')+'" data-bf="all">Tất cả (theo danh mục)</button></div>';
   var full2=!!d.co;
-  h+='<div class="btsc"><table class="bt"><thead><tr><th>STT</th><th>Chủ đầu tư / đơn vị / xã, phường</th><th>Lũy kế</th><th>Trong tháng</th>'+(full2?'<th>THBC lũy kế</th><th>Chênh lệch lũy kế</th>':'')+'<th>Ghi chú</th></tr></thead><tbody id="btTb">'+btBody(d)+'</tbody></table></div>';
+  h+='<div class="btsc"><table class="bt"><thead><tr><th>STT</th><th>Chủ đầu tư / đơn vị / xã, phường</th><th>Lũy kế</th>'+(full2?'<th>THBC lũy kế</th><th>Chênh lệch lũy kế</th>':'')+'<th>Ghi chú</th></tr></thead><tbody id="btTb">'+btBody(d)+'</tbody></table></div>';
   if(d.co)h+='<p class="hint" style="margin:6px 0 0">Đối chiếu theo lũy kế · Chênh = số web − THBC (triệu đồng). <span class="dck thap">−</span> thấp hơn THBC · <span class="dck cao">+</span> cao hơn THBC · lệch dưới 1 triệu coi là khớp.</p>';
   return h+'</div>'}
 function drawBt(){$('main').innerHTML=btCard();bindTq();bindEx();btLoad();btGcBind()}
