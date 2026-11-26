@@ -799,7 +799,7 @@ function bcItems(vt){return [['tq',vt==='TH'?'📈 Tổng quan toàn tỉnh':'�
 function drawTabs0(){drawTabs()}
 function drawTabs(){
   var M=!!S.vaiNv,thv=M?'th':'',nvv=M?'nv':'',vt0=M?'TH':S.vt;
-  var G=[{id:'gchung',v:thv,t:'🗂 Dùng chung',it:[['cbq','Cán bộ chuyên quản'],['cdt','Danh mục chủ đầu tư'],['dm','Danh mục dự án']]}]
+  var G=[{id:'gchung',v:thv,t:'🗂 Danh mục dùng chung',it:[['cbq','Cán bộ chuyên quản'],['cdt','Danh mục chủ đầu tư'],['dm','Danh mục dự án']]}]
    .concat(vt0!=='PGD'?[{id:'gcn',v:thv,t:'🔄 Cập nhật dữ liệu',it:[['dmup','📤 Dự án mới từ B501/TT85'],['tt37','📥 Tải số liệu THBC (TT37)']]}]:[])
    .concat(M?[{id:'g1953',v:'',t:'📑 BC 1953',it:[],sub:[{id:'g1953n',v:nvv,t:'Phòng Nghiệp vụ 2',it:bcItems('PGD')},{id:'g1953t',v:thv,t:'Tổng hợp toàn tỉnh',it:bcItems('TH')}]}]:[{id:'g1953',v:'',t:'📑 BC 1953',it:bcItems(S.vt)}])
    .concat([{id:'gkpi',v:thv,t:'🎯 BC đánh giá KPI',it:[['kpi','📊 Tổng quan KPI'],['kpib','📝 Số liệu & xác nhận'],['kpibt','⚖ Phòng ghi nhận khác THBC']].concat(vt0!=='PGD'?[['kpvb','📤 Xuất báo cáo']]:[])}]),h='';
@@ -1030,7 +1030,7 @@ function btCard(){var d=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null,full=btFull(),f=
   if(d.err)return h+'<p class="hint">Không tải được biểu tổng. Thử tải lại trang.</p></div>';
   var st=btLech(d);
   if(d.co){h+=st.n?'<div class="btw"><b>⚠ '+st.n+' chủ đầu tư lệch so với THBC</b><span>'+(st.thap?'<span class="dck thap">'+st.thap+' lũy kế thấp hơn</span> ':'')+(st.cao?'<span class="dck cao">'+st.cao+' lũy kế cao hơn</span> ':'')+'<span class="dck khop">'+st.khop+' khớp</span></span>'+(d.meta&&full?'<small>File THBC: '+esc(d.meta.file)+' · '+esc(d.meta.nguoi||'')+'</small>':'')+'</div>':'<div class="btw ok"><b>✓ Khớp THBC toàn bộ</b><span><span class="dck khop">'+st.khop+' chủ đầu tư khớp</span></span>'+(d.meta&&full?'<small>File THBC: '+esc(d.meta.file)+'</small>':'')+'</div>'}
-  else if(full)h+='<div class="btw nf"><b>Chưa có file THBC kỳ '+esc(d.ky)+'</b><span>Vào mục <b>📥 Tải số liệu THBC (TT37)</b> (nhóm Dùng chung) để tải file THBC; hệ thống sẽ tự đối chiếu và cảnh báo chủ đầu tư thấp hơn / cao hơn.</span></div>';
+  else if(full)h+='<div class="btw nf"><b>Chưa có file THBC kỳ '+esc(d.ky)+'</b><span>Vào mục <b>📥 Tải số liệu THBC (TT37)</b> (nhóm Danh mục dùng chung) để tải file THBC; hệ thống sẽ tự đối chiếu và cảnh báo chủ đầu tư thấp hơn / cao hơn.</span></div>';
   if(d.soThua)h+='<div class="rsn" style="background:#fff7e0;border-color:#f1deaa;color:#7a5200;margin:8px 0">Có <b>'+d.soThua+'</b> dòng chưa có trong danh mục (xếp cuối biểu); tổng vẫn bằng tổng 4 biểu con.</div>';
   h+='<div class="btt"><input type="text" id="btQ" placeholder="🔍 Tìm chủ đầu tư, xã, phường..." value="'+esc(S.btQ||'')+'">'+(d.co?[['lech','Chỉ dòng lệch'],['thap','Lũy kế thấp hơn'],['cao','Lũy kế cao hơn']].map(function(x){return'<button class="pill'+(f===x[0]?' on':'')+'" data-bf="'+x[0]+'">'+x[1]+'</button>'}).join(''):'')+'<button class="pill'+(f==='all'?' on':'')+'" data-bf="all">Tất cả (theo danh mục)</button></div>';
   var full2=!!d.co;
