@@ -518,7 +518,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 <div id="busy"></div>
 <div id="app">
   <header>
-    <h1>Hệ thống quản lý danh mục và báo cáo đầu tư KV8<small>KBNN khu vực VIII</small></h1>
+    <h1>Hệ thống quản lý danh mục và báo cáo đầu tư KV8<small>KBNN khu vực VIII</small></h1>
     <select id="kySel" class="kysel" title="Chọn kỳ báo cáo"></select><span class="greet" id="greet"></span><span class="chip" id="who"></span>
     <button id="maBtn" title="Đổi mật khẩu đăng nhập">Đổi mật khẩu</button><button id="outBtn">Đăng xuất</button>
   </header>
@@ -789,7 +789,7 @@ $('xemSel').onchange=function(){if(S.tab==='bt'||S.tab==='tt'){S.xemB=$('xemSel'
 function loadXem(){run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;S.dirty={};show(S.tab)}).catch(function(e){toast(msg(e),6000)})}
 
 function fillKy(){var l=(S.wf&&S.wf.dsKy)||S.dsKy||[];S.dsKy=l;var sel=$('kySel');if(!sel)return;
-  sel.innerHTML=l.map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'"'+(k.chuaMo?' disabled':'')+'>Kỳ '+k.nhan+(k.chuaMo?' (Chưa mở)':(k.hienTai?' (Đang mở)':(k.soGoc?' · Dữ liệu gốc (Đã đóng)':' (Đã đóng)')))+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Hệ thống quản lý danh mục và báo cáo đầu tư KV8'}
+  sel.innerHTML=l.map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'"'+(k.chuaMo?' disabled':'')+'>Kỳ '+k.nhan+(k.chuaMo?' (Chưa mở)':(k.hienTai?' (Đang mở)':(k.soGoc?' · Dữ liệu gốc (Đã đóng)':' (Đã đóng)')))+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Hệ thống quản lý danh mục và báo\u00a0cáo\u00a0đầu\u00a0tư\u00a0KV8'}
 function doiKy(v){S.dc=null;S.cb=null;S.bt=null;if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển kỳ?')){$('kySel').value=S.ky||'';return}
   S.ky=v;S.dirty={};S.data=null;Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();fillKy();show(S.tab==='in'?'in':'tq')}).catch(function(e){toast(msg(e),6000);S.ky='';fillKy()})}
 function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();var t0='home';try{var st=localStorage.getItem('cv1953t');if(st&&$('tabs').querySelector('[data-t="'+st+'"]'))t0=st}catch(e){}show(t0)}
@@ -1085,7 +1085,7 @@ var VC=['#a31d2f','#2563eb','#0d9488','#d97706'],SCOL=['#8b95a9','#2563eb','#0d9
 function fmtK(v){return fmt(Math.round(v/1e3))+' tỷ'}
 function cdtTong(t){var o={n:0,dg:0,cham:0,chua:0,trong:0};t.list.forEach(function(p){Object.keys(p.b).forEach(function(i){var b=p.b[i];o.n+=b.n;o.dg+=b.dg;o.cham+=b.cham;o.chua+=b.chua;o.trong+=b.trong})});return o}
 function donut(parts,center,sub){var R=50,Cc=2*Math.PI*R,tot=parts.reduce(function(a,x){return a+x.v},0),off=0,sv='<svg viewBox="0 0 140 140" class="dn"><circle cx="70" cy="70" r="'+R+'" fill="none" stroke="#f1e6e8" stroke-width="20"/>';
-  parts.forEach(function(x){if(x.v<=0||!tot)return;var len=Cc*x.v/tot;sv+='<circle cx="70" cy="70" r="'+R+'" fill="none" stroke="'+x.c+'" stroke-width="20" stroke-dasharray="'+len.toFixed(2)+' '+(Cc-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 70 70)"><title>Hệ thống quản lý danh mục và báo cáo đầu tư KV8</title></circle>';off+=len});
+  parts.forEach(function(x){if(x.v<=0||!tot)return;var len=Cc*x.v/tot;sv+='<circle cx="70" cy="70" r="'+R+'" fill="none" stroke="'+x.c+'" stroke-width="20" stroke-dasharray="'+len.toFixed(2)+' '+(Cc-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 70 70)"><title>'+esc(x.l)+': '+x.v+'</title></circle>';off+=len});
   sv+='<text x="70" y="68" text-anchor="middle" class="dn1">'+esc(center)+'</text><text x="70" y="86" text-anchor="middle" class="dn2">'+esc(sub)+'</text></svg>';
   return '<div class="dnw">'+sv+'<ul class="dnl">'+parts.map(function(x){return '<li><i style="background:'+x.c+'"></i>'+esc(x.l)+' <b>'+(Math.round(x.v*10)/10).toLocaleString('vi-VN')+'</b></li>'}).join('')+'</ul></div>'}
 function unitCard(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null;if(!d)return chartCard('Số đơn vị đã gửi báo cáo','<p class="hint">Đang tính...</p>');if(d.err||!d.lon)return chartCard('Số đơn vị đã gửi báo cáo','<p class="hint">Không tải được.</p>');
