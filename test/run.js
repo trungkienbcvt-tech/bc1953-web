@@ -203,7 +203,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await assert.rejects(() => M.dmSua(p20, '111', { cdt: mauT }), /đề xuất/);
     await M.dmDeXuat(p20, '111', mauT); assert.strictEqual(last()[0], 'cv_dm_dx_gui'); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20');
     await assert.rejects(() => M.dmDeXuat(th, '111', mauT), /trực tiếp/);
-    await assert.rejects(() => M.dmDxDuyet(p20, '111', true), /Chỉ chuyên viên THBC/);
+    await assert.rejects(() => M.dmDxDuyet(p20, '111', true), /Chỉ Phòng NV2/);
     await M.dmDxDuyet(th, '111', true); assert.strictEqual(last()[0], 'cv_dm_dx_duyet');
     await M.dmSua(th, '111', { cdt: mauT, cdt2: mauT }); assert.strictEqual(last()[1].p_rec.cdt, mauT, 'THBC sửa trực tiếp');
     await M.dmSua(th, '111', { kbnn: 'Phòng giao dịch số 17' }); assert.strictEqual(last()[1].p_gh, null); assert.strictEqual(last()[1].p_rec.kbnn, 'Phòng giao dịch số 17');
@@ -224,7 +224,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         M.api.goi = async (fn, b) => { got.push([fn, b]); if (fn === 'cv_dm_ban_do') return []; if (fn === 'cv_dm_them_moi') return { them: b.p_rows.length }; return { ok: 1 }; };
         const d = await UP.ds(th); assert(d.tong > 100 && d.tai === true); assert(d.rows.some((x) => x.ma === chiB && x.nguon === 'Chỉ có ở B501'));
         const dp = await UP.ds(p20); assert(d.rows.length >= dp.rows.length && dp.tai === false);
-        await assert.rejects(() => UP.quyet(th, [], true), /Chưa chọn/); await assert.rejects(() => UP.tai(p20, 'x.xlsx', 'AAAA'), /Chỉ Chuyên viên THBC/);
+        await assert.rejects(() => UP.quyet(th, [], true), /Chưa chọn/); await assert.rejects(() => UP.tai(p20, 'x.xlsx', 'AAAA'), /Chỉ Phòng NV2/);
         const kq = await UP.quyet(th, [chiB], true); assert.strictEqual(kq.them, 1); const ct = got.filter((g) => g[0] === 'cv_dm_them_moi').pop(); assert.strictEqual(ct[1].p_rows[0].m, chiB);
         M.api.goi = sv3;
       }
@@ -232,7 +232,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         const sv4 = M.api.goi; M.api.goi = async (fn) => { if (fn === 'cv_dm_ds') return { kpi: {}, tong: 2, rows: [['111', 'A', mauT, mauT, 'Phòng giao dịch số 20', '', '', '', false, false, null, null, ''], ['222', 'B', mauT, mauT, 'Phòng giao dịch số 20', '', '', '', false, false, null, null, '']] }; if (fn === 'cv_dm_canh_bao') return { tong: 1, nhom: {}, rows: [['222', 'B', mauT, mauT, 'Phòng giao dịch số 20', ['Thiếu tên dự án'], '']] }; if (fn === 'cv_dm_ban_do') return []; return { ok: 1 }; };
         const r = await M.dmDs(th, { sach: true }, 0); assert.strictEqual(r.tong, 1); assert.strictEqual(r.rows[0].ma_da, '111'); M.api.goi = sv4;
       }
-      await assert.rejects(() => M.cdtDeXuat(th, { khoi: 'Khối tỉnh', cdt_lon: 'ABC' }), /không cần đề xuất/); await assert.rejects(() => M.cdtDxDuyet(p20, '1', true), /Chỉ Chuyên viên THBC/);
+      await assert.rejects(() => M.cdtDeXuat(th, { khoi: 'Khối tỉnh', cdt_lon: 'ABC' }), /không cần đề xuất/); await assert.rejects(() => M.cdtDxDuyet(p20, '1', true), /Chỉ Phòng NV2/);
       { const DY = require('../lib/dmdyn'), BT0 = require('../lib/bieutong'), P = { 'Phòng giao dịch số 21': 1, 'Phòng Nghiệp vụ 2': 1 };
         const arr = DY.xay([[1, 'Khối xã, phường', 'Phường Minh Xuân', 'Phòng Kinh tế hạ tầng và đô thị', '', 0, 3, { 'Phòng Nghiệp vụ 2': 3 }], [2, 'Khối tỉnh', 'Sở Mới Toanh', '', '', 0, 1, { 'Phòng Nghiệp vụ 2': 1 }], [3, 'Khối tỉnh', 'Bộ Chỉ huy Bộ đội Biên phòng tỉnh Tuyên Quang', '', '', 0, 1, { 'Phòng giao dịch số 21': 1 }]], BT0);
         const by = {}; arr.forEach((o) => { by[o.row] = o; }); assert.strictEqual(new Set(arr.map((o) => o.row)).size, arr.length);
@@ -252,12 +252,12 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         await assert.rejects(() => M.cbqLuu(th, { ten: 'Người khác', ma: 'abc123' }), /Chọn phòng/);
         const r = d.rows.find((y) => y.ma === 'hanhht04'); await M.cbqXoa(p20, r.id); assert.strictEqual((await M.cbqDs(p20)).rows.some((y) => y.ma === 'hanhht04'), false); }
       await assert.rejects(() => M.dmCbcqLuu(p20, [], 'A'), /Thiếu mã dự án/);
-      await assert.rejects(() => M.tbGhi(p20, 'x'), /Chỉ chuyên viên THBC/);
-      await assert.rejects(() => M.lhGhi(p20, 'x'), /Chỉ chuyên viên THBC/);
-      await assert.rejects(() => M.dmHtLuu(p20, '1', 'tam', 'ngắn'), /ít nhất 10 ký tự/); await assert.rejects(() => M.dmHtLuu(p20, '1', 'xoa', ''), /không hợp lệ/); await assert.rejects(() => M.dmHtXacNhan(p20, '1', true), /Chỉ chuyên viên THBC/); assert.deepStrictEqual((await M.dmHtDs(p20)).rows, []);
-      await assert.rejects(() => M.dmTenDeXuat(th, '1', 'Tên', 'lý do dài đủ mười'), /không cần đề xuất/); await assert.rejects(() => M.dmTenDeXuat(p20, '1', 'Tên mới', 'ngắn'), /Bắt buộc ghi lý do/); await assert.rejects(() => M.dmTenDxDuyet(p20, '1', true), /Chỉ Chuyên viên THBC/);
+      await assert.rejects(() => M.tbGhi(p20, 'x'), /Chỉ Phòng NV2/);
+      await assert.rejects(() => M.lhGhi(p20, 'x'), /Chỉ Phòng NV2/);
+      await assert.rejects(() => M.dmHtLuu(p20, '1', 'tam', 'ngắn'), /ít nhất 10 ký tự/); await assert.rejects(() => M.dmHtLuu(p20, '1', 'xoa', ''), /không hợp lệ/); await assert.rejects(() => M.dmHtXacNhan(p20, '1', true), /Chỉ Phòng NV2/); assert.deepStrictEqual((await M.dmHtDs(p20)).rows, []);
+      await assert.rejects(() => M.dmTenDeXuat(th, '1', 'Tên', 'lý do dài đủ mười'), /không cần đề xuất/); await assert.rejects(() => M.dmTenDeXuat(p20, '1', 'Tên mới', 'ngắn'), /Bắt buộc ghi lý do/); await assert.rejects(() => M.dmTenDxDuyet(p20, '1', true), /Chỉ Phòng NV2/);
       { const t = M.ctmtTra('1102; 11102 ; 0514'); assert.strictEqual(t.rows.length, 2); assert.deepStrictEqual(t.rows[0].chuoi.map((x) => x.ma), ['0100', '0102', '1102']); assert(/Rà soát, lập, phê duyệt quy hoạch chung xã/.test(t.rows[0].chuoi[2].ten)); assert.deepStrictEqual(t.rows[1].chuoi.map((x) => x.ma), ['0510', '0514']); assert.strictEqual(t.rows[0].nhan, 'NTM-GNBV-DTTS 26-30'); assert.strictEqual(t.rows[1].nhan, 'DTTS 21-25'); assert.strictEqual(M.ctmtTra('0022').rows[0].nhan, 'Không xác định'); assert.deepStrictEqual(M.ctmtTra('9999 12').loi, ['9999', '12']); await assert.rejects(() => M.dmCtmtLuu(th, '8011836', '9999'), /không có trong mục lục/); }
-      { const sv5 = M.api.goi; let g5; M.api.goi = async (fn, b) => { g5 = [fn, b]; return { tong: 2143 }; }; await M.dmCtmtDongBo(th, false); assert.strictEqual(g5[0], 'cv_dm_ctmt_dong_bo'); const r5 = g5[1].p_rows.find((x) => x.m === '8011836'); assert.strictEqual(r5.c, '0514'); assert.strictEqual(r5.n, 'DTTS'); assert.strictEqual(r5.l, 'DTTS 21-25'); assert(/hạ tầng thiết yếu/i.test(r5.t)); await assert.rejects(() => M.dmCtmtDongBo(p20, false), /Chỉ Chuyên viên THBC/); M.api.goi = sv5; }
+      { const sv5 = M.api.goi; let g5; M.api.goi = async (fn, b) => { g5 = [fn, b]; return { tong: 2143 }; }; await M.dmCtmtDongBo(th, false); assert.strictEqual(g5[0], 'cv_dm_ctmt_dong_bo'); const r5 = g5[1].p_rows.find((x) => x.m === '8011836'); assert.strictEqual(r5.c, '0514'); assert.strictEqual(r5.n, 'DTTS'); assert.strictEqual(r5.l, 'DTTS 21-25'); assert(/hạ tầng thiết yếu/i.test(r5.t)); await assert.rejects(() => M.dmCtmtDongBo(p20, false), /Chỉ Phòng NV2/); M.api.goi = sv5; }
       let goi2; M.api.goi = async (fn, b) => { goi2 = [fn, b]; return { giu: 1 }; }; await M.dmDongBo(th, false); assert.strictEqual(goi2[0], 'cv_dm_dong_bo'); assert.strictEqual(goi2[1].p_ghi, false); assert(goi2[1].p_rows.length > 4000); M.api.goi = sv;
     }
     {
@@ -282,14 +282,14 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     }
     {
       const bc = require('../lib/tt37bc'), T37 = require('../lib/tt37');
-      await assert.rejects(() => bc.baoCao(p20, 'a', 'eA==', ''), /Chỉ Chuyên viên/);
+      await assert.rejects(() => bc.baoCao(p20, 'a', 'eA==', ''), /Chỉ cán bộ Phòng NV2/);
     }
     M.api.goi = null; delete process.env.TONGHOP_KHOA; await assert.rejects(() => M.dmDs(th, {}, 0), /TONGHOP_KHOA/);
   }
   // ---- BC KPI: đối chiếu THBC theo mốc ngày, PGD xác nhận / ghi nhận số khác kèm lý do ----
   {
     const K = require('../lib/kpi'), b64 = require('fs').readFileSync(require('path').join(__dirname, 'fixtures', 'doichieu_thbc.xlsx')).toString('base64');
-    await assert.rejects(() => K.taiThbc(lap20, '2026-10-15', '', 'x.xlsx', b64), /Chỉ Chuyên viên THBC/);
+    await assert.rejects(() => K.taiThbc(lap20, '2026-10-15', '', 'x.xlsx', b64), /Chỉ Phòng NV2/);
     await assert.rejects(() => K.taiThbc(th, '2026-02-31', '', 'x.xlsx', b64), /ngày mốc/);
     const r0 = await K.taiThbc(th, '2026-10-15', '', 'doichieu.xlsx', b64); assert(r0.co && r0.full); assert.strictEqual(r0.rows.filter((x) => x.k === 'row').length, 195);
     assert(Math.abs(r0.rows.find((x) => x.k === 'tot').e0 - r0.rows.find((x) => x.k === 'tot').t0) < 1e-6);
