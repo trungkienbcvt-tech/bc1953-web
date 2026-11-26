@@ -233,6 +233,18 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         const r = await M.dmDs(th, { sach: true }, 0); assert.strictEqual(r.tong, 1); assert.strictEqual(r.rows[0].ma_da, '111'); M.api.goi = sv4;
       }
       await assert.rejects(() => M.cdtDeXuat(th, { khoi: 'Khối tỉnh', cdt_lon: 'ABC' }), /không cần đề xuất/); await assert.rejects(() => M.cdtDxDuyet(p20, '1', true), /Chỉ Phòng NV2/);
+      { // PGD sửa lại đề xuất chủ đầu tư bị NV2 từ chối rồi gửi lại
+        const L0 = require('../lib/logic'), ky = 'Phòng giao dịch số 20';
+        const luu = (ds) => L0._.db().q('INSERT INTO kv (k,v) VALUES ($1,$2) ON CONFLICT (k) DO UPDATE SET v=excluded.v', ['cdt:dx', JSON.stringify({ ds })]);
+        await luu([{ id: 'T1', khoi: 'Khối tỉnh', lon: 'Đơn vị thử A', tt: '', gc: '', kbnn: ky, nguoi: 'x', luc: 1, st: 'tu_choi', ly: 'Sai tên' }, { id: 'T2', khoi: 'Khối tỉnh', lon: 'Đơn vị thử B', tt: '', gc: '', kbnn: 'Phòng giao dịch số 21', nguoi: 'y', luc: 2, st: 'tu_choi', ly: '' }, { id: 'T3', khoi: 'Khối tỉnh', lon: 'Đơn vị thử C', tt: '', gc: '', kbnn: ky, nguoi: 'x', luc: 3, st: 'cho', ly: '' }]);
+        await assert.rejects(() => M.cdtDxSua(p20, 'T2', { khoi: 'Khối tỉnh', cdt_lon: 'Đơn vị thử B2' }), /Không tìm thấy/);
+        await assert.rejects(() => M.cdtDxSua(p20, 'T3', { khoi: 'Khối tỉnh', cdt_lon: 'Đơn vị thử C2' }), /đã bị từ chối/);
+        await assert.rejects(() => M.cdtDxSua(p20, 'T1', { khoi: 'Khối tỉnh', cdt_lon: '' }), /Chưa nhập/);
+        await assert.rejects(() => M.cdtDxSua(th, 'T1', { khoi: 'Khối tỉnh', cdt_lon: 'Đơn vị thử A2' }), /Sửa & duyệt/);
+        await M.cdtDxSua(p20, 'T1', { khoi: 'Khối tỉnh', cdt_lon: 'Đơn vị thử A2', cdt_tt: '', ghi_chu: 'đã sửa' });
+        const dx = (await M.cdtDxDs(p20)).rows.find((x) => x.id === 'T1'); assert.strictEqual(dx.st, 'cho'); assert.strictEqual(dx.lon, 'Đơn vị thử A2'); assert.strictEqual(dx.ly, ''); assert.strictEqual(dx.truoc.ly, 'Sai tên');
+        await luu([]);
+      }
       { const DY = require('../lib/dmdyn'), BT0 = require('../lib/bieutong'), P = { 'Phòng giao dịch số 21': 1, 'Phòng Nghiệp vụ 2': 1 };
         const arr = DY.xay([[1, 'Khối xã, phường', 'Phường Minh Xuân', 'Phòng Kinh tế hạ tầng và đô thị', '', 0, 3, { 'Phòng Nghiệp vụ 2': 3 }], [2, 'Khối tỉnh', 'Sở Mới Toanh', '', '', 0, 1, { 'Phòng Nghiệp vụ 2': 1 }], [3, 'Khối tỉnh', 'Bộ Chỉ huy Bộ đội Biên phòng tỉnh Tuyên Quang', '', '', 0, 1, { 'Phòng giao dịch số 21': 1 }]], BT0);
         const by = {}; arr.forEach((o) => { by[o.row] = o; }); assert.strictEqual(new Set(arr.map((o) => o.row)).size, arr.length);
