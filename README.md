@@ -110,18 +110,18 @@ Danh sách dòng nằm trong bảng `rowdef` (lấy từ `seed/raw.json`). Muố
 
 Chỉ PGD 17 (danh sách `THI_DIEM` trong `lib/common.js`); các phòng khác giữ luồng cũ.
 
-Người lập biểu → *Trình KTT* → Kế toán trưởng → *Trình lãnh đạo* → Trưởng phòng → *Phê duyệt* (tự gửi NV2) →
+Người nhập → *Trình KTT* → Kế toán trưởng → *Trình lãnh đạo* → Trưởng phòng → *Phê duyệt* (tự gửi NV2) →
 Huy (NV2) *Tiếp nhận*, đối chiếu → *Xác nhận báo cáo* (sang tổng hợp) hoặc *Chuyển trả* (bắt buộc lý do) →
 Cán bộ tổng hợp *Tiếp nhận* → *Trình lãnh đạo phòng*. Mọi bước trả lại đều bắt buộc ghi lý do và xóa chữ ký cũ.
 
 Tài khoản được tự tạo khi chạy (không cần nạp lại dữ liệu), mã đăng nhập mặc định `bc1953`:
-`PGD17 - Người lập biểu`, `PGD17 - Kế toán trưởng`, `PGD17 - Trưởng phòng`, `Huy (NV2 - PGD 17)` (chỉ thấy PGD 17).
+`PGD17 - Người nhập`, `PGD17 - Kế toán trưởng`, `PGD17 - Trưởng phòng`, `Huy (NV2 - PGD 17)` (chỉ thấy PGD 17).
 Tài khoản cũ "Phòng giao dịch 17" bị ẩn khỏi danh sách đăng nhập. Mỗi người tự nhập họ tên ở tab *In & xuất*;
 biểu in/xuất của PGD 17 hiện "(đã ký)" dưới từng chức danh đã ký trong kỳ.
 
 ## Quy trình ký duyệt (áp dụng cho cả 12 phòng)
-- PGD 17–27: Người lập biểu → Kế toán trưởng → Trưởng phòng phê duyệt → gửi thẳng Tổng hợp.
-- Phòng Nghiệp vụ 2: Người lập biểu → Lãnh đạo phòng phê duyệt → gửi thẳng Tổng hợp.
+- PGD 17–27: Người nhập → Kế toán trưởng → Trưởng phòng phê duyệt → gửi thẳng Tổng hợp.
+- Phòng Nghiệp vụ 2: Người nhập → Lãnh đạo phòng phê duyệt → gửi thẳng Tổng hợp.
 - Tổng hợp toàn tỉnh: Chuyên viên tổng hợp (tài khoản "Tổng hợp toàn tỉnh") tiếp nhận, đối chiếu, trình → "Trưởng phòng Tổng hợp" phê duyệt. Có thể chuyển trả kèm lý do ở bất kỳ bước nào của Tổng hợp.
 - Tài khoản theo chức vụ được tự tạo khi khởi động (mã mặc định `bc1953`, đổi ngay sau khi đưa vào dùng). Tài khoản chung của từng phòng và cán bộ NV2 bị ẩn khỏi danh sách đăng nhập.
 

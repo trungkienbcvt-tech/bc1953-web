@@ -3,7 +3,7 @@
 <head>
 <base target="_top">
 <meta charset="utf-8">
-<title>Hệ thống quản lý danh mục và báo cáo đầu tư công – KBNN khu vực VIII</title>
+<title>Hệ thống quản lý danh mục và báo cáo đầu tư KV8</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23a31d2f'/%3E%3Cpath d='M8 24V15h4v9zm6 0V8h4v16zm6 0v-6h4v6z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Nunito:ital,wght@1,400;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -492,12 +492,12 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 <div class="lwrap">
   <div class="lhero">
     <div class="lbadge"><i class="pdot"></i>KBNN KHU VỰC VIII</div>
-    <h1><span class="ln">Hệ thống quản lý danh mục</span><span class="ln">và báo cáo <span class="gx">đầu tư công</span></span></h1>
+    <h1><span class="ln">Hệ thống quản lý danh mục</span><span class="ln">và báo cáo <span class="gx">đầu tư KV8</span></span></h1>
     <p>Danh mục dự án, báo cáo giải ngân theo Công văn 1953 và báo cáo đánh giá KPI – dùng chung cho các phòng giao dịch và phòng Nghiệp vụ 2.</p>
     <div class="lflow">
       <div class="lst"><div class="lic"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z M4 10h16 M10 5v14"/></svg></div><b>Danh mục dùng chung</b><span>Dự án, chủ đầu tư, cán bộ chuyên quản</span></div>
       <div class="lar"></div>
-      <div class="lst"><div class="lic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div><b>Báo cáo BC 1953</b><span>Nhập, ký duyệt, tổng hợp toàn tỉnh</span></div>
+      <div class="lst"><div class="lic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div><b>Báo cáo 1953</b><span>Nhập, ký duyệt, tổng hợp toàn tỉnh</span></div>
       <div class="lar"></div>
       <div class="lst"><div class="lic"><svg viewBox="0 0 24 24"><path d="M4 19V9 M10 19V5 M16 19v-7 M21 19H3"/></svg></div><b>Báo cáo KPI</b><span>Xác nhận số liệu, điều chỉnh theo mốc</span></div>
     </div>
@@ -518,7 +518,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 <div id="busy"></div>
 <div id="app">
   <header>
-    <h1>Hệ thống quản lý danh mục và báo cáo đầu tư công<small>KBNN khu vực VIII · Danh mục · Báo cáo 1953 · Báo cáo KPI</small></h1>
+    <h1>Hệ thống quản lý danh mục và báo cáo đầu tư KV8<small>KBNN khu vực VIII · Danh mục · Báo cáo 1953 · Báo cáo KPI</small></h1>
     <select id="kySel" class="kysel" title="Chọn kỳ báo cáo"></select><span class="greet" id="greet"></span><span class="chip" id="who"></span>
     <button id="maBtn" title="Đổi mật khẩu đăng nhập">Đổi mật khẩu</button><button id="outBtn">Đăng xuất</button>
   </header>
@@ -536,7 +536,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 var PGDS=['Phòng Nghiệp vụ 2','Phòng giao dịch 17','Phòng giao dịch 18','Phòng giao dịch 19','Phòng giao dịch 20','Phòng giao dịch 21','Phòng giao dịch 22','Phòng giao dịch 23','Phòng giao dịch 24','Phòng giao dịch 25','Phòng giao dịch 26','Phòng giao dịch 27'];
 var S={ky:'',dsKy:[],token:null,ten:null,vt:null,scope:[],xem:null,info:null,data:null,tt:null,wf:null,tab:'tq',dirty:{}};
 var BN={b01:'Biểu 01-KBNN',b02:'Biểu 02-KBNN',b03a:'Biểu 03 (21-25)',b03b:'Biểu 03 (26-30)'};
-var STC={'Chưa gửi':0,'Đã gửi':1,'Đã tiếp nhận':2,'Bị trả lại':3,'Đã nộp tổng hợp':4,'Chờ KTT duyệt':5,'Chờ TP phê duyệt':5,'Tổng hợp đã tiếp nhận':6,'Đã trình lãnh đạo phòng':6,'Trưởng phòng TH đã phê duyệt':4};
+var STC={'Chưa gửi':0,'Đã gửi':1,'Đã tiếp nhận':2,'Bị trả lại':3,'Đã nộp tổng hợp':4,'Chờ KTT duyệt':5,'Chờ LĐ phê duyệt':5,'Tổng hợp đã tiếp nhận':6,'Đã trình lãnh đạo phòng':6,'Trưởng phòng TH đã phê duyệt':4};
 var $=function(i){return document.getElementById(i)};
 var BUSY=0;function busy(d){BUSY+=d;var e=document.getElementById('busy');if(e)e.style.display=BUSY>0?'block':'none'}
 function run(fn){var a=[].slice.call(arguments,1);busy(1);return fetch('/api/rpc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fn:fn,args:a})}).then(function(r){return r.json()}).then(function(r){busy(-1);if(!r.ok)throw new Error(r.error||'Lỗi máy chủ');return r.data},function(){busy(-1);throw new Error('Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.')})}
@@ -583,7 +583,7 @@ function hoi(html,okText,withText){return new Promise(function(res){
   $('mOk').onclick=function(){var v=t?t.value.trim():true;if(t&&!v){t.style.borderColor='#dc2626';return}$('modal').style.display='none';res(v)}})}
 
 /* đăng nhập */
-run('dsTaiKhoan').then(function(ds){var NV='Phòng Nghiệp vụ 2',U={},ord=[NV].concat(PGDS.filter(function(p){return p!==NV})),lb=function(x){return x.ten==='Trưởng phòng Tổng hợp'?'Lãnh đạo phòng':x.ten};
+run('dsTaiKhoan').then(function(ds){var NV='Phòng Nghiệp vụ 2',U={},ord=[NV].concat(PGDS.filter(function(p){return p!==NV})),lb=function(x){return tenHt(x.ten)};
   ord.forEach(function(p){U[p]=[]});U['Quản trị hệ thống']=[];
   ds.forEach(function(x){var u=x.vt==='AD'?'Quản trị hệ thống':(x.vt==='TH'||x.vt==='NV2')?NV:x.donvi;if(!U[u])U[u]=[];U[u].push(x)});
   var rk=function(x){return x.ten==='Chuyên viên THBC'?0:(x.ten==='Trưởng phòng Tổng hợp'?1:2)};U[NV].sort(function(a,b){return rk(a)-rk(b)});
@@ -597,9 +597,9 @@ function ganVai(r){S.token=r.token;S.ten=r.ten;S.vt=r.vt;S.scope=r.scope;S.info=
   $('xemSel').innerHTML=(r.vt!=='PGD'||S.nv2tp?'<option value="*">★ Toàn tỉnh (tất cả phòng)</option>':'')+(S.nv2tp?r.xemAll:r.scope).map(function(p){return'<option>'+esc(p)+'</option>'}).join('')}
 /* Một mã đăng nhập hai vai (Trưởng phòng Tổng hợp + Lãnh đạo Phòng NV2): r.vai2 là phiên của vai Phòng NV2 */
 function pd0(L){return L.filter(function(x){return x.tt==='Đã trình lãnh đạo phòng'}).length}
-function tenHt(t){return t==='Trưởng phòng Tổng hợp'?'Lãnh đạo phòng':t}
+function tenHt(t){t=String(t==null?'':t);return t==='Trưởng phòng Tổng hợp'?'Lãnh đạo phòng':t.replace('Người lập biểu','Người nhập').replace(/ - Trưởng phòng$/,' - Lãnh đạo phòng')}
 function whoTxt(){var b=S.vaiNv;return (S.vt==='TH'?'★ ':'')+tenHt(b?S.vaiTh.ten:S.ten)}
-function nvKiem(){S.nvPend=false;if(!S.vaiNv||S.vai!=='th')return Promise.resolve();return run('trangThai',S.vaiNv.token,S.ky).then(function(w){var me=(w.list||[]).filter(function(x){return x.pgd===(S.vaiNv.donvi||S.vaiNv.ten)})[0];S.nvPend=!!(me&&me.tt==='Chờ TP phê duyệt');nbDuyet()}).catch(function(){})}
+function nvKiem(){S.nvPend=false;if(!S.vaiNv||S.vai!=='th')return Promise.resolve();return run('trangThai',S.vaiNv.token,S.ky).then(function(w){var me=(w.list||[]).filter(function(x){return x.pgd===(S.vaiNv.donvi||S.vaiNv.ten)})[0];S.nvPend=!!(me&&me.tt==='Chờ LĐ phê duyệt');nbDuyet()}).catch(function(){})}
 function setVai(v){if(S.vai===v)return Promise.resolve();var r=v==='nv'?S.vaiNv:S.vaiTh;if(!r)return Promise.resolve();
   if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển sang phần khác?'))return Promise.reject(new Error('huy'));
   S.vai=v;ganVai(r);S.data=null;S.dc=null;S.cb=null;S.bt=null;S.ttd=null;S.kp=null;S.dirty={};S.xemB='*';
@@ -622,7 +622,7 @@ function adDraw(){
   run('adDs',S.token).then(function(ds){S.adDs=ds;adRows();$('adQ').oninput=adRows}).catch(function(e){$('adTb').innerHTML='<span class="hint" style="color:#b91c1c">'+esc(msg(e))+'</span>'})}
 function adPhaiDoi(){var m=$('main');m.innerHTML='<div class="card"><h3>🛡 Quản trị hệ thống</h3><p class="hint">Tài khoản đang dùng mật khẩu mặc định. Hãy đổi mật khẩu (hộp thoại vừa mở hoặc nút “Đổi mật khẩu” ở góc trên) để bắt đầu sử dụng.</p></div>'}
 function adRows(){
-  var q=($('adQ').value||'').trim().toLowerCase(),G={TH:'Chuyên viên THBC',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},cv={LAP:'Người lập biểu',KTT:'Kế toán trưởng',TP:'Trưởng phòng',TTH:'Lãnh đạo phòng'};
+  var q=($('adQ').value||'').trim().toLowerCase(),G={TH:'Chuyên viên THBC',NV2:'Cán bộ Nghiệp vụ 2',PGD:'Phòng giao dịch'},cv={LAP:'Người nhập',KTT:'Kế toán trưởng',TP:'Lãnh đạo phòng',TTH:'Lãnh đạo phòng'};
   var l=(S.adDs||[]).filter(function(a){return !q||(a.ten+' '+a.donvi+' '+a.hoten).toLowerCase().indexOf(q)>=0});
   $('adTb').innerHTML='<table class="dmt" style="width:100%"><thead><tr><th>Tài khoản</th><th>Nhóm</th><th>Người dùng</th><th>Mật khẩu</th><th></th></tr></thead><tbody>'+l.map(function(a,i){
     return '<tr><td>'+esc(a.ten)+'</td><td>'+esc((G[a.vt]||a.vt)+(a.cv&&cv[a.cv]?' · '+cv[a.cv]:''))+'</td><td>'+esc(a.hoten||'')+'</td><td><code style="font-size:14px;letter-spacing:.5px">'+esc(a.ma)+'</code>'+(a.macdinh?' <small style="color:#b45309">(mặc định)</small>':'')+'</td><td><button class="mini" data-i="'+S.adDs.indexOf(a)+'">Đặt lại</button></td></tr>'}).join('')+(l.length?'':'<tr><td colspan="5" class="hint">Không có tài khoản phù hợp.</td></tr>')+'</tbody></table>';
@@ -815,8 +815,8 @@ function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
 function nbDuyet(){var e=$('cvNotice');if(!e)return;e.className='';e.innerHTML='';
   if(S.vaiNv&&S.vai==='th'&&S.nvPend){e.className='cvn';e.innerHTML='<span>🔔 Có <b>1 báo cáo của Phòng Nghiệp vụ 2 đợi Lãnh đạo phòng phê duyệt</b> – kỳ '+esc(S.ky||'')+'.</span><button>Chuyển sang phần Phòng NV2 để duyệt</button>';e.onclick=function(){setVai('nv').then(function(){drawTabs();show('tq')}).catch(function(){})};return}
   if(S.vt!=='PGD'||!S.info||!S.wf||!S.wf.list)return;var cv=S.info.cv,me=S.wf.list.filter(function(x){return x.pgd===S.pgd})[0];if(!me)return;
-  var cho=(cv==='KTT'&&me.tt==='Chờ KTT duyệt')||(cv==='TP'&&me.tt==='Chờ TP phê duyệt');if(!cho)return;
-  e.className='cvn';e.innerHTML='<span>🔔 Có <b>1 báo cáo đợi '+(cv==='KTT'?'Kế toán trưởng duyệt':'Trưởng phòng phê duyệt')+'</b> – kỳ '+esc(S.wf.ky||S.ky||'')+', người lập biểu vừa gửi lên.</span><button>Xem &amp; duyệt ngay</button>';e.onclick=function(){show('tq')}}
+  var cho=(cv==='KTT'&&me.tt==='Chờ KTT duyệt')||(cv==='TP'&&me.tt==='Chờ LĐ phê duyệt');if(!cho)return;
+  e.className='cvn';e.innerHTML='<span>🔔 Có <b>1 báo cáo đợi '+(cv==='KTT'?'Kế toán trưởng duyệt':'Lãnh đạo phòng phê duyệt')+'</b> – kỳ '+esc(S.wf.ky||S.ky||'')+', người nhập vừa gửi lên.</span><button>Xem &amp; duyệt ngay</button>';e.onclick=function(){show('tq')}}
 function show(t){nbDuyet();S.tab=t;try{localStorage.setItem('cv1953t',t)}catch(e){}[].forEach.call($('tabs').querySelectorAll('button'),function(b){b.className=(b.getAttribute('data-t')===t&&(!b.getAttribute('data-v')||b.getAttribute('data-v')===S.vai))?'on':''});
   (function(){var ob=$('tabs').querySelector('button.on'),g=ob&&ob.parentNode&&ob.parentNode.closest('.tg');while(g){g.classList.remove('shut');S.shut[g.querySelector('.tgh').getAttribute('data-g')]=false;g=g.parentNode.closest('.tg')}})();
   var isB=BTAB.indexOf(t)>=0,needData=isB;
@@ -908,10 +908,10 @@ function drawHome(){
     var T=function(c,ic,t,sub,btn,tab){tasks.push('<div class="hmk '+c+'"><span class="ic">'+ic+'</span><div><b>'+t+'</b><span class="s">'+sub+'</span></div>'+(btn?'<button class="pri mini" data-hg="'+tab+'">'+btn+'</button>':'')+'</div>')};
     if(!wf)tasks.push('<div class="hmk i"><span class="ic">⏳</span><div><b>Đang tải thông tin...</b></div></div>');
     else if(pg&&me){
-      if(cv==='KTT'&&me.tt==='Chờ KTT duyệt')T('u','🔔','Có 1 báo cáo đợi Kế toán trưởng duyệt','Người lập biểu vừa trình lên – kỳ '+esc(wf.ky),'Xem &amp; duyệt','tq');
-      else if(cv==='TP'&&me.tt==='Chờ TP phê duyệt')T('u','🔔','Có 1 báo cáo đợi Trưởng phòng phê duyệt','Kế toán trưởng đã trình – kỳ '+esc(wf.ky),'Xem &amp; phê duyệt','tq');
+      if(cv==='KTT'&&me.tt==='Chờ KTT duyệt')T('u','🔔','Có 1 báo cáo đợi Kế toán trưởng duyệt','Người nhập vừa trình lên – kỳ '+esc(wf.ky),'Xem &amp; duyệt','tq');
+      else if(cv==='TP'&&me.tt==='Chờ LĐ phê duyệt')T('u','🔔','Có 1 báo cáo đợi Lãnh đạo phòng phê duyệt','Kế toán trưởng đã trình – kỳ '+esc(wf.ky),'Xem &amp; phê duyệt','tq');
       else if(me.tt==='Bị trả lại')T('r','↩','Báo cáo bị trả lại','Lý do: '+esc(me.lyDo||'')+' – sửa số liệu rồi gửi lại',cv==='LAP'||!cv?'Sửa báo cáo':'', 'b01');
-      else if(me.tt==='Chưa gửi')T('u','📝','Báo cáo kỳ '+esc(wf.ky)+' chưa gửi',cv==='KTT'||cv==='TP'?'Người lập biểu chưa trình – bạn chưa cần xử lý':'Hoàn thiện số liệu 4 biểu rồi trình duyệt',cv==='LAP'||!cv?'Nhập số liệu':'Xem biểu','b01');
+      else if(me.tt==='Chưa gửi')T('u','📝','Báo cáo kỳ '+esc(wf.ky)+' chưa gửi',cv==='KTT'||cv==='TP'?'Người nhập chưa trình – bạn chưa cần xử lý':'Hoàn thiện số liệu 4 biểu rồi trình duyệt',cv==='LAP'||!cv?'Nhập số liệu':'Xem biểu','b01');
       else T('g','✓','Báo cáo kỳ '+esc(wf.ky)+': '+esc(me.tt),'Không có việc nào đang chờ bạn xử lý','Tổng quan','tq');
     }else if(wf){
       var cho=0,chua=0,late=0;L.forEach(function(x){if(x.tt==='Đã gửi')cho++;if(['Chưa gửi','Bị trả lại'].indexOf(x.tt)>=0)chua++;if(x.cham||x.quaHan)late++});
@@ -978,14 +978,14 @@ function hanTxt(wf,done){return '<span class="hint" style="margin:0">Hạn PGD g
 function kyBar(wf){return '<div class="kybar"><span>📅 Kỳ báo cáo <b>tháng '+esc(wf.ky)+'</b>'+'</span>'+(S.vt==='TH'?'<button id="bTron" class="mini">Làm tròn số liệu về triệu đồng</button><button id="bChot" class="mini">⏭ Chốt kỳ, sang tháng sau</button>':'')+'</div>'}
 function stepper(x){
   var k=x.ky||{},tt=x.tt,nv=x.pgd==='Phòng Nghiệp vụ 2',thn=['Tổng hợp đã tiếp nhận','Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(tt)>=0,tr=['Đã trình lãnh đạo phòng','Trưởng phòng TH đã phê duyệt'].indexOf(tt)>=0,
-  st=(nv?[['Lập biểu trình lãnh đạo',k.LAP],['Lãnh đạo phòng phê duyệt',k.TP]]:[['Lập biểu trình KTT',k.LAP],['Kế toán trưởng trình lãnh đạo',k.KTT],['Trưởng phòng phê duyệt',k.TP]]),nk=nv?2:3,
+  st=(nv?[['Lập biểu trình lãnh đạo',k.LAP],['Lãnh đạo phòng phê duyệt',k.TP]]:[['Lập biểu trình KTT',k.LAP],['Kế toán trưởng trình lãnh đạo',k.KTT],['Lãnh đạo phòng phê duyệt',k.TP]]),nk=nv?2:3,
   cur=-1;st.forEach(function(a,i){if(!a[1]&&cur<0)cur=i});
   return '<div class="card" style="padding:10px 14px;margin-top:12px"><h3 style="font-size:15px;margin:0 0 6px">🧭 Tiến trình ký duyệt</h3><div style="display:flex;flex-wrap:wrap;gap:8px">'+st.map(function(a,i){var d=!!a[1];
     return '<div style="flex:1;min-width:150px;padding:8px 10px;border-radius:8px;border:1px solid '+(d?'#9bd3ab':(i===cur?'#f1c27a':'var(--line)'))+';background:'+(d?'#eefaf1':(i===cur?'#fff7e8':'#fafafa'))+'"><b style="font-size:12.5px">'+(d?'✔ ':(i===cur?'⏳ ':'○ '))+a[0]+(d&&i<nk?' <span style="color:#15803d">(đã ký)</span>':'')+'</b>'+(d&&(a[1].ten||a[1].luc)?'<br><small>'+esc(a[1].ten||'')+(a[1].luc?' · '+a[1].luc:'')+'</small>':'')+'</div>'}).join('')+'</div></div>'}
 function pilotBtns(x){var cv=S.info.cv,tt=x.tt,h='',nv=x.pgd==='Phòng Nghiệp vụ 2';
-  if(cv==='LAP'){if(tt==='Chưa gửi'||tt==='Bị trả lại')h+='<button class="pri" data-w="lap_trinh" style="padding:10px 20px;font-weight:600">📤 Trình '+(nv?'Lãnh đạo phòng':'Kế toán trưởng')+'</button>';if(tt==='Chờ KTT duyệt'||(nv&&tt==='Chờ TP phê duyệt'))h+='<button data-w="lap_rut">↩ Thu hồi để sửa</button>'}
-  if(cv==='KTT'&&tt==='Chờ KTT duyệt')h+='<button class="pri" data-w="ktt_trinh" style="padding:10px 20px;font-weight:600">✔ Trình lãnh đạo (ký)</button> <button data-w="ktt_tra">↩ Chuyển trả người lập</button>';
-  if(cv==='TP'&&tt==='Chờ TP phê duyệt')h+='<button class="pri" data-w="tp_duyet" style="padding:10px 20px;font-weight:600">✔ Phê duyệt (ký) &amp; gửi BC phòng NV2</button> <button data-w="tp_tra">↩ Chuyển trả</button>';
+  if(cv==='LAP'){if(tt==='Chưa gửi'||tt==='Bị trả lại')h+='<button class="pri" data-w="lap_trinh" style="padding:10px 20px;font-weight:600">📤 Trình '+(nv?'Lãnh đạo phòng':'Kế toán trưởng')+'</button>';if(tt==='Chờ KTT duyệt'||(nv&&tt==='Chờ LĐ phê duyệt'))h+='<button data-w="lap_rut">↩ Thu hồi để sửa</button>'}
+  if(cv==='KTT'&&tt==='Chờ KTT duyệt')h+='<button class="pri" data-w="ktt_trinh" style="padding:10px 20px;font-weight:600">✔ Trình lãnh đạo (ký)</button> <button data-w="ktt_tra">↩ Chuyển trả người nhập</button>';
+  if(cv==='TP'&&tt==='Chờ LĐ phê duyệt')h+='<button class="pri" data-w="tp_duyet" style="padding:10px 20px;font-weight:600">✔ Phê duyệt (ký) &amp; gửi BC phòng NV2</button> <button data-w="tp_tra">↩ Chuyển trả</button>';
   return h}
 function cbWarn(){var d=S.bt;if(!d||!d.co)return '';var l=btLech(d);return l.n?'<br><b style="color:#b45309">⚠ '+l.n+' chủ đầu tư còn lệch so với THBC (xem biểu tổng ở trang Tổng quan).</b>':''}
 function drawPgd(wf,t){
@@ -1085,7 +1085,7 @@ var VC=['#a31d2f','#2563eb','#0d9488','#d97706'],SCOL=['#8b95a9','#2563eb','#0d9
 function fmtK(v){return fmt(Math.round(v/1e3))+' tỷ'}
 function cdtTong(t){var o={n:0,dg:0,cham:0,chua:0,trong:0};t.list.forEach(function(p){Object.keys(p.b).forEach(function(i){var b=p.b[i];o.n+=b.n;o.dg+=b.dg;o.cham+=b.cham;o.chua+=b.chua;o.trong+=b.trong})});return o}
 function donut(parts,center,sub){var R=50,Cc=2*Math.PI*R,tot=parts.reduce(function(a,x){return a+x.v},0),off=0,sv='<svg viewBox="0 0 140 140" class="dn"><circle cx="70" cy="70" r="'+R+'" fill="none" stroke="#f1e6e8" stroke-width="20"/>';
-  parts.forEach(function(x){if(x.v<=0||!tot)return;var len=Cc*x.v/tot;sv+='<circle cx="70" cy="70" r="'+R+'" fill="none" stroke="'+x.c+'" stroke-width="20" stroke-dasharray="'+len.toFixed(2)+' '+(Cc-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 70 70)"><title>Hệ thống quản lý danh mục và báo cáo đầu tư công – KBNN khu vực VIII</title></circle>';off+=len});
+  parts.forEach(function(x){if(x.v<=0||!tot)return;var len=Cc*x.v/tot;sv+='<circle cx="70" cy="70" r="'+R+'" fill="none" stroke="'+x.c+'" stroke-width="20" stroke-dasharray="'+len.toFixed(2)+' '+(Cc-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 70 70)"><title>Hệ thống quản lý danh mục và báo cáo đầu tư KV8</title></circle>';off+=len});
   sv+='<text x="70" y="68" text-anchor="middle" class="dn1">'+esc(center)+'</text><text x="70" y="86" text-anchor="middle" class="dn2">'+esc(sub)+'</text></svg>';
   return '<div class="dnw">'+sv+'<ul class="dnl">'+parts.map(function(x){return '<li><i style="background:'+x.c+'"></i>'+esc(x.l)+' <b>'+(Math.round(x.v*10)/10).toLocaleString('vi-VN')+'</b></li>'}).join('')+'</ul></div>'}
 function unitCard(){var d=S.ttd&&S.wf&&S.ttd.ky===S.wf.ky?S.ttd:null;if(!d)return chartCard('Số đơn vị đã gửi báo cáo','<p class="hint">Đang tính...</p>');if(d.err||!d.lon)return chartCard('Số đơn vị đã gửi báo cáo','<p class="hint">Không tải được.</p>');
@@ -1111,11 +1111,11 @@ function drawViewer(wf,t){
 function drawQt(wf,t){
   var ids=['b01','b02','b03a','b03b'],cnt={'Chưa gửi':0,'Đã gửi':0,'Đã tiếp nhận':0,'Bị trả lại':0,'Đã nộp tổng hợp':0},late=[];
   wf.list.forEach(function(x){cnt[x.tt]=(cnt[x.tt]||0)+1;if(x.cham||x.quaHan||x.nv2Cham||x.nv2QuaHan)late.push(x)});
-  var h='<div class="card" style="margin-bottom:16px"><h3>🔄 Quy trình nộp báo cáo · kỳ '+esc(wf.ky)+'</h3><p class="hint" style="margin:2px 0 8px">'+(S.info.cv==='TTH'?'Phê duyệt hoặc trả lại các báo cáo chuyên viên tổng hợp đã trình.':'Trưởng phòng ký phê duyệt là số liệu tự động lên tổng hợp, Tổng hợp không cần tiếp nhận hay xác nhận. Chỉ chuyển trả kèm lý do khi phát hiện số liệu sai.')+'</p>'+
+  var h='<div class="card" style="margin-bottom:16px"><h3>🔄 Quy trình nộp báo cáo · kỳ '+esc(wf.ky)+'</h3><p class="hint" style="margin:2px 0 8px">'+(S.info.cv==='TTH'?'Phê duyệt hoặc trả lại các báo cáo chuyên viên tổng hợp đã trình.':'Lãnh đạo phòng ký phê duyệt là số liệu tự động lên tổng hợp, Tổng hợp không cần tiếp nhận hay xác nhận. Chỉ chuyển trả kèm lý do khi phát hiện số liệu sai.')+'</p>'+
     (S.vt==='TH'&&S.info.cv!=='TTH'&&!wf.kyCu?'<div style="display:flex;gap:8px;flex-wrap:wrap"><button id="bTron" class="mini">Làm tròn số liệu về triệu đồng</button><button id="bChot" class="mini">⏭ Chốt kỳ, sang tháng sau</button></div>':'')+'</div>';
   if(S.vt==='TH'&&S.info.cv!=='TTH'&&!wf.kyCu)h+='<div class="card" style="margin-bottom:16px"><h3>Đặt hạn nộp báo cáo</h3><div class="row2" style="max-width:760px"><div><label>PGD gửi báo cáo trước (ngày/tháng/năm giờ:phút)</label><div style="display:flex;gap:6px"><input type="text" id="hPgdD" placeholder="dd/mm/yyyy" maxlength="10" value="'+isoDmy(wf.han.pgd)+'"><input type="text" id="hPgdT" placeholder="hh:mm" maxlength="5" style="width:90px" value="'+((wf.han.pgd||'').slice(11,16))+'"></div></div><div style="display:none"><label>Nghiệp vụ 2 nộp tổng hợp trước</label><div style="display:flex;gap:6px"><input type="text" id="hNv2D" placeholder="dd/mm/yyyy" maxlength="10" value="'+isoDmy(wf.han.nv2)+'"><input type="text" id="hNv2T" placeholder="hh:mm" maxlength="5" style="width:90px" value="'+((wf.han.nv2||'').slice(11,16))+'"></div></div></div><div style="margin-top:10px"><button class="pri" id="bHan">Lưu hạn nộp</button> <span class="hint">Bây giờ: '+wf.now+'</span></div></div>';
   h+='<div class="card" style="margin-bottom:16px"><h3>Quy trình nộp báo cáo</h3>'+
-    '<p class="hint">Mỗi phòng ký duyệt nội bộ (người lập → Kế toán trưởng → Trưởng phòng); Trưởng phòng phê duyệt xong là số liệu tự động cập nhật vào tổng hợp toàn tỉnh.</p>'+
+    '<p class="hint">Mỗi phòng ký duyệt nội bộ (người nhập → Kế toán trưởng → Lãnh đạo phòng); Lãnh đạo phòng phê duyệt xong là số liệu tự động cập nhật vào tổng hợp toàn tỉnh.</p>'+
     '<div style="overflow:auto"><table class="mx wf"><thead><tr><th>Phòng</th><th>Trạng thái</th><th>Gửi lúc</th><th>Đã ký</th><th>Cảnh báo</th><th>Thao tác</th></tr></thead><tbody>';
   wf.list.forEach(function(x){h+='<tr><td class="p" data-a="xem" data-p="'+esc(x.pgd)+'">'+esc(x.pgd)+'</td><td>'+chip(x.tt)+(x.soTra?'<br><small>trả '+x.soTra+' lần</small>':'')+(x.soGui>1?'<br><small>gửi lần '+x.soGui+' (thay thế)</small>':'')+(x.deNghi?'<br><small style="color:#9a5b00">📝 Đề nghị sửa: '+esc(x.deNghi)+'</small>':'')+(x.lyDo?'<br><small style="color:#a11">'+esc(x.lyDo)+'</small>':'')+'</td><td>'+(x.gui||'<small>—</small>')+'</td><td>'+kyTxt(x)+'</td><td>'+(flags(x)||'<small>—</small>')+'</td><td>'+actions(x)+'</td></tr>'});
   h+='</tbody></table></div></div>';
@@ -1151,7 +1151,7 @@ function bindTq(){
   if($('bChot'))$('bChot').onclick=function(){hoi('<h3>Chốt kỳ tháng '+esc(S.wf.ky)+'?</h3><p class="hint">• Lưu lũy kế hiện tại làm mốc để tháng sau tự trừ ra số trong tháng.<br>• Đặt lại trạng thái các phòng về <b>Chưa gửi</b>, xóa tình trạng/ghi chú của chủ đầu tư, đặt lại hạn nộp.<br>• Đổi tiêu đề các biểu sang tháng kế tiếp.<br><b style="color:#b91c1c">Chỉ làm khi đã tổng hợp xong báo cáo tháng này, không hoàn tác được.</b></p>','Chốt kỳ').then(function(v){if(!v)return;
     $('bChot').disabled=true;run('chotKy',S.token).then(function(r){toast('Đã chốt kỳ, sang tháng '+r.ky);S.wf=r;S.data=null;S.ky='';S.stale=true;S.dc=null;S.cb=null;S.bt=null;fillKy();drawTabs();show('tq')}).catch(function(e){toast(msg(e),8000);$('bChot').disabled=false})})};
   [].forEach.call(m.querySelectorAll('[data-w]'),function(b){b.onclick=function(){var w=b.getAttribute('data-w'),tra=/_tra$/.test(w),
-    T={lap_trinh:[S.info.donvi==='Phòng Nghiệp vụ 2'?'Trình Lãnh đạo phòng?':'Trình Kế toán trưởng?','Báo cáo sẽ chuyển cho '+(S.info.donvi==='Phòng Nghiệp vụ 2'?'Lãnh đạo phòng':'Kế toán trưởng')+', số liệu bị khóa. Họ tên của bạn sẽ được ghi "(đã ký)" khi in.'],lap_rut:['Thu hồi báo cáo?','Báo cáo về trạng thái chưa gửi để bạn sửa số liệu.'],ktt_trinh:['Trình lãnh đạo?','Bạn xác nhận số liệu đúng và ký. Báo cáo chuyển Trưởng phòng phê duyệt.'],ktt_tra:['Chuyển trả người lập biểu','Ghi rõ lý do để người lập biểu sửa lại.'],tp_duyet:['Phê duyệt báo cáo?','Bạn ký phê duyệt và gửi báo cáo về phòng NV2. Số liệu tự động cập nhật vào tổng hợp toàn tỉnh.'],tp_tra:['Chuyển trả báo cáo','Ghi rõ lý do để người lập biểu sửa lại.']}[w];
+    T={lap_trinh:[S.info.donvi==='Phòng Nghiệp vụ 2'?'Trình Lãnh đạo phòng?':'Trình Kế toán trưởng?','Báo cáo sẽ chuyển cho '+(S.info.donvi==='Phòng Nghiệp vụ 2'?'Lãnh đạo phòng':'Kế toán trưởng')+', số liệu bị khóa. Họ tên của bạn sẽ được ghi "(đã ký)" khi in.'],lap_rut:['Thu hồi báo cáo?','Báo cáo về trạng thái chưa gửi để bạn sửa số liệu.'],ktt_trinh:['Trình lãnh đạo?','Bạn xác nhận số liệu đúng và ký. Báo cáo chuyển Lãnh đạo phòng phê duyệt.'],ktt_tra:['Chuyển trả người nhập','Ghi rõ lý do để người nhập sửa lại.'],tp_duyet:['Phê duyệt báo cáo?','Bạn ký phê duyệt và gửi báo cáo về phòng NV2. Số liệu tự động cập nhật vào tổng hợp toàn tỉnh.'],tp_tra:['Chuyển trả báo cáo','Ghi rõ lý do để người nhập sửa lại.']}[w];
     var go=function(cb){var lech=cb&&cb.co&&cb.ds&&cb.ds.length,lyDo=lech&&w==='lap_trinh',viec=w==='tp_duyet'?'phê duyệt':'trình',
       ds=lech?'<div class="lechb"><b style="color:#b45309">⚠ Có '+cb.ds.length+' chủ đầu tư chênh lệch so với số tổng hợp THBC. '+(lyDo?'Bắt buộc nêu lý do chênh lệch để tiếp tục:':'Bạn có chắc chắn muốn '+viec+' không?')+'</b><ul>'+cb.ds.slice(0,12).map(function(d){return '<li>'+esc(d.ten)+' — <i>'+(d.ttLk==='thap'?'thấp hơn':'cao hơn')+' THBC</i> ('+(d.dLk>0?'+':'−')+fmt(Math.abs(d.dLk))+' triệu)</li>'}).join('')+(cb.ds.length>12?'<li>… và '+(cb.ds.length-12)+' đơn vị khác</li>':'')+'</ul></div>':'';
       hoi('<h3>'+T[0]+'</h3><p class="hint">'+T[1]+'</p>'+ds,tra?'Chuyển trả':(lech&&!lyDo?'Vẫn '+viec:'Xác nhận'),tra||lyDo).then(function(v){if(!v)return;
@@ -1222,7 +1222,7 @@ function drawTable(id){
   h+='</tbody></table></div>';m.innerHTML=h;
   [].forEach.call(m.querySelectorAll('[data-k]'),bind);dcLoad();dcRender();fixTop(m);
 }
-/* Trưởng phòng / Kế toán trưởng xem biểu 1953 dưới dạng bản in; ghi chú ở dưới cùng */
+/* Lãnh đạo phòng / Kế toán trưởng xem biểu 1953 dưới dạng bản in; ghi chú ở dưới cùng */
 function stickyHead(f){try{var d=f.contentDocument,th=d&&d.querySelector('table thead');if(!th)return;var y=0;[].forEach.call(th.querySelectorAll('tr'),function(tr){var h=tr.getBoundingClientRect().height;[].forEach.call(tr.children,function(c){var bg=d.defaultView.getComputedStyle(c).backgroundColor;c.style.position='sticky';c.style.top=y+'px';c.style.zIndex='3';if(!bg||bg==='rgba(0, 0, 0, 0)'||bg==='transparent')c.style.backgroundColor='#fff'});y+=h})}catch(e){}}
 function fitFrame(f){try{var d=f.contentDocument;if(!d||!d.body||d.querySelector('table.w'))return;d.body.style.zoom='';var hh=d.documentElement.scrollHeight,fh=f.clientHeight;if(hh>0){var z=Math.max(1,Math.min(1.8,fh/hh*0.97));for(var i=0;i<6&&z>1;i++){d.body.style.zoom=z;var h2=d.documentElement.scrollHeight;if(h2<=fh)break;z=Math.max(1,z*fh/h2*0.99)}d.body.style.zoom=z}}catch(e){}}
 function drawTpBieu(id,b){
@@ -1235,7 +1235,7 @@ function drawTpBieu(id,b){
   var bd=S.bt&&S.wf&&S.bt.ky===S.wf.ky?S.bt:null;
   if(((S.vt==='PGD'&&S.xem===S.pgd)||(S.vt==='TH'&&S.xem==='*'))&&!bd&&!S.btBusy&&S.wf){S.btBusy=1;run('bieuTong',S.token,S.ky).then(function(r){S.bt=r}).catch(function(){S.bt={err:1,rows:[],ky:S.wf.ky}}).then(function(){S.btBusy=0;if(S.tab===id)drawTable(id)})}
   if(bd&&bd.co&&((S.vt==='PGD'&&S.xem===S.pgd)||(S.vt==='TH'&&S.xem==='*')))bd.rows.forEach(function(x){if(x.k==='row'&&x.n!=null&&x.ttl&&x.ttl!=='khop')wc.lech.push((x.ten||x.b)+' ('+(x.dlk>0?'+':'−')+fmt(Math.abs(r2(x.dlk)))+')')});
-  var tt=S.data.tt||'';if(S.xem!=='*'&&['Chưa gửi','Bị trả lại','Chờ KTT duyệt','Chờ TP phê duyệt'].indexOf(tt)>=0)w.push('<div class="wi w1"><b>⛔ Báo cáo chưa hoàn thành</b> · '+esc(tt)+'</div>');
+  var tt=S.data.tt||'';if(S.xem!=='*'&&['Chưa gửi','Bị trả lại','Chờ KTT duyệt','Chờ LĐ phê duyệt'].indexOf(tt)>=0)w.push('<div class="wi w1"><b>⛔ Báo cáo chưa hoàn thành</b> · '+esc(tt)+'</div>');
   [['chua','w2','✗ Chưa gửi BC','Chủ đầu tư chưa gửi BC'],['thieu','w3','○ Chưa chọn tình trạng gửi BC','Chủ đầu tư / dòng chưa chọn tình trạng gửi báo cáo (Đã gửi BC, Gửi BC chậm, Chưa gửi BC hoặc Không phát sinh)'],['lech','w4','⚖ Chênh lệch so với THBC','Chủ đầu tư có lũy kế trên hệ thống khác file THBC (hệ thống − THBC, triệu đồng)']].forEach(function(k){var a=wc[k[0]];if(a.length)w.push('<details class="wi '+k[1]+'" title="'+k[3]+'"><summary>'+k[2]+'<em><i>'+a.length+'</i></em></summary><ul>'+a.slice(0,40).map(function(n){return '<li>'+esc(n)+'</li>'}).join('')+(a.length>40?'<li>… và '+(a.length-40)+' dòng khác</li>':'')+'</ul></details>')});
   var warn=w.length?'<div class="cvw">'+w.join('')+'</div>':'<div class="cvw good">✓ Biểu đã nhập đầy đủ, không có dòng nào chưa hoàn thiện.</div>';
   var h='<div class="tb1"><div class="tb1l"><p class="hint" style="margin:0">'+(S.data.kyCu?'<b style="color:#9a5b00">Kỳ '+esc(S.data.ky)+' đã đóng, chỉ xem.</b> ':'')+(S.xem==='*'?'Số liệu <b>toàn tỉnh</b> (chỉ xem). ':'Trạng thái báo cáo: <b>'+esc(S.data.tt||'')+'</b>. ')+'Bản in bên dưới là biểu gửi đi; chỉ xem, không sửa số liệu.</p></div><div class="tb1r">'+expBar('bieu',id)+'</div></div>'+
@@ -1295,8 +1295,8 @@ function xuat(fn,btn,mode){
 function drawIn(){
   if(S.ky&&S.wf&&S.wf.kyCu){$('main').innerHTML='<div class="card"><h3>🖨 In & xuất kỳ '+esc(S.wf.ky)+'</h3><p class="hint">Kỳ đã chốt: xem số liệu ngay trên các tab biểu. Biểu in PDF/Excel hiện làm cho <b>kỳ hiện tại</b>; chọn lại kỳ hiện tại ở góc trên để in.</p>'+(S.vt!=="PGD"?'<p class="hint">Bảng thống kê nộp báo cáo của kỳ này xuất ở trang Tổng hợp.</p>':'')+'</div>';return}
   var i=S.info,d=new Date(),iso=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2),h='';
-  if(S.vt==='PGD')h+='<div class="card" style="margin-bottom:12px;padding:12px 16px"><h3 style="font-size:15px;margin-bottom:6px">✍ Người ký <small style="font-weight:400;color:var(--mut)">· họ tên in ở phần chữ ký các biểu</small></h3><div class="sig"><div><label>Người lập biểu</label><input type="text" id="kLap" value="'+esc(i.lap)+'"></div>'+
-   (i.coKtt?'<div><label>Kế toán trưởng</label><input type="text" id="kKtt" value="'+esc(i.ktt)+'"></div>':'')+'<div><label>Trưởng phòng</label><input type="text" id="kTp" value="'+esc(i.tp)+'"></div><div><button id="kLuu">Lưu họ tên</button></div></div></div>';
+  if(S.vt==='PGD')h+='<div class="card" style="margin-bottom:12px;padding:12px 16px"><h3 style="font-size:15px;margin-bottom:6px">✍ Người ký <small style="font-weight:400;color:var(--mut)">· họ tên in ở phần chữ ký các biểu</small></h3><div class="sig"><div><label>Người nhập</label><input type="text" id="kLap" value="'+esc(i.lap)+'"></div>'+
+   (i.coKtt?'<div><label>Kế toán trưởng</label><input type="text" id="kKtt" value="'+esc(i.ktt)+'"></div>':'')+'<div><label>Lãnh đạo phòng</label><input type="text" id="kTp" value="'+esc(i.tp)+'"></div><div><button id="kLuu">Lưu họ tên</button></div></div></div>';
   h+='<div class="card"><h3>🖨 In &amp; xuất biểu'+(isV()?' của '+esc(S.xem):'')+'</h3><p class="hint">PDF mở ở tab mới để in ngay (Ctrl+P), Excel tải về để chỉnh. Cuối biểu tự ghi ngày giờ in, hạn nộp và trạng thái báo cáo.</p>'+
    '<div style="max-width:220px"><label>Ngày lập báo cáo (ngày/tháng/năm)</label><input type="text" id="kNgay" maxlength="10" placeholder="dd/mm/yyyy" value="'+isoDmy(iso)+'"></div><div style="margin-top:12px">'+
    ['B01','B02','B03(21-25)','B03(26-30)','BCĐT'].map(function(x){return'<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)"><b style="flex:1">'+x+' <small style="color:var(--mut);font-weight:400">'+({'BCĐT':'Tình trạng báo cáo','B01':'Biểu 01-KBNN','B02':'Biểu 02-KBNN'}[x]||'Biểu 03-KBNN')+'</small></b><button class="pri" data-f="pdf" data-in="'+x+'">PDF</button><button data-f="xlsx" data-in="'+x+'">Excel</button></div>'}).join('')+'</div></div>';
@@ -1812,7 +1812,7 @@ function dmBulk(){var o=DM.opt,b=$('mbox');b.className='box wide';
 
 /* ===== BC đánh giá KPI: khung đã tạo sẵn, chờ biểu mẫu ===== */
 /* ===== BC KPI: đối chiếu THBC theo mốc ngày · PGD xác nhận ===== */
-var KTT={cho:['Chờ xác nhận','#b45309','#fff1d6'],nhap:['Người lập đang soạn số điều chỉnh','#b45309','#fff1d6'],gui:['Chờ Trưởng phòng phê duyệt điều chỉnh','#7c3aed','#efe7fd'],duyet:['Đã phê duyệt điều chỉnh, chờ xác nhận','#0f4c75','#e0f0fb'],xn:['Đã xác nhận','#15803d','#dcfce7'],xn_dc:['Đã xác nhận · có điều chỉnh','#0f4c75','#e0f0fb'],khong:['Không có số liệu','#6b5a5f','#eee']};
+var KTT={cho:['Chờ xác nhận','#b45309','#fff1d6'],nhap:['Người nhập đang soạn số điều chỉnh','#b45309','#fff1d6'],gui:['Chờ Lãnh đạo phòng phê duyệt điều chỉnh','#7c3aed','#efe7fd'],duyet:['Đã phê duyệt điều chỉnh, chờ xác nhận','#0f4c75','#e0f0fb'],xn:['Đã xác nhận','#15803d','#dcfce7'],xn_dc:['Đã xác nhận · có điều chỉnh','#0f4c75','#e0f0fb'],khong:['Không có số liệu','#6b5a5f','#eee']};
 function kpChip(t){var x=KTT[t]||KTT.khong;return '<span class="dck" style="background:'+x[2]+';color:'+x[1]+'">'+x[0]+'</span>'}
 function kpSt(x){return x.e0+x.e1+x.e2+x.e3}
 function kpTh(x){return x.t0+x.t1+x.t2+x.t3}
@@ -1925,7 +1925,7 @@ function kpXbInit(d){if(!$('kxBox'))return;var box=$('kxBox');
 function kpHuong(d){
   var q=d.quyen||{},m=d.ds[0]||{};
   if(S.vt==='PGD'){
-    var c=S.info.cv,vai=c==='TP'?'Bạn là Trưởng phòng: xem số THBC và bấm <b>Xác nhận số liệu</b>; nếu người lập có đề nghị điều chỉnh thì <b>phê duyệt</b> rồi <b>xác nhận số điều chỉnh</b>.':(c==='LAP'?'Bạn là người lập: xem số THBC; nếu cần ghi nhận khác thì lập <b>đề nghị điều chỉnh</b> (kèm lý do), <b>lưu tạm</b> rồi <b>gửi phê duyệt</b>.':'Bạn chỉ xem; không thao tác trên báo cáo này.');
+    var c=S.info.cv,vai=c==='TP'?'Bạn là Lãnh đạo phòng: xem số THBC và bấm <b>Xác nhận số liệu</b>; nếu người nhập có đề nghị điều chỉnh thì <b>phê duyệt</b> rồi <b>xác nhận số điều chỉnh</b>.':(c==='LAP'?'Bạn là người nhập: xem số THBC; nếu cần ghi nhận khác thì lập <b>đề nghị điều chỉnh</b> (kèm lý do), <b>lưu tạm</b> rồi <b>gửi phê duyệt</b>.':'Bạn chỉ xem; không thao tác trên báo cáo này.');
     return '<div class="card kpgo"><h3>Việc của phòng bạn</h3><p>'+(m.tt==='xn'||m.tt==='xn_dc'?'✅ Phòng đã xác nhận số liệu đến ngày '+esc(d.moc.nhan)+'.':'⏳ Số liệu đến ngày <b>'+esc(d.moc.nhan)+'</b> đang chờ phòng xác nhận.')+'</p><p class="hint">'+vai+'</p><button class="pri" data-kgo="kpib">Xem số liệu của phòng →</button></div>'}
   return ''}
 function drawKpi(t){
@@ -1939,7 +1939,7 @@ function drawKpi(t){
     $('main').innerHTML=h;bindKp();if(t==='kpvb')kpXbInit(d)})}
 function kpDc(d){
   var rows=d.rows.filter(function(x){return x.k==='row'&&x.ly!==undefined}),tm={};d.ds.forEach(function(x){tm[x.pgd]=x.tt});
-  var h='<div class="card"><h3>⚖ Các dòng phòng đề nghị điều chỉnh khác THBC</h3><p class="hint" style="margin:2px 0 8px">Chỉ các dòng đã được Trưởng phòng <b>phê duyệt</b> mới thay số THBC trong số gửi Sở Tài chính; dòng đang chờ duyệt vẫn lấy số THBC.</p>';
+  var h='<div class="card"><h3>⚖ Các dòng phòng đề nghị điều chỉnh khác THBC</h3><p class="hint" style="margin:2px 0 8px">Chỉ các dòng đã được Lãnh đạo phòng <b>phê duyệt</b> mới thay số THBC trong số gửi Sở Tài chính; dòng đang chờ duyệt vẫn lấy số THBC.</p>';
   if(!rows.length)return h+'<p class="rsn" style="background:#ecfdf5;border-color:#a7f3d0;color:#047857">✓ Chưa có dòng nào đề nghị điều chỉnh khác THBC.</p></div>';
   h+='<div style="overflow:auto"><table class="mini-t"><thead><tr><th style="text-align:left">Phòng</th><th style="text-align:left">Chủ đầu tư</th><th>THBC</th><th>Số đề nghị</th><th>Chênh lệch</th><th style="text-align:left">Trạng thái</th><th style="text-align:left">Lý do</th></tr></thead><tbody>';
   rows.forEach(function(x){h+='<tr><td style="text-align:left">'+esc(x.c)+'</td><td style="text-align:left">'+esc(x.b)+'</td><td>'+fmt(kpTh(x))+'</td><td><b>'+fmt(kpPr(x))+'</b></td><td>'+kpLech(kpPr(x)-kpTh(x))+'</td><td style="text-align:left">'+kpChip(tm[x.c])+'</td><td style="text-align:left;max-width:380px">'+esc(x.ly)+'</td></tr>'});
@@ -1952,7 +1952,7 @@ function kpBody(d){
   var q=d.quyen||{},th=S.vt!=='PGD',h='',hasAdj=d.rows.some(function(x){return x.k==='row'&&x.ok>0}),hasProp=d.rows.some(function(x){return x.k==='row'&&x.ly!==undefined}),ev=S.kpView||((q.pheDuyet||(q.sua&&hasProp))?'de':(hasAdj?'sau':'goc')),canDe=!!q.sua||hasProp;if(ev==='sau'&&!hasAdj)ev='goc';if(ev==='de'&&!canDe)ev='goc';var tq=S.vt==='PGD'&&!['LAP','ALL'].includes(d.cv);if(tq)canDe=hasProp;if(ev==='de'&&!canDe)ev='goc';var ed=!!q.sua&&ev==='de';S.kpDirty=0;S.kpEv=ev;
   if(S.vt==='PGD'){var m=d.ds[0]||{};h+='<div class="card kpgo" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>'+esc(S.pgd||'')+'</b>'+kpChip(m.tt)+(m.nguoi?'<span class="hint" style="margin:0">'+esc(m.nguoi)+' · '+esc(m.luc||'')+'</span>':'')+'</div></div>'}
   else{h+='<div class="card" style="margin-bottom:12px"><label style="display:inline">Lọc theo phòng: </label><select id="kpP" style="width:auto"><option value="">Toàn tỉnh</option>'+d.ds.map(function(x){return '<option'+(S.kpP===x.pgd?' selected':'')+'>'+esc(x.pgd)+'</option>'}).join('')+'</select> <span class="hint" style="margin:0 0 0 8px">Chỉ xem; số điều chỉnh do phòng giao dịch nhập.</span></div>'}
-  var hint={goc:(S.vt==='PGD'?(q.xnThbc?'Số do Phòng NV2 cung cấp. Nếu đúng, bấm <b>Xác nhận số liệu</b> ở cuối trang.':'Số do Phòng NV2 cung cấp.'):'Số do Phòng NV2 cung cấp, giữ nguyên để đối chiếu.')+(q.sua&&!hasProp?' Nếu cần ghi nhận khác, chọn <b>Số đề nghị điều chỉnh</b>.':''),de:(q.sua?'Nhập số thực tế vào các ô xanh; nếu khác THBC thì <b>bắt buộc nêu lý do</b>. Bấm <b>Lưu tạm</b> để giữ lại, <b>Gửi phê duyệt điều chỉnh</b> khi xong.':(q.pheDuyet?'Người lập đã gửi số đề nghị điều chỉnh. Xem số và lý do rồi bấm <b>Phê duyệt số điều chỉnh</b> (hoặc <b>Trả lại</b> để người lập sửa).':'Các dòng phòng đề nghị ghi nhận khác THBC, kèm số đề nghị và lý do.')),sau:'Kết quả cuối: dòng đã phê duyệt điều chỉnh thay thế số THBC, các dòng còn lại theo THBC. Đây là số gửi Sở Tài chính.'+(q.xnDc?' Bấm <b>Xác nhận số điều chỉnh</b> ở cuối trang.':'')};
+  var hint={goc:(S.vt==='PGD'?(q.xnThbc?'Số do Phòng NV2 cung cấp. Nếu đúng, bấm <b>Xác nhận số liệu</b> ở cuối trang.':'Số do Phòng NV2 cung cấp.'):'Số do Phòng NV2 cung cấp, giữ nguyên để đối chiếu.')+(q.sua&&!hasProp?' Nếu cần ghi nhận khác, chọn <b>Số đề nghị điều chỉnh</b>.':''),de:(q.sua?'Nhập số thực tế vào các ô xanh; nếu khác THBC thì <b>bắt buộc nêu lý do</b>. Bấm <b>Lưu tạm</b> để giữ lại, <b>Gửi phê duyệt điều chỉnh</b> khi xong.':(q.pheDuyet?'Người nhập đã gửi số đề nghị điều chỉnh. Xem số và lý do rồi bấm <b>Phê duyệt số điều chỉnh</b> (hoặc <b>Trả lại</b> để người nhập sửa).':'Các dòng phòng đề nghị ghi nhận khác THBC, kèm số đề nghị và lý do.')),sau:'Kết quả cuối: dòng đã phê duyệt điều chỉnh thay thế số THBC, các dòng còn lại theo THBC. Đây là số gửi Sở Tài chính.'+(q.xnDc?' Bấm <b>Xác nhận số điều chỉnh</b> ở cuối trang.':'')};
   var ops=[['goc','Số THBC gốc']];if(canDe)ops.push(['de','Số đề nghị điều chỉnh']);if(hasAdj)ops.push(['sau','Số sau điều chỉnh']);
   if(tq)hint[ev]='';
   var rv='<div class="kpv"><b>'+(ops.length>1?'Xem:':'Số liệu:')+'</b> '+(ops.length>1?ops.map(function(o){return '<label><input type="radio" name="kv" value="'+o[0]+'"'+(ev===o[0]?' checked':'')+'> '+o[1]+'</label>'}).join(''):'<span>Số THBC</span>')+'<span class="hint" style="margin:0 0 0 auto">Triệu đồng</span>'+(hint[ev]?'<div class="kph">'+hint[ev]+'</div>':'')+'</div>';
@@ -1973,18 +1973,18 @@ function kpBody(d){
     else if(adj&&ev==='sau'){h+='<tr class="kxl ro2 khac"><td></td><td class="kl">Lý do <small>(chênh '+kpLech(kpSt(x)-kpTh(x))+' so với THBC)</small></td><td colspan="9" style="text-align:left"><i>'+esc(x.ly)+'</i></td></tr>'}}});
   h+='</tbody></table></div></div>'}
   if(S.vt==='PGD'){var tt=q.tt||(d.ds[0]||{}).tt,btn='',msg='';
-    var TM={xn:'Phòng đã xác nhận số liệu.',xn_dc:'Phòng đã xác nhận số điều chỉnh.',gui:'Số điều chỉnh đã gửi, chờ Trưởng phòng phê duyệt.',duyet:'Số điều chỉnh đã được phê duyệt, chờ Trưởng phòng xác nhận.',nhap:'Người lập đang soạn số điều chỉnh, chưa gửi phê duyệt.'};
+    var TM={xn:'Phòng đã xác nhận số liệu.',xn_dc:'Phòng đã xác nhận số điều chỉnh.',gui:'Số điều chỉnh đã gửi, chờ Lãnh đạo phòng phê duyệt.',duyet:'Số điều chỉnh đã được phê duyệt, chờ Lãnh đạo phòng xác nhận.',nhap:'Người nhập đang soạn số điều chỉnh, chưa gửi phê duyệt.'};
     msg=TM[tt]||'';
     if((ev==='goc'||tq)&&q.xnThbc)btn+='<button class="pri" id="kpXn" data-lo="thbc">✔ Xác nhận số liệu</button>';
     if(ev==='de'&&q.sua){msg='Chưa có thay đổi.';btn+='<button class="mini" id="kpSave" disabled>💾 Lưu tạm</button><button class="kpsave" id="kpGui" disabled>📨 Gửi phê duyệt điều chỉnh</button>'}
-    if((ev==='de'||tq)&&q.pheDuyet)btn+='<button class="mini" id="kpTra">↩ Trả lại người lập</button><button class="pri" id="kpDuyet">✔ Phê duyệt số điều chỉnh</button>';
+    if((ev==='de'||tq)&&q.pheDuyet)btn+='<button class="mini" id="kpTra">↩ Trả lại người nhập</button><button class="pri" id="kpDuyet">✔ Phê duyệt số điều chỉnh</button>';
     if((ev==='sau'||tq)&&q.xnDc)btn+='<button class="pri" id="kpXn" data-lo="dc">✔ Xác nhận số điều chỉnh</button>';
     if(q.moLai)btn+='<button class="mini" id="kpMoLai">Mở lại để sửa</button>';
     if(btn||msg)h+='<div class="kpfoot card"><span id="kpMsg" class="hint" style="margin:0">'+msg+'</span><span style="margin-left:auto;display:flex;gap:8px">'+btn+'</span></div>'}
   return h}
 function kpNote(d,hasProp){
   var m=d.ds[0]||{},LB=['Kéo dài · KLHT','Kéo dài · tạm ứng','Vốn năm · KLHT','Vốn năm · tạm ứng'],h='<div class="card kpn"><h4>📝 Ghi chú</h4>';
-  if(!hasProp)h+='<p class="hint" style="margin:0">'+(m.tt==='nhap'?'Người lập đang soạn số điều chỉnh, chưa gửi.':'Không có đề nghị điều chỉnh: phòng ghi nhận đúng số THBC.')+'</p>';
+  if(!hasProp)h+='<p class="hint" style="margin:0">'+(m.tt==='nhap'?'Người nhập đang soạn số điều chỉnh, chưa gửi.':'Không có đề nghị điều chỉnh: phòng ghi nhận đúng số THBC.')+'</p>';
   else{h+='<p class="hint" style="margin:0 0 6px">'+(m.guiNguoi?esc(m.guiNguoi)+(m.guiLuc?' · '+esc(m.guiLuc):''):'Đề nghị điều chỉnh khác THBC')+'</p><div class="kpnw">';
     d.rows.forEach(function(x){if(x.k!=='row'||x.ly===undefined)return;var t=[x.t0,x.t1,x.t2,x.t3],p=[x.p0,x.p1,x.p2,x.p3],ch=[];
       t.forEach(function(v,i){if(Math.abs(p[i]-v)>0.0005)ch.push('<div>'+LB[i]+': <s>'+fmt(v)+'</s> → <b>'+fmt(p[i])+'</b></div>')});
@@ -1997,13 +1997,13 @@ function kpDuyet(d,hasProp){
   var m=d.ds[0]||{},tot=d.rows.filter(function(x){return x.k==='tot'})[0]||{t0:0,t1:0,t2:0,t3:0,p0:0,p1:0,p2:0,p3:0,e0:0,e1:0,e2:0,e3:0,nd:0},q=d.quyen||{},tt=q.tt||m.tt,cho=tt==='gui',
     sau=(tt==='duyet'||tt==='xn_dc')?kpSt(tot):kpPr(tot),dl=kpPr(tot)-kpTh(tot);
   var h='<div class="ovg" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 12px">'+
-    kpTile(hasProp?'bad':'ok','✏️','Dòng đề nghị điều chỉnh',tot.nd||0,hasProp?(cho?'Đang chờ Trưởng phòng phê duyệt':(tt==='duyet'||tt==='xn_dc'?'Đã phê duyệt':'')):'Phòng ghi nhận đúng số THBC')+
+    kpTile(hasProp?'bad':'ok','✏️','Dòng đề nghị điều chỉnh',tot.nd||0,hasProp?(cho?'Đang chờ Lãnh đạo phòng phê duyệt':(tt==='duyet'||tt==='xn_dc'?'Đã phê duyệt':'')):'Phòng ghi nhận đúng số THBC')+
     (hasProp?kpTile(Math.abs(dl)<0.5?'ok':'bad','⚖','Chênh lệch so với THBC',kpLech(dl),'triệu đồng')+kpTile('','🎯',(tt==='duyet'||tt==='xn_dc')?'Số sau điều chỉnh':'Tổng nếu được duyệt',fmt(sau),'triệu đồng'):'')+'</div>';
   if(!hasProp){
-    var TX={nhap:'Người lập đang soạn số đề nghị điều chỉnh, chưa gửi phê duyệt.',xn:'Phòng đã xác nhận số liệu THBC.'};
+    var TX={nhap:'Người nhập đang soạn số đề nghị điều chỉnh, chưa gửi phê duyệt.',xn:'Phòng đã xác nhận số liệu THBC.'};
     return h+'<div class="card" style="margin-bottom:12px"><h3>Số liệu của phòng</h3><p class="hint" style="margin:2px 0 0">'+(TX[tt]||'Phòng chưa có đề nghị điều chỉnh. Nếu số THBC trong biểu bên dưới đúng, bấm <b>Xác nhận số liệu</b> ở cuối trang.')+'</p></div>'}
   var LB=['Kéo dài · thanh toán KLHT','Kéo dài · tạm ứng','Vốn năm · thanh toán KLHT','Vốn năm · tạm ứng'];
-  h+='<div class="card" style="margin-bottom:12px"><h3>📝 Các dòng đề nghị điều chỉnh</h3><p class="hint" style="margin:2px 0 8px">'+(m.guiNguoi?'Người lập <b>'+esc(m.guiNguoi)+'</b> gửi'+(m.guiLuc?' lúc '+esc(m.guiLuc):'')+'. ':'')+'Chỉ liệt kê nội dung khác số THBC.</p><div style="overflow:auto"><table class="mini-t kpdl"><thead><tr><th style="width:44px">STT</th><th style="text-align:left">Chủ đầu tư</th><th style="text-align:left">Nội dung thay đổi (triệu đồng)</th><th style="width:110px">Chênh tổng</th><th style="text-align:left;min-width:220px">Lý do</th></tr></thead><tbody>';
+  h+='<div class="card" style="margin-bottom:12px"><h3>📝 Các dòng đề nghị điều chỉnh</h3><p class="hint" style="margin:2px 0 8px">'+(m.guiNguoi?'Người nhập <b>'+esc(m.guiNguoi)+'</b> gửi'+(m.guiLuc?' lúc '+esc(m.guiLuc):'')+'. ':'')+'Chỉ liệt kê nội dung khác số THBC.</p><div style="overflow:auto"><table class="mini-t kpdl"><thead><tr><th style="width:44px">STT</th><th style="text-align:left">Chủ đầu tư</th><th style="text-align:left">Nội dung thay đổi (triệu đồng)</th><th style="width:110px">Chênh tổng</th><th style="text-align:left;min-width:220px">Lý do</th></tr></thead><tbody>';
   var n=0;d.rows.forEach(function(x){if(x.k!=='row'||x.ly===undefined)return;n++;
     var t=[x.t0,x.t1,x.t2,x.t3],p=[x.p0,x.p1,x.p2,x.p3],ch=[];t.forEach(function(v,i){if(Math.abs(p[i]-v)>0.0005)ch.push('<div>'+LB[i]+': <s style="color:#9a8a8e">'+fmt(v)+'</s> → <b>'+fmt(p[i])+'</b></div>')});
     h+='<tr><td>'+n+'</td><td style="text-align:left;font-weight:600">'+esc(x.b)+'</td><td style="text-align:left;font-size:13px">'+ch.join('')+'</td><td><b>'+kpLech(kpPr(x)-kpTh(x))+'</b></td><td style="text-align:left;font-style:italic">'+esc(x.ly)+'</td></tr>'});
@@ -2061,12 +2061,12 @@ function bindKp(){
   var kpLuuRun=function(){var g=kpGather();if(g.bad.length){toast('Có ô nhập chưa đúng số: '+g.bad[0],7000);return null}return g.items.length?run('kpiLuu',S.token,d.moc.id,g.items):Promise.resolve(null)};
   if($('kpSave'))$('kpSave').onclick=function(){var p=kpLuuRun();if(!p)return;p.then(function(r){if(r){S.kp=r;S.kpD={}}toast('Đã lưu tạm số đề nghị điều chỉnh.',4000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),12000)})};
   if($('kpGui'))$('kpGui').onclick=function(){var g0=kpGather();if(g0.bad.length){toast('Có ô nhập chưa đúng số: '+g0.bad[0],7000);return}
-    hoi('<b>Gửi phê duyệt số điều chỉnh đến ngày '+esc(d.moc.nhan)+'?</b><br><small>Sau khi gửi, người lập không sửa được cho đến khi Trưởng phòng phê duyệt hoặc trả lại.</small>','Gửi phê duyệt').then(function(v){if(!v)return;var p=kpLuuRun();if(!p)return;
-      p.then(function(){return run('kpiGui',S.token,d.moc.id)}).then(function(r){S.kp=r;S.kpD={};toast('Đã gửi Trưởng phòng phê duyệt số điều chỉnh.',5000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),12000)})})};
-  if($('kpDuyet'))$('kpDuyet').onclick=function(){hoi('<b>Phê duyệt số điều chỉnh đến ngày '+esc(d.moc.nhan)+'?</b><br><small>Số đề nghị của người lập sẽ thay số THBC ở các dòng điều chỉnh. Sau đó bạn cần bấm Xác nhận số điều chỉnh ở mục Số sau điều chỉnh.</small>','Phê duyệt').then(function(v){if(!v)return;
+    hoi('<b>Gửi phê duyệt số điều chỉnh đến ngày '+esc(d.moc.nhan)+'?</b><br><small>Sau khi gửi, người nhập không sửa được cho đến khi Lãnh đạo phòng phê duyệt hoặc trả lại.</small>','Gửi phê duyệt').then(function(v){if(!v)return;var p=kpLuuRun();if(!p)return;
+      p.then(function(){return run('kpiGui',S.token,d.moc.id)}).then(function(r){S.kp=r;S.kpD={};toast('Đã gửi Lãnh đạo phòng phê duyệt số điều chỉnh.',5000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),12000)})})};
+  if($('kpDuyet'))$('kpDuyet').onclick=function(){hoi('<b>Phê duyệt số điều chỉnh đến ngày '+esc(d.moc.nhan)+'?</b><br><small>Số đề nghị của người nhập sẽ thay số THBC ở các dòng điều chỉnh. Sau đó bạn cần bấm Xác nhận số điều chỉnh ở mục Số sau điều chỉnh.</small>','Phê duyệt').then(function(v){if(!v)return;
     run('kpiPheDuyet',S.token,d.moc.id).then(function(r){S.kp=r;S.kpView='sau';toast('Đã phê duyệt số điều chỉnh. Xem mục Số sau điều chỉnh để xác nhận.',6000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),10000)})})};
-  if($('kpTra'))$('kpTra').onclick=function(){hoi('<b>Trả lại người lập?</b><br><small>Số đề nghị điều chỉnh quay về bản nháp để người lập sửa và gửi lại.</small>','Trả lại').then(function(v){if(!v)return;
-    run('kpiTraLai',S.token,d.moc.id).then(function(r){S.kp=r;toast('Đã trả lại người lập.',5000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),10000)})})};
+  if($('kpTra'))$('kpTra').onclick=function(){hoi('<b>Trả lại người nhập?</b><br><small>Số đề nghị điều chỉnh quay về bản nháp để người nhập sửa và gửi lại.</small>','Trả lại').then(function(v){if(!v)return;
+    run('kpiTraLai',S.token,d.moc.id).then(function(r){S.kp=r;toast('Đã trả lại người nhập.',5000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),10000)})})};
   if($('kpXn'))$('kpXn').onclick=function(){var dc=this.getAttribute('data-lo')==='dc',nd=(S.kp.ds[0]||{}).nd||0;
     hoi('<b>'+(dc?'Xác nhận số điều chỉnh':'Xác nhận số liệu')+' KPI đến ngày '+esc(d.moc.nhan)+'?</b><br><small>'+(dc?'Phòng ghi nhận khác THBC ở '+nd+' dòng (đã phê duyệt, có lý do). ':'Phòng ghi nhận đúng theo số THBC. ')+'Sau khi xác nhận, số liệu được chuyển cho Tổng hợp; muốn sửa phải "Mở lại để sửa".</small>','Xác nhận').then(function(v){if(!v)return;
       run('kpiXacNhan',S.token,d.moc.id).then(function(r){S.kp=r;toast('Đã xác nhận số liệu KPI của phòng.',5000);drawKpi(S.tab)}).catch(function(e){toast(msg(e),10000)})})};

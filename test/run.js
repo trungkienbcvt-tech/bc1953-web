@@ -88,15 +88,15 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await L.luuNguoiKy(lap, 'Nguyễn Văn Lập'); await L.luuNguoiKy(ktt, 'Trần Thị Kế'); await L.luuNguoiKy(tp, 'Lê Văn Phòng');
     const dl = await L.layDuLieu(lap), rr = dl.sheets[0].rows[0]; assert.strictEqual(dl.docChiXem, false);
     assert.strictEqual((await L.layDuLieu(ktt)).docChiXem, true, 'KTT chỉ xem');
-    await assert.rejects(() => L.luu(ktt, [{ id: 'b01', r: rr.r, c: 5, v: '1' }]), /người lập biểu/);
+    await assert.rejects(() => L.luu(ktt, [{ id: 'b01', r: rr.r, c: 5, v: '1' }]), /người nhập/);
     await assert.rejects(() => L.duyet(ktt, 'ktt_trinh', '', ''), /Không thực hiện/);      // chưa trình
-    await assert.rejects(() => L.duyet(tp, 'lap_trinh', '', ''), /Người lập biểu/);          // sai chức vụ
+    await assert.rejects(() => L.duyet(tp, 'lap_trinh', '', ''), /Người nhập/);          // sai chức vụ
     await dienTT(lap, 'Không phát sinh'); let x = (await L.duyet(lap, 'lap_trinh', '', '')).list[0]; assert.strictEqual(x.tt, 'Chờ KTT duyệt'); assert(x.ky.LAP);
     await assert.rejects(() => L.luu(lap, [{ id: 'b01', r: rr.r, c: 5, v: '1' }]), /đã gửi/);
     await assert.rejects(() => L.duyet(ktt, 'ktt_tra', '', ''), /lý do/);
     x = (await L.duyet(ktt, 'ktt_tra', 'sai số dòng 1', '')).list[0]; assert.strictEqual(x.tt, 'Bị trả lại'); assert(!x.ky.LAP, 'trả lại thì xóa chữ ký'); assert(/sai số/.test(x.lyDo));
     await L.luu(lap, [{ id: 'b01', r: rr.r, c: 5, v: String(rr.v[1] + 10) }]);
-    await L.duyet(lap, 'lap_trinh', '', ''); x = (await L.duyet(ktt, 'ktt_trinh', '', '')).list[0]; assert.strictEqual(x.tt, 'Chờ TP phê duyệt'); assert(x.ky.KTT);
+    await L.duyet(lap, 'lap_trinh', '', ''); x = (await L.duyet(ktt, 'ktt_trinh', '', '')).list[0]; assert.strictEqual(x.tt, 'Chờ LĐ phê duyệt'); assert(x.ky.KTT);
     x = (await L.duyet(tp, 'tp_tra', 'xem lại', '')).list[0]; assert.strictEqual(x.tt, 'Bị trả lại'); assert.strictEqual(Object.keys(x.ky).length, 0);
     await L.duyet(lap, 'lap_trinh', '', ''); await L.duyet(lap, 'lap_rut', '', ''); assert.strictEqual((await st(lap)).tt, 'Chưa gửi');
     await L.duyet(lap, 'lap_trinh', '', ''); await L.duyet(ktt, 'ktt_trinh', '', ''); x = (await L.duyet(tp, 'tp_duyet', '', '')).list[0];
@@ -123,7 +123,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert.strictEqual((await L.duyet(tth, 'th_duyet', '', '', P)).list.find((y) => y.pgd === P).tt, 'Trưởng phòng TH đã phê duyệt');
     // Phòng Nghiệp vụ 2: Lập biểu → Lãnh đạo phòng → Tổng hợp
     const nl = await lg('NV2 - Người lập biểu'), nt = (await L.dangNhap('NV2 - Lãnh đạo phòng', ma('Trưởng phòng Tổng hợp'))).token, NV = 'Phòng Nghiệp vụ 2', sn = async () => (await L.trangThai(th)).list.find((y) => y.pgd === NV);
-    await dienTT(nl); await L.duyet(nl, 'lap_trinh', '', ''); assert.strictEqual((await sn()).tt, 'Chờ TP phê duyệt');
+    await dienTT(nl); await L.duyet(nl, 'lap_trinh', '', ''); assert.strictEqual((await sn()).tt, 'Chờ LĐ phê duyệt');
     await L.duyet(nl, 'lap_rut', '', ''); assert.strictEqual((await sn()).tt, 'Chưa gửi'); await L.duyet(nl, 'lap_trinh', '', '');
     await assert.rejects(() => L.duyet(nt, 'ktt_trinh', '', ''), /Kế toán trưởng/);
     await L.duyet(nt, 'tp_duyet', '', ''); let xn = await sn(); assert.strictEqual(xn.tt, 'Đã gửi'); assert(xn.ky.LAP && xn.ky.TP && !xn.ky.KTT);
@@ -134,7 +134,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   {
     const BT = require('../lib/bieutong'), r = await BT.bieuTong(th, ''), tot = r.rows.find((x) => x.k === 'tot');
     { const rx = await BT.bieuTong(th, '', 'Phòng giao dịch 20'); assert.strictEqual(rx.full, false); assert(rx.rows.filter((x) => x.k === 'row').every((x) => x.c === 'Phòng giao dịch 20'), 'THBC lọc theo phòng'); const rt = await BT.bieuTong(th, '', '*'); assert.strictEqual(rt.full, true); const tx = await require('../lib/tinhtrang').tinh(th, '', 'Phòng giao dịch 20'); assert.strictEqual(tx.full, false); }
-    { const l1 = r.rows.find((x) => x.k === 'row'); await BT.btGhiChu(th, '', BT.gcKey(l1), 'Lệch do chờ số THBC'); assert.strictEqual((await BT.bieuTong(th, '')).rows.find((x) => BT.gcKey(x) === BT.gcKey(l1)).gc, 'Lệch do chờ số THBC', 'ghi chú đối chiếu được lưu'); await assert.rejects(() => BT.btGhiChu(p20, '', BT.gcKey(l1), 'x'), /người lập biểu/); const lap20 = await lg('PGD20 - Người lập biểu').catch(() => null); if (lap20) { const rr = (await BT.bieuTong(lap20, '')).rows.find((x) => x.k === 'row'); if (rr) { await BT.btGhiChu(lap20, '', BT.gcKey(rr), 'ghi chú phòng'); await BT.btGhiChu(lap20, '', BT.gcKey(rr), ''); } await assert.rejects(() => BT.btGhiChu(lap20, '', BT.gcKey(l1.c === 'Phòng giao dịch 20' ? Object.assign({}, l1, { c: 'Phòng giao dịch 5' }) : l1), 'x'), /người lập biểu/); } await BT.btGhiChu(th, '', BT.gcKey(l1), ''); }
+    { const l1 = r.rows.find((x) => x.k === 'row'); await BT.btGhiChu(th, '', BT.gcKey(l1), 'Lệch do chờ số THBC'); assert.strictEqual((await BT.bieuTong(th, '')).rows.find((x) => BT.gcKey(x) === BT.gcKey(l1)).gc, 'Lệch do chờ số THBC', 'ghi chú đối chiếu được lưu'); await assert.rejects(() => BT.btGhiChu(p20, '', BT.gcKey(l1), 'x'), /người nhập/); const lap20 = await lg('PGD20 - Người lập biểu').catch(() => null); if (lap20) { const rr = (await BT.bieuTong(lap20, '')).rows.find((x) => x.k === 'row'); if (rr) { await BT.btGhiChu(lap20, '', BT.gcKey(rr), 'ghi chú phòng'); await BT.btGhiChu(lap20, '', BT.gcKey(rr), ''); } await assert.rejects(() => BT.btGhiChu(lap20, '', BT.gcKey(l1.c === 'Phòng giao dịch 20' ? Object.assign({}, l1, { c: 'Phòng giao dịch 5' }) : l1), 'x'), /người nhập/); } await BT.btGhiChu(th, '', BT.gcKey(l1), ''); }
     assert.strictEqual(r.soThua, 0, 'mọi dòng web đều khớp danh mục'); assert.strictEqual(r.rows.filter((x) => x.k === 'row').length, 195);
     const tp = await L.tongHop(th), s4 = tp.list.reduce((a, p) => a + Object.values(p.b).reduce((z, b) => z + b.luyke, 0), 0), t4 = tp.list.reduce((a, p) => a + Object.values(p.b).reduce((z, b) => z + b.thang, 0), 0);
     assert(Math.abs(tot.lk - s4) < 0.01 && Math.abs(tot.th - t4) < 0.01, 'tổng biểu tổng = tổng 4 biểu con');
@@ -308,12 +308,12 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     assert(Math.abs(y0.p0 - (x0.t0 + 5)) < 1e-6 && Math.abs(y0.e0 - x0.t0) < 1e-6 && y0.ly && o.ds.find((d) => d.pgd === P20).tt === 'nhap' && o.quyen.gui, 'bản nháp: chưa tính vào số sau điều chỉnh');
     { const tk = await K.lay(tp20, '2026-10-15'); assert.strictEqual(tk.rows.find((x) => x.khoa === x0.khoa).ly, undefined, 'bản nháp Trưởng phòng chưa thấy'); assert(!tk.quyen.xacNhan, 'có điều chỉnh nháp thì chưa xác nhận được'); }
     await assert.rejects(() => K.xacNhan(tp20, '2026-10-15'), /chưa gửi phê duyệt/);
-    await assert.rejects(() => K.pheDuyet(tp20, '2026-10-15'), /Không có số điều chỉnh nào đang chờ/); await assert.rejects(() => K.guiDuyet(tp20, '2026-10-15'), /Chỉ người lập/);
-    await assert.rejects(() => K.xacNhan(lap20, '2026-10-15'), /Chỉ Trưởng phòng/); await assert.rejects(() => K.xacNhan(ktt20, '2026-10-15'), /Chỉ Trưởng phòng/);
+    await assert.rejects(() => K.pheDuyet(tp20, '2026-10-15'), /Không có số điều chỉnh nào đang chờ/); await assert.rejects(() => K.guiDuyet(tp20, '2026-10-15'), /Chỉ người nhập/);
+    await assert.rejects(() => K.xacNhan(lap20, '2026-10-15'), /Chỉ Lãnh đạo phòng/); await assert.rejects(() => K.xacNhan(ktt20, '2026-10-15'), /Chỉ Lãnh đạo phòng/);
     const g = await K.guiDuyet(lap20, '2026-10-15'); assert.strictEqual(g.ds.find((d) => d.pgd === P20).tt, 'gui'); assert(!g.quyen.sua && !g.quyen.gui);
     await assert.rejects(() => K.luuDc(lap20, '2026-10-15', [{ khoa: x0.khoa, v: null }]), /đã gửi phê duyệt/);
     { const tk = await K.lay(tp20, '2026-10-15'); assert(tk.quyen.pheDuyet && tk.quyen.traLai && !tk.quyen.xacNhan && !tk.quyen.sua); assert(Math.abs(tk.rows.find((x) => x.khoa === x0.khoa).p0 - (x0.t0 + 5)) < 1e-6 && Math.abs(tk.rows.find((x) => x.khoa === x0.khoa).e0 - x0.t0) < 1e-6); }
-    await assert.rejects(() => K.xacNhan(tp20, '2026-10-15'), /chờ phê duyệt/); await assert.rejects(() => K.pheDuyet(lap20, '2026-10-15'), /Chỉ Trưởng phòng/);
+    await assert.rejects(() => K.xacNhan(tp20, '2026-10-15'), /chờ phê duyệt/); await assert.rejects(() => K.pheDuyet(lap20, '2026-10-15'), /Chỉ Lãnh đạo phòng/);
     const tl = await K.traLai(tp20, '2026-10-15'); assert.strictEqual(tl.ds.find((d) => d.pgd === P20).tt, 'nhap'); await K.guiDuyet(lap20, '2026-10-15');
     const pd = await K.pheDuyet(tp20, '2026-10-15'); assert.strictEqual(pd.ds.find((d) => d.pgd === P20).tt, 'duyet'); assert(pd.quyen.xnDc && !pd.quyen.xnThbc && Math.abs(pd.rows.find((x) => x.khoa === x0.khoa).e0 - (x0.t0 + 5)) < 1e-6, 'duyệt xong số sau điều chỉnh thay số THBC');
     const xn = await K.xacNhan(tp20, '2026-10-15'); assert.strictEqual(xn.ds.find((d) => d.pgd === P20).tt, 'xn_dc'); assert(!xn.quyen.sua && xn.quyen.moLai);
