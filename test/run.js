@@ -271,6 +271,18 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         await assert.rejects(() => M.cbqLuu(th, { ten: 'Người khác', ma: 'abc123' }), /Chọn phòng/);
         const r = d.rows.find((y) => y.ma === 'hanhht04'); await M.cbqXoa(p20, r.id); assert.strictEqual((await M.cbqDs(p20)).rows.some((y) => y.ma === 'hanhht04'), false); }
       await assert.rejects(() => M.dmCbcqLuu(p20, [], 'A'), /Thiếu mã dự án/);
+      { // gán rồi hủy phân công bằng từng tài khoản Người nhập (kể cả Phòng Nghiệp vụ 2)
+        const sv = M.api.goi, bd = [['901', 'DA 1', '', '', 'Phòng giao dịch số 20', '', ''], ['902', 'DA 2', '', '', 'Phòng giao dịch số 20', '', ''], ['903', 'DA 3', '', '', 'Phòng Nghiệp vụ 2', '', ''], ['904', 'DA 4', '', '', '', '', '']];
+        M.api.goi = async (fn) => (fn === 'cv_dm_ban_do' ? bd : sv(fn)); M._reset && M._reset();
+        const luu = (k, v) => L._.db().q('INSERT INTO kv (k,v) VALUES ($1,$2) ON CONFLICT (k) DO UPDATE SET v=excluded.v', [k, JSON.stringify(v)]);
+        const gm = async () => (JSON.parse((await L._.db().q('SELECT v FROM kv WHERE k=$1', ['dm:cbcq']))[0].v).m);
+        await luu('dm:cbql', { ds: [{ id: 'c1', ten: 'Cán bộ A', ma: 'cba', kbnn: 'Phòng giao dịch số 20' }, { id: 'c2', ten: 'Cán bộ B', ma: 'cbb', kbnn: 'Phòng Nghiệp vụ 2' }] }); await luu('dm:cbcq', { m: {} });
+        for (const [tk, ma, das, mas] of [[lap20, 'cba', ['901', '902'], ['901', '902']], [await lg('NV2 - Người lập biểu'), 'cbb', ['903'], ['903']]]) {
+          await M.dmCbcqLuu(tk, das, ma); assert.strictEqual(Object.keys(await gm()).filter((k) => mas.includes(k)).length, mas.length);
+          await M.dmCbcqLuu(tk, das, ''); assert.strictEqual(Object.keys(await gm()).filter((k) => mas.includes(k)).length, 0, 'hủy phân công phải xóa được');
+        }
+        M.api.goi = sv;
+      }
       await assert.rejects(() => M.tbGhi(p20, 'x'), /Chỉ Phòng NV2/);
       await assert.rejects(() => M.lhGhi(p20, 'x'), /Chỉ Phòng NV2/);
       await assert.rejects(() => M.dmHtLuu(p20, '1', 'tam', 'ngắn'), /ít nhất 10 ký tự/); await assert.rejects(() => M.dmHtLuu(p20, '1', 'xoa', ''), /không hợp lệ/); await assert.rejects(() => M.dmHtXacNhan(p20, '1', true), /Chỉ Phòng NV2/); assert.deepStrictEqual((await M.dmHtDs(p20)).rows, []);
