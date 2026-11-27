@@ -622,7 +622,7 @@ async function xuatDBHC(kq, st) {
 
 
 // ---- CHẤM SỐ LIỆU BÁO CÁO CHI TIẾT SỐ DƯ THEO MỤC LỤC NGÂN SÁCH (kho dữ liệu mlns.json + danh mục hành chính)
-const CHS = { file: null, tinh: '08', bo0: false, bat: { baibo: true, dbhc: true, cap3: true }, phong: '*', loai: '*', tim: '', tra: '' };
+const CHS = { file: null, tinh: '08', bo0: true, bat: { baibo: true, dbhc: true, cap3: true }, phong: '*', loai: '*', tim: '', tra: '' };
 let MLNS = null;
 async function taiMLNS() { if (!MLNS) MLNS = await (await fetch(new URL('./mlns.json', import.meta.url))).json(); return MLNS; }
 async function docFileCham(files) {
