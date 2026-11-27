@@ -1799,6 +1799,7 @@ function htForm(d,x){var o=DM.opt,thbc=!!o.toanBo,L=x.loai,ma=d.ma_da;
       if(!lo){er.textContent='Chọn chủ đầu tư lớn.';return}
       if(dmLonOpts(o,lon).indexOf(lo)<0){er.textContent='Chủ đầu tư lớn "'+lo+'" chưa có trong danh sách – gõ để tìm rồi chọn đúng tên gợi ý.';return}
       if(tr&&dmTtOpts(o,lo,curTt).indexOf(tr)<0){er.textContent='Chủ đầu tư trực thuộc "'+tr+'" không thuộc chủ đầu tư lớn đã chọn – chọn trong gợi ý hoặc để trống.';return}
+      if(nTt&&!tr&&!ko&&!dmTtOpts(o,lo,curTt).length){er.textContent='Xã/phường này chưa có đơn vị trực thuộc trong Danh mục chủ đầu tư – vào mục Danh mục chủ đầu tư để đề xuất thêm, hoặc tích "không thuộc đơn vị trực thuộc nào".';return}
       if(nTt&&!tr&&!ko){er.textContent='Chọn đơn vị trực thuộc, hoặc tích "Dự án không thuộc đơn vị trực thuộc nào".';return}
       rec.cdt2=lo;rec.cdt=tr||lo;if(!thbc){if(curTt)delete rec.cdt;else rec.cdt=lo}}
     if(nDm){var sd=document.querySelector('input[name=hDm]:checked');if(!sd){er.textContent='Chọn "Tiếp tục theo dõi" hoặc "Tạm chưa theo dõi".';return}dmV=sd.value;dmLy=$('hTamLy').value.trim();if(dmV==='tam'&&dmLy.length<10){er.textContent='Ghi lý do tạm chưa theo dõi (ít nhất 10 ký tự).';return}}
