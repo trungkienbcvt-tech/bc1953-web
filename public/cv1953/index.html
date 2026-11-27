@@ -1211,24 +1211,24 @@ function drawTable(id){
     h+='</tr>'}
   h+='</thead><tbody>';
   var sums=function(rows){return b.cols.map(function(c,j){if(c.t!=='n'&&c.t!=='t'&&c.t!=='a')return null;var t=0;rows.forEach(function(r){var x=Number(r.v[j]);if(!isNaN(x))t+=x});return r2(t)})};
-  var cells=function(a,cls){return a.map(function(x,j){return'<td class="ps '+cls+' '+grp(b.cols[j])+'">'+(x===null?'':fmt(x))+'</td>'}).join('')};
+  var cells=function(a,cls,pk){return a.map(function(x,j){return'<td class="ps '+cls+' '+grp(b.cols[j])+'"'+(pk!==undefined&&x!==null?' data-pk="'+esc(pk)+'" data-pj="'+j+'"':'')+'>'+(x===null?'':fmt(x))+'</td>'}).join('')};
   var gp={},gs={};b.rows.forEach(function(r){if(r.par)(gp[r.par]=gp[r.par]||[]).push(r);(gs[r.sec]=gs[r.sec]||[]).push(r)});
-  h+='<tr class="tot0"><td class="stt"></td><td class="nm">TỔNG CỘNG</td>'+cells(sums(b.rows),'')+'</tr>';
+  h+='<tr class="tot0"><td class="stt"></td><td class="nm">TỔNG CỘNG</td>'+cells(sums(b.rows),'','T')+'</tr>';
   var secList=(b.secs&&b.secs.length)?b.secs.slice():[];b.rows.forEach(function(r){if(secList.indexOf(r.sec)<0)secList.push(r.sec)});
   var nTop=0,nSub=0;
   secList.forEach(function(sec){
     var rr=b.rows.filter(function(r){return r.sec===sec});nTop=0;nSub=0;
-    if(sec&&(rr.length||S.vt==='TH'))h+='<tr class="sec"><td class="stt"></td><td class="nm"><span class="sx">'+esc(sec)+'</span></td>'+cells(sums(rr),'')+'</tr>';
+    if(sec&&(rr.length||S.vt==='TH'))h+='<tr class="sec"><td class="stt"></td><td class="nm"><span class="sx">'+esc(sec)+'</span></td>'+cells(sums(rr),'','S'+sec)+'</tr>';
     if(!rr.length&&S.vt==='TH')h+='<tr class="emp"><td class="stt"></td><td class="nm" colspan="'+(NC-1)+'"><small>'+(S.data.tatCa?'Chưa có chủ đầu tư':'Phòng không có chủ đầu tư trong khối này')+'</small></td></tr>';
     var pPar=null;
     rr.forEach(function(r){
       var nhom=S.vt!=='TH'&&r.par&&gp[r.par].length>1,cls='',sttV=S.vt==='TH'?esc(r.a):'';
-      if(S.vt==='TH'){if(r.par&&r.par!==pPar){var pm=/^(\d+)\.\s*(.*)$/.exec(r.par);h+='<tr class="par"><td class="stt">'+(pm?pm[1]:'')+'</td><td class="nm">'+esc(pm?pm[2]:r.par)+'</td>'+cells(sums(gp[r.par]),'')+'</tr>';pPar=r.par}if(!r.par)pPar=null;cls=r.par?'sub':'ind'}
-      else{if(nhom&&r.par!==pPar){pPar=r.par;nTop++;nSub=0;h+='<tr class="par"><td class="stt">'+nTop+'</td><td class="nm">'+esc(r.par.replace(/^\d+\.\s*/,''))+'</td>'+cells(sums(gp[r.par]),'')+'</tr>'}
+      if(S.vt==='TH'){if(r.par&&r.par!==pPar){var pm=/^(\d+)\.\s*(.*)$/.exec(r.par);h+='<tr class="par"><td class="stt">'+(pm?pm[1]:'')+'</td><td class="nm">'+esc(pm?pm[2]:r.par)+'</td>'+cells(sums(gp[r.par]),'','P'+r.par)+'</tr>';pPar=r.par}if(!r.par)pPar=null;cls=r.par?'sub':'ind'}
+      else{if(nhom&&r.par!==pPar){pPar=r.par;nTop++;nSub=0;h+='<tr class="par"><td class="stt">'+nTop+'</td><td class="nm">'+esc(r.par.replace(/^\d+\.\s*/,''))+'</td>'+cells(sums(gp[r.par]),'','P'+r.par)+'</tr>'}
         if(!nhom)pPar=null;cls=nhom?'sub':'ind';sttV=nhom?nTop+'.'+(++nSub):(++nTop)}
       h+='<tr'+(cls?' class="'+cls+'"':'')+'><td class="stt">'+sttV+'</td><td class="nm">'+esc(r.b)+(S.data.tatCa?'<div class="pg">'+esc(r.p)+'</div>':'')+'</td>';
       b.cols.forEach(function(c,j){var v=r.v[j],key=b.id+'|'+r.r+'|'+c.c,g=grp(c),gb=(j===0||grp(b.cols[j-1])!==g)?' gb':'',cl=(g+gb).trim();
-        if(c.t==='t'||c.t==='a'){h+='<td class="'+(c.t==='a'?'a ':'t ')+(Number(v)<0?'neg ':'')+cl+'"'+(c.t==='a'?' title="Tự tính = lũy kế − lũy kế tháng trước"':'')+'>'+fmt(v)+'</td>';return}
+        if(c.t==='t'||c.t==='a'){h+='<td data-t="'+r.r+'|'+j+'" class="'+(c.t==='a'?'a ':'t ')+(Number(v)<0?'neg ':'')+cl+'"'+(c.t==='a'?' title="Tự tính = lũy kế − lũy kế tháng trước"':'')+'>'+fmt(v)+'</td>';return}
         var val=S.dirty[key]!==undefined?S.dirty[key].v:v,dis=ro?' disabled':'';
         if(c.t==='g'){var gv=S.dirty[key]!==undefined?S.dirty[key].v:v;h+=ro?'<td class="'+cl+' gn">'+esc(v)+'</td>':'<td class="'+cl+' gn"><input type="text" data-k="'+key+'" class="gc'+(S.dirty[key]?' d':'')+'" maxlength="500" value="'+esc(gv)+'" autocomplete="off" placeholder="Ghi chú..."></td>';return}
         if(c.t==='s')h+='<td class="'+cl+'"><select data-k="'+key+'"'+dis+(S.dirty[key]?' class="d"':'')+'><option value=""></option>'+S.data.ttOpts.map(function(o){return'<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>'}).join('')+'</select></td>';
@@ -1236,7 +1236,7 @@ function drawTable(id){
       h+='</tr>'});
   });
   h+='</tbody></table></div>';m.innerHTML=h;
-  [].forEach.call(m.querySelectorAll('[data-k]'),bind);dcLoad();dcRender();fixTop(m);
+  [].forEach.call(m.querySelectorAll('[data-k]'),bind);liveCalc();dcLoad();dcRender();fixTop(m);
 }
 /* Lãnh đạo phòng / Kế toán trưởng xem biểu 1953 dưới dạng bản in; ghi chú ở dưới cùng */
 function stickyHead(f){try{var d=f.contentDocument,th=d&&d.querySelector('table thead');if(!th)return;var y=0;[].forEach.call(th.querySelectorAll('tr'),function(tr){var h=tr.getBoundingClientRect().height;[].forEach.call(tr.children,function(c){var bg=d.defaultView.getComputedStyle(c).backgroundColor;c.style.position='sticky';c.style.top=y+'px';c.style.zIndex='3';if(!bg||bg==='rgba(0, 0, 0, 0)'||bg==='transparent')c.style.backgroundColor='#fff'});y+=h})}catch(e){}}
@@ -1264,6 +1264,18 @@ function drawTpBieu(id,b){
 function deeper(c,i){for(var x=i+1;x<c.lv.length;x++)if(c.lv[x])return true;return false}
 function sameUp(a,b,i){for(var x=0;x<i;x++)if(a.lv[x]!==b.lv[x])return false;return true}
 function fixTop(m){var y=0;[].forEach.call(m.querySelectorAll('thead tr'),function(tr){[].forEach.call(tr.children,function(th){th.style.top=y+'px'});y+=tr.offsetHeight});var t=m.querySelector('.wrap table');if(t)t.style.setProperty('--hh',y+'px')}
+/* Tính tức thì các cột tổng / trong tháng / dòng cộng khi người nhập gõ số (chưa cần bấm Lưu), theo đúng công thức máy chủ */
+var LV_OFF={b01:3,b02:3,b03a:7,b03b:15},LV_TOT={b01:[[4,[5,6]],[7,[8,9]]],b02:[[4,[5,6]],[7,[8,9]]],b03a:[[4,[5,6,7,8,9,10]],[11,[12,13,14,15,16,17]]],
+  b03b:[[5,[6,7]],[8,[9,10,11,12,13,14,15,16,17,18]],[4,[5,8]],[20,[21,22]],[23,[24,25,26,27,28,29,30,31,32,33]],[19,[20,23]]]};
+function liveCalc(){try{var b=S.data&&S.data.sheets.filter(function(x){return x.id===S.tab})[0];if(!b||!LV_TOT[b.id]||!$('main').querySelector('[data-t],[data-pk]'))return;
+  var ci={};b.cols.forEach(function(c,j){ci[c.c]=j});var off=LV_OFF[b.id],eff={};
+  b.rows.forEach(function(r){var v={};b.cols.forEach(function(c){var x=Number(r.v[ci[c.c]]);v[c.c]=isNaN(x)?0:x});
+    b.cols.forEach(function(c,j){if(c.t!=='n'||grp(c)!=='glk')return;var jt=ci[c.c+off];if(jt===undefined)return;var prev=v[c.c]-v[c.c+off],d=S.dirty[b.id+'|'+r.r+'|'+c.c];
+      if(d!==undefined){var L=d.v===''||d.v==='-'?prev:Number(d.v);if(isNaN(L))L=prev;v[c.c]=L;v[c.c+off]=L-prev}});
+    LV_TOT[b.id].forEach(function(t){var s2=0;t[1].forEach(function(k){s2+=v[k]||0});v[t[0]]=s2});eff[r.r]=v});
+  [].forEach.call($('main').querySelectorAll('[data-t]'),function(td){var a=td.getAttribute('data-t').split('|'),rr=Number(a[0]),j=Number(a[1]),e=eff[rr];if(!e)return;var x=e[b.cols[j].c];td.textContent=fmt(x);td.classList.toggle('neg',x<0)});
+  var grpRows=function(k){var t=k.charAt(0),n=k.slice(1);return b.rows.filter(function(r){return t==='T'?true:t==='S'?r.sec===n:r.par===n})};
+  [].forEach.call($('main').querySelectorAll('[data-pk]'),function(td){var rows=grpRows(td.getAttribute('data-pk')),j=Number(td.getAttribute('data-pj')),c=b.cols[j].c,t=0;rows.forEach(function(r){t+=(eff[r.r]||{})[c]||0});td.textContent=fmt(r2(t))})}catch(e){}}
 function cur(key){var p=key.split('|'),b=S.data.sheets.filter(function(x){return x.id===p[0]})[0];
   var j=b.cols.map(function(c){return c.c}).indexOf(Number(p[2]));var r=b.rows.filter(function(x){return x.r===Number(p[1])})[0];return{b:b,j:j,id:p[0],row:Number(p[1]),col:Number(p[2]),old:r.v[j]}}
 function bind(el){var key=el.getAttribute('data-k');
@@ -1278,7 +1290,7 @@ function bind(el){var key=el.getAttribute('data-k');
       if(v==='-')v=''}
     var same=t==='n'?((v===''&&(c.old===''||c.old==null))||(v!==''&&c.old!==''&&c.old!=null&&Number(v)===Number(c.old))):String(v)===String(c.old==null?'':c.old);
     if(same)delete S.dirty[key];else S.dirty[key]={id:c.id,r:c.row,c:c.col,v:v};
-    el.classList.toggle('d',!same);updBar();dcRender()})}
+    el.classList.toggle('d',!same);updBar();liveCalc();dcRender()})}
 function updBar(){var n=nDirty();$('saveBtn').disabled=!n;$('barMsg').textContent=n?('Có '+n+' ô thay đổi chưa lưu.'):'Chưa có thay đổi.'}
 function coSoLieu(b,r){var k=false;b.cols.forEach(function(c,j){if(c.t==='s'||c.t==='g')return;var key=b.id+'|'+r.r+'|'+c.c,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[j];if(Number(String(v==null?'':v).replace(',','.'))){k=true}});return k}
 function thieuTT(chiSua){var l=[],hang={};if(chiSua)Object.keys(S.dirty).forEach(function(k){var a=k.split('|');hang[a[0]+'|'+a[1]]=1});S.data.sheets.forEach(function(b){if(b.id!==S.tab)return;var js=-1;b.cols.forEach(function(c,j){if(c.t==='s')js=j});if(js<0)return;
