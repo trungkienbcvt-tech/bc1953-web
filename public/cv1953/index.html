@@ -1281,16 +1281,16 @@ function bind(el){var key=el.getAttribute('data-k');
     el.classList.toggle('d',!same);updBar();dcRender()})}
 function updBar(){var n=nDirty();$('saveBtn').disabled=!n;$('barMsg').textContent=n?('Có '+n+' ô thay đổi chưa lưu.'):'Chưa có thay đổi.'}
 function coSoLieu(b,r){var k=false;b.cols.forEach(function(c,j){if(c.t==='s'||c.t==='g')return;var key=b.id+'|'+r.r+'|'+c.c,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[j];if(Number(String(v==null?'':v).replace(',','.'))){k=true}});return k}
-function thieuTT(){var l=[];S.data.sheets.forEach(function(b){if(b.id!==S.tab)return;var js=-1;b.cols.forEach(function(c,j){if(c.t==='s')js=j});if(js<0)return;
-  b.rows.forEach(function(r){var key=b.id+'|'+r.r+'|'+b.cols[js].c,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[js];if(!v&&coSoLieu(b,r))l.push(r.b)})});return l}
+function thieuTT(chiSua){var l=[],hang={};if(chiSua)Object.keys(S.dirty).forEach(function(k){var a=k.split('|');hang[a[0]+'|'+a[1]]=1});S.data.sheets.forEach(function(b){if(b.id!==S.tab)return;var js=-1;b.cols.forEach(function(c,j){if(c.t==='s')js=j});if(js<0)return;
+  b.rows.forEach(function(r){if(chiSua&&!hang[b.id+'|'+r.r])return;var key=b.id+'|'+r.r+'|'+b.cols[js].c,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[js];if(!v&&coSoLieu(b,r))l.push(r.b)})});return l}
 function datKps(){var n=0;S.data.sheets.forEach(function(b){if(b.id!==S.tab)return;var js=-1;b.cols.forEach(function(c,j){if(c.t==='s')js=j});if(js<0)return;
   b.rows.forEach(function(r){var col=b.cols[js].c,key=b.id+'|'+r.r+'|'+col,v=S.dirty[key]!==undefined?S.dirty[key].v:r.v[js];if(!v&&!coSoLieu(b,r)){S.dirty[key]={id:b.id,r:r.r,c:col,v:'Không phát sinh'};n++}})});
   if(!n){toast('Không có dòng nào cần đặt (các dòng chưa chọn tình trạng đều đã có số liệu).',4500);return}
   show(S.tab);toast('Đã đặt "Không phát sinh" cho '+n+' dòng chưa có số liệu. Bấm Lưu để ghi lại.',6000)}
 $('saveBtn').onclick=function(){
   var bad=document.querySelector('.e');if(bad){toast('Có ô nhập sai (không phải số), vui lòng sửa.');bad.focus();return}
-  var th=S.vt==='PGD'?thieuTT():[];
-  if(th.length){toast('Chưa lưu: ở '+BN[S.tab]+' còn '+th.length+' chủ đầu tư có số liệu nhưng chưa chọn tình trạng gửi báo cáo ('+th.slice(0,3).join('; ')+(th.length>3?'…':'')+'). Hãy chọn tình trạng; nếu không phát sinh thì chọn "Không phát sinh".',10000);return}
+  var th=S.vt==='PGD'?thieuTT(true):[];   // chỉ kiểm tra các dòng chủ đầu tư đang nhập/sửa; việc kiểm tra cả bảng làm khi trình / gửi báo cáo
+  if(th.length){toast('Chưa lưu: '+th.length+' chủ đầu tư vừa nhập số liệu nhưng chưa chọn tình trạng gửi báo cáo ('+th.slice(0,3).join('; ')+(th.length>3?'…':'')+'). Hãy chọn tình trạng; nếu không phát sinh thì chọn "Không phát sinh".',10000);return}
   doSave()};
 function doSave(){
   var arr=Object.keys(S.dirty).map(function(k){return S.dirty[k]});$('saveBtn').disabled=true;$('saveBtn').textContent='Đang lưu...';
