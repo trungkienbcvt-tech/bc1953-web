@@ -70,7 +70,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await assert.rejects(() => L.luu(ad, [{ id: 'b01', r: 1, c: 5, v: '1' }], '2026-09'));
     await assert.rejects(() => M.adDs(th), /quản trị/);
     await assert.rejects(() => M.adDatMa(th, 'Phòng giao dịch 20', 'abc12345'), /quản trị/);
-    const ds = await M.adDs(ad); assert(ds.length > 5 && ds.every((a) => a.vt !== 'AD' && a.ma), 'admin xem được mật khẩu người dùng');
+    const ds = await M.adDs(ad); assert(ds.length > 5 && ds.every((a) => a.vt !== 'AD' && (a.macdinh ? a.ma : a.ma === '')), 'admin chỉ thấy mật khẩu mặc định, mật khẩu người dùng tự đổi thì ẩn');
     await assert.rejects(() => M.adDatMa(ad, 'Phòng giao dịch 20', 'ab'), /6 đến 12/);
     await assert.rejects(() => M.adDatMa(ad, 'Không có', 'abc12345'), /Không tìm thấy/);
     await assert.rejects(() => M.adDatMa(ad, 'Quản trị hệ thống', 'abc12345'), /Không tìm thấy/);
