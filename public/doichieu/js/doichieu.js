@@ -383,7 +383,8 @@ async function xuatDoiChieu(M, opt) {
 //   Tìm đơn vị sử dụng ngân sách (cột "Mã đơn vị sử dụng ngân sách") hạch toán trên từ 2 mã địa bàn trở lên (cột "Mã địa bàn"),
 //   ưu tiên các tài khoản 1523, 1513, 1713, 8211, 8123, 8113, 8126; đối chiếu mã địa bàn với danh mục 34 tỉnh và 3.321 xã (dmhc.json).
 const TK_UU_TIEN = ['1523', '1513', '1713', '8211', '8123', '8113', '8126'];
-const DBS = { file: null, tk: TK_UU_TIEN.join(', '), phamVi: 'ut', nguong: 2, kb: '*', tim: '', loai: 'nhieu', mo: new Set() };
+const DBS = { file: null, tk: TK_UU_TIEN.join(', '), phamVi: 'ut', nguong: 2, kb: '*', tim: '', loai: 'nhieu', mo: new Set(), bo0: true };
+const la0 = r => Math.abs(r.du || 0) < 0.5;   // dòng dư cuối kỳ bằng 0
 let DMHC = null;
 // Danh mục lưu trên máy chủ (bảng th_dmhc, ai cũng đọc được); không đọc được máy chủ thì dùng bản kèm theo trang (dmhc.json)
 async function taiDMHC(moi = false) {
@@ -469,6 +470,7 @@ function phanTichDB(f, st) {
   for (const r of f.rows) {
     if (dsTK && !dsTK.has(r.tk)) continue;
     if (st.kb !== '*' && r.kb !== st.kb) continue;
+    if (st.bo0 && la0(r)) continue;
     if (!/^0*$/.test(r.dv) && r.dv) {
       const x = dv.get(r.dv) || { ma: r.dv, ten: r.ten, kb: new Set(), db: new Map(), soDong: 0 };
       x.soDong++; x.kb.add(r.kb);
@@ -507,7 +509,8 @@ async function viewDBHC(v) {
       <input id="dbtk" class="dc-sel" style="min-width:300px" value="${esc(st.tk)}" ${st.phamVi === 'ut' ? '' : 'disabled'} title="Danh sách mã tài khoản, cách nhau bằng dấu phẩy">
       <label class="chk"><input type="radio" name="dbpv" value="all" ${st.phamVi === 'all' ? 'checked' : ''}> Tất cả tài khoản</label>
       <span class="muted small" style="margin-left:12px">Đơn vị có từ</span>
-      <select id="dbng" class="dc-sel">${[2, 3, 4].map(n => `<option value="${n}" ${st.nguong === n ? 'selected' : ''}>${n}</option>`).join('')}</select><span class="muted small">mã địa bàn trở lên</span>`)}
+      <select id="dbng" class="dc-sel">${[2, 3, 4].map(n => `<option value="${n}" ${st.nguong === n ? 'selected' : ''}>${n}</option>`).join('')}</select><span class="muted small">mã địa bàn trở lên</span>
+      <label class="chk" style="margin-left:12px" title="Không tính các dòng có Dư cuối kỳ bằng 0 khi tìm đơn vị nhiều mã địa bàn, khi xem dòng và khi xuất Excel"><input type="checkbox" id="db0" ${st.bo0 ? 'checked' : ''}> Bỏ dòng có dư cuối kỳ bằng 0${f ? ` <span class="muted small">(${fmtDong(f.rows.filter(la0).length)} dòng)</span>` : ''}</label>`)}
   </div><div id="dbkq"></div>`;
   v.querySelector('#dbf').addEventListener('change', async e => {
     const fl = e.target.files[0]; e.target.value = ''; if (!fl) return;
@@ -530,6 +533,7 @@ async function viewDBHC(v) {
   v.querySelectorAll('[name=dbpv]').forEach(r => r.onchange = () => { st.phamVi = r.value; viewDBHC(v); });
   v.querySelector('#dbtk').onchange = e => { st.tk = e.target.value; viewDBHC(v); };
   v.querySelector('#dbng').onchange = e => { st.nguong = Number(e.target.value); viewDBHC(v); };
+  v.querySelector('#db0').onchange = e => { st.bo0 = e.target.checked; st.mo = new Set(); viewDBHC(v); };
   const box = v.querySelector('#dbkq');
   if (!f) { box.innerHTML = '<div class="card"><p class="muted" style="margin:0">Bấm <b>📂 Tải file báo cáo chi tiết số dư…</b> ở trên để bắt đầu.</p></div>'; return; }
   await taiDMHC();
@@ -543,7 +547,7 @@ function veDBHC(box, st) {
   let ds = kq.nhieu.filter(x => st.kb === '*' || x.kb.has(st.kb));
   const q = boDau(st.tim);
   if (q) ds = ds.filter(x => boDau(x.ma + ' ' + x.ten + ' ' + x.dbs.map(d => d.db + ' ' + d.ten).join(' ')).includes(q));
-  const pv = st.phamVi === 'ut' ? `tài khoản ${esc(st.tk)}` : 'tất cả tài khoản';
+  const pv = (st.phamVi === 'ut' ? `tài khoản ${esc(st.tk)}` : 'tất cả tài khoản') + (st.bo0 ? ', bỏ dòng dư cuối kỳ bằng 0' : '');
   const chip = d => `<span class="db-chip ${!d.hopLe ? 'sai' : d.chinh ? 'chinh' : 'khac'}" title="${esc(d.db)} – ${esc(d.ten)}${d.tenTinh && d.cap === 'xã' ? ', ' + esc(d.tenTinh) : ''} · ${d.soDong} dòng · TK ${esc([...d.tk].join(', '))} · dư cuối kỳ ${fmtDong(d.du)} đ">
     <b>${esc(d.db)}</b> ${esc(d.ten)}${d.cap === 'xã' && d.tinh !== '08' ? ` <i>(${esc(d.tenTinh)})</i>` : ''}${d.khopTen ? ' ★' : ''} · ${d.soDong} dòng</span>`;
   const HIEN = 1000;
@@ -580,7 +584,7 @@ function veDBHC(box, st) {
   let hen; box.querySelector('#dbtim').oninput = e => { st.tim = e.target.value; clearTimeout(hen); hen = setTimeout(() => { ve(); const i = box.querySelector('#dbtim'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 300); };
   box.querySelector('#dbxuat')?.addEventListener('click', () => xuatDBHC(kq, st).catch(fail));
 }
-const dongCuaDV = (f, x, st) => { const dsTK = st.phamVi === 'ut' ? new Set(st.tk.split(/[^\d]+/).filter(Boolean)) : null; return f.rows.filter(r => r.dv === x.ma && (!dsTK || dsTK.has(r.tk))); };
+const dongCuaDV = (f, x, st) => { const dsTK = st.phamVi === 'ut' ? new Set(st.tk.split(/[^\d]+/).filter(Boolean)) : null; return f.rows.filter(r => r.dv === x.ma && (!dsTK || dsTK.has(r.tk)) && !(st.bo0 && la0(r))); };
 function bangDongDB(f, x, st) {
   let ds = dongCuaDV(f, x, st);
   const it = ds.length > 200; if (it) ds = ds.filter(r => r.db !== x.chinh.db);
@@ -592,7 +596,7 @@ async function xuatDBHC(kq, st) {
   const ExcelJS = await loadExcelJS(), f = st.file, wb = new ExcelJS.Workbook(), NF = '#,##0;[Red]-#,##0;"-"';
   const w0 = wb.addWorksheet('Tong hop');
   w0.addRow(['ĐỐI CHIẾU MÃ ĐỊA BÀN HÀNH CHÍNH – ĐƠN VỊ SỬ DỤNG NGÂN SÁCH HẠCH TOÁN TRÊN NHIỀU MÃ ĐỊA BÀN']).font = { bold: true, size: 13 };
-  w0.addRow([`File: ${f.ten_file}${f.ky ? ` (${f.ky.tu} – ${f.ky.den})` : ''}. Phạm vi: ${st.phamVi === 'ut' ? 'tài khoản ' + st.tk : 'tất cả tài khoản'}; từ ${st.nguong} mã địa bàn trở lên.`]);
+  w0.addRow([`File: ${f.ten_file}${f.ky ? ` (${f.ky.tu} – ${f.ky.den})` : ''}. Phạm vi: ${st.phamVi === 'ut' ? 'tài khoản ' + st.tk : 'tất cả tài khoản'}; từ ${st.nguong} mã địa bàn trở lên${st.bo0 ? '; bỏ dòng dư cuối kỳ bằng 0' : ''}.`]);
   w0.addRow([`Số đơn vị nhiều mã địa bàn: ${kq.nhieu.length} / ${kq.tongDV}. Mã địa bàn không có trong danh mục: ${kq.sai.length}.`]);
   const w1 = wb.addWorksheet('Don vi nhieu dia ban', { views: [{ state: 'frozen', ySplit: 1 }] });
   w1.addRow(['STT', 'Mã ĐVSDNS', 'Tên đơn vị sử dụng ngân sách', 'Mã KBNN', 'Số mã địa bàn', 'Mã địa bàn', 'Tên địa bàn', 'Tỉnh', 'Địa bàn chính', 'Khớp tên đơn vị', 'Có trong danh mục', 'Số dòng', 'Tài khoản', 'Dư cuối kỳ (đồng)']).font = { bold: true };
