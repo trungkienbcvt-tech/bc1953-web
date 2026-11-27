@@ -1411,7 +1411,7 @@ function dmHtDraw(){var o=DM.opt,box=$('dmBody');
 // Ô chọn cán bộ chuyên quản của trang Tra cứu (theo phòng đang lọc; có mục "Chưa phân công")
 function dmCbSel(){var sel=$('dmCb');if(!sel)return;var fill=function(){var kb=DM.loc.kbnn||(DM.opt&&!DM.opt.toanBo?DM.opt.phamVi:''),ds=(DM.cbq||[]).filter(function(c){return !kb||c.kbnn===kb});
     sel.innerHTML='<option value="">Cán bộ chuyên quản: tất cả</option><option value="__none">Chưa phân công cán bộ</option>'+ds.map(function(c){return '<option value="'+esc(c.ma)+'">'+esc(c.ten)+' ('+esc(c.ma)+')'+(kb?'':' – '+esc((c.kbnn||'').replace('Phòng giao dịch số ','PGD ')))+' · '+(c.so||0)+' DA</option>'}).join('');sel.value=DM.loc.cb||''};
-  if(DM.cbq){fill();return}run('cbqDs',S.token).then(function(r){DM.cbq=r.rows;fill()}).catch(function(){})}
+  if(DM.cbq)fill();run('cbqDs',S.token).then(function(r){DM.cbq=r.rows;fill()}).catch(function(){})}
 // ---- Tra cứu danh mục ----
 function dmTcDraw(){var o=DM.opt,box=$('dmBody');
   box.innerHTML='<div class="dmf"><input type="text" class="q" id="dmQ" placeholder="🔍 Tìm mã hoặc tên dự án..." value="'+esc(DM.loc.tim)+'">'+
