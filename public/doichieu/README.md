@@ -30,3 +30,16 @@ Thư viện tải từ CDN khi chạy: SheetJS (đọc Excel), ExcelJS (xuất E
 
 - Chạy thử trên máy: mở bằng một máy chủ tĩnh bất kỳ, ví dụ `npx serve .` hoặc `python -m http.server`, rồi vào `http://localhost:…/` (không mở trực tiếp file:// vì trình duyệt chặn ES module).
 - Triển khai: chép cả thư mục lên bất kỳ dịch vụ web tĩnh nào (Vercel, Netlify, GitHub Pages…). Với Vercel: tạo project mới, chọn thư mục này làm Root Directory, Framework “Other”, không cần lệnh build.
+
+## Chấm số liệu theo Mục lục ngân sách (`#cham`)
+
+Nạp file Báo cáo chi tiết số dư `P_BAOCAOSODU_12_COA` (một hoặc nhiều file, đọc mọi sheet), chấm từng dòng:
+
+- **Mã đã bãi bỏ** (Chương, Khoản – mã ngành kinh tế, Tiểu mục – mã NDKT), chỉ tính khi số liệu đến sau ngày hiệu lực.
+- **Mã ĐBHC theo cấp ngân sách**: cấp 2 (TK 15xx, 81xx) phải là mã tỉnh; cấp 4 (TK 15, 17, 18, 81, 82) phải là xã trong tỉnh và đúng xã ghi trong tên đơn vị; TK 82xx không để 00000.
+- **Mã cấp ngân sách 3** (cấp huyện) không còn sử dụng.
+
+Xuất Excel đúng mẫu: sheet Tổng hợp + mỗi sheet gốc giữ nguyên tiêu đề, cột, thêm cột "Lỗi", "Ghi chú".
+
+Kho dữ liệu `js/mlns.json` (chương, loại – khoản, mục – tiểu mục, CTMT, mã bãi bỏ) dựng từ file MLNS Excel bằng
+`python3 tools/build_mlns.py <MLNS.xlsx> public/doichieu/js/mlns.json <tt123.txt>`; danh sách mã bãi bỏ khai báo trong script.

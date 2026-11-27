@@ -233,3 +233,9 @@ tr.click{cursor:pointer} tr.click:hover td{background:#f2f6fb} tr.chon td{backgr
 .tbl.db-bang > tbody > tr > td{vertical-align:top}
 .db-hai{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 @media (max-width:1000px){ .db-hai{grid-template-columns:1fr} }
+/* Chấm số liệu theo MLNS */
+.tbl td.click-o{cursor:pointer} .tbl td.click-o:hover{background:#f2f6fb}
+.tbl.ch-bang td.loi-c{white-space:nowrap;color:#a61b1b}
+.tbl.ch-bang td.ten{max-width:340px;white-space:normal;min-width:240px}
+.tbl.ch-bang td.nxc{min-width:300px}
+.tbl.ch-bang td.lechct{background:#fde2e2!important;font-weight:700;color:#a61b1b}

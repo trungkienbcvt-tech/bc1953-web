@@ -3,9 +3,10 @@
 import * as E from './engine.js';
 import * as B5 from './b501.js';
 import * as DTE from './dt.js';
+import * as CH from './cham.js';
 
-const TABS = { b5: 'B5-01 ↔ Thông tư 37', b585: 'B5-01 ↔ Thông tư 85', tt3785: 'Thông tư 37 ↔ Thông tư 85', dtkb: 'Thông tư 85 ↔ ĐTKB-GD', dbhc: 'Mã địa bàn hành chính' };
-const ICON_TAB = { b5: '🔍', b585: '🔎', tt3785: '🔁', dtkb: '🧾', dbhc: '📍' };
+const TABS = { b5: 'B5-01 ↔ Thông tư 37', b585: 'B5-01 ↔ Thông tư 85', tt3785: 'Thông tư 37 ↔ Thông tư 85', dtkb: 'Thông tư 85 ↔ ĐTKB-GD', dbhc: 'Mã địa bàn hành chính', cham: 'Chấm số liệu theo MLNS' };
+const ICON_TAB = { b5: '🔍', b585: '🔎', tt3785: '🔁', dtkb: '🧾', dbhc: '📍', cham: '✅' };
 const S = { tab: TABS[location.hash.slice(1)] ? location.hash.slice(1) : 'b5', cdt: [] };
 const tabsCua = () => TABS;
 const coXuat = () => true;
@@ -82,7 +83,7 @@ function khung() {
 function show() {
   document.querySelectorAll('.tab[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === S.tab));
   const v = view();
-  try { ({ b5: viewB501, b585: viewB501, tt3785: viewTT3785, dtkb: viewDTKB, dbhc: viewDBHC })[S.tab](v); } catch (e) { fail(e); }
+  try { ({ b5: viewB501, b585: viewB501, tt3785: viewTT3785, dtkb: viewDTKB, dbhc: viewDBHC, cham: viewCham })[S.tab](v); } catch (e) { fail(e); }
 }
 window.addEventListener('hashchange', () => { const t = location.hash.slice(1); if (TABS[t] && t !== S.tab) { S.tab = t; show(); } });
 
@@ -617,6 +618,161 @@ async function xuatDBHC(kq, st) {
   [12, 30, 10, 10, 40, 30].forEach((w, i) => w3.getColumn(i + 1).width = w);
   const buf = await wb.xlsx.writeBuffer();
   await luuFile(buf, `Doi chieu ma dia ban ${(f.ky?.den || ddmmyyyy(new Date())).replace(/\//g, '.')}.xlsx`);
+}
+
+
+// ---- CHẤM SỐ LIỆU BÁO CÁO CHI TIẾT SỐ DƯ THEO MỤC LỤC NGÂN SÁCH (kho dữ liệu mlns.json + danh mục hành chính)
+const CHS = { file: null, tinh: '08', bo0: false, bat: { baibo: true, dbhc: true, cap3: true }, phong: '*', loai: '*', tim: '', tra: '' };
+let MLNS = null;
+async function taiMLNS() { if (!MLNS) MLNS = await (await fetch(new URL('./mlns.json', import.meta.url))).json(); return MLNS; }
+async function docFileCham(files) {
+  const XLSX = await loadXLSX(), sheets = [], ten = [];
+  for (const fl of files) {
+    const wb = XLSX.read(await fl.arrayBuffer(), { type: 'array' });
+    let gap = 0;
+    for (const n of wb.SheetNames) {
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: null, raw: true, blankrows: false });
+      const sh = CH.docSheetSoDu(rows, n);
+      if (sh && sh.rows.length) { sh.tenFile = fl.name; sheets.push(sh); gap++; }
+    }
+    if (gap) ten.push(fl.name); else toast(`Không thấy báo cáo chi tiết số dư trong file ${fl.name} (cần dòng tiêu đề có "Mã tài khoản", "Mã địa bàn").`, 'err');
+  }
+  if (!sheets.length) throw new Error('Không đọc được sheet báo cáo chi tiết số dư nào.');
+  const ky = sheets.find(x => x.ky)?.ky || null;
+  return { sheets, ten, ky, soDong: sheets.reduce((s, x) => s + x.rows.length, 0) };
+}
+function traMa(M, q) {
+  q = String(q || '').trim(); if (!q) return [];
+  const bd = CH.boDau(q), kq = [], them = (phan, ma, ten, phu = '') => kq.push({ phan, ma, ten, phu, bo: M.baibo.find(b => b.ma === ma && b.phan === { 'Chương': 'chuong', 'Khoản': 'khoan', 'Tiểu mục': 'ndkt' }[phan]) });
+  const khop = (ma, ten) => ma === q || (q.length >= 3 && (ma.startsWith(q) || CH.boDau(ten).includes(bd)));
+  for (const [ma, ten] of Object.entries(M.chuong)) if (khop(ma, ten)) them('Chương', ma, ten);
+  for (const [ma, [ten, l]] of Object.entries(M.khoan)) if (khop(ma, ten)) them('Khoản', ma, ten, `Loại ${l} – ${M.loai[l] || ''}`);
+  for (const [ma, ten] of Object.entries(M.muc)) if (khop(ma, ten)) them('Mục', ma, ten);
+  for (const [ma, [ten, mu]] of Object.entries(M.ndkt)) if (khop(ma, ten)) them('Tiểu mục', ma, ten, `Mục ${mu} – ${M.muc[mu] || ''}`);
+  for (const [ma, ten] of Object.entries(M.ctmt || {})) if (khop(ma, ten)) them('CTMT', ma, ten);
+  return kq.slice(0, 60);
+}
+async function viewCham(v) {
+  const st = CHS, f = st.file;
+  if (!MLNS || !DMHC) { v.innerHTML = '<div class="loading">Đang tải kho dữ liệu mục lục ngân sách…</div>'; try { await Promise.all([taiMLNS(), taiDMHC()]); } catch (e) { fail(e); } }
+  const M = MLNS;
+  v.innerHTML = `<div class="card dc-gon no-print"><h2>Chấm số liệu báo cáo chi tiết số dư theo Mục lục ngân sách</h2>
+    ${dongDC('Nguồn số liệu', `${f ? `<span class="dc-chip ok" title="${esc(f.sheets.map(x => `${x.tenFile} · sheet ${x.ten}: ${x.rows.length} dòng`).join('\n'))}">✓ <b>Báo cáo chi tiết số dư</b> <span>${esc(f.ten.join(', '))} · ${f.sheets.length} sheet${f.ky ? ` · ${esc(f.ky.tu)} – ${esc(f.ky.den)}` : ''} · ${fmtDong(f.soDong)} dòng</span></span>` : '<span class="dc-chip no">○ <b>Báo cáo chi tiết số dư</b> <span>chưa tải file</span></span>'}
+      <label class="btn small primary">📂 Tải file P_BAOCAOSODU_12_COA…<input type="file" id="chf" accept=".xls,.xlsx" multiple hidden></label>
+      <span class="muted small">Chọn một hoặc nhiều file; đọc mọi sheet (mỗi phòng giao dịch một sheet). File chỉ xử lý trên máy bạn.</span>`)}
+    ${dongDC('Kho dữ liệu', `<span class="dc-chip ok" title="${esc(M.nguon.van_ban)}">✓ <b>Mục lục NSNN</b> <span>${fmtDong(Object.keys(M.chuong).length)} chương · ${fmtDong(Object.keys(M.khoan).length)} khoản · ${fmtDong(Object.keys(M.ndkt).length)} tiểu mục · ${fmtDong(Object.keys(M.ctmt || {}).length)} mã CTMT · <b>${M.baibo.length}</b> mã bãi bỏ</span></span>
+      <span class="dc-chip ${DMHC?.xa ? 'ok' : 'no'}">${DMHC?.xa ? '✓' : '○'} <b>Danh mục hành chính</b> <span>${fmtDong(Object.keys(DMHC?.xa || {}).length)} xã, phường, đặc khu</span></span>
+      <span class="muted small">${esc(M.nguon.van_ban)}</span>`)}
+    ${dongDC('Quy tắc', `${Object.entries(CH.NHOM_QT).map(([k, t]) => `<label class="chk"><input type="checkbox" data-qt="${k}" ${st.bat[k] ? 'checked' : ''}> ${esc(t)}</label>`).join('')}
+      <span class="muted small" style="margin-left:8px">Mã tỉnh</span><input id="chtinh" class="dc-sel" style="width:56px" value="${esc(st.tinh)}">
+      <label class="chk" style="margin-left:8px"><input type="checkbox" id="ch0" ${st.bo0 ? 'checked' : ''}> Bỏ dòng có dư cuối kỳ bằng 0</label>`)}
+  </div><div id="chkq"></div>
+  <div class="card no-print"><div class="dc-kq-dau"><h3>Kho dữ liệu mục lục ngân sách</h3></div>
+    <div class="bar"><label style="min-width:340px">Tra mã hoặc tên (chương, khoản, mục, tiểu mục, CTMT)<input id="chtra" value="${esc(st.tra)}" placeholder="VD: 121, 7054, chuyển đổi số…"></label></div>
+    <div id="chtrakq"></div>
+    <h3 style="margin-top:14px">Mã đã bãi bỏ đang áp dụng khi chấm</h3>
+    <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Phân đoạn</th><th>Mã</th><th>Tên</th><th>Văn bản</th><th>Hiệu lực từ</th><th>Hạch toán thay bằng</th></tr></thead>
+    <tbody>${M.baibo.map(b => `<tr><td>${{ chuong: 'Chương', khoan: 'Khoản (mã ngành kinh tế)', ndkt: 'Tiểu mục (mã NDKT)' }[b.phan]}</td><td class="c"><b>${esc(b.ma)}</b></td><td>${esc(b.ten)}</td><td class="small">${esc(b.vb)} – ${esc(b.dieu || '')}</td><td class="c">${esc(CH.ngayVN(b.tu))}</td><td class="small">${esc(b.thay || '')}</td></tr>`).join('')}</tbody></table></div></div>`;
+  v.querySelector('#chf').addEventListener('change', async e => {
+    const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
+    const box = v.querySelector('#chkq');
+    box.innerHTML = '<div class="card"><div class="loading">Đang đọc file (file lớn có thể mất 10–30 giây)…</div></div>';
+    try { st.file = await docFileCham(files); st.phong = '*'; st.loai = '*'; toast(`Đã đọc ${fmtDong(st.file.soDong)} dòng số dư (${st.file.sheets.length} sheet).`, 'ok'); } catch (err) { fail(err); }
+    viewCham(v);
+  });
+  v.querySelectorAll('[data-qt]').forEach(c => c.onchange = () => { st.bat[c.dataset.qt] = c.checked; viewCham(v); });
+  v.querySelector('#chtinh').onchange = e => { st.tinh = e.target.value.trim().padStart(2, '0'); viewCham(v); };
+  v.querySelector('#ch0').onchange = e => { st.bo0 = e.target.checked; viewCham(v); };
+  const veTra = () => {
+    const kq = traMa(M, st.tra), b = v.querySelector('#chtrakq');
+    b.innerHTML = !st.tra.trim() ? '' : kq.length ? `<div class="tbl-wrap" style="max-height:340px"><table class="tbl ss"><thead><tr><th>Phân đoạn</th><th>Mã</th><th>Tên</th><th>Thuộc</th><th>Tình trạng</th></tr></thead>
+      <tbody>${kq.map(x => `<tr><td>${esc(x.phan)}</td><td class="c"><b>${esc(x.ma)}</b></td><td>${esc(x.ten)}</td><td class="small">${esc(x.phu)}</td><td>${x.bo ? `<span class="chip am">Bãi bỏ từ ${esc(CH.ngayVN(x.bo.tu))}</span>` : '<span class="chip duong">Đang dùng</span>'}</td></tr>`).join('')}</tbody></table></div>` : '<p class="muted small">Không tìm thấy mã phù hợp.</p>';
+  };
+  let hen; v.querySelector('#chtra').oninput = e => { st.tra = e.target.value; clearTimeout(hen); hen = setTimeout(veTra, 250); };
+  veTra();
+  const box = v.querySelector('#chkq');
+  if (!f) { box.innerHTML = '<div class="card"><p class="muted" style="margin:0">Bấm <b>📂 Tải file P_BAOCAOSODU_12_COA…</b> ở trên để bắt đầu chấm.</p></div>'; return; }
+  veCham(box, st);
+}
+function veCham(box, st) {
+  const f = st.file, ctx = CH.taoNguCanh(MLNS, DMHC, { tinh: st.tinh, den: f.ky?.den });
+  const kq = CH.chamTatCa(f, ctx, { bat: st.bat, bo0: st.bo0 });
+  const loais = kq.loai.map(x => x[0]);
+  const phongs = [...new Set(f.sheets.flatMap(s => s.rows.map(r => r.kb)))].filter(Boolean).sort();
+  const pm = new Map(kq.phong.map(p => [p.kb, p]));
+  let ds = kq.ds.filter(r => (st.phong === '*' || r.kb === st.phong) && (st.loai === '*' || r.loi.some(l => l.loai === st.loai)));
+  const q = CH.boDau(st.tim);
+  if (q) ds = ds.filter(r => CH.boDau([r.tk, r.nd, r.dv, r.ten, r.db, r.ch, r.nkt].join(' ')).includes(q));
+  const coTay = f.sheets.some(s => s.coTay);
+  const HIEN = 1500;
+  const o = (kb, l, n) => n ? `<td class="c click-o" data-kb="${esc(kb)}" data-l="${esc(l)}"><span class="chip am">${fmtDong(n)}</span></td>` : '<td class="c">-</td>';
+  box.innerHTML = `<div class="card">
+    <div class="dc-kq-dau"><h3>Tổng hợp kết quả chấm</h3><div class="actions" style="margin:0">
+      <label class="chk small"><input type="checkbox" id="chchiloi"> Chỉ xuất dòng lỗi</label>
+      <button class="btn primary" id="chxuat">⬇ Xuất Excel theo mẫu (cột Lỗi)</button></div></div>
+    <div class="${kq.ds.length ? 'warnbox' : 'okbox'}">${kq.ds.length ? `Có <b>${fmtDong(kq.ds.length)}</b> / ${fmtDong(f.soDong)} dòng có lỗi${f.ky ? ` (số liệu đến ${esc(f.ky.den)})` : ''}.` : '✓ Không phát hiện lỗi theo các quy tắc đang bật.'}
+      ${st.bo0 ? ' Đã bỏ các dòng dư cuối kỳ bằng 0.' : ''}</div>
+    <div class="tbl-wrap"><table class="tbl ss"><thead><tr><th>Mã KBNN – phòng giao dịch</th><th>Số dòng lỗi</th>${loais.map(l => `<th>${esc(l)}</th>`).join('')}</tr></thead>
+    <tbody>${phongs.map(k => { const p = pm.get(k); return `<tr class="${st.phong === k ? 'chon' : ''}"><td class="click-o" data-kb="${esc(k)}" data-l="*">${esc(k)} – ${esc(tenPhongKB(k))}</td>${o(k, '*', p?.soDong)}${loais.map(l => o(k, l, p?.loai[l])).join('')}</tr>`; }).join('')}
+      <tr class="l0"><td>Tổng cộng</td>${o('*', '*', kq.ds.length)}${kq.loai.map(([l, n]) => o('*', l, n)).join('')}</tr></tbody></table></div>
+    ${coTay ? `<p class="small muted">File có sẵn cột “Lỗi” chấm tay: ${fmtDong(f.sheets.reduce((s, x) => s + x.rows.filter(r => r.tay).length, 0))} dòng; máy và tay cùng chấm lỗi ở ${fmtDong(kq.ds.filter(r => r.tay).length)} dòng. Khi xuất, cột Lỗi được chấm lại theo máy.</p>` : ''}
+  </div>
+  <div class="card" id="chct"><div class="dc-kq-dau"><h3>Chi tiết dòng lỗi</h3></div>
+    <div class="bar">
+      <label>Phòng giao dịch<select id="chph"><option value="*">Tất cả</option>${phongs.map(k => `<option value="${esc(k)}" ${st.phong === k ? 'selected' : ''}>${esc(k)} – ${esc(tenPhongKB(k))} (${pm.get(k)?.soDong || 0})</option>`).join('')}</select></label>
+      <label>Loại lỗi<select id="chlo"><option value="*">Tất cả (${kq.ds.length})</option>${kq.loai.map(([l, n]) => `<option value="${esc(l)}" ${st.loai === l ? 'selected' : ''}>${esc(l)} (${n})</option>`).join('')}</select></label>
+      <label style="min-width:260px">Tìm TK, NDKT, mã / tên đơn vị, ĐBHC…<input id="chtim" value="${esc(st.tim)}"></label>
+    </div>
+    <div class="tbl-wrap tall"><table class="tbl ss ch-bang"><thead><tr><th>STT</th><th>Mã KBNN</th><th>Mã TK</th><th>Mã NDKT</th><th>Cấp NS</th><th class="ten">Đơn vị sử dụng ngân sách</th><th>Mã ĐBHC</th><th>Mã chương</th><th>Mã NKT</th><th>Mã nguồn</th><th>Dư cuối kỳ (đồng)</th><th>Lỗi</th><th class="nxc">Ghi chú</th></tr></thead>
+    <tbody>${ds.slice(0, HIEN).map((r, i) => { const t = n => r.loi.some(l => l.loai === n) ? ' lechct' : ''; return `<tr><td class="c">${i + 1}</td><td class="c">${esc(r.kb)}</td><td class="c">${esc(r.tk)}</td><td class="c${t(CH.LOI.NDKT)}">${esc(r.nd)}</td><td class="c${t(CH.LOI.CAP3)}">${esc(r.cap)}</td>
+      <td class="ten" title="${esc(r.dv + '_' + r.ten)}"><b>${esc(r.dv)}</b> ${esc(r.ten)}</td><td class="c${t(CH.LOI.DBHC)}"><b>${esc(r.db)}</b></td><td class="c${t(CH.LOI.CHUONG)}">${esc(r.ch)}</td><td class="c${t(CH.LOI.NKT)}">${esc(r.nkt)}</td><td class="c">${esc(r.ng)}</td>
+      <td class="num">${fmtDong(r.du)}</td><td class="small loi-c"><b>${[...new Set(r.loi.map(l => l.loai))].map(esc).join('<br>')}</b></td><td class="small nxc">${esc(r.loi.map(l => l.ghi).join('; '))}</td></tr>`; }).join('') || '<tr><td colspan="13" class="empty">Không có dòng lỗi phù hợp.</td></tr>'}</tbody></table></div>
+    <p class="small muted">${ds.length > HIEN ? `Đang hiện ${fmtDong(HIEN)}/${fmtDong(ds.length)} dòng – xuất Excel để xem đủ.` : `${fmtDong(ds.length)} dòng.`} Ô tô màu là phân đoạn bị chấm lỗi.</p></div>`;
+  const ve = () => veCham(box, st);
+  box.querySelectorAll('.click-o').forEach(td => td.onclick = () => { st.phong = td.dataset.kb; st.loai = td.dataset.l; ve(); box.querySelector('#chct').scrollIntoView({ behavior: 'smooth' }); });
+  box.querySelector('#chph').onchange = e => { st.phong = e.target.value; ve(); };
+  box.querySelector('#chlo').onchange = e => { st.loai = e.target.value; ve(); };
+  let hen; box.querySelector('#chtim').oninput = e => { st.tim = e.target.value; clearTimeout(hen); hen = setTimeout(() => { ve(); const i = box.querySelector('#chtim'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 300); };
+  box.querySelector('#chxuat').onclick = async ev => {
+    const b = ev.currentTarget; b.disabled = true; b.textContent = 'Đang tạo file…';
+    try { await xuatCham(f, kq, st, box.querySelector('#chchiloi').checked); } catch (e) { fail(e); }
+    b.disabled = false; b.textContent = '⬇ Xuất Excel theo mẫu (cột Lỗi)';
+  };
+}
+// Xuất Excel đúng mẫu báo cáo chi tiết số dư: mỗi sheet gốc một sheet (giữ tiêu đề, cột gốc) + cột "Lỗi", "Ghi chú"; sheet đầu tổng hợp
+async function xuatCham(f, kq, st, chiLoi) {
+  const ExcelJS = await loadExcelJS(), wb = new ExcelJS.Workbook(), NF = '#,##0;[Red]-#,##0;0';
+  const loais = kq.loai.map(x => x[0]);
+  const w0 = wb.addWorksheet('Tong hop');
+  w0.addRow(['TỔNG HỢP KẾT QUẢ CHẤM SỐ LIỆU BÁO CÁO CHI TIẾT SỐ DƯ THEO MỤC LỤC NGÂN SÁCH']).font = { bold: true, size: 13 };
+  w0.addRow([`Số liệu${f.ky ? ` từ ngày ${f.ky.tu} đến ngày ${f.ky.den}` : ''}. File: ${f.ten.join(', ')}.`]);
+  w0.addRow([`Quy tắc: ${Object.entries(CH.NHOM_QT).filter(([k]) => st.bat[k]).map(([, t]) => t).join('; ')}. Mã tỉnh ${st.tinh}.${st.bo0 ? ' Bỏ dòng dư cuối kỳ bằng 0.' : ''} Kho dữ liệu: ${MLNS.nguon.van_ban}.`]);
+  w0.addRow([]);
+  const hd = w0.addRow(['Mã KBNN', 'Phòng giao dịch', 'Số dòng lỗi', ...loais]); hd.font = { bold: true }; hd.alignment = { wrapText: true, vertical: 'middle', horizontal: 'center' }; hd.height = 32;
+  for (const p of kq.phong) w0.addRow([p.kb, tenPhongKB(p.kb), p.soDong, ...loais.map(l => p.loai[l] || 0)]);
+  w0.addRow(['', 'Tổng cộng', kq.ds.length, ...kq.loai.map(x => x[1])]).font = { bold: true };
+  [10, 26, 12, ...loais.map(() => 18)].forEach((w, i) => w0.getColumn(i + 1).width = w);
+  const ten = new Set(['Tong hop']);
+  for (const sh of f.sheets) {
+    let n = String(sh.ten || 'Sheet').replace(/[\\/?*[\]:]/g, ' ').slice(0, 28) || 'Sheet', k = 2; while (ten.has(n)) n = `${n.slice(0, 26)}_${k++}`; ten.add(n);
+    const ws = wb.addWorksheet(n);
+    for (const r of sh.tieuDe) ws.addRow(r.map(v => v === '' ? null : v));
+    const nc = sh.header.length, h = ws.addRow([...sh.header, 'Lỗi', 'Ghi chú']);
+    h.font = { bold: true }; h.alignment = { wrapText: true, vertical: 'middle', horizontal: 'center' };
+    h.eachCell(c => { c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE6F1' } }; c.border = { bottom: { style: 'thin' } }; });
+    const hRow = h.number;
+    ws.views = [{ state: 'frozen', ySplit: hRow }];
+    for (const r of sh.rows) {
+      if (chiLoi && !r.loi?.length) continue;
+      const row = ws.addRow([...r.g.map(v => v === undefined ? null : v), r.loi?.length ? [...new Set(r.loi.map(l => l.loai))].join('; ') : null, r.loi?.length ? r.loi.map(l => l.ghi).join('; ') : null]);
+      if (r.loi?.length) for (const c of [nc + 1, nc + 2]) { const cell = row.getCell(c); cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } }; cell.font = { color: { argb: 'FFC00000' }, bold: c === nc + 1 }; }
+    }
+    sh.header.forEach((t, i) => { const col = ws.getColumn(i + 1); const so = /dư|phát sinh/i.test(t); col.width = /đơn vị sử dụng/i.test(t) ? 42 : so ? 18 : 10; if (so) col.numFmt = NF; });
+    ws.getColumn(nc + 1).width = 26; ws.getColumn(nc + 2).width = 60;
+    ws.autoFilter = { from: { row: hRow, column: 1 }, to: { row: hRow, column: nc + 2 } };
+  }
+  const buf = await wb.xlsx.writeBuffer();
+  await luuFile(buf, `Cham so lieu so du${f.ky ? ' den ' + f.ky.den.replace(/\//g, '.') : ''}.xlsx`);
 }
 
 
