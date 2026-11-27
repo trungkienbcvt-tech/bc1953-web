@@ -545,7 +545,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
   <header>
     <h1>Hệ thống quản lý danh mục và báo cáo đầu tư KVIII - Địa bàn Tuyên Quang (BCĐT-TQ)<small>KBNN khu vực VIII</small></h1>
     <select id="kySel" class="kysel" title="Chọn kỳ báo cáo"></select><span class="greet" id="greet"></span><span class="chip" id="who"></span>
-    <button id="maBtn" title="Đổi mật khẩu đăng nhập">Đổi mật khẩu</button><button id="outBtn">Đăng xuất</button>
+    <button id="pushBtn" style="display:none" title="Nhận thông báo trên điện thoại/trình duyệt khi các phòng đệ trình">🔔 Thông báo</button><button id="maBtn" title="Đổi mật khẩu đăng nhập">Đổi mật khẩu</button><button id="outBtn">Đăng xuất</button>
   </header>
   <div id="shell"><nav id="tabs"></nav><div id="cont">
   <div id="cvNotice"></div>
@@ -844,8 +844,23 @@ function drawTabs(){
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
 /* Thông báo cho Chuyên viên THBC: phòng giao dịch có cập nhật đang chờ phê duyệt */
+
+// ---- Thông báo đẩy (chuyên viên THBC) ----
+function u8(b){var p='='.repeat((4-b.length%4)%4),s=(b+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o}
+function pushInit(){var b=$('pushBtn');if(!b||S.vt!=='TH'||S.vaiNv)return;b.style.display='';
+  var ok=('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);
+  function nhan(on){b.textContent=on?'🔔 Đã bật thông báo':'🔔 Bật thông báo điện thoại';b.className=on?'mini':'mini pri';b.dataset.on=on?'1':''}
+  nhan(false);
+  if(ok&&Notification.permission==='granted')navigator.serviceWorker.register('/cv1953/sw.js',{scope:'/cv1953/'}).then(function(r){return r.pushManager.getSubscription()}).then(function(s){if(s)nhan(true)}).catch(function(){});
+  b.onclick=function(){
+    if(!ok){xn('Trình duyệt này chưa hỗ trợ thông báo đẩy.\n\nTrên iPhone (iOS 16.4 trở lên): mở web bằng Safari → nút Chia sẻ → “Thêm vào Màn hình chính”, rồi mở hệ thống từ biểu tượng vừa thêm và bấm lại nút này.\n\nTrên Android: dùng Chrome.',function(){});return}
+    navigator.serviceWorker.register('/cv1953/sw.js',{scope:'/cv1953/'}).then(function(reg){return navigator.serviceWorker.ready.then(function(){return reg})}).then(function(reg){
+      return reg.pushManager.getSubscription().then(function(s){
+        if(s&&b.dataset.on==='1'){return run('pushHuy',S.token,s.endpoint).then(function(){return s.unsubscribe()}).then(function(){nhan(false);toast('Đã tắt thông báo trên thiết bị này')})}
+        return Notification.requestPermission().then(function(p){if(p!=='granted')throw new Error('Chưa cho phép thông báo. Vào cài đặt trình duyệt/điện thoại để cho phép rồi bấm lại.');return run('pushKhoa',S.token)}).then(function(k){return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(k.pub)})}).then(function(sub){return run('pushDangKy',S.token,JSON.parse(JSON.stringify(sub)))}).then(function(){nhan(true);toast('Đã bật thông báo – các phòng đệ trình sẽ báo về thiết bị này',6000);try{reg.showNotification('BCĐT-TQ',{body:'Đã bật thông báo thành công.',tag:'bcdt-test'})}catch(e){}})})
+    }).catch(function(e){toast(msg(e),8000)})}}
 function tbChoDong(){var o=document.getElementById('tbcho');if(o)o.remove()}
-function tbCho(){if(!S.token||S.vt!=='TH'||S.vaiNv||S._tbBusy)return;if($('modal')&&$('modal').style.display==='flex')return;S._tbBusy=1;
+function tbCho(){if(!S.token||S.vt!=='TH'||S.vaiNv||S._tbBusy)return;pushInit();if($('modal')&&$('modal').style.display==='flex')return;S._tbBusy=1;
   run('thongBaoCho',S.token).then(function(d){S._tbBusy=0;if(!d||!d.ap)return;var sig=[d.cdt,d.tt,d.ten,d.gy].join('-'),old='';try{old=sessionStorage.getItem('tbcho')||''}catch(e){}
     if(!d.tong){try{sessionStorage.setItem('tbcho','')}catch(e){}tbChoDong();return}
     var cu=old.split('-').map(Number),moi=[d.cdt,d.tt,d.ten,d.gy];if(old&&!moi.some(function(v,i){return v>(cu[i]||0)}))return;   // chỉ báo lại khi có thêm đơn mới
