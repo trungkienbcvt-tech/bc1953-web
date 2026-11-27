@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23a31d2f'/%3E%3Cpath d='M8 24V15h4v9zm6 0V8h4v16zm6 0v-6h4v6z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Nunito:ital,wght@1,400;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="manifest" href="/cv1953/manifest.json"><link rel="apple-touch-icon" href="/cv1953/apple-touch-icon.png"><meta name="theme-color" content="#a31d2f"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="BCĐT-TQ">
 <style>
 :root{--ink:#2a1a1e;--mut:#4a3a3f;--line:#e4d3d6;--bg:#f8f2f2;--acc:#a31d2f;--acc2:#5c0f1b;--inp:#ffeeb0;--ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;--gray:#cbd3e1}
 *{box-sizing:border-box}
@@ -510,8 +510,9 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
  h2{font-size:20px}
 }
 .nhx{display:block;padding:3px 0;font-size:14px;break-inside:avoid;cursor:pointer}.nhx small{color:#64748b}
+#cdNh{background:#0f766e;border-color:#0f766e;color:#fff}#cdNh:hover{background:#115e59}#cdAdd{background:#2563eb;border-color:#2563eb;color:#fff}#cdAdd:hover{background:#1d4ed8}#pushBtn{white-space:nowrap}
 </style>
-<script>try{if(sessionStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
+<script>try{if(localStorage.getItem('cv1953s')||sessionStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
 <div id="login"><div class="lbg"></div><div class="lov"></div><div class="lnet"></div><div class="lgrid"></div><div class="lorb o1"></div><div class="lorb o2"></div>
 <div class="lwrap">
@@ -533,7 +534,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
     <label>Đơn vị</label><select id="lgDv"><option>Đang tải...</option></select>
     <label>Tài khoản</label><select id="lgPgd"><option>Đang tải...</option></select>
     <label>Mã đăng nhập</label><input id="lgMa" type="text" autocomplete="off" maxlength="12" placeholder="Nhập mã được cấp">
-    <div style="margin-top:22px"><button class="pri" id="lgBtn" style="width:100%;padding:13px;font-weight:600">Đăng nhập</button></div>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:14px;font-size:14.5px;cursor:pointer"><input type="checkbox" id="lgNho" checked style="width:auto;margin:0"> Ghi nhớ đăng nhập trên thiết bị này (30 ngày)</label><div style="margin-top:14px"><button class="pri" id="lgBtn" style="width:100%;padding:13px;font-weight:600">Đăng nhập</button></div>
     <div class="err" id="lgErr"></div>
     <div class="lsec"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.500-1-8-4-8-9V6z M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Kết nối được bảo mật · Phân quyền theo vai trò</div>
     <div class="lver"><b>Phiên bản dùng thử · Version 68.01</b><br>Tác giả: Hoàng Thúy Hạnh – Phòng NV2</div>
@@ -803,18 +804,18 @@ function cvForm(d){var m=$('main');S.xbTab=S.xbTab||'vb';
   vbSoan($('vbBox'),{bl:bl,ok:function(){return S.tab==='cv'&&S.xbTab==='vb'},luu:function(b){return run('cvLuuTay',S.token,S.ky,b).then(function(){d.tay=b})},xuat:function(b){return run('cvXuatTay',S.token,S.ky,b)},lam:function(){return run('cvLamLai',S.token,S.ky).then(function(){drawCv()})}})}
 function dangNhap(){
   $('lgErr').textContent='';$('lgBtn').disabled=true;$('lgBtn').textContent='Đang kiểm tra...';
-  run('dangNhap',$('lgPgd').value,$('lgMa').value).then(function(r){try{sessionStorage.setItem('cv1953s',JSON.stringify(r))}catch(e){}return vaoApp(r)})
+  run('dangNhap',$('lgPgd').value,$('lgMa').value,$('lgNho').checked).then(function(r){try{(r.ghiNho=$('lgNho').checked)?localStorage.setItem('cv1953s',JSON.stringify(r)):sessionStorage.setItem('cv1953s',JSON.stringify(r))}catch(e){}return vaoApp(r)})
   .catch(function(e){$('lgErr').textContent=msg(e)}).then(function(){$('lgBtn').disabled=false;$('lgBtn').textContent='Đăng nhập'});
 }
-(function(){var r;try{r=JSON.parse(sessionStorage.getItem('cv1953s')||'null')}catch(e){}   // tải lại trang vẫn giữ phiên đăng nhập
-  if(r&&r.token)vaoApp(r).catch(function(e){document.documentElement.className='';if(/hết hạn|không còn hiệu lực|đăng nhập lại/i.test(msg(e))){try{sessionStorage.removeItem('cv1953s')}catch(x){}}});else document.documentElement.className=''})();
+(function(){var r;try{r=JSON.parse(localStorage.getItem('cv1953s')||sessionStorage.getItem('cv1953s')||'null')}catch(e){}   // tải lại trang vẫn giữ phiên đăng nhập
+  if(r&&r.token)vaoApp(r).catch(function(e){document.documentElement.className='';if(/hết hạn|không còn hiệu lực|đăng nhập lại/i.test(msg(e))){try{sessionStorage.removeItem('cv1953s');localStorage.removeItem('cv1953s')}catch(x){}}});else document.documentElement.className=''})();
 $('maBtn').onclick=function(){
   $('mbox').innerHTML='<h3 style="margin:0 0 8px">Đổi mật khẩu đăng nhập</h3><p class="hint" style="margin:0 0 8px">Tài khoản: <b>'+esc(S.ten)+'</b>. Mật khẩu mới gồm 6 đến 12 ký tự chữ hoặc số, không dùng mật khẩu mặc định.</p><label>Mật khẩu hiện tại</label><input id="mCu" type="password" autocomplete="off"><label>Mật khẩu mới</label><input id="mMoi" type="password" autocomplete="off" maxlength="12"><label>Nhập lại mật khẩu mới</label><input id="mLai" type="password" autocomplete="off" maxlength="12"><div id="mErr" class="err"></div><div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end"><button id="mNo">Hủy</button><button class="pri" id="mOk">Đổi mã</button></div>';
   $('modal').style.display='flex';$('mCu').focus();
   $('mNo').onclick=function(){$('modal').style.display='none'};
   $('mOk').onclick=function(){if($('mMoi').value!==$('mLai').value){$('mErr').textContent='Hai lần nhập mật khẩu mới chưa giống nhau.';return}
     run('doiMa',S.token,$('mCu').value,$('mMoi').value).then(function(){$('modal').style.display='none';toast('Đã đổi mật khẩu. Lần sau đăng nhập bằng mật khẩu mới.',6000);if(S.info&&S.info.phaiDoi){try{var ss=JSON.parse(sessionStorage.getItem('cv1953s'));ss.phaiDoi=false;sessionStorage.setItem('cv1953s',JSON.stringify(ss))}catch(x){}setTimeout(function(){location.reload()},800)}}).catch(function(e){$('mErr').textContent=msg(e)})}};
-$('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{sessionStorage.removeItem('cv1953s');sessionStorage.removeItem('cv1953t');sessionStorage.removeItem('cv1953s')}catch(e){}location.reload()};
+$('outBtn').onclick=function(){if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn đăng xuất?'))return;try{sessionStorage.removeItem('cv1953s');sessionStorage.removeItem('cv1953t');localStorage.removeItem('cv1953s')}catch(e){}location.reload()};
 window.addEventListener('beforeunload',function(e){if(nDirty()){e.preventDefault();e.returnValue=''}});
 $('xemSel').onchange=function(){if(S.tab==='bt'||S.tab==='tt'){S.xemB=$('xemSel').value;S.bt=null;S.ttd=null;S.btF='all';if(S.tab==='bt')drawBt();else drawTt();return}S.xem=$('xemSel').value;loadXem()};
 function loadXem(){run('layDuLieu',S.token,S.xem,S.ky).then(function(d){S.data=d;S.dirty={};show(S.tab)}).catch(function(e){toast(msg(e),6000)})}
@@ -823,7 +824,7 @@ function fillKy(){var l=(S.wf&&S.wf.dsKy)||S.dsKy||[];S.dsKy=l;var sel=$('kySel'
   sel.innerHTML=l.map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'"'+(k.chuaMo?' disabled':'')+'>Kỳ '+k.nhan+(k.chuaMo?' (Chưa mở)':(k.hienTai?' (Đang mở)':(k.soGoc?' · Dữ liệu gốc (Đã đóng)':' (Đã đóng)')))+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Hệ thống quản lý danh mục và báo\u00a0cáo\u00a0đầu\u00a0tư\u00a0KVIII\u00a0- Địa\u00a0bàn\u00a0Tuyên\u00a0Quang (BCĐT-TQ)'}
 function doiKy(v){S.dc=null;S.cb=null;S.bt=null;if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển kỳ?')){$('kySel').value=S.ky||'';return}
   S.ky=v;S.dirty={};S.data=null;Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();fillKy();show(S.tab==='in'?'in':'tq')}).catch(function(e){toast(msg(e),6000);S.ky='';fillKy()})}
-function start(){fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();var t0='home';try{var st=sessionStorage.getItem('cv1953t');if(st&&$('tabs').querySelector('[data-t="'+st+'"]'))t0=st}catch(e){}show(t0)}
+function start(){pushInit();fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();var t0='home';try{var st=sessionStorage.getItem('cv1953t');if(st&&$('tabs').querySelector('[data-t="'+st+'"]'))t0=st}catch(e){}show(t0)}
 var BTAB=['b01','b02','b03a','b03b'];
 S.shut=S.shut||{};
 function bcItems(vt){return [['tq',vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan']].concat(BTAB.map(function(id){return [id,BN[id]]})).concat([['tt','Biểu 04-KBNN'],['bt','⚖ Đối chiếu THBC']]).concat(vt==='TH'?[['qt','🔄 Quy trình & hạn nộp'],['cv','📤 Xuất báo cáo']]:(vt==='NV2'?[['qt','📥 Hộp tiếp nhận']]:[]))}
@@ -847,7 +848,8 @@ function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
 
 // ---- Thông báo đẩy (chuyên viên THBC) ----
 function u8(b){var p='='.repeat((4-b.length%4)%4),s=(b+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o}
-function pushInit(){var b=$('pushBtn');if(!b||S.vt!=='TH'||S.vaiNv)return;b.style.display='';
+function pushTk(){return (S.vaiTh&&S.vaiTh.token)||S.token}
+function pushInit(){var b=$('pushBtn');if(!b||!S.token||S.vt!=='TH')return;b.style.display='';
   var ok=('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);
   function nhan(on){b.textContent=on?'🔔 Đã bật thông báo':'🔔 Bật thông báo điện thoại';b.className=on?'mini':'mini pri';b.dataset.on=on?'1':''}
   nhan(false);
@@ -856,8 +858,8 @@ function pushInit(){var b=$('pushBtn');if(!b||S.vt!=='TH'||S.vaiNv)return;b.styl
     if(!ok){xn('Trình duyệt này chưa hỗ trợ thông báo đẩy.\n\nTrên iPhone (iOS 16.4 trở lên): mở web bằng Safari → nút Chia sẻ → “Thêm vào Màn hình chính”, rồi mở hệ thống từ biểu tượng vừa thêm và bấm lại nút này.\n\nTrên Android: dùng Chrome.',function(){});return}
     navigator.serviceWorker.register('/cv1953/sw.js',{scope:'/cv1953/'}).then(function(reg){return navigator.serviceWorker.ready.then(function(){return reg})}).then(function(reg){
       return reg.pushManager.getSubscription().then(function(s){
-        if(s&&b.dataset.on==='1'){return run('pushHuy',S.token,s.endpoint).then(function(){return s.unsubscribe()}).then(function(){nhan(false);toast('Đã tắt thông báo trên thiết bị này')})}
-        return Notification.requestPermission().then(function(p){if(p!=='granted')throw new Error('Chưa cho phép thông báo. Vào cài đặt trình duyệt/điện thoại để cho phép rồi bấm lại.');return run('pushKhoa',S.token)}).then(function(k){return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(k.pub)})}).then(function(sub){return run('pushDangKy',S.token,JSON.parse(JSON.stringify(sub)))}).then(function(){nhan(true);toast('Đã bật thông báo – các phòng đệ trình sẽ báo về thiết bị này',6000);try{reg.showNotification('BCĐT-TQ',{body:'Đã bật thông báo thành công.',tag:'bcdt-test'})}catch(e){}})})
+        if(s&&b.dataset.on==='1'){return run('pushHuy',pushTk(),s.endpoint).then(function(){return s.unsubscribe()}).then(function(){nhan(false);toast('Đã tắt thông báo trên thiết bị này')})}
+        return Notification.requestPermission().then(function(p){if(p!=='granted')throw new Error('Chưa cho phép thông báo. Vào cài đặt trình duyệt/điện thoại để cho phép rồi bấm lại.');return run('pushKhoa',pushTk())}).then(function(k){return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(k.pub)})}).then(function(sub){return run('pushDangKy',pushTk(),JSON.parse(JSON.stringify(sub)))}).then(function(){nhan(true);toast('Đã bật thông báo – các phòng đệ trình sẽ báo về thiết bị này',6000);try{reg.showNotification('BCĐT-TQ',{body:'Đã bật thông báo thành công.',tag:'bcdt-test'})}catch(e){}})})
     }).catch(function(e){toast(msg(e),8000)})}}
 function tbChoDong(){var o=document.getElementById('tbcho');if(o)o.remove()}
 function tbCho(){if(!S.token||S.vt!=='TH'||S.vaiNv||S._tbBusy)return;pushInit();if($('modal')&&$('modal').style.display==='flex')return;S._tbBusy=1;
