@@ -195,7 +195,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
   // ---- Danh mục dự án (CSDL ngoài, giả lập) ----
   {
     const M = require('../lib/danhmuc'), goi = [], mauT = require('../lib/tenmau.json')[3];
-    M.api.goi = async (fn, b) => { goi.push([fn, b]); if (fn === 'cv_dm_ds') return { kpi: { tong: 1 }, tong: 1, rows: [['111', 'DA 1', 'x', 'y', b.p_kbnn || 'Phòng giao dịch số 20', '', '', '', false, false, null, null, '']] }; if (fn === 'cv_dm_hangloat') return { so: 2 }; return { ok: true }; };
+    M.api.goi = async (fn, b) => { goi.push([fn, b]); if (fn === 'cv_dm_cdt_ds') return { rows: ['Đơn vị thử A2', 'Đơn vị thử B2', 'Đơn vị thử C2', 'Q2'].map((l, i) => [i + 1, 'Khối tỉnh', l, 'tt mẫu', '', 0, 0, {}, '', '', [], true]) }; if (fn === 'cv_dm_ds') return { kpi: { tong: 1 }, tong: 1, rows: [['111', 'DA 1', 'x', 'y', b.p_kbnn || 'Phòng giao dịch số 20', '', '', '', false, false, null, null, '']] }; if (fn === 'cv_dm_hangloat') return { so: 2 }; return { ok: true }; };
     const last = () => goi[goi.length - 1];
     let r = await M.dmDs(p20, { kbnn: 'Phòng giao dịch số 17', tim: 'a' }, 0); assert.strictEqual(last()[1].p_kbnn, 'Phòng giao dịch số 20', 'PGD bị khóa theo phòng của mình'); assert.strictEqual(r.rows[0].ma_da, '111');
     await M.dmDs(th, { kbnn: 'Phòng giao dịch số 17' }, 0); assert.strictEqual(last()[1].p_kbnn, 'Phòng giao dịch số 17', 'Tổng hợp lọc theo phòng tùy ý');
@@ -237,6 +237,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
         const r = await M.dmDs(th, { sach: true }, 0); assert.strictEqual(r.tong, 1); assert.strictEqual(r.rows[0].ma_da, '111'); M.api.goi = sv4;
       }
       await assert.rejects(() => M.cdtDeXuat(th, { khoi: 'Khối tỉnh', cdt_lon: 'ABC' }), /không cần đề xuất/); await assert.rejects(() => M.cdtDxDuyet(p20, '1', true), /Chỉ Phòng NV2/);
+      await assert.rejects(() => M.cdtDeXuat(p20, { khoi: 'Khối tỉnh', cdt_lon: 'UBND Đơn vị thử A2', cdt_tt: 'abc' }), /không đúng tên trong danh mục.*Đơn vị thử A2/); await assert.rejects(() => M.cdtDeXuat(p20, { khoi: 'Khối tỉnh', cdt_lon: 'Tên lạ chưa có', cdt_tt: '' }), /chưa có trong danh mục/);
       { // PGD sửa lại đề xuất chủ đầu tư bị NV2 từ chối rồi gửi lại
         const L0 = require('../lib/logic'), ky = 'Phòng giao dịch số 20';
         const luu = (ds) => L0._.db().q('INSERT INTO kv (k,v) VALUES ($1,$2) ON CONFLICT (k) DO UPDATE SET v=excluded.v', ['cdt:dx', JSON.stringify({ ds })]);
