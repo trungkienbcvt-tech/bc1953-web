@@ -509,6 +509,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
  .dmg{grid-template-columns:1fr}
  h2{font-size:20px}
 }
+.nhx{display:block;padding:3px 0;font-size:14px;break-inside:avoid;cursor:pointer}.nhx small{color:#64748b}
 </style>
 <script>try{if(sessionStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
@@ -1569,14 +1570,14 @@ function drawCbq(){var m=$('main');
 function drawCdt(){var m=$('main');
   if(!CD.d){m.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh mục chủ đầu tư...</p>';run('cdtDs',S.token).then(function(r){CD.d=r;if(S.tab==='cdt')drawCdt()}).catch(function(e){m.innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'});return}
   var d=CD.d;
-  m.innerHTML=pgHead('Danh mục chủ đầu tư'+(d.phong?' – '+esc(d.phong):''),'Chủ đầu tư lớn và đơn vị trực thuộc dùng để chọn cho dự án. '+(d.sua?'Đề xuất của các phòng hiện ngay đầu bảng; duyệt xong là vào danh mục.':'Chủ đầu tư hoặc đơn vị trực thuộc mới: phòng đề xuất, Phòng NV2 duyệt.'))+cdStat(d)+'<div class="dmf cdtb"><input type="text" class="q" id="cdQ" placeholder="🔍 Tìm chủ đầu tư (không cần gõ dấu)…" value="'+esc(CD.q)+'"><select id="cdKh"><option value="">Tất cả khối</option><option>Khối tỉnh</option><option>Khối xã, phường</option></select><select id="cdV" title="Chọn cách xem danh sách"><option value="">Tất cả</option><option value="tt">Chỉ chủ đầu tư có đơn vị trực thuộc</option></select><span class="hint" id="cdN"></span><span class="cdbt"><button class="pri mini" id="cdAdd">＋ '+(d.sua?'Thêm':'Đề xuất thêm')+'</button><button class="mini" id="cdXls" title="Xuất danh mục (chủ đầu tư lớn, đơn vị trực thuộc nằm ngay dưới)">⬇ Xuất Excel</button></span></div>'+
+  m.innerHTML=pgHead('Danh mục chủ đầu tư'+(d.phong?' – '+esc(d.phong):''),'Chủ đầu tư lớn và đơn vị trực thuộc dùng để chọn cho dự án. '+(d.sua?'Đề xuất của các phòng hiện ngay đầu bảng; duyệt xong là vào danh mục.':'Chủ đầu tư hoặc đơn vị trực thuộc mới: phòng đề xuất, Phòng NV2 duyệt.'))+cdStat(d)+'<div class="dmf cdtb"><input type="text" class="q" id="cdQ" placeholder="🔍 Tìm chủ đầu tư (không cần gõ dấu)…" value="'+esc(CD.q)+'"><select id="cdKh"><option value="">Tất cả khối</option><option>Khối tỉnh</option><option>Khối xã, phường</option></select><select id="cdV" title="Chọn cách xem danh sách"><option value="">Tất cả</option><option value="tt">Chỉ chủ đầu tư có đơn vị trực thuộc</option></select><span class="hint" id="cdN"></span><span class="cdbt"><button class="mini" id="cdNh" title="Khai nhiều đơn vị trực thuộc cho nhiều xã/phường cùng lúc">⚡ Khai nhanh trực thuộc theo xã</button><button class="pri mini" id="cdAdd">＋ '+(d.sua?'Thêm':'Đề xuất thêm')+'</button><button class="mini" id="cdXls" title="Xuất danh mục (chủ đầu tư lớn, đơn vị trực thuộc nằm ngay dưới)">⬇ Xuất Excel</button></span></div>'+
    '<div id="cdDx"></div><div id="dmD"></div>'+
    (d.ngoai&&d.ngoai.length?'<div class="dmwarn"><b>Có '+d.ngoai.reduce(function(s,x){return s+x.so},0)+' dự án thuộc chủ đầu tư chưa nằm trong danh mục:</b><ul style="margin:6px 0 0 18px">'+d.ngoai.map(function(x){return '<li>'+esc(x.lon||'(trống)')+(x.tt?' › '+esc(x.tt):'')+' — '+x.so+' dự án</li>'}).join('')+'</ul><p class="hint">Vào Danh mục dự án → nút “🚩 Dự án sai/thiếu” để chọn lại chủ đầu tư đúng, hoặc thêm chủ đầu tư mới vào danh mục này.</p></div>':'')+
    '<div class="dmw" style="max-height:none"><table class="dmt"><thead><tr><th style="width:50px">STT</th><th>Chủ đầu tư</th><th style="width:80px">Số dự án</th>'+(d.sua?'<th style="width:200px">Phòng giao dịch</th>':'')+'<th style="width:170px">Cán bộ chuyên quản</th>'+(d.sua?'<th style="width:200px"></th>':'')+'</tr></thead><tbody id="cdB"></tbody></table></div>';
   $('cdKh').value=CD.k;$('cdV').value=CD.v||'';if($('cdStT'))$('cdStT').onclick=function(){CD.v='tt';$('cdV').value='tt';CD.q='';$('cdQ').value='';cdRows()};
   var f=function(){CD.q=$('cdQ').value;CD.k=$('cdKh').value;CD.v=$('cdV').value;cdRows()};$('cdQ').oninput=f;$('cdKh').onchange=f;$('cdV').onchange=f;
   $('cdXls').onclick=function(){xuat(function(){return run('cdtXuat',S.token,'ca')},this,'xlsx')};
-  $('cdAdd').onclick=function(){cdForm(null)};cdDxLoad();DM.moDx=true;dmDxLoad();
+  $('cdAdd').onclick=function(){cdForm(null)};$('cdNh').onclick=cdNhanh;cdDxLoad();DM.moDx=true;dmDxLoad();
   $('cdB').onclick=function(e){
     var sb=e.target.closest('[data-xs]');if(sb){var x=(CD.dx||[]).filter(function(y){return y.id===sb.getAttribute('data-xs')})[0];if(x)cdForm({khoi:x.khoi,lon:x.lon,tt:x.tt,ghi_chu:x.gc,so:0},x.id);return}
     var bd=e.target.closest('[data-xd]');if(bd){var ok=bd.getAttribute('data-xd')==='1',ly='';if(!ok){ly=prompt('Lý do từ chối (không bắt buộc):','');if(ly===null)return}
@@ -1585,7 +1586,7 @@ function drawCdt(){var m=$('main');
     if(b.hasAttribute('data-ce'))cdForm(d.rows.filter(function(x){return x.id===id})[0]);
     else xn('Xóa dòng chủ đầu tư này khỏi danh mục?',function(){run('cdtXoa',S.token,id).then(function(){toast('Đã xóa');cdReload()}).catch(function(er){toast(msg(er),6000)})})};
   cdRows()}
-function cdDxLoad(){run('cdtDxDs',S.token).then(function(r){var box=$('cdDx');if(!box||S.tab!=='cdt')return;var rows=r.rows;if(r.duyet){CD.dx=rows;box.innerHTML='';cdRows();return}rows=rows.filter(function(x){return x.st!=='duyet'});if(!rows.length){box.innerHTML='';return}   /* đã duyệt thì vào thẳng danh mục chính thức bên dưới */
+function cdDxLoad(){run('cdtDxDs',S.token).then(function(r){var box=$('cdDx');if(!box||S.tab!=='cdt')return;var rows=r.rows;if(r.duyet){CD.dx=rows;box.innerHTML='';cdRows();cdAllBtn();return}rows=rows.filter(function(x){return x.st!=='duyet'});if(!rows.length){box.innerHTML='';return}   /* đã duyệt thì vào thẳng danh mục chính thức bên dưới */
   var ST={cho:'<span style="color:#b45309">Chờ duyệt</span>',duyet:'<span style="color:#15803d">Đã duyệt</span>',tu_choi:'<span style="color:#b91c1c">Bị từ chối</span>'};
   box.innerHTML='<div class="dmwarn"><b>Đề xuất thêm chủ đầu tư: '+rows.filter(function(x){return x.st==='cho'}).length+' chờ duyệt</b><p class="hint">'+(r.duyet?'Phòng NV2: bấm <b>Duyệt</b> để thêm vào Danh mục chủ đầu tư, hoặc <b>Từ chối</b>.':'Đề xuất của phòng bạn, chờ Phòng NV2 duyệt. Đề xuất bị từ chối có thể bấm <b>Sửa &amp; gửi lại</b> hoặc <b>Xóa</b>.')+'</p><div class="dmw" style="max-height:260px"><table class="dmt"><thead><tr><th>Khối</th><th>Chủ đầu tư lớn</th><th>Chủ đầu tư trực thuộc</th><th>Phòng / người đề xuất</th><th>Trạng thái</th>'+'<th></th></tr></thead><tbody>'+rows.map(function(x){return '<tr><td>'+esc(x.khoi)+'</td><td class="ten">'+esc(x.lon)+'</td><td class="ten">'+(x.tt?esc(x.tt):'—')+'</td><td>'+esc(x.kbnn)+'<br><small>'+esc(x.nguoi)+'</small></td><td>'+ST[x.st]+(x.ly?'<br><small>'+esc(x.ly)+'</small>':'')+'</td>'+(r.duyet?'<td style="white-space:nowrap">'+(x.st==='cho'?'<button data-xs="'+esc(x.id)+'">✎ Sửa &amp; duyệt</button> <button class="pri" data-xd="1" data-id="'+esc(x.id)+'">Duyệt</button> <button data-xd="0" data-id="'+esc(x.id)+'">Từ chối</button>':'')+(x.st==='tu_choi'?'<button data-xa="'+esc(x.id)+'" title="Gỡ khỏi danh sách của Phòng NV2; phòng giao dịch vẫn thấy để sửa và gửi lại">🗑 Xóa khỏi danh sách</button>':'')+(x.st==='duyet'?'<button data-xe="'+esc(x.id)+'" title="Sửa tên chủ đầu tư vừa duyệt nếu phát hiện sai sót">✎ Sửa tên</button>':'')+'</td>':'<td style="white-space:nowrap">'+(x.st==='tu_choi'?'<button class="pri" data-xl="'+esc(x.id)+'">✎ Sửa &amp; gửi lại</button> ':'')+(x.st!=='duyet'?'<button data-xx="'+esc(x.id)+'" title="Xóa đề xuất này">🗑 Xóa</button>':'')+'</td>')+'</tr>'}).join('')+'</tbody></table></div></div>';
   box.onclick=function(e){var sb=e.target.closest('[data-xs]');if(sb){var x=rows.filter(function(y){return y.id===sb.getAttribute('data-xs')})[0];if(x)cdForm({khoi:x.khoi,lon:x.lon,tt:x.tt,ghi_chu:x.gc,so:0},x.id);return}
@@ -1617,6 +1618,40 @@ function cdRows(){var d=CD.d;if(!d||!$('cdB'))return;var sua=d.sua,NC=sua?6:4,nd
   if(gs.length)h+=tongRow();
   $('cdB').innerHTML=h||'<tr><td colspan="'+NC+'" style="padding:20px;text-align:center;color:var(--mut)">Không có chủ đầu tư phù hợp.</td></tr>';
   if($('cdN'))$('cdN').textContent=gs.length+' chủ đầu tư lớn · '+nTt+' đơn vị trực thuộc'}
+
+function cdAllBtn(){var n=(CD.dx||[]).filter(function(x){return x.st==='cho'}).length,sp=document.querySelector('.cdbt'),b=$('cdAll');if(!sp)return;
+  if(!n){if(b)b.remove();return}
+  if(!b){b=document.createElement('button');b.className='pri mini';b.id='cdAll';b.style.background='#16a34a';sp.insertBefore(b,sp.firstChild);
+    b.onclick=function(){var k=(CD.dx||[]).filter(function(x){return x.st==='cho'}).length;xn('Duyệt tất cả '+k+' đề xuất đang chờ và đưa vào Danh mục chủ đầu tư?',function(){b.disabled=true;var tong=0;
+      (function lap(){run('cdtDxDuyetHet',S.token).then(function(r){tong+=r.duyet;if(r.con>0){b.textContent='Đang duyệt… '+tong;lap()}else{toast('Đã duyệt '+tong+' đề xuất',5000);b.disabled=false;cdReload()}}).catch(function(e){b.disabled=false;toast(msg(e)+' (đã duyệt '+tong+')',8000);cdReload()})})()})}}
+  b.textContent='✔ Duyệt tất cả ('+n+')'}
+function cdNhanh(){var b=$('mbox');b.className='box wide fbox';b.style.maxWidth='820px';b.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh sách xã/phường...</p>';$('modal').style.display='flex';
+  run('cdtXaDs',S.token).then(function(r){var xa=r.xa,sel={},q='';
+    xa.forEach(function(x){sel[x.lon]=r.duyet?false:!x.daTt||x.daTt<x.da});
+    function dong(){$('modal').style.display='none';$('mbox').className='box';$('mbox').style.maxWidth=''}
+    function mauL(){return $('nhM').value.split('\n').map(function(z){return z.replace(/\s+/g,' ').trim()}).filter(Boolean)}
+    function suf(l){return l.charAt(0).toLowerCase()+l.slice(1)}
+    function ten(m,l){return (/\{xã\}/i.test(m)?m.replace(/\{xã\}/gi,suf(l)):m+' '+suf(l))}
+    function dsChon(){return xa.filter(function(x){return sel[x.lon]}).map(function(x){return x.lon})}
+    function ve(){var f=q?xa.filter(function(x){return x.lon.toLowerCase().indexOf(q.toLowerCase())>=0}):xa;
+      $('nhL').innerHTML=f.map(function(x){return '<label class="nhx"><input type="checkbox" data-l="'+esc(x.lon)+'"'+(sel[x.lon]?' checked':'')+'> <b>'+esc(x.lon)+'</b> <small>'+(x.tt?x.tt+' trực thuộc':'chưa có trực thuộc')+' · '+x.da+' dự án'+(r.duyet&&x.pgd.length?' · '+esc(x.pgd.join(', ').replace(/Phòng giao dịch /g,'PGD ')):'')+'</small></label>'}).join('')||'<p class="hint">Không có xã/phường phù hợp.</p>';ps()}
+    function ps(){var m=mauL(),c=dsChon();$('nhS').textContent='Đã chọn '+c.length+' xã/phường × '+m.length+' đơn vị = '+(c.length*m.length)+' đơn vị trực thuộc'+(c.length&&m.length?'. Ví dụ: '+ten(m[0],c[0]):'')}
+    b.innerHTML='<div class="fxw"><button type="button" id="fX" title="Đóng" aria-label="Đóng">✕</button></div><h3 class="fh">⚡ Khai nhanh đơn vị trực thuộc theo xã/phường</h3>'+
+      '<div class="cdnote"><b>Cách làm:</b> nhập tên các đơn vị trực thuộc dùng chung (mỗi dòng một đơn vị, <b>không cần gõ tên xã</b>), tích chọn các xã/phường áp dụng. Hệ thống tự thêm “xã …” vào cuối từng tên. Muốn tên xã nằm giữa câu thì gõ <b>{xã}</b>, ví dụ: Trường Mầm non {xã} cơ sở 2.</div>'+
+      '<label style="display:block;margin-top:10px"><b>Đơn vị trực thuộc</b> (mỗi dòng một đơn vị)<textarea id="nhM" rows="5" style="width:100%;font:inherit" placeholder="Trường Mầm non\nTrường Tiểu học\nTrường THCS\nTrạm Y tế"></textarea></label>'+
+      '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b>Chọn xã/phường</b><input type="text" id="nhQ" class="q" style="max-width:220px" placeholder="🔍 Tìm xã/phường"><button class="mini" id="nhA">Chọn tất cả</button><button class="mini" id="nhB">Bỏ chọn</button><button class="mini" id="nhC">Chỉ xã chưa có trực thuộc</button></div>'+
+      '<div id="nhL" style="max-height:260px;overflow:auto;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;margin-top:6px;columns:2 260px"></div>'+
+      '<p class="fnote" id="nhS" style="margin-top:8px"></p><div id="fErr" style="color:#b91c1c;font-size:14px;min-height:18px"></div><div style="display:flex;gap:10px;justify-content:flex-end"><button id="fNo">Hủy</button><button class="pri" id="fOk">'+(r.duyet?'Thêm vào danh mục':'Gửi Phòng NV2 duyệt')+'</button></div>';
+    $('fX').onclick=$('fNo').onclick=dong;$('nhM').oninput=ps;$('nhQ').oninput=function(){q=this.value;ve()};
+    $('nhL').onchange=function(e){var c=e.target.getAttribute('data-l');if(c){sel[c]=e.target.checked;ps()}};
+    $('nhA').onclick=function(){xa.forEach(function(x){sel[x.lon]=true});ve()};$('nhB').onclick=function(){xa.forEach(function(x){sel[x.lon]=false});ve()};
+    $('nhC').onclick=function(){xa.forEach(function(x){sel[x.lon]=!x.tt});ve()};
+    $('fOk').onclick=function(){var m=mauL(),c=dsChon(),er=$('fErr');er.textContent='';if(!m.length){er.textContent='Nhập ít nhất một đơn vị trực thuộc.';return}if(!c.length){er.textContent='Chọn ít nhất một xã/phường.';return}
+      var btn=this,nhom=Math.max(1,Math.floor(300/m.length)),i=0,them=0,trung=0,gd=false;btn.disabled=true;
+      (function lap(){if(i>=c.length){dong();toast((gd?'Đã gửi '+them+' đề xuất – chờ Phòng NV2 duyệt':'Đã thêm '+them+' đơn vị trực thuộc')+(trung?' (bỏ '+trung+' dòng đã có)':''),6000);if(gd)cdDxLoad();else cdReload();return}
+        btn.textContent='Đang lưu… '+Math.min(i,c.length)+'/'+c.length;
+        run('cdtTtNhanh',S.token,c.slice(i,i+nhom),m).then(function(x){them+=x.them;trung+=x.trung;gd=x.guiDuyet;i+=nhom;lap()}).catch(function(e){btn.disabled=false;btn.textContent='Thử lại';er.textContent=msg(e)+(them?' (đã lưu '+them+' đơn vị trước đó)':'')})})()};
+    ve()}).catch(function(e){$('mbox').innerHTML='<p class="hint" style="padding:20px;color:#b91c1c">'+esc(msg(e))+'</p>'})}
 function cdForm(r,dxId,lai){var moi=!r||!!dxId,d=r||{khoi:'Khối tỉnh',lon:'',tt:'',ghi_chu:'',chua_co_dong:true},b=$('mbox'),lons=[];CD.d.rows.forEach(function(x){if(lons.indexOf(x.lon)<0)lons.push(x.lon)});
   b.className='box wide fbox';b.style.maxWidth='820px';
   function sec(c,ic,t,body){return '<div class="fsec" style="border-left-color:'+c+'"><h4><span class="fic" style="background:'+c+'">'+ic+'</span>'+t+'</h4>'+body+'</div>'}
@@ -1799,7 +1834,7 @@ function htForm(d,x){var o=DM.opt,thbc=!!o.toanBo,L=x.loai,ma=d.ma_da;
       if(!lo){er.textContent='Chọn chủ đầu tư lớn.';return}
       if(dmLonOpts(o,lon).indexOf(lo)<0){er.textContent='Chủ đầu tư lớn "'+lo+'" chưa có trong danh sách – gõ để tìm rồi chọn đúng tên gợi ý.';return}
       if(tr&&dmTtOpts(o,lo,curTt).indexOf(tr)<0){er.textContent='Chủ đầu tư trực thuộc "'+tr+'" không thuộc chủ đầu tư lớn đã chọn – chọn trong gợi ý hoặc để trống.';return}
-      if(nTt&&!tr&&!ko&&!dmTtOpts(o,lo,curTt).length){er.textContent='Xã/phường này chưa có đơn vị trực thuộc trong Danh mục chủ đầu tư – vào mục Danh mục chủ đầu tư để đề xuất thêm, hoặc tích "không thuộc đơn vị trực thuộc nào".';return}
+      if(nTt&&!tr&&!ko&&!dmTtOpts(o,lo,curTt).length){er.textContent='Xã/phường này chưa có đơn vị trực thuộc trong Danh mục chủ đầu tư – vào Danh mục chủ đầu tư → nút “⚡ Khai nhanh trực thuộc theo xã” để thêm cả loạt, hoặc tích "không thuộc đơn vị trực thuộc nào".';return}
       if(nTt&&!tr&&!ko){er.textContent='Chọn đơn vị trực thuộc, hoặc tích "Dự án không thuộc đơn vị trực thuộc nào".';return}
       rec.cdt2=lo;rec.cdt=tr||lo;if(!thbc){if(curTt)delete rec.cdt;else rec.cdt=lo}}
     if(nDm){var sd=document.querySelector('input[name=hDm]:checked');if(!sd){er.textContent='Chọn "Tiếp tục theo dõi" hoặc "Tạm chưa theo dõi".';return}dmV=sd.value;dmLy=$('hTamLy').value.trim();if(dmV==='tam'&&dmLy.length<10){er.textContent='Ghi lý do tạm chưa theo dõi (ít nhất 10 ký tự).';return}}
