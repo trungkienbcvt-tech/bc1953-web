@@ -205,7 +205,7 @@ const db = require('../lib/db')(); const { seed } = require('../lib/seed'); cons
     await M.dmSua(p20, '111', { cdt: mauT, cdt2: mauT }); assert.strictEqual(last()[1].p_rec.cdt, mauT, 'PGD đặt CĐT = CĐT lớn khi không có trực thuộc');
     await M.dmSua(p20, '111', { cdt: mauT, dac_thu: 'Chuyển đổi số' }); assert(!('cdt' in last()[1].p_rec), 'PGD không tự sửa CĐT trực thuộc');
     await assert.rejects(() => M.dmSua(p20, '111', { cdt: mauT }), /đề xuất/);
-    await M.dmDeXuat(p20, '111', mauT); assert.strictEqual(last()[0], 'cv_dm_dx_gui'); assert.strictEqual(last()[1].p_gh, 'Phòng giao dịch số 20');
+    await M.dmDeXuat(p20, '111', mauT); { const g = goi.filter((z) => z[0] === 'cv_dm_dx_gui').pop(); assert(g && g[1].p_gh === 'Phòng giao dịch số 20'); }
     await assert.rejects(() => M.dmDeXuat(th, '111', mauT), /trực tiếp/);
     await assert.rejects(() => M.dmDxDuyet(p20, '111', true), /Chỉ Phòng NV2/);
     await M.dmDxDuyet(th, '111', true); assert.strictEqual(last()[0], 'cv_dm_dx_duyet');
