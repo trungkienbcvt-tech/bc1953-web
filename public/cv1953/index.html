@@ -827,6 +827,22 @@ function drawTabs(){
   [].forEach.call($('tabs').querySelectorAll('.bcv span'),function(s){s.onclick=function(){var v=s.getAttribute('data-vai');if(v===S.vai)return;setVai(v).then(function(){drawTabs();show('tq')}).catch(function(){})}});
 }
 function canEdit(){return S.vt==='PGD'&&S.data&&!S.data.docChiXem}
+/* Thông báo cho Chuyên viên THBC: phòng giao dịch có cập nhật đang chờ phê duyệt */
+function tbChoDong(){var o=document.getElementById('tbcho');if(o)o.remove()}
+function tbCho(){if(!S.token||S.vt!=='TH'||S.vaiNv||S._tbBusy)return;if($('modal')&&$('modal').style.display==='flex')return;S._tbBusy=1;
+  run('thongBaoCho',S.token).then(function(d){S._tbBusy=0;if(!d||!d.ap)return;var sig=[d.cdt,d.tt,d.ten,d.gy].join('-'),old='';try{old=sessionStorage.getItem('tbcho')||''}catch(e){}
+    if(!d.tong){try{sessionStorage.setItem('tbcho','')}catch(e){}tbChoDong();return}
+    var cu=old.split('-').map(Number),moi=[d.cdt,d.tt,d.ten,d.gy];if(old&&!moi.some(function(v,i){return v>(cu[i]||0)}))return;   // chỉ báo lại khi có thêm đơn mới
+    try{sessionStorage.setItem('tbcho',sig)}catch(e){}tbChoDong();
+    var rows=[[d.cdt,'Chủ đầu tư trực thuộc đề xuất mới','cdt'],[d.tt,'Dự án đề xuất chủ đầu tư trực thuộc','dm'],[d.ten,'Đề xuất đổi tên dự án','dm'],[d.gy,'Góp ý chưa trả lời','gy']].filter(function(x){return x[0]>0});
+    var o=document.createElement('div');o.id='tbcho';o.style.cssText='position:fixed;right:18px;bottom:18px;z-index:9998;max-width:380px;background:#fff;border:1px solid #e5c9ce;border-left:6px solid #b91c1c;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:14px 16px;font-size:14px';
+    o.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b style="font-size:15px;color:#7a1622">🔔 Có '+d.tong+' mục đang chờ anh/chị phê duyệt</b><button id="tbX" class="mini" style="padding:2px 8px">✕</button></div>'+
+      (d.dv&&d.dv.length?'<div style="color:var(--mut);font-size:12.5px;margin:4px 0 8px">Từ: '+esc(d.dv.slice(0,8).join(', '))+(d.dv.length>8?' và '+(d.dv.length-8)+' đơn vị khác':'')+'</div>':'')+
+      rows.map(function(x){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-top:1px solid #f1e3e5"><span>'+esc(x[1])+' <b style="color:#b91c1c">('+x[0]+')</b></span><button class="pri mini" data-g="'+x[2]+'">Xem</button></div>'}).join('');
+    document.body.appendChild(o);$('tbX').onclick=tbChoDong;
+    o.onclick=function(e){var b=e.target.closest('[data-g]');if(!b)return;var g=b.getAttribute('data-g');tbChoDong();if(g==='cdt')show('cdt');else if(g==='gy'){if(typeof gyMo==='function')gyMo();else show('home')}else{DM.sub='ht';DM.cbL='';show('dm')}}
+  }).catch(function(){S._tbBusy=0})}
+setInterval(tbCho,60000);setTimeout(tbCho,5000);
 function nbDuyet(){var e=$('cvNotice');if(!e)return;e.className='';e.innerHTML='';
   if(S.vaiNv&&S.vai==='th'&&S.nvPend){e.className='cvn';e.innerHTML='<span>🔔 Có <b>1 báo cáo của Phòng Nghiệp vụ 2 đợi Lãnh đạo phòng phê duyệt</b> – kỳ '+esc(S.ky||'')+'.</span><button>Chuyển sang phần Phòng NV2 để duyệt</button>';e.onclick=function(){setVai('nv').then(function(){drawTabs();show('tq')}).catch(function(){})};return}
   if(S.vt!=='PGD'||!S.info||!S.wf||!S.wf.list)return;var cv=S.info.cv,me=S.wf.list.filter(function(x){return x.pgd===S.pgd})[0];if(!me)return;
