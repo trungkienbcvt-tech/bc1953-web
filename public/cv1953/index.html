@@ -1648,7 +1648,7 @@ function cdAllBtn(){var n=(CD.dx||[]).filter(function(x){return x.st==='cho'}).l
   b.textContent='✔ Duyệt tất cả ('+n+')'}
 function cdNhanh(){var b=$('mbox');b.className='box wide fbox';b.style.maxWidth='820px';b.innerHTML='<p class="hint" style="padding:20px">⏳ Đang tải danh sách xã/phường...</p>';$('modal').style.display='flex';
   run('cdtXaDs',S.token).then(function(r){var xa=r.xa,sel={},q='';
-    xa.forEach(function(x){sel[x.lon]=r.duyet?false:!x.daTt||x.daTt<x.da});
+    xa.forEach(function(x){sel[x.lon]=!x.tt});   /* mặc định chỉ tích xã/phường chưa có đơn vị trực thuộc nào */
     function dong(){$('modal').style.display='none';$('mbox').className='box';$('mbox').style.maxWidth=''}
     function mauL(){return $('nhM').value.split('\n').map(function(z){return z.replace(/\s+/g,' ').trim()}).filter(Boolean)}
     function suf(l){return l.charAt(0).toLowerCase()+l.slice(1)}
