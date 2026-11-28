@@ -513,6 +513,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 #cdNh{background:#0f766e;border-color:#0f766e;color:#fff}#cdNh:hover{background:#115e59}#cdAdd{background:#2563eb;border-color:#2563eb;color:#fff}#cdAdd:hover{background:#1d4ed8}#pushBtn{white-space:nowrap}
 @media(max-width:700px){.cdbt{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 100%;margin-top:6px}.cdbt button{flex:1 1 100%;padding:13px 10px;font-size:15.5px;font-weight:700}.dmt input[type=checkbox]{width:22px;height:22px}#pushTest,#pushBtn{padding:9px 10px}}
 #onl{position:fixed;left:12px;bottom:12px;z-index:45;font-size:13.5px}#onl button{border:1px solid #d6e5da;background:#fff;border-radius:20px;padding:7px 13px;font-weight:600;color:#14532d;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer}#onl .op{position:absolute;left:0;bottom:42px;width:330px;max-height:62vh;overflow:auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:10px 12px;display:none}#onl.mo .op{display:block}#onl .ol{display:flex;gap:8px;align-items:baseline;padding:4px 0;border-bottom:1px solid #f1f5f9;line-height:1.35}#onl .ol:last-child{border:0}#onl .ol i{font-style:normal;font-size:11px}#onl .ol small{color:#64748b}#onl .ol.off{color:#94a3b8}@media(max-width:899px){#onl{bottom:70px}#onl .op{width:min(330px,88vw)}}
+header .clk{color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:5px 11px;font-size:13px;font-weight:600;white-space:nowrap;line-height:1.25;text-align:center}header .clk small{display:block;font-weight:500;opacity:.85;font-size:11.5px}@media(max-width:600px){header .clk{padding:4px 8px;font-size:12px}header .clk small{display:none}}
 </style>
 <script>try{if(localStorage.getItem('cv1953s')||sessionStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
@@ -547,7 +548,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 <div id="app">
   <header>
     <h1>Hệ thống quản lý danh mục và báo cáo đầu tư KVIII - Địa bàn Tuyên Quang (BCĐT-TQ)<small>KBNN khu vực VIII</small></h1>
-    <select id="kySel" class="kysel" title="Chọn kỳ báo cáo"></select><span class="greet" id="greet"></span><span class="chip" id="who"></span>
+    <select id="kySel" class="kysel" title="Chọn kỳ báo cáo"></select><span class="clk" id="clk" title="Ngày giờ hiện tại"></span><span class="greet" id="greet"></span><span class="chip" id="who"></span>
     <button id="pushTest" class="mini" style="display:none" title="Gửi thử một thông báo thật về thiết bị đã đăng ký">Gửi thử</button><button id="pushBtn" style="display:none" title="Nhận thông báo trên điện thoại/trình duyệt khi các phòng đệ trình">🔔 Thông báo</button><button id="maBtn" title="Đổi mật khẩu đăng nhập">Đổi mật khẩu</button><button id="outBtn">Đăng xuất</button>
   </header>
   <div id="shell"><nav id="tabs"></nav><div id="cont">
@@ -874,6 +875,12 @@ function onlPing(){if(!S.token)return;run('hienDien',S.token).then(function(r){v
     else h+='<div class="ol off"><i>○</i><div>'+esc(nm)+' <small>· '+onlAgo(mn)+'</small></div></div>'});
   $('onB').textContent='🟢 '+nOn+'/'+od.length+' đơn vị online';$('onP').innerHTML='<div style="font-weight:700;margin-bottom:4px">Đơn vị đang online ('+nOn+'/'+od.length+')</div>'+h;bx.style.display=''}).catch(function(){})}
 (function(){var bx=document.getElementById('onl');if(!bx)return;document.getElementById('onB').onclick=function(){bx.classList.toggle('mo')};document.addEventListener('click',function(e){if(!bx.contains(e.target))bx.classList.remove('mo')});setInterval(onlPing,60000)})();
+
+// ---- Đồng hồ ngày giờ (giờ Việt Nam) ở thanh trên cùng ----
+(function(){var T=['Chủ nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];function p(n){return n<10?'0'+n:''+n}
+  function tick(){var e=document.getElementById('clk');if(!e)return;var d=new Date(),v;try{v=new Date(d.toLocaleString('en-US',{timeZone:'Asia/Ho_Chi_Minh'}))}catch(x){v=d}
+    e.innerHTML=p(v.getHours())+':'+p(v.getMinutes())+'<small>'+T[v.getDay()]+', '+p(v.getDate())+'/'+p(v.getMonth()+1)+'/'+v.getFullYear()+'</small>'}
+  tick();setInterval(tick,15000)})();
 
 function tbChoDong(){var o=document.getElementById('tbcho');if(o)o.remove()}
 function tbCho(){if(!S.token||S.vt!=='TH'||S.vaiNv||S._tbBusy)return;pushInit();if($('modal')&&$('modal').style.display==='flex')return;S._tbBusy=1;
