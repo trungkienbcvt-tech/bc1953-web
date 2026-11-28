@@ -512,6 +512,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
 .nhx{display:block;padding:3px 0;font-size:14px;break-inside:avoid;cursor:pointer}.nhx small{color:#64748b}
 #cdNh{background:#0f766e;border-color:#0f766e;color:#fff}#cdNh:hover{background:#115e59}#cdAdd{background:#2563eb;border-color:#2563eb;color:#fff}#cdAdd:hover{background:#1d4ed8}#pushBtn{white-space:nowrap}
 @media(max-width:700px){.cdbt{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 100%;margin-top:6px}.cdbt button{flex:1 1 100%;padding:13px 10px;font-size:15.5px;font-weight:700}.dmt input[type=checkbox]{width:22px;height:22px}#pushTest,#pushBtn{padding:9px 10px}}
+#onl{position:fixed;left:12px;bottom:12px;z-index:45;font-size:13.5px}#onl button{border:1px solid #d6e5da;background:#fff;border-radius:20px;padding:7px 13px;font-weight:600;color:#14532d;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer}#onl .op{position:absolute;left:0;bottom:42px;width:330px;max-height:62vh;overflow:auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:10px 12px;display:none}#onl.mo .op{display:block}#onl .ol{display:flex;gap:8px;align-items:baseline;padding:4px 0;border-bottom:1px solid #f1f5f9;line-height:1.35}#onl .ol:last-child{border:0}#onl .ol i{font-style:normal;font-size:11px}#onl .ol small{color:#64748b}#onl .ol.off{color:#94a3b8}@media(max-width:899px){#onl{bottom:70px}#onl .op{width:min(330px,88vw)}}
 </style>
 <script>try{if(localStorage.getItem('cv1953s')||sessionStorage.getItem('cv1953s'))document.documentElement.className='rs'}catch(e){}</script><style>html.rs #login{display:none!important}html.rs body{background:#f6f0f1}</style></head>
 <body>
@@ -557,7 +558,7 @@ nav#tabs .tgh{font-size:13px;line-height:1.3}nav#tabs .tg.sub .tgh{font-size:12.
   <div class="sbar" id="sbar"><span id="barMsg">Chưa có thay đổi.</span><button class="pri" id="saveBtn" disabled>Lưu thay đổi</button></div>
 </div>
 <div id="modal"><div class="box" id="mbox"></div></div>
-<div id="toast"></div>
+<div id="onl" style="display:none"><div class="op" id="onP"></div><button id="onB" type="button">🟢 …</button></div><div id="toast"></div>
 
 <script>
 var PGDS=['Phòng Nghiệp vụ 2','Phòng giao dịch 17','Phòng giao dịch 18','Phòng giao dịch 19','Phòng giao dịch 20','Phòng giao dịch 21','Phòng giao dịch 22','Phòng giao dịch 23','Phòng giao dịch 24','Phòng giao dịch 25','Phòng giao dịch 26','Phòng giao dịch 27'];
@@ -825,7 +826,7 @@ function fillKy(){var l=(S.wf&&S.wf.dsKy)||S.dsKy||[];S.dsKy=l;var sel=$('kySel'
   sel.innerHTML=l.map(function(k){return'<option value="'+(k.hienTai?'':k.ky)+'"'+(k.chuaMo?' disabled':'')+'>Kỳ '+k.nhan+(k.chuaMo?' (Chưa mở)':(k.hienTai?' (Đang mở)':(k.soGoc?' · Dữ liệu gốc (Đã đóng)':' (Đã đóng)')))+'</option>'}).join('');sel.value=S.ky||'';var cur=l.filter(function(k){return S.ky?k.ky===S.ky:k.hienTai})[0],h1=document.querySelector('header h1');if(cur&&h1&&h1.firstChild)h1.firstChild.nodeValue='Hệ thống quản lý danh mục và báo\u00a0cáo\u00a0đầu\u00a0tư\u00a0KVIII\u00a0- Địa\u00a0bàn\u00a0Tuyên\u00a0Quang (BCĐT-TQ)'}
 function doiKy(v){S.dc=null;S.cb=null;S.bt=null;if(nDirty()&&!confirm('Còn thay đổi chưa lưu. Vẫn chuyển kỳ?')){$('kySel').value=S.ky||'';return}
   S.ky=v;S.dirty={};S.data=null;Promise.all([run('tongHop',S.token,S.ky),run('trangThai',S.token,S.ky)]).then(function(d){S.tt=d[0];S.wf=d[1];S.tqAt=Date.now();fillKy();show(S.tab==='in'?'in':'tq')}).catch(function(e){toast(msg(e),6000);S.ky='';fillKy()})}
-function start(){pushInit();fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();var t0='home';try{var st=sessionStorage.getItem('cv1953t');if(st&&$('tabs').querySelector('[data-t="'+st+'"]'))t0=st}catch(e){}show(t0)}
+function start(){pushInit();onlPing();fillKy();$('kySel').onchange=function(){doiKy($('kySel').value)};drawTabs();var t0='home';try{var st=sessionStorage.getItem('cv1953t');if(st&&$('tabs').querySelector('[data-t="'+st+'"]'))t0=st}catch(e){}show(t0)}
 var BTAB=['b01','b02','b03a','b03b'];
 S.shut=S.shut||{};
 function bcItems(vt){return [['tq',vt==='TH'?'📈 Tổng quan toàn tỉnh':'📊 Tổng quan']].concat(BTAB.map(function(id){return [id,BN[id]]})).concat([['tt','Biểu 04-KBNN'],['bt','⚖ Đối chiếu THBC']]).concat(vt==='TH'?[['qt','🔄 Quy trình & hạn nộp'],['cv','📤 Xuất báo cáo']]:(vt==='NV2'?[['qt','📥 Hộp tiếp nhận']]:[]))}
@@ -863,6 +864,17 @@ function pushInit(){var b=$('pushBtn');if(!b||!S.token||S.vt!=='TH')return;b.sty
         if(s&&b.dataset.on==='1'){return run('pushHuy',pushTk(),s.endpoint).then(function(){return s.unsubscribe()}).then(function(){nhan(false);toast('Đã tắt thông báo trên thiết bị này')})}
         return Notification.requestPermission().then(function(p){if(p!=='granted')throw new Error('Chưa cho phép thông báo. Vào cài đặt trình duyệt/điện thoại để cho phép rồi bấm lại.');return run('pushKhoa',pushTk())}).then(function(k){return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(k.pub)})}).then(function(sub){return run('pushDangKy',pushTk(),JSON.parse(JSON.stringify(sub)))}).then(function(){nhan(true);toast('Đã bật thông báo – các phòng đệ trình sẽ báo về thiết bị này',6000);try{reg.showNotification('BCĐT-TQ',{body:'Đã bật thông báo thành công.',tag:'bcdt-test'})}catch(e){}})})
     }).catch(function(e){toast(msg(e),8000)})}}
+// ---- Online: báo "còn mở" mỗi 60 giây; chuyên viên THBC thấy ai đang online ở góc dưới bên trái ----
+function onlRole(a){return a.vt==='TH'?'Chuyên viên THBC':a.cv==='LAP'?'Người nhập':a.cv==='KTT'?'Kế toán trưởng':a.cv==='TP'?'Lãnh đạo phòng':a.ten}
+function onlAgo(g){return g==null?'chưa đăng nhập':g<150?'online':g<3600?Math.round(g/60)+' phút trước':g<86400?Math.round(g/3600)+' giờ trước':Math.round(g/86400)+' ngày trước'}
+function onlPing(){if(!S.token)return;run('hienDien',S.token).then(function(r){var bx=$('onl');if(!bx)return;if(!r||!r.ds||S.vt!=='TH'){bx.style.display='none';return}
+  var g={},od=[];r.ds.forEach(function(a){var k=a.donvi||a.ten;if(!g[k]){g[k]={k:k,a:[]};od.push(k)}g[k].a.push(a)});
+  var nOn=0,h='';od.forEach(function(k){var u=g[k],on=u.a.filter(function(a){return a.giay!=null&&a.giay<150}),mn=u.a.reduce(function(m,a){return a.giay!=null&&(m==null||a.giay<m)?a.giay:m},null),nm=k.replace('Phòng giao dịch số ','Phòng giao dịch ').replace('Phòng Nghiệp vụ 2','Phòng Nghiệp vụ 2');
+    if(on.length){nOn++;h+='<div class="ol"><i style="color:#16a34a">●</i><div><b>'+esc(nm)+'</b><br><small>'+on.map(function(a){return esc(onlRole(a))}).join(', ')+'</small></div></div>'}
+    else h+='<div class="ol off"><i>○</i><div>'+esc(nm)+' <small>· '+onlAgo(mn)+'</small></div></div>'});
+  $('onB').textContent='🟢 '+nOn+'/'+od.length+' đơn vị online';$('onP').innerHTML='<div style="font-weight:700;margin-bottom:4px">Đơn vị đang online ('+nOn+'/'+od.length+')</div>'+h;bx.style.display=''}).catch(function(){})}
+(function(){var bx=document.getElementById('onl');if(!bx)return;document.getElementById('onB').onclick=function(){bx.classList.toggle('mo')};document.addEventListener('click',function(e){if(!bx.contains(e.target))bx.classList.remove('mo')});setInterval(onlPing,60000)})();
+
 function tbChoDong(){var o=document.getElementById('tbcho');if(o)o.remove()}
 function tbCho(){if(!S.token||S.vt!=='TH'||S.vaiNv||S._tbBusy)return;pushInit();if($('modal')&&$('modal').style.display==='flex')return;S._tbBusy=1;
   run('thongBaoCho',S.token).then(function(d){S._tbBusy=0;if(!d||!d.ap)return;var sig=[d.cdt,d.tt,d.ten,d.gy].join('-'),old='';try{old=sessionStorage.getItem('tbcho')||''}catch(e){}
