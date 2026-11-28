@@ -1911,8 +1911,10 @@ function htForm(d,x){var o=DM.opt,thbc=!!o.toanBo,L=x.loai,ma=d.ma_da;
      .then(function(){return (nTt&&(ko||(deXuat&&tr)))?run('dmTtBoQua',S.token,[ma],true):0})
      .then(function(){return tenDx?run('dmTenDeXuat',S.token,ma,tenDx.ten,tenDx.ly).then(function(k){tdKq=k}):0})
      .then(function(){return (nTen||nDm)?run('dmHtLuu',S.token,ma,dmV||'theo',dmLy):0})
-     .then(function(){DM.ht=null;DM.cb=null;if(typeof dmDxLoad==='function')dmDxLoad();var tenDoi=thbc&&rec.ten_da?rec.ten_da:'';
+     .then(function(){var tenDoi=thbc&&rec.ten_da?rec.ten_da:'',nhanh=sangTiep&&nxt&&!(tdKq&&tdKq.tuDuyet)&&!tenDoi;   // nhanh: mở ngay dự án kế tiếp, tải lại cảnh báo ở nền (không bắt chờ)
+       if(!nhanh){DM.ht=null;DM.cb=null}if(typeof dmDxLoad==='function')dmDxLoad();
        toast('Đã lưu dự án '+ma+(tdKq&&tdKq.tuDuyet?' – tên dự án đã cập nhật theo B501':tenDx?' – tên dự án chờ Phòng NV2 duyệt':(deXuat&&tr?' – chủ đầu tư trực thuộc chờ Phòng NV2 duyệt':'')),4000);
+       if(nhanh){htOpen(nxt);dmCbLoad().then(function(){if(typeof dmLoad==='function')dmLoad()});return}
        return dmCbLoad().then(function(){if(typeof dmLoad==='function')dmLoad();if(tdKq&&tdKq.tuDuyet){kbgdNotice(tdKq.ten);return}if(tenDoi){kbgdNotice(tenDoi);return}if(sangTiep&&nxt)htOpen(nxt);else dong()})})
      .catch(function(e){btn.disabled=false;$('fNo').disabled=false;er.textContent=msg(e)})}
   $('fOk').onclick=function(){luu(this,false)};if($('fNx'))$('fNx').onclick=function(){luu(this,true)}}
